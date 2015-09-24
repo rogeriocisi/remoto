@@ -61,7 +61,7 @@ public class PoolIdentificationSOLMGScript
 		// Specify ReMoto's path
 		
 		
-		ReMoto.path = "/home/renato/Documents/Doutorado/Semestre2_2013/MNPoolIdentification/";
+		ReMoto.path = "/home/renato/Dropbox/Doutorado/identRenshaw/";
 		//ReMoto.path = "C:\\Users\\Vitor\\Desktop\\Workspace2\\remoto\\WebContent\\";
 		
 		// Specify user account
@@ -88,7 +88,7 @@ public class PoolIdentificationSOLMGScript
     	
     	// LOAD SCENARIO
     	
-		conf = simDAO.getConfiguration(34);
+		conf = simDAO.getConfiguration(44);
 		
 		//conf.setMerge( true );
 		ResultVO resultVO = new ResultVO();
@@ -185,8 +185,8 @@ public class PoolIdentificationSOLMGScript
 		//	}
 		//}
 	 
-	 for (int j = 2; j <=10; j=j+2){
-		for(int k = 1; k <= numOfSimulations; k++){
+	 for (int j = 10; j <= 20; j=j+2){
+		for(int k = 1; k <= 1; k++){
 			
 			 
 			
@@ -198,9 +198,9 @@ public class PoolIdentificationSOLMGScript
 		    	NeuronVO dt = (NeuronVO) conf.getNeuronTypes(ReMoto.DT, ReMoto.TR).get(i);
 		    	if(dt.isActive()){
 		    		if (k == 1){
-		    			dt.setMean(11.2);
-		    			dt.setStd(7);
-			    		dt.setOrder(7);
+		    			dt.setMean(6.7);
+		    			dt.setStd(1);
+			    		dt.setOrder(1);
 		    		}
 		    		else if(k == 2){
 		    			dt.setMean(9.6);
@@ -251,11 +251,11 @@ public class PoolIdentificationSOLMGScript
 			generateLogOfScenario(k, dataPath, path, j);
 			
 			generateAndStoreData("emgSOL", sim, dataPath, graphicPath, path, k, j);
-			generateAndStoreData("emgMG", sim, dataPath, graphicPath, path, k, j);
+			//generateAndStoreData("emgMG", sim, dataPath, graphicPath, path, k, j);
 			//generateAndStoreData("emgLG", sim, dataPath, graphicPath, path, k, j);
 			//generateAndStoreData("emg", sim, dataPath, graphicPath, path, k);
 			generateAndStoreData("spikesMNsSOL", sim, dataPath, graphicPath, path, k, j);
-			generateAndStoreData("spikesMNsMG", sim, dataPath, graphicPath, path, k, j);
+			//generateAndStoreData("spikesMNsMG", sim, dataPath, graphicPath, path, k, j);
 			//generateAndStoreData("spikesMNsLG", sim, dataPath, graphicPath, path, k, j);
 			//generateAndStoreData("spikesIasSOL", sim, dataPath, graphicPath, path, k);
 			//generateAndStoreData("spikesIasMG", sim, dataPath, graphicPath, path, k);
@@ -263,9 +263,9 @@ public class PoolIdentificationSOLMGScript
 			//generateAndStoreData("meanFiringRateIa", sim, dataPath, graphicPath, path, k);
 			//generateAndStoreData("firingRateMNs", sim, dataPath, graphicPath, path, k);
 			generateAndStoreData("conductanceSOL", sim, dataPath, graphicPath, path, k, j);
-			generateAndStoreData("conductanceMG", sim, dataPath, graphicPath, path, k, j);
+			//generateAndStoreData("conductanceMG", sim, dataPath, graphicPath, path, k, j);
 			generateAndStoreData("muscleForceSOL", sim, dataPath, graphicPath, path, k, j);
-			generateAndStoreData("muscleForceMG", sim, dataPath, graphicPath, path, k, j);
+			//generateAndStoreData("muscleForceMG", sim, dataPath, graphicPath, path, k, j);
 			//generateAndStoreData("muscleForceLG", sim, dataPath, graphicPath, path, k, j);
 			//generateAndStoreData("spikesIaINs", sim, dataPath, graphicPath, path, k);
 			//generateAndStoreData("muscleLength", sim, dataPath, graphicPath, path, k);
@@ -544,7 +544,7 @@ public class PoolIdentificationSOLMGScript
 		
 	
 		
-		outputFile = new File(dataPath + path + "/" + output + "_Gamma_" + (int)(10*simCount) + "p" + simCount2 + ".txt");
+		outputFile = new File(dataPath + path + "/" + output + "_Renshaw_" + simCount2 + ".txt");
 		
 	    PrintWriter printWriter = new PrintWriter(outputFile);
 	    
@@ -561,7 +561,7 @@ public class PoolIdentificationSOLMGScript
 			Object[] objT = { new Double(t) };
 			Object[] objF = { new Double(y) };
 			
-			printWriter.println(ind + "\t" + mf.format(objT) + "\t" + mf.format(objF));
+			printWriter.println(mf.format(objT) + "\t" + mf.format(objF));
 			
 			xySeries.add( t, Double.valueOf(y) );
 		}
@@ -573,14 +573,14 @@ public class PoolIdentificationSOLMGScript
 
 	    if(output.equals("spikesMNs") || output.equals("spikesIas") || output.equals("firingRateMNs") || output.equals("spikesIaINs") ){
 	    	PlotScatter.generate(datasetS,
-					 graphicPath + path + "/" +  output + "_Gamma_" + (int)(10*simCount) + "p" + simCount2 + ".jpg",
+					 graphicPath + path + "/" +  output + "Renshaw_" + simCount2 + ".jpg",
 					 output, 
 					 "Time [ms]", 
 					 output);
 	    }
 	    else{
 	    	PlotXYLine.generate(datasetS,
-	    			 graphicPath + path + "/"  + output + "_Gamma_" +10*simCount + "p" + simCount2 + ".jpg",
+	    			 graphicPath + path + "/"  + output + "_Renshaw_" + simCount2 + ".jpg",
 					 output, 
 					 "Time [ms]", 
 					 output);
@@ -598,7 +598,7 @@ public class PoolIdentificationSOLMGScript
 		
 		
 	    
-		output = new File(dataPath + path + "/scenario" + (int)(10*simCount) + "p" + simCount2 + ".txt");
+		output = new File(dataPath + path + "/scenario" +  simCount2 + ".txt");
 		
 	    PrintWriter printWriter = new PrintWriter(output);
 	    
