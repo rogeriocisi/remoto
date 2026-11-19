@@ -1,6 +1,6 @@
 # ReMoto
 
-This repository has the Java code to a web-based neuronal simulation system. It has been developed over the last ten years by some authors, including me. The version in this repository is the code as I am using it now. An on-line version of this simulator can be found in: http://remoto.leb.usp.br. 
+This repository has the Java code to a web-based neuronal simulation system. It has been developed over the last ten years by some authors, including me. The version in this repository is the code as I am using it now. 
 
 ReMoto is a web-based neuronal simulation system, intended for studying spinal cord neuronal networks responsible for muscle control. These networks are affected by descending drive, afferent drive, and electrical nerve stimulation. The simulator may be used to investigate phenomena at several levels of organization, e.g., at the neuronal membrane level or at the whole muscle behavior level (e.g., muscle force generation). This versatility is due to the fact that each element (neurons, synapses, muscle fibers) has its own specific mathematical model, usually involving the action of voltage- or neurotransmitter-dependent ionic channels. The simulator should be helpful in activities such as interpretation of results obtained from neurophysiological experiments in humans, proposal of hypothesis or testing models or theories on neuronal dynamics or neuronal network processing, validation of experimental protocols, and teaching neurophysiology.
 
