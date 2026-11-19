@@ -10,8 +10,10 @@ import br.remoto.model.Current;
 import br.remoto.model.ModulatingSignal;
 import br.remoto.model.ReMoto;
 import br.remoto.model.vo.ConductanceVO;
+import br.remoto.model.vo.DynamicVO;
 import br.remoto.model.vo.MiscellaneousVO;
 import br.remoto.model.vo.MotorUnitVO;
+import br.remoto.model.vo.MuscleVO;
 import br.remoto.model.vo.NerveVO;
 import br.remoto.model.vo.NeuronVO;
 import br.remoto.model.vo.Nucleus;
@@ -51,6 +53,15 @@ public final class LegacyScreens {
         register(miscellaneous());
         register(nerveStimulation());
         register(injectedCurrent());
+        register(conductances());
+        register(kineticProperties());
+        register(synapticDynamics());
+        register(muscleSpindle());
+        register(golgiTendonOrgan());
+        register(biomechanicalElements());
+        register(joint());
+        register(musculotendon());
+        register(electromyogram());
     }
 
     private LegacyScreens() {
@@ -64,7 +75,8 @@ public final class LegacyScreens {
     public static List<MenuGroup> menu() {
         return List.of(
                 group("Structure", "input", "Descending Commands", "network", "Neural Elements"),
-                group("Neural Parameters", "synapse", "Synapses", "conductance", "Conductances",
+                group("Neural Parameters", "synapse", "Synapses", "markov", "Kinetic Properties",
+                        "dynamics", "Synaptic Dynamics", "conductance", "Conductances",
                         "motoneuron", "Motoneurons", "interneuron", "Interneurons", "sensory", "Sensory Fibers"),
                 group("Proprioceptors", "muscleSpindle", "Muscle Spindle", "golgiTendonOrgan", "Golgi Tendon Organ"),
                 group("Biomechanical Elements", "biomechanicalElements", "Biomechanical Elements"),
@@ -340,12 +352,39 @@ public final class LegacyScreens {
                 item -> ((MotorUnitVO) item).getType(),
                 List.of(Field.number("MUAP scale factor", "mV", "ampEMG1", "ampEMG2"),
                         Field.number("MUAP duration factor", "ms", "lambdaEMG1", "lambdaEMG2")));
+        Part model = confPart(null, List.of(muscleModel(), muDistribution()));
         return new LegacyScreen("motorunit", "Parameters of the muscle units",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
-                List.of(muscle, emg),
-                (conf, sel, items) -> conf.setListMotorUnitTypes(items.get(0)),
-                List.of("The muscle model and the motor unit distribution were not stored by the original"
-                        + " ConfigurationDAO, so they are not editable here."));
+                List.of(model, muscle, emg),
+                (conf, sel, items) -> conf.setListMotorUnitTypes(items.get(1)),
+                List.of(SETTINGS_NOTE));
+    }
+
+    // ------------------------------------------------------------------ campos ligados à Configuration
+
+    /** Escolhas de biomechanicalElements.jsp / motorunit.jsp (valores lidos pela JointFactory). */
+    private static Field muscleModel() {
+        return Field.choice("Muscle model", "cdMuscleModel",
+                ReMoto.SOCDS, "Second-order critically-damped system", ReMoto.Raikova, "Raikova-Aladjov Model",
+                ReMoto.Hill, "Hill-type Model", ReMoto.DistributionMoments, "Distributed-Moments Model");
+    }
+
+    private static Field jointModel() {
+        return Field.choice("Joint model", "cdJointModel",
+                "isometric", "Isometric", "pendulum", "Inverted Pendulum", "position", "Position Task");
+    }
+
+    private static Field muDistribution() {
+        return Field.choice("Motor unit distribution in a muscle section",
+                "muDistribution", "1", "preset", "2", "random", "3", "linear");
+    }
+
+    private static final String SETTINGS_NOTE = "Model choices, gains and angles were not stored by the original"
+            + " ConfigurationDAO (they lasted only for the session); here they are saved with the scenario.";
+
+    /** Uma "linha" só: a própria Configuration, como os formulários que usavam conf.get/set direto. */
+    private static Part confPart(String title, List<Field> fields) {
+        return new Part(title, Layout.MATRIX, (conf, sel) -> List.of(conf), item -> "Value", fields);
     }
 
     /** miscellaneous.jsp / MiscellaneousAction. */
@@ -398,15 +437,17 @@ public final class LegacyScreens {
                                 "sine", "sine", "random", "random", "trapezoid", "trapezoid", "triangle", "triangle",
                                 "stochastic", "stochastic"),
                         Field.number("Width", null, "width")));
-        return new LegacyScreen("stimulation", "Nerve Stimulation", List.of(), List.of(part),
+        Part order = confPart(null, List.of(Field.choice("Motor-unit recruitment order", "recruitmentOrderFES",
+                "linear", "Linear")));
+        return new LegacyScreen("stimulation", "Nerve Stimulation", List.of(), List.of(order, part),
                 (conf, sel, items) -> {
-                    for (Object o : items.get(0)) {
+                    for (Object o : items.get(1)) {
                         NerveVO nerve = (NerveVO) o;
                         if (nerve.getTfin() > conf.getTFin()) {
                             conf.setTFin(nerve.getTfin());
                         }
                     }
-                    conf.setNerves(new ArrayList<>(items.get(0)));
+                    conf.setNerves(new ArrayList<>(items.get(1)));
                 },
                 List.of("Pulse width: 1 ms. A stop time after the end of the simulation extends its duration"
                         + " (as in the original StimulationAction)."));
@@ -445,6 +486,212 @@ public final class LegacyScreens {
                     conf.setListInjectedCurrents(new ArrayList<>(items.get(0)));
                 },
                 List.of("Amplitudes are limited to " + ReMoto.maxAmpCurrent + " nA."));
+    }
+
+    // ------------------------------------------------------------------ Neural Parameters (cont.)
+
+    /** conductance.jsp / ConductanceAction: as cinco condutâncias dependentes de voltagem de um tipo. */
+    private static LegacyScreen conductances() {
+        List<SelectorDef> selectors = List.of(
+                new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, true)), ReMoto.SOL),
+                new SelectorDef("type", "Neuron", (conf, sel) -> {
+                    List<Field.Option> types = new ArrayList<>();
+                    for (String category : new String[]{ReMoto.MN, ReMoto.IN}) {
+                        for (Object o : conf.getNeuronTypes(sel.get("pool"), category)) {
+                            String type = ((NeuronVO) o).getType();
+                            types.add(new Field.Option(type, type));
+                        }
+                    }
+                    return types;
+                }, ReMoto.S));
+        Part part = new Part(null, Layout.LIST,
+                (conf, sel) -> {
+                    List<Object> list = new ArrayList<>();
+                    String[][] specs = {{ReMoto.gNaM, ReMoto.excitatory}, {ReMoto.gNaH, ReMoto.excitatory},
+                            {ReMoto.gKN, ReMoto.inhibitory}, {ReMoto.gKQ, ReMoto.inhibitory},
+                            {ReMoto.gCaP, ReMoto.excitatory}};
+                    for (String[] spec : specs) {
+                        ConductanceVO vo = conf.getMarcovType(sel.get("pool"), spec[0] + "-" + sel.get("type"), spec[1]);
+                        if (vo != null) {
+                            list.add(vo);
+                        }
+                    }
+                    return list;
+                },
+                item -> ((ConductanceVO) item).getCdConductanceType(),
+                List.of(Field.number("Maximum conductance", "mS/cm²", "gmax"),
+                        Field.number("Equilibrium potential*", "mV", "e"),
+                        Field.number("Time-to-peak", "ms", "tpeak"),
+                        Field.number("Peak value of alpha", "1/ms", "alpha"),
+                        Field.number("Peak value of beta", "1/ms", "beta")));
+        return new LegacyScreen("conductance", "Parameters of the voltage-dependent conductances", selectors,
+                List.of(part),
+                (conf, sel, items) -> {
+                    conf.setChangedConfiguration(true);
+                    conf.setNeuronIonicConductances(new ArrayList<>(items.get(0)));
+                },
+                List.of("* with respect to resting potential"));
+    }
+
+    /** markov.jsp / MarkovAction ("Kinetic Properties" das sinapses de um pool). */
+    private static LegacyScreen kineticProperties() {
+        Part part = new Part(null, Layout.LIST,
+                (conf, sel) -> conf.getSynapticDynamics(sel.get("pool")),
+                item -> {
+                    ConductanceVO c = (ConductanceVO) item;
+                    return c.getCdConductanceType() + (c.getCdNucleusPre() == null ? "" : " (from " + c.getCdNucleusPre() + ")");
+                },
+                List.of(Field.number("Transmitter", "mM", "tmax"),
+                        Field.number("Time-to-peak", "ms", "tpeak"),
+                        Field.number("Forward rate", "1/ms", "alpha"),
+                        Field.number("Backward rate", "1/ms", "beta"),
+                        Field.number("Reversal potential", "mV", "e")));
+        return new LegacyScreen("markov", "Kinetic Properties",
+                List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, true)), ReMoto.SOL)),
+                List.of(part),
+                (conf, sel, items) -> {
+                    conf.setChangedConfiguration(true);
+                    conf.setListMarkovTypes(new ArrayList<>(items.get(0)));
+                },
+                List.of());
+    }
+
+    /** dynamics.jsp / DynamicsAction: depressão ou facilitação de cada sinapse do pool. */
+    private static LegacyScreen synapticDynamics() {
+        Part part = new Part(null, Layout.LIST,
+                (conf, sel) -> {
+                    List<Object> list = new ArrayList<>();
+                    for (Object o : conf.getDynamicTypes()) {
+                        if (sel.get("pool").equals(((DynamicVO) o).getCdNucleus())) {
+                            list.add(o);
+                        }
+                    }
+                    return list;
+                },
+                item -> {
+                    DynamicVO d = (DynamicVO) item;
+                    return d.getCdNucleusPre() + " → " + d.getCdNucleus() + " (" + d.getCdConductanceType() + ")";
+                },
+                List.of(Field.choice("Type", "dynamicType", "N", "none", "D", "Depressing", "F", "Facilitating"),
+                        Field.number("Variation", "%", "variation"),
+                        Field.number("Time constant", "ms", "tau")));
+        return new LegacyScreen("dynamics", "Synaptic dynamics",
+                List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, true)), ReMoto.SOL)),
+                List.of(part),
+                (conf, sel, items) -> {
+                    conf.setChangedConfiguration(true);
+                    for (Object o : items.get(0)) {
+                        conf.setDynamicType((DynamicVO) o);
+                    }
+                },
+                List.of());
+    }
+
+    // ------------------------------------------------------------------ Proprioceptors
+
+    /** muscleSpindle.jsp / MuscleSpindleAction. */
+    private static LegacyScreen muscleSpindle() {
+        Part part = confPart(null, List.of(
+                Field.choice("Model", "cdSpindleModel",
+                        ReMoto.spindleModelMileusnic, "Mileusnic", ReMoto.spindleModelProchazka, "Prochazka"),
+                Field.number("Gamma dynamic", "spikes/s", "gammaDynamic"),
+                Field.number("Gamma static", "spikes/s", "gammaStatic"),
+                Field.number("Gain of bag1 fiber primary afferent activity", null, "primaryBag1Gain"),
+                Field.number("Gain of bag 2 and chain fibers primary afferent activity", null, "primaryBag2AndChainGain"),
+                Field.number("Gain of bag 2 and chain fibers secondary afferent activity", null, "secondaryBag2AndChainGain")));
+        return new LegacyScreen("muscleSpindle", "Muscle Spindle", List.of(), List.of(part),
+                (conf, sel, items) -> { }, List.of(SETTINGS_NOTE));
+    }
+
+    /** golgiTendonOrgan.jsp: só a escolha do modelo (Crago). */
+    private static LegacyScreen golgiTendonOrgan() {
+        Part part = confPart(null, List.of(
+                Field.choice("Model", "cdGtoModel", ReMoto.lumpedGtoModelCrago, "Crago")));
+        return new LegacyScreen("golgiTendonOrgan", "Golgi Tendon Organ", List.of(), List.of(part),
+                (conf, sel, items) -> { }, List.of());
+    }
+
+    // ------------------------------------------------------------------ Biomechanical Elements / Parameters
+
+    /** biomechanicalElements.jsp / BiomechanicalElementsAction. */
+    private static LegacyScreen biomechanicalElements() {
+        Part part = confPart(null, List.of(jointModel(), muscleModel()));
+        return new LegacyScreen("biomechanicalElements", "Biomechanical Elements", List.of(), List.of(part),
+                (conf, sel, items) -> { },
+                List.of("Joint: Ankle. The converted scenarios only have data for the ankle nuclei"
+                                + " (SOL, MG, LG, TA); the metacarpophalangeal and wrist joints are not available.",
+                        "Per-muscle activation is set in Structure → Neural Elements (the original action did"
+                                + " not save the muscle checkboxes of this screen).",
+                        SETTINGS_NOTE));
+    }
+
+    /** joint.jsp / JointAction. */
+    private static LegacyScreen joint() {
+        Part part = confPart(null, List.of(
+                Field.number("Ankle initial angle", "deg", "jointAngle"),
+                Field.number("Knee angle", "deg", "kneeAngle")));
+        return new LegacyScreen("joint", "Joint Parameters", List.of(), List.of(part),
+                (conf, sel, items) -> { },
+                List.of("The joint model is chosen in Biomechanical Elements.", SETTINGS_NOTE));
+    }
+
+    /** musculotendon.jsp / MusculotendonAction. */
+    private static LegacyScreen musculotendon() {
+        Part socds = new Part("Twitch parameters (second-order critically-damped system)", Layout.MATRIX,
+                (conf, sel) -> conf.getMotorUnitTypes(sel.get("pool")),
+                item -> ((MotorUnitVO) item).getType(),
+                List.of(Field.number("Peak", "N", "twitchTension1", "twitchTension2"),
+                        Field.number("Time-to-peak", "ms", "contractionTime1", "contractionTime2")));
+        Part raikova = new Part("Twitch parameters (Raikova-Aladjov model)", Layout.MATRIX,
+                (conf, sel) -> conf.getMotorUnitTypes(sel.get("pool")),
+                item -> ((MotorUnitVO) item).getType(),
+                List.of(Field.number("Peak", "N", "twitchTension1Raikova", "twitchTension2Raikova"),
+                        Field.number("Time-to-peak", "ms", "contractionTime1Raikova", "contractionTime2Raikova"),
+                        Field.number("Half relaxation time", "ms", "halfRelaxationTimeRaikova1", "halfRelaxationTimeRaikova2")));
+        Part hill = new Part("Mechanical parameters (Hill-type model)", Layout.MATRIX,
+                (conf, sel) -> {
+                    MuscleVO vo = conf.getMuscle(sel.get("pool"), ReMoto.Hill);
+                    return vo == null ? List.of() : List.of(vo);
+                },
+                item -> "Value",
+                List.of(Field.number("Optimal Length", "m", "optimalLength"),
+                        Field.number("Maximum Muscle Force", "N", "maximumMuscleForce"),
+                        Field.number("Mass", "Kg", "muscleMass"),
+                        Field.number("Viscosity Coeficient", "F0.s/L0M", "viscosityCoeficient"),
+                        Field.number("Elastic Coeficient (Parallel Element)", "F0/L0M", "elasticCoeficientOfParallelElement"),
+                        Field.number("Pennation Angle", "deg", "pennationAngle"),
+                        Field.number("Slack Tendon Length", "m", "slackTendonLength"),
+                        Field.number("Tendon Stiffness", "F0/L0T", "k_T"),
+                        Field.number("Toe curvature", "-", "c_T"),
+                        Field.number("Length at linear region onset", "L0T", "LR_T")));
+        return new LegacyScreen("musculotendon", "Musculotendon Parameters",
+                List.of(new SelectorDef("pool", "Muscle", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
+                List.of(socds, raikova, hill),
+                (conf, sel, items) -> {
+                    conf.setTwitchParameters(items.get(0));
+                    if (!items.get(2).isEmpty()) {
+                        conf.setMuscle(sel.get("pool"), ReMoto.Hill, (MuscleVO) items.get(2).get(0));
+                    }
+                },
+                List.of("The parameters used depend on the muscle model chosen in Biomechanical Elements."));
+    }
+
+    /** emg.jsp / EMGAction. */
+    private static LegacyScreen electromyogram() {
+        Part model = confPart(null, List.of(
+                Field.choice("MUAP model", "cdEMGModel", ReMoto.emgModelHermiteRodriguez, "Hermite-Rodriguez"),
+                muDistribution()));
+        Part units = new Part("Model parameters", Layout.MATRIX,
+                (conf, sel) -> conf.getMotorUnitTypes(sel.get("pool")),
+                item -> ((MotorUnitVO) item).getType(),
+                List.of(Field.number("MUAP scale factor (A MUAP)", "mV", "ampEMG1", "ampEMG2"),
+                        Field.number("MUAP duration factor (λ MUAP)", "ms", "lambdaEMG1", "lambdaEMG2")));
+        return new LegacyScreen("emg", "Electromyogram",
+                List.of(new SelectorDef("pool", "Muscle", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
+                List.of(model, units),
+                (conf, sel, items) -> conf.setEMGParameters(items.get(1)),
+                List.of("The new platform does not export the EMG signal yet; these parameters are kept for"
+                        + " when it does.", SETTINGS_NOTE));
     }
 
     // ------------------------------------------------------------------ apoio

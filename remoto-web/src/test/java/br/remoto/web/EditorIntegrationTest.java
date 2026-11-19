@@ -102,6 +102,16 @@ class EditorIntegrationTest {
                 .andExpect(content().string(containsString("Soma threshold")));
     }
 
+    @Test
+    void seletoresDaTelaVemDaUrl() throws Exception {
+        String id = copyAs("ana");
+
+        mvc.perform(get("/editor/" + id).param("screen", "conductance").param("pool", "SOL").param("type", "FR")
+                        .with(user("ana")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("gNaM-FR")));
+    }
+
     private String copyAs(String username) throws Exception {
         MvcResult r = mvc.perform(post("/api/scenarios/public/remoto-17-default-soleus-contraction/copy")
                         .with(user(username)).with(csrf()))

@@ -39,6 +39,9 @@ class EditorController {
 
     static final String GENERAL = "general";
     private static final String SELECTION_PREFIX = "sel.";
+    /** Parâmetros da URL que não são seletores de tela. */
+    private static final java.util.Set<String> NOT_SELECTORS = java.util.Set.of(
+            "screen", "saved", "erro", "etag", "name", "description", "seed", "durationMs", "stepMs", "_csrf");
 
     private final ScenarioRepository scenarios;
     private final SimulationService simulations;
@@ -200,7 +203,8 @@ class EditorController {
         params.forEach((k, v) -> {
             if (k.startsWith(SELECTION_PREFIX)) {
                 selection.put(k.substring(SELECTION_PREFIX.length()), v);
-            } else if (k.equals("pool") || k.equals("typePre") || k.equals("typePos")) {
+            } else if (k.matches("[A-Za-z]+") && !NOT_SELECTORS.contains(k)) {
+                // seletores da tela na URL (pool, type, typePre...); a tela ignora os que não conhece
                 selection.putIfAbsent(k, v);
             }
         });

@@ -50,7 +50,9 @@ public final class LegacyConfigurations {
                 insert(connection, entry.getKey(), entry.getValue());
             }
             try {
-                return loadFromJdbc(url, config.idConfiguration());
+                Configuration conf = loadFromJdbc(url, config.idConfiguration());
+                LegacySettings.apply(conf, config.settings());
+                return conf;
             } finally {
                 try (Statement st = connection.createStatement()) {
                     st.execute("SHUTDOWN");
@@ -104,7 +106,8 @@ public final class LegacyConfigurations {
             if (original.tables().containsKey("NOTHING")) {
                 tables.put("NOTHING", original.tables().get("NOTHING"));
             }
-            return new LegacyConfig(LegacyConfig.FORMAT, original.idConfiguration(), tables);
+            return new LegacyConfig(LegacyConfig.FORMAT, original.idConfiguration(), tables,
+                    LegacySettings.capture(conf));
         } catch (SQLException e) {
             throw new IllegalStateException("não foi possível gravar a configuração legada", e);
         }

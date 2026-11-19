@@ -104,6 +104,92 @@ class LegacyEditorTest {
         assertThat(saved.stepMs()).isEqualTo(0.025);
     }
 
+    @Test
+    void todasAsTelasDoMenuEstaoPortadas() {
+        assertThat(LegacyScreens.menu()).flatMap(LegacyScreens.MenuGroup::items)
+                .allMatch(LegacyScreens.MenuItem::available);
+    }
+
+    /** Campos que o DAO original não gravava (fuso, modelos...) ficam no campo settings e voltam ao reabrir. */
+    @Test
+    void ganhosDoFusoEModelosSobrevivemAGravacao() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView spindle = editor.view("muscleSpindle", Map.of());
+        String gammaDynamic = cellOf(spindle, "Gamma dynamic [spikes/s]", 0);
+        ScreenView bio = editor.view("biomechanicalElements", Map.of());
+        String jointModel = cellOf(bio, "Joint model", 0);
+
+        assertThat(editor.apply("muscleSpindle", Map.of(), Map.of(gammaDynamic, "77"))).isEmpty();
+        assertThat(editor.apply("biomechanicalElements", Map.of(), Map.of(jointModel, "pendulum"))).isEmpty();
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(saved.settings()).containsEntry("gammaDynamic", 77.0).containsEntry("cdJointModel", "pendulum");
+        LegacyEditor reopened = LegacyEditor.open(saved, 5000, 0.05);
+        assertThat(value(reopened.view("muscleSpindle", Map.of()), "Gamma dynamic [spikes/s]")).isEqualTo("77");
+        assertThat(value(reopened.view("biomechanicalElements", Map.of()), "Joint model")).isEqualTo("pendulum");
+    }
+
+    @Test
+    void condutanciaDinamicaEMusculoSaoGravadosNasTabelasCertas() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView cond = editor.view("conductance", Map.of("pool", "SOL", "type", "S"));
+        ScreenView dyn = editor.view("dynamics", Map.of("pool", "SOL"));
+        ScreenView hill = editor.view("musculotendon", Map.of("pool", "SOL"));
+        assertThat(cond.sections().get(0).rows()).hasSize(5);
+        assertThat(dyn.sections().get(0).rows()).isNotEmpty();
+
+        editor.apply("conductance", Map.of("pool", "SOL", "type", "S"),
+                Map.of(cond.sections().get(0).rows().get(0).cells().get(0).name(), "12.5"));
+        editor.apply("dynamics", Map.of("pool", "SOL"),
+                Map.of(dyn.sections().get(0).rows().get(0).cells().get(2).name(), "123"));
+        editor.apply("musculotendon", Map.of("pool", "SOL"),
+                Map.of(cellOf(hill, "Maximum Muscle Force [N]", 2), "4321"));
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(column(saved, "MARKOV_TYPE", "GMAX")).contains(12.5);
+        assertThat(column(saved, "SYNAPTIC_DYNAMICS", "TAU")).contains(123.0);
+        assertThat(column(saved, "HILL_TYPE_MUSCULOTENDON_PARAMETERS", "MAXIMUM_MUSCLE_FORCE")).contains(4321.0);
+    }
+
+    @Test
+    void cenarioComOutroModeloDeArticulacaoRoda() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView bio = editor.view("biomechanicalElements", Map.of());
+        editor.apply("biomechanicalElements", Map.of(), Map.of(cellOf(bio, "Joint model", 0), "pendulum"));
+        LegacyConfig saved = editor.save().config();
+        br.remoto.core.scenario.Scenario scenario = new br.remoto.core.scenario.Scenario(null, "pendulum", "", 1, 3,
+                10, 0.05, List.of(), br.remoto.core.scenario.Scenario.ENGINE_LEGACY, br.remoto.legacy.LegacyJson.toMap(saved));
+        Map<String, Integer> sizes = new HashMap<>();
+
+        new br.remoto.legacy.LegacyEngine().run(scenario, new br.remoto.core.engine.RunContext() {
+            @Override public void progress(double fraction) { }
+            @Override public boolean isCancelled() { return false; }
+            @Override public br.remoto.core.engine.ResultSink results() {
+                return new br.remoto.core.engine.ResultSink() {
+                    @Override public void series(String name, String unit, double[] t, double[] v) { sizes.put(name, t.length); }
+                    @Override public void spikes(String name, int[] u, double[] t) { sizes.put(name, t.length); }
+                };
+            }
+        });
+
+        assertThat(sizes).containsKey("torque");
+    }
+
+    private static String cellOf(ScreenView view, String rowLabel, int section) {
+        return row(view, section, rowLabel).cells().get(0).name();
+    }
+
+    private static String value(ScreenView view, String rowLabel) {
+        return row(view, 0, rowLabel).cells().get(0).value();
+    }
+
+    private static List<Double> column(LegacyConfig config, String table, String column) {
+        LegacyConfig.Table t = config.tables().get(table);
+        int c = t.columns().indexOf(column);
+        return t.rows().stream().map(r -> r.get(c)).filter(Objects::nonNull)
+                .map(v -> ((Number) v).doubleValue()).toList();
+    }
+
     private static ScreenView.Row row(ScreenView view, int section, String label) {
         return view.sections().get(section).rows().stream()
                 .filter(r -> r.label().equals(label))

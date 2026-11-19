@@ -20,8 +20,15 @@ import java.util.function.Function;
 public final class LegacyScreen {
 
     /** Seletores do topo da tela (ex.: "Pool"). */
-    public record SelectorDef(String name, String label, Function<Configuration, List<Field.Option>> options,
+    public record SelectorDef(String name, String label,
+                              BiFunction<Configuration, Map<String, String>, List<Field.Option>> options,
                               String defaultValue) {
+
+        /** Seletor cujas opções não dependem dos seletores anteriores. */
+        public SelectorDef(String name, String label, Function<Configuration, List<Field.Option>> options,
+                           String defaultValue) {
+            this(name, label, (conf, selection) -> options.apply(conf), defaultValue);
+        }
     }
 
     /** Um bloco da tela: uma lista de itens e os campos de cada item. */
@@ -65,7 +72,7 @@ public final class LegacyScreen {
     public Map<String, String> selection(Configuration conf, Map<String, String> requested) {
         Map<String, String> selection = new LinkedHashMap<>();
         for (SelectorDef s : selectors) {
-            List<Field.Option> options = s.options().apply(conf);
+            List<Field.Option> options = s.options().apply(conf, selection);
             String wanted = requested.get(s.name());
             boolean valid = options.stream().anyMatch(o -> o.value().equals(wanted));
             String value = valid ? wanted
@@ -80,7 +87,8 @@ public final class LegacyScreen {
         Map<String, String> selection = selection(conf, requested);
         List<ScreenView.Selector> selectorViews = new ArrayList<>();
         for (SelectorDef s : selectors) {
-            selectorViews.add(new ScreenView.Selector(s.name(), s.label(), s.options().apply(conf), selection.get(s.name())));
+            selectorViews.add(new ScreenView.Selector(s.name(), s.label(), s.options().apply(conf, selection),
+                    selection.get(s.name())));
         }
         List<ScreenView.Section> sections = new ArrayList<>();
         for (int p = 0; p < parts.size(); p++) {

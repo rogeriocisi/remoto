@@ -289,25 +289,36 @@ Testes (`LegacyStoreTest`) garantem que carregar e gravar sem editar devolve as 
 a mesma simulação. Duas diferenças, ambas do código original: `DT_CONFIGURATION` passa a ser a
 data da gravação, e a tabela `NOTHING` (que o DAO só escreve e ninguém lê) é mantida como estava.
 
-**Telas disponíveis:** Scenario (nome, descrição, seed), Descending Commands, Neural Elements,
-Synapses, Motoneurons, Interneurons, Sensory Fibers, Muscle Units, Miscellaneous, Nerve
-Stimulation, Injected Current e Simulation Start.
+**Telas (todas as do menu antigo):**
 
-**Ainda não portadas** (aparecem como "em breve"): Conductances, Muscle Spindle, Golgi Tendon
-Organ, Biomechanical Elements, Joint, Musculotendon e Electromyogram.
+| Grupo | Telas |
+|---|---|
+| — | Scenario (nome, descrição, seed) |
+| Structure | Descending Commands, Neural Elements |
+| Neural Parameters | Synapses, Kinetic Properties, Synaptic Dynamics, Conductances, Motoneurons, Interneurons, Sensory Fibers |
+| Proprioceptors | Muscle Spindle, Golgi Tendon Organ |
+| Biomechanical Elements | Biomechanical Elements (modelos de articulação e de músculo) |
+| Biomechanical Parameters | Joint, Muscle Units, Musculotendon, Electromyogram, Miscellaneous |
+| Stimulation | Nerve Stimulation, Injected Current |
+| Run | Simulation Start |
 
-**Campos do site antigo que ficaram de fora** porque o `ConfigurationDAO` original não os gravava
-(valiam só durante a sessão): nível de neuromodulação e CV do limiar de Ca⁺⁺ (Motoneurons),
-índices de neurônios com sinais guardados, modelo de músculo e distribuição das unidades motoras
-(Muscle Units) e ordem de recrutamento FES (Nerve Stimulation).
+**Campos que o DAO original não gravava.** Algumas telas antigas editavam propriedades da
+`Configuration` que o `ConfigurationDAO` não salvava (valiam só durante a sessão): modelos de
+articulação, músculo, fuso, OTG e MUAP, distribuição das unidades motoras, ordem de recrutamento
+FES, ângulos do tornozelo e do joelho, frequências gama e ganhos do fuso. Na nova plataforma elas
+ficam no campo `legacy.settings` do cenário (`LegacySettings`) e são aplicadas depois do
+carregamento pelo DAO; cenários exportados do banco não têm `settings` e usam os padrões do DAO.
+
+**Ainda de fora:** a escolha de articulação (os cenários convertidos só têm dados do tornozelo),
+as caixas de músculo de *Biomechanical Elements* (o Action original não as salvava; use *Neural
+Elements*), e o nível de neuromodulação, o CV do limiar de Ca⁺⁺ e os índices de neurônios com
+sinal guardado (o Action original também não os salvava).
 
 ## Próximos passos
 
 1. **EMG** no motor original, extraindo o cálculo de `ResultDisplay` para o `remoto-legacy-model`.
-2. **Telas restantes do editor** (Conductances, Muscle Spindle, GTO, Joint, Musculotendon,
-   Electromyogram, Biomechanical Elements), no mesmo modelo das já portadas.
-3. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
+2. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
    famílias de modelos), o que também elimina o HSQLDB em memória.
-4. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).
-5. Varreduras de parâmetros, cliente Python, export NWB.
-6. Licença do projeto (o repositório ainda não tem `LICENSE`).
+3. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).
+4. Varreduras de parâmetros, cliente Python, export NWB.
+5. Licença do projeto (o repositório ainda não tem `LICENSE`).
