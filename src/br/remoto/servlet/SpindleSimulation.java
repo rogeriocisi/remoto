@@ -102,7 +102,7 @@ public class SpindleSimulation extends SpindleSuper {
 			
 			out.println("<P>");
 			
-			out.println("<TD align=\"center\"><APPLET CODEBASE=\"http://remoto.leb.usp.br/remoto\"");
+			out.println("<TD align=\"center\"><APPLET CODEBASE=\"" + request.getContextPath() + "\"");
 			out.println("ARCHIVE=\"AppletChartGeneratorSpindle.jar, jfreechart-1.0.13.jar,jcommon-1.0.16.jar\"");
 			out.println("CODE=br.remoto.applet.AppletChartGeneratorSpindle.class");
 			out.println("width=800 height=600");

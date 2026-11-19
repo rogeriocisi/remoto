@@ -79,8 +79,6 @@ public class AppletChartGeneratorSpindle extends JApplet {
 	
 	private void communicateWithServlet() throws ClassNotFoundException, IOException {
 		
-		//servlet = new URL( "http://remoto.leb.usp.br/remoto/servlet/SpindleSendResultsToApplet2" );
-		
 		String url = getCodeBase() + "/servlet/SpindleSendResultsToApplet2";
 		
 		servlet = new URL(url);

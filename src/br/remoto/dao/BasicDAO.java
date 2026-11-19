@@ -43,12 +43,10 @@ public class BasicDAO
 				// java -cp C:/java/Tomcat/webapps/remoto/WEB-INF/lib/hsqldb.jar org.hsqldb.Server -database.0 file:C:/java/Tomcat/webapps/remoto/db/remoto -dbname.0 remoto				
 				// Can be stored on HKEY_LOCAL_MACHINESOFTWARE\Microsoft\Windows\CurrentVersion\Run
 				
-				jdbcUrl = "jdbc:hsqldb:hsql://143.107.162.166/remoto";
-				//jdbcUrl = "jdbc:hsqldb:hsql://localhost/remoto";
+				// HSQLDB server host: localhost by default; for another host start Tomcat with -Dremoto.db.host=<IP>
+				jdbcUrl = "jdbc:hsqldb:hsql://" + System.getProperty("remoto.db.host", "localhost") + "/remoto";
 				
 				System.out.println("CONNECTING TO " + jdbcUrl);
-				
-				//jdbcUrl = "jdbc:hsqldb:hsql://143.107.162.139/remoto";
 				
 				con = DriverManager.getConnection( jdbcUrl, jdbcUser, jdbcPassword ); 
 				
