@@ -268,12 +268,44 @@ O motor original é pesado: na máquina de desenvolvimento, 40 ms simulados leva
 primeira execução (com aquecimento da JVM). Por isso os cenários longos (5 a 30 s simulados)
 levam minutos; o progresso aparece ao vivo e a CLI aceita `--duration-ms` para testes rápidos.
 
+## Editor de cenários
+
+Em "Meus cenários", o botão **Editar** abre o editor, montado a partir do editor do site antigo
+(`WebContent/jsp` + `br.remoto.control.action`): o mesmo menu lateral, as mesmas telas, os mesmos
+rótulos e unidades. Cenários públicos são só leitura; use **Copiar** antes de editar.
+
+**Como funciona (pacote `br.remoto.legacy.editor`):**
+
+1. O cenário vira a `Configuration` original (`LegacyConfigurations.load`).
+2. Cada tela lista os mesmos objetos que o Action original colocava no formulário (`NeuronVO`,
+   `ConductanceVO`, `NerveVO`, `Current`, `MotorUnitVO`, `MiscellaneousVO`), pelos mesmos
+   métodos da `Configuration`, e edita as mesmas propriedades JavaBean dos JSPs.
+3. Ao salvar, a tela repete o `setConfProperties` do Action (limites como no máximo 1000
+   neurônios por tipo, ISI mínimo, passo mínimo, períodos refratários mínimos).
+4. A `Configuration` é gravada de volta com o **`ConfigurationDAO.saveConfiguration` original**,
+   num HSQLDB em memória, e exportada de novo para o JSON do cenário.
+
+Testes (`LegacyStoreTest`) garantem que carregar e gravar sem editar devolve as mesmas tabelas e
+a mesma simulação. Duas diferenças, ambas do código original: `DT_CONFIGURATION` passa a ser a
+data da gravação, e a tabela `NOTHING` (que o DAO só escreve e ninguém lê) é mantida como estava.
+
+**Telas disponíveis:** Scenario (nome, descrição, seed), Descending Commands, Neural Elements,
+Synapses, Motoneurons, Interneurons, Sensory Fibers, Muscle Units, Miscellaneous, Nerve
+Stimulation, Injected Current e Simulation Start.
+
+**Ainda não portadas** (aparecem como "em breve"): Conductances, Muscle Spindle, Golgi Tendon
+Organ, Biomechanical Elements, Joint, Musculotendon e Electromyogram.
+
+**Campos do site antigo que ficaram de fora** porque o `ConfigurationDAO` original não os gravava
+(valiam só durante a sessão): nível de neuromodulação e CV do limiar de Ca⁺⁺ (Motoneurons),
+índices de neurônios com sinais guardados, modelo de músculo e distribuição das unidades motoras
+(Muscle Units) e ordem de recrutamento FES (Nerve Stimulation).
+
 ## Próximos passos
 
 1. **EMG** no motor original, extraindo o cálculo de `ResultDisplay` para o `remoto-legacy-model`.
-2. **Parâmetros tipados e editor de cenários:** trocar aos poucos as tabelas do formato
-   `remoto-legacy-db/1` por campos tipados (núcleos, sinapses, comandos descendentes),
-   começando pelos mais editados, sempre com o golden master passando.
+2. **Telas restantes do editor** (Conductances, Muscle Spindle, GTO, Joint, Musculotendon,
+   Electromyogram, Biomechanical Elements), no mesmo modelo das já portadas.
 3. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
    famílias de modelos), o que também elimina o HSQLDB em memória.
 4. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).

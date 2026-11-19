@@ -27,15 +27,18 @@
 
   <h3>Meus cenários</h3>
   <p th:if="${#lists.isEmpty(mine)}" class="vazio">
-    Nenhum ainda. Copie um público ou envie um JSON pela API (<code>POST /api/scenarios</code>).
+    Nenhum ainda. Copie um cenário público para poder editá-lo.
   </p>
   <ul class="lista">
     <li th:each="s : ${mine}">
       <div>
         <strong th:text="${s.name}">nome</strong>
+        <span th:if="${s.engine == 'legacy'}" class="selo">modelos originais</span>
+        <small th:text="|${#numbers.formatDecimal(s.durationMs, 1, 'POINT', 0, 'COMMA')} ms simulados|">1000 ms</small>
         <a th:href="@{/api/scenarios/{id}(id=${s.id})}" class="discreto">JSON</a>
       </div>
       <div class="acoes">
+        <a th:href="@{/editor/{id}(id=${s.id})}" class="botao secundario">Editar</a>
         <form hx-post="/ui/runs" hx-target="#execucoes">
           <input type="hidden" name="scenarioId" th:value="${s.id}">
           <button type="submit">Rodar</button>

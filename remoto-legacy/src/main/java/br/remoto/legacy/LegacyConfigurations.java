@@ -3,6 +3,7 @@ package br.remoto.legacy;
 import br.remoto.dao.BasicDAO;
 import br.remoto.dao.ConfigurationDAO;
 import br.remoto.model.Configuration;
+import br.remoto.model.vo.User;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +59,67 @@ public final class LegacyConfigurations {
         } catch (SQLException e) {
             throw new IllegalStateException("não foi possível montar a configuração legada", e);
         }
+    }
+
+    /**
+     * Grava uma {@code Configuration} editada de volta no formato do cenário, usando o
+     * {@code ConfigurationDAO.saveConfiguration} original — o mesmo que o site antigo chamava ao
+     * salvar. As tabelas que esse DAO não grava (as globais, SCENARIO_MODELS...) ficam como estavam.
+     */
+    public static synchronized LegacyConfig store(Configuration conf, LegacyConfig original) {
+        String url = "jdbc:hsqldb:mem:remoto-legacy-" + COUNTER.incrementAndGet();
+        try (Connection connection = DriverManager.getConnection(url, "SA", "")) {
+            try (Statement st = connection.createStatement()) {
+                for (String ddl : schema()) {
+                    st.execute(ddl);
+                }
+            }
+            for (Map.Entry<String, LegacyConfig.Table> entry : original.tables().entrySet()) {
+                insert(connection, entry.getKey(), entry.getValue());
+            }
+            String previous = System.getProperty(URL_PROPERTY);
+            System.setProperty(URL_PROPERTY, url);
+            boolean saved;
+            try {
+                new BasicDAO().disconnect();
+                conf.setId(original.idConfiguration());
+                saved = new ConfigurationDAO().saveConfiguration(conf, new User(owner(original)));
+            } finally {
+                new BasicDAO().disconnect();
+                if (previous == null) {
+                    System.clearProperty(URL_PROPERTY);
+                } else {
+                    System.setProperty(URL_PROPERTY, previous);
+                }
+            }
+            if (!saved) {
+                throw new IllegalStateException("o ConfigurationDAO original não conseguiu gravar a configuração");
+            }
+            Map<String, LegacyConfig.Table> tables = LegacyTables.export(connection, original.idConfiguration());
+            try (Statement st = connection.createStatement()) {
+                st.execute("SHUTDOWN");
+            }
+            // NOTHING: o saveConfiguration original insere linhas a cada gravação e nunca as apaga, e
+            // nenhum código lê essa tabela. Mantém o conteúdo original para não crescer a cada edição.
+            if (original.tables().containsKey("NOTHING")) {
+                tables.put("NOTHING", original.tables().get("NOTHING"));
+            }
+            return new LegacyConfig(LegacyConfig.FORMAT, original.idConfiguration(), tables);
+        } catch (SQLException e) {
+            throw new IllegalStateException("não foi possível gravar a configuração legada", e);
+        }
+    }
+
+    /** CD_USER da linha de CONFIGURATION (o DAO grava a configuração em nome de um usuário). */
+    private static String owner(LegacyConfig config) {
+        LegacyConfig.Table table = config.tables().get("CONFIGURATION");
+        if (table != null && !table.rows().isEmpty()) {
+            int column = table.columns().indexOf("CD_USER");
+            if (column >= 0 && table.rows().get(0).get(column) != null) {
+                return table.rows().get(0).get(column).toString();
+            }
+        }
+        return "guest";
     }
 
     /** Direto de um banco JDBC (o arquivo original), usando o DAO legado sem alterações. */

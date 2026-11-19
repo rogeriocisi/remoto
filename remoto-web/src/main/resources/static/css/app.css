@@ -133,3 +133,41 @@ button.secundario { background: transparent; color: var(--primaria); }
   color: var(--ok);
   font-size: .75rem;
 }
+
+/* editor de cenários (telas do site antigo) */
+.editor {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+}
+@media (max-width: 760px) {
+  .editor { grid-template-columns: 1fr; }
+}
+.menu-editor { display: flex; flex-direction: column; gap: 2px; align-self: start; }
+.menu-editor h4 { margin: 10px 0 2px; font-size: .8rem; text-transform: uppercase; color: var(--suave); }
+.menu-editor a { color: var(--primaria); text-decoration: none; padding: 2px 6px; border-radius: 4px; }
+.menu-editor a.atual { background: var(--primaria); color: var(--primaria-texto); }
+.menu-editor .indisponivel { color: var(--suave); padding: 2px 6px; font-size: .9rem; }
+.conteudo-editor { min-width: 0; }
+.seletores { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; }
+.seletores label { display: flex; gap: 6px; align-items: center; }
+.secao-editor h3 { margin-top: 16px; }
+.tabela-editor th { white-space: nowrap; font-weight: 600; }
+.tabela-editor thead th { text-align: center; }
+.tabela-editor tr.sub th { font-weight: 400; color: var(--suave); font-size: .8rem; }
+.tabela-editor tr.divisao th { padding-top: 12px; color: var(--suave); }
+.tabela-editor input.numero { width: 7em; }
+.tabela-editor input, .tabela-editor select, .form-geral input, .form-geral textarea {
+  font: inherit;
+  background: var(--cartao);
+  color: var(--texto);
+  border: 1px solid var(--borda);
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+.form-geral { display: flex; flex-direction: column; gap: 10px; max-width: 640px; }
+.form-geral label { display: flex; flex-direction: column; gap: 4px; }
+.notas { color: var(--suave); font-size: .9rem; }
+.ok { color: var(--ok); font-weight: 600; }
+.botao.secundario { background: transparent; color: var(--primaria); }

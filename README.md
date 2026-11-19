@@ -45,6 +45,7 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 - **Multi-user without a database:** each user's scenarios, runs and results are kept in their own folder. Guests get a temporary area that is deleted when the session ends.
 - **Fair simulation queue:** several users can run simulations at the same time; a large batch from one user does not block the others.
 - **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Tests check that each converted scenario gives exactly the same results as the original database configuration.
+- **Scenario editor modeled on the original site:** copy a public scenario and edit it through the same screens, fields and limits as the old editor (Neural Elements, Descending Commands, Synapses, Motoneurons, Interneurons, Sensory Fibers, Muscle Units, Miscellaneous, Nerve Stimulation, Injected Current, Simulation Start). Changes are saved with the original `ConfigurationDAO`. Some screens (Conductances, Muscle Spindle, GTO, Joint, Musculotendon, EMG) are not ported yet.
 - **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
 - Live progress, interactive charts, CSV and PNG downloads, a REST API and immutable share links.
 - Users can export or delete all of their data.
@@ -100,7 +101,7 @@ The web application is a single executable JAR with an embedded web server, inst
 1. ~~Run the original models in the new platform, with reference outputs (golden master).~~ Done.
 2. ~~Convert the old configurations into JSON scenarios.~~ Done.
 3. Export EMG from the original models.
-4. Typed scenario parameters and a scenario editor.
+4. Port the remaining editor screens (Conductances, Muscle Spindle, GTO, Joint, Musculotendon, EMG).
 5. Port and clean up the models in `remoto-core`, checked against the reference outputs.
 6. Parameter sweeps, a Python client and NWB export.
 

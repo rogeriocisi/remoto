@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** Converte entre o campo {@code legacy} do cenário (mapa genérico) e {@link LegacyConfig}. */
-final class LegacyJson {
+public final class LegacyJson {
 
     private static final JsonMapper MAPPER = JsonMapper.builder()
             .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
@@ -16,7 +16,7 @@ final class LegacyJson {
     private LegacyJson() {
     }
 
-    static LegacyConfig toConfig(Map<String, Object> legacy) {
+    public static LegacyConfig toConfig(Map<String, Object> legacy) {
         if (legacy == null) {
             throw new IllegalArgumentException("cenário sem o campo legacy");
         }
@@ -28,7 +28,7 @@ final class LegacyJson {
     }
 
     @SuppressWarnings("unchecked")
-    static Map<String, Object> toMap(LegacyConfig config) {
+    public static Map<String, Object> toMap(LegacyConfig config) {
         return MAPPER.convertValue(config, LinkedHashMap.class);
     }
 }

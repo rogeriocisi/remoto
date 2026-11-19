@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- um campo do editor, conforme o tipo (usado por editor.html) -->
+<th:block th:fragment="campo(c)">
+  <input th:if="${c.kind().name() == 'BOOLEAN'}" type="checkbox" th:name="${c.name()}" value="true"
+         th:checked="${c.checked()}">
+  <select th:if="${c.kind().name() == 'CHOICE'}" th:name="${c.name()}">
+    <option th:each="o : ${c.options()}" th:value="${o.value()}" th:text="${o.label()}"
+            th:selected="${o.value() == c.value()}">opção</option>
+  </select>
+  <input th:if="${c.kind().name() == 'NUMBER' or c.kind().name() == 'INTEGER'}" type="text" th:name="${c.name()}"
+         th:value="${c.value()}" size="8" inputmode="decimal" class="numero">
+  <input th:if="${c.kind().name() == 'TEXT'}" type="text" th:name="${c.name()}" th:value="${c.value()}">
+</th:block>
+</body>
+</html>

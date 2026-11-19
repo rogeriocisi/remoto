@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="|Editar: ${scenario.name} – ReMoto|">Editar – ReMoto</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topo">
+  <div class="marca">
+    <a th:href="@{/}" class="discreto">← ReMoto</a>
+    <strong th:text="${scenario.name}">cenário</strong>
+    <span th:if="${legacy}" class="selo">modelos originais</span>
+  </div>
+  <form th:action="@{/editor/{id}/run(id=${scenario.id})}" method="post" class="inline">
+    <button type="submit">Rodar este cenário</button>
+  </form>
+</header>
+
+<div class="editor">
+  <nav class="menu-editor cartao" aria-label="Telas do editor">
+    <a th:href="@{/editor/{id}(id=${scenario.id},screen='general')}"
+       th:classappend="${screen == 'general'} ? 'atual'">Scenario</a>
+    <th:block th:each="g : ${menu}">
+      <h4 th:text="${g.title}">Grupo</h4>
+      <th:block th:each="item : ${g.items}">
+        <a th:if="${item.available}" th:href="@{/editor/{id}(id=${scenario.id},screen=${item.id})}"
+           th:classappend="${screen == item.id} ? 'atual'" th:text="${item.title}">Tela</a>
+        <span th:unless="${item.available}" class="indisponivel" th:text="|${item.title} (em breve)|">Tela</span>
+      </th:block>
+    </th:block>
+  </nav>
+
+  <main class="cartao conteudo-editor">
+    <p th:if="${saved}" class="ok">Salvo.</p>
+    <p th:if="${param.erro}" class="erro" th:text="${param.erro}">erro</p>
+    <ul th:if="${!#lists.isEmpty(errors)}" class="erro">
+      <li th:each="e : ${errors}" th:text="${e}">erro</li>
+    </ul>
+
+    <!-- Scenario (general.jsp): nome, descrição, seed -->
+    <th:block th:if="${screen == 'general'}">
+      <h2>Scenario</h2>
+      <form th:action="@{/editor/{id}(id=${scenario.id})}" method="post" class="form-geral">
+        <input type="hidden" name="screen" value="general">
+        <input type="hidden" name="etag" th:value="${etag}">
+        <label>Name <input type="text" name="name" th:value="${scenario.name}" maxlength="60" required></label>
+        <label>Description <textarea name="description" rows="5" th:text="${scenario.description}"></textarea></label>
+        <label>Seed <input type="text" name="seed" th:value="${scenario.seed}" inputmode="numeric"></label>
+        <th:block th:unless="${legacy}">
+          <label>Duração [ms] <input type="text" name="durationMs" th:value="${scenario.durationMs}"></label>
+          <label>Passo [ms] <input type="text" name="stepMs" th:value="${scenario.stepMs}"></label>
+        </th:block>
+        <p th:if="${legacy}" class="vazio">
+          Duração e passo ficam em <em>Run → Simulation Start</em>; os demais parâmetros, nas telas do menu.
+        </p>
+        <button type="submit">Salvar</button>
+      </form>
+    </th:block>
+
+    <!-- Telas do site antigo -->
+    <th:block th:if="${view != null}">
+      <h2 th:text="${view.title}">Tela</h2>
+
+      <form th:if="${!#lists.isEmpty(view.selectors)}" th:action="@{/editor/{id}(id=${scenario.id})}" method="get"
+            class="seletores">
+        <input type="hidden" name="screen" th:value="${screen}">
+        <label th:each="s : ${view.selectors}">
+          <span th:text="${s.label}">Pool</span>
+          <select th:name="${s.name}" onchange="this.form.submit()">
+            <option th:each="o : ${s.options}" th:value="${o.value}" th:text="${o.label}"
+                    th:selected="${o.value == s.selected}">opção</option>
+          </select>
+        </label>
+        <noscript><button type="submit">Trocar</button></noscript>
+      </form>
+
+      <form th:action="@{/editor/{id}(id=${scenario.id})}" method="post">
+        <input type="hidden" name="screen" th:value="${screen}">
+        <input type="hidden" name="etag" th:value="${etag}">
+        <input th:each="s : ${view.selectors}" type="hidden" th:name="|sel.${s.name}|" th:value="${s.selected}">
+
+        <section th:each="sec : ${view.sections}" class="secao-editor">
+          <h3 th:if="${sec.title != null}" th:text="${sec.title}">Seção</h3>
+          <p th:if="${#lists.isEmpty(sec.rows)}" class="vazio">Nada para editar nesta seleção.</p>
+          <div class="tabela-rolavel" th:unless="${#lists.isEmpty(sec.rows)}">
+            <!-- MATRIX: parâmetros nas linhas, tipos nas colunas (from/to) -->
+            <table th:if="${sec.layout.name() == 'MATRIX'}" class="tabela tabela-editor">
+              <thead>
+              <tr>
+                <th></th>
+                <th th:each="h : ${sec.headers}" th:colspan="${sec.paired} ? 2 : 1" th:text="${h}">S</th>
+              </tr>
+              <tr th:if="${sec.paired}" class="sub">
+                <th></th>
+                <th:block th:each="h : ${sec.headers}"><th>from</th><th>to</th></th:block>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="r : ${sec.rows}">
+                <th th:text="${r.label}">parâmetro</th>
+                <td th:each="c : ${r.cells}" th:colspan="${c.span}">
+                  <th:block th:replace="~{editor-campo :: campo(${c})}"></th:block>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <!-- LIST: um item por linha -->
+            <table th:if="${sec.layout.name() == 'LIST'}" class="tabela tabela-editor">
+              <thead>
+              <tr><th></th><th th:each="h : ${sec.headers}" th:text="${h}">campo</th></tr>
+              </thead>
+              <tbody>
+              <th:block th:each="r : ${sec.rows}">
+                <tr th:if="${r.header}" class="divisao">
+                  <th th:colspan="${#lists.size(sec.headers) + 1}" th:text="${r.label}">grupo</th>
+                </tr>
+                <tr th:unless="${r.header}">
+                  <th th:text="${r.label}">item</th>
+                  <td th:each="c : ${r.cells}"><th:block th:replace="~{editor-campo :: campo(${c})}"></th:block></td>
+                </tr>
+              </th:block>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <ul th:if="${!#lists.isEmpty(view.notes)}" class="notas">
+          <li th:each="n : ${view.notes}" th:text="${n}">nota</li>
+        </ul>
+        <button type="submit">Salvar</button>
+      </form>
+    </th:block>
+  </main>
+</div>
+
+</body>
+</html>
