@@ -49,7 +49,7 @@ Requer JDK 25. O Maven é baixado pelo wrapper.
 ./mvnw verify
 
 # servidor em modo desenvolvimento (usuários de teste em application-dev.yml)
-./mvnw -pl remoto-web -am spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 # → http://localhost:8080
 
 # CLI
@@ -57,7 +57,10 @@ Requer JDK 25. O Maven é baixado pelo wrapper.
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/exemplo-sol-mg.json -o resultados/teste
 ```
 
-No Windows, use `mvnw.cmd` no lugar de `./mvnw`.
+No Windows, use `mvnw.cmd` no lugar de `./mvnw`. No PowerShell, mantenha as aspas em
+`"-Dspring-boot.run.profiles=dev"`: sem elas, o PowerShell quebra o argumento nos pontos. Se o
+Java padrão da máquina for anterior ao 25, aponte o `JAVA_HOME` para o JDK 25 antes
+(`$env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"`, ajustando o caminho).
 
 ### Produção (OIDC)
 

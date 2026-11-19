@@ -62,8 +62,10 @@ JDK 25. Maven is downloaded automatically by the Maven Wrapper (`./mvnw`, or `mv
 ### Run locally
 
 ```bash
-./mvnw -pl remoto-web -am spring-boot:run -Dspring-boot.run.profiles=dev
+./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
+
+Keep the quotes: PowerShell otherwise splits the argument at the dots. If your default Java is older than 25, point `JAVA_HOME` to a JDK 25 first (PowerShell: `$env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"`, adjusting the path).
 
 Then open http://localhost:8080. You can use the site as a guest. The `dev` profile also enables test accounts, defined in `remoto-web/src/main/resources/application-dev.yml`; use them only for local development.
 
