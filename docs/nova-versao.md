@@ -239,8 +239,15 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
   `Configuration`, o motor carrega essas linhas num HSQLDB **em memória**, privado e descartado
   em seguida, e chama o `ConfigurationDAO` original — assim as ~2 mil linhas de mapeamento não
   precisaram ser reescritas. Nada é gravado em disco.
-- **Saídas:** `forca-<núcleo>` (N), `disparos-<núcleo>` (motoneurônios) e `torque` (N·m).
-  O EMG ainda não: no código original ele é calculado na camada de gráficos (`ResultDisplay`).
+- **Saídas:** `forca-<núcleo>` (N), `disparos-<núcleo>` (motoneurônios), `torque` (N·m) e
+  o EMG de cada músculo, em mV:
+  - `emg-bruto-<núcleo>`: soma dos MUAPs das unidades motoras (`instantMuscleEMG` original,
+    com atenuação);
+  - `emg-<núcleo>`: o que a tela de resultados do site antigo mostrava por padrão — o EMG bruto
+    com ruído (média de |EMG| × `noiseEMG` da configuração) e passa-banda de 50 a 1000 Hz
+    (`ButterworthImpulseInvariance`). No código original esse cálculo ficava na camada de
+    gráficos (`ResultDisplay`); agora o motor o faz ao final da simulação. A única diferença é
+    o ruído, que vem de um gerador com a seed do cenário em vez de `Math.random()`.
 
 ### Garantias (testes em `remoto-legacy`)
 
@@ -248,7 +255,7 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 |---|---|
 | JSON × banco | A mesma configuração lida do HSQLDB original e do cenário JSON produz saídas idênticas |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
-| Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` |
+| Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro) |
 
 Ao portar ou refatorar um modelo, o golden master mostra na hora se o resultado mudou.
 
@@ -316,9 +323,8 @@ sinal guardado (o Action original também não os salvava).
 
 ## Próximos passos
 
-1. **EMG** no motor original, extraindo o cálculo de `ResultDisplay` para o `remoto-legacy-model`.
-2. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
+1. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
    famílias de modelos), o que também elimina o HSQLDB em memória.
-3. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).
-4. Varreduras de parâmetros, cliente Python, export NWB.
-5. Licença do projeto (o repositório ainda não tem `LICENSE`).
+2. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).
+3. Varreduras de parâmetros, cliente Python, export NWB.
+4. Licença do projeto (o repositório ainda não tem `LICENSE`).

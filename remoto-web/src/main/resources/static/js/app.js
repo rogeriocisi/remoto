@@ -71,7 +71,10 @@
   function yLabel(name, header) {
     if (name.startsWith('disparos-')) return 'unidade motora';
     const unit = /\[(.*)\]/.exec(header || '');
-    const what = name.startsWith('forca-') ? 'força' : name;
+    const what = name.startsWith('forca-') ? 'força'
+      : name.startsWith('emg-bruto-') ? 'EMG bruto'
+      : name.startsWith('emg-') ? 'EMG'
+      : name;
     return unit ? `${what} (${unit[1]})` : what;
   }
 

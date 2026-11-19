@@ -80,7 +80,7 @@ public final class LegacyEngine implements SimulationEngine {
         if (context.isCancelled()) {
             throw new SimulationCancelledException();
         }
-        LegacyOutputs.write(sim, context.results());
+        LegacyOutputs.write(sim, conf, seed, context.results());
         context.progress(1.0);
     }
 }

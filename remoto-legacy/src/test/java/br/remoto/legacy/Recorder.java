@@ -50,8 +50,16 @@ final class Recorder implements RunContext, ResultSink {
 
     /** SHA-256 de todas as saídas, em ordem de nome. */
     String sha256() throws Exception {
+        return sha256(name -> true);
+    }
+
+    /** SHA-256 das saídas cujo nome passa no filtro (ex.: só EMG, ou tudo menos EMG). */
+    String sha256(java.util.function.Predicate<String> names) throws Exception {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         for (Map.Entry<String, String> e : outputs.entrySet()) {
+            if (!names.test(e.getKey())) {
+                continue;
+            }
             md.update(e.getKey().getBytes(StandardCharsets.UTF_8));
             md.update((byte) 0);
             md.update(e.getValue().getBytes(StandardCharsets.UTF_8));

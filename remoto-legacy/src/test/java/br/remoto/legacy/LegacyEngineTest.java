@@ -84,9 +84,27 @@ class LegacyEngineTest {
         String key = id + "." + scenario.seed() + "." + (int) SHORT_RUN_MS;
 
         Recorder r = run(scenario);
+        String emgHash = r.sha256(name -> name.startsWith("emg-"));
 
         assertThat(r.outputs).containsKey("torque");
-        assertThat(r.sha256()).as("golden master %s%n%s", key, r.summary()).isEqualTo(golden().getProperty(key));
+        // força, disparos e torque: as mesmas referências de antes do EMG existir
+        assertThat(r.sha256(name -> !name.startsWith("emg-"))).as("golden master %s%n%s", key, r.summary())
+                .isEqualTo(golden().getProperty(key));
+        assertThat(emgHash).as("golden master %s.emg (valor atual: %s)", key, emgHash)
+                .isEqualTo(golden().getProperty(key + ".emg"));
+    }
+
+    @Test
+    void emgTemUmPontoPorPassoEDuasVersoesPorMusculo() throws Exception {
+        Recorder r = run(viaJsonFile(db.exportScenario(17)).withDuration(SHORT_RUN_MS));
+
+        assertThat(r.outputs).containsKeys("emg-SOL", "emg-bruto-SOL");
+        String[] raw = r.outputs.get("emg-bruto-SOL").split("\n");
+        assertThat(raw[0]).isEqualTo("t_ms,valor[mV]");
+        assertThat(raw).hasSize(1 + (int) (SHORT_RUN_MS / 0.05));
+        assertThat(java.util.Arrays.stream(raw).skip(1).mapToDouble(l -> Double.parseDouble(l.split(",")[1])))
+                .as("há disparos nos 40 ms, então o EMG bruto não pode ser todo zero")
+                .anyMatch(v -> v != 0);
     }
 
     private Recorder run(Scenario scenario) {
