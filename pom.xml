@@ -37,6 +37,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <picocli.version>4.7.7</picocli.version>
     <jfreechart.version>1.5.6</jfreechart.version>
+    <!--
+      "mvnw -pl remoto-web -am spring-boot:run" roda o goal em todos os módulos da lista;
+      só o remoto-web tem aplicação para subir, os outros pulam.
+    -->
+    <spring-boot.run.skip>true</spring-boot.run.skip>
   </properties>
 
   <dependencyManagement>

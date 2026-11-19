@@ -61,11 +61,21 @@ JDK 25. Maven is downloaded automatically by the Maven Wrapper (`./mvnw`, or `mv
 
 ### Run locally
 
+Use the start script for your shell. It finds a JDK 25 (from `JAVA_HOME`, the `PATH` or the usual install folders), so it works even if your default Java is older. An optional argument sets the port (default 8080).
+
+| Shell | Command |
+|---|---|
+| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090` |
+| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090` |
+| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090` |
+
+If PowerShell refuses to run scripts, use `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`, or the `.cmd` version.
+
+Without the scripts, the equivalent command is below. Keep the quotes, because PowerShell otherwise splits the argument at the dots, and point `JAVA_HOME` to a JDK 25 first if needed:
+
 ```bash
 ./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
-
-Keep the quotes: PowerShell otherwise splits the argument at the dots. If your default Java is older than 25, point `JAVA_HOME` to a JDK 25 first (PowerShell: `$env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"`, adjusting the path).
 
 Then open http://localhost:8080. You can use the site as a guest. The `dev` profile also enables test accounts, defined in `remoto-web/src/main/resources/application-dev.yml`; use them only for local development.
 

@@ -44,6 +44,22 @@ scenarios/           cenários públicos versionados no Git (o antigo usuário "
 
 Requer JDK 25. O Maven é baixado pelo wrapper.
 
+O jeito mais simples de subir o site em modo desenvolvimento é o script de start do seu terminal.
+Ele procura um JDK 25 (no `JAVA_HOME`, no `PATH` ou nas pastas de instalação comuns), então
+funciona mesmo se o Java padrão da máquina for mais antigo. O argumento opcional é a porta
+(padrão 8080):
+
+| Terminal | Comando |
+|---|---|
+| Windows (cmd) | `scripts\start.cmd` ou `scripts\start.cmd 9090` |
+| Windows (PowerShell) | `.\scripts\start.ps1` ou `.\scripts\start.ps1 -Port 9090` |
+| Linux, macOS, Git Bash | `scripts/start.sh` ou `scripts/start.sh 9090` |
+
+Se o PowerShell bloquear scripts, use
+`powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1` ou a versão `.cmd`.
+
+Os comandos equivalentes, sem os scripts:
+
 ```bash
 # testes de todos os módulos
 ./mvnw verify
