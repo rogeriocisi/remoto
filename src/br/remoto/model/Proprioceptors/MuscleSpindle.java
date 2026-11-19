@@ -3,7 +3,6 @@ package br.remoto.model.Proprioceptors;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.sun.org.apache.bcel.internal.generic.Type;
 
 import br.remoto.model.Configuration;
 import br.remoto.model.ReMoto;
@@ -174,7 +173,7 @@ public class MuscleSpindle {
 		
 		
 		//random frequency disturbance to test Stochastic Resonance
-		Random fRandom = new Random();
+		Random fRandom = br.remoto.util.Rng.newRandom();
 		double stdDev = 0.0;
 		double disturbanceFrequency = stdDev * fRandom.nextGaussian();
 		if (disturbanceFrequency < 0){

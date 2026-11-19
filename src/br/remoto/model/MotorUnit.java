@@ -204,8 +204,8 @@ public class MotorUnit implements Serializable
 		// Pick a position inside the unitary circle
 		while( Math.pow(y, 2) + Math.pow(z, 2) >= 1 )
 		{
-			y = 2 * (0.5 - Math.random());
-			z = 2 * (0.5 - Math.random());
+			y = 2 * (0.5 - br.remoto.util.Rng.random());
+			z = 2 * (0.5 - br.remoto.util.Rng.random());
 			
 			cont++;
 			
@@ -221,17 +221,17 @@ public class MotorUnit implements Serializable
 		z *= (muscleThickness/2);
 
 		/* Do not work!
-		double y = 2 * (0.5 - Math.random());
+		double y = 2 * (0.5 - br.remoto.util.Rng.random());
 		double maxZ = Math.sqrt( 1 - Math.pow(y, 2) );
-		double z = 2 * (0.5 - Math.random()) * maxZ;
+		double z = 2 * (0.5 - br.remoto.util.Rng.random()) * maxZ;
 		
 		y = y * (muscleThickness/2) + (muscleThickness/2) + skinLayer;
 		z *= (muscleThickness/2);
 		*/
 		
 		/* Do not work, also!
-		double radius = (muscleThickness/2) * Math.random();
-		double angle = 360 * Math.random();
+		double radius = (muscleThickness/2) * br.remoto.util.Rng.random();
+		double angle = 360 * br.remoto.util.Rng.random();
 		
 		double y = radius * Math.sin( angle );
 		double z = radius * Math.cos( angle );

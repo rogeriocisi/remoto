@@ -397,7 +397,7 @@ public class ReMoto
 	// Simulator variables
 	
 	public static String path;
-	public static HashMap simulations = new HashMap();
+	public static java.util.Map simulations = new java.util.concurrent.ConcurrentHashMap();
 	
 	
 	// -------------------

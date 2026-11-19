@@ -8,6 +8,9 @@ import br.remoto.core.scenario.Scenario;
  */
 public interface SimulationEngine {
 
+    /** Identificador usado no campo {@code engine} do cenário (ex.: "legacy"). */
+    String id();
+
     /** Versão do motor, gravada no manifesto de cada execução. */
     String version();
 

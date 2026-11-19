@@ -34,6 +34,12 @@ public final class ScenarioValidator {
         } else if (s.durationMs() > 0 && s.totalSteps() > MAX_STEPS) {
             errors.add("durationMs/stepMs: no máximo " + MAX_STEPS + " passos por simulação");
         }
+        if (Scenario.ENGINE_LEGACY.equals(s.engineOrDefault())) {
+            if (s.legacy() == null || s.legacy().isEmpty()) {
+                errors.add("legacy: obrigatório para o motor legacy");
+            }
+            return List.copyOf(errors);
+        }
         if (s.nuclei().isEmpty()) {
             errors.add("nuclei: informe ao menos um núcleo");
         }

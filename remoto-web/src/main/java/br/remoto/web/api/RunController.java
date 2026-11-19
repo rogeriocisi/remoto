@@ -117,6 +117,21 @@ class RunController {
         return figures.png(name, ResultFiles.read(dir, name, 20_000), name.startsWith("disparos-"));
     }
 
+    record Preview(String header, int totalPoints, double[] x, double[] y) {
+    }
+
+    /**
+     * Prévia reduzida para gráficos no navegador: execuções do motor original podem ter
+     * centenas de milhares de pontos por série; o CSV completo continua disponível.
+     */
+    @GetMapping("/{id}/results/{name}/preview")
+    Preview preview(Caller caller, @PathVariable String id, @PathVariable String name,
+                    @org.springframework.web.bind.annotation.RequestParam(defaultValue = "5000") int max) {
+        Path dir = resultsDir(caller, id, name);
+        ResultFiles.Columns reduced = ResultFiles.read(dir, name, Math.max(100, Math.min(max, 50_000)));
+        return new Preview(reduced.header(), reduced.totalPoints(), reduced.x(), reduced.y());
+    }
+
     private RunManifest find(Caller caller, String id) {
         return runs.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException("execução não encontrada"));
     }

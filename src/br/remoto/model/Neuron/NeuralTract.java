@@ -132,7 +132,7 @@ public class NeuralTract extends Neuron
 				{
 					double probability = lambda * miscellaneous.getStep() / 1000;
 					System.out.println("Poisson " + mean);	
-					double aux = Math.random();
+					double aux = br.remoto.util.Rng.random();
 					
 					if(aux <= probability){
 							propagateSpike(t);

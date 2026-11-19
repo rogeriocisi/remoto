@@ -14,20 +14,22 @@ This repository contains two versions of ReMoto side by side:
 
 | | Legacy version | New version (in development) |
 |---|---|---|
-| Location | `src/`, `WebContent/` | `remoto-core/`, `remoto-storage/`, `remoto-web/`, `remoto-cli/`, `scenarios/` |
+| Location | `src/`, `WebContent/` | `remoto-*/` Maven modules, `scenarios/` |
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
-| Simulation models | Complete: all published models | Placeholder engine; the original models are being ported |
+| Simulation models | All published models | The same published models, running the original numerical code (`legacy` engine), plus a small demo engine |
 | Users | Local accounts stored in HSQLDB | Login with ORCID or GitHub (OIDC), plus guest access |
-| Status | Unmaintained; depends on software without security updates | Infrastructure working and tested; not yet suitable for scientific results |
+| Status | Unmaintained; depends on software without security updates | Working and tested; muscle force, motoneuron spikes and joint torque are available, EMG is not yet |
 
 ### Repository layout
 
 ```
-remoto-core/       simulation models and engine (plain Java)
-remoto-storage/    file-based persistence (JSON scenarios, CSV.gz results)
-remoto-web/        multi-user web application (Spring Boot)
-remoto-cli/        command-line runner for scripts and clusters
-scenarios/         public scenarios (JSON)
+remoto-core/          scenario format and engine interfaces (plain Java)
+remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
+remoto-legacy-model/  the original numerical models, compiled straight from src/
+remoto-legacy/        "legacy" engine: runs the original models, converts old configurations
+remoto-web/           multi-user web application (Spring Boot)
+remoto-cli/           command-line runner for scripts and clusters
+scenarios/            public scenarios (JSON)
 deploy/            systemd service and configuration template
 docs/              documentation of the new version (in Portuguese)
 src/, WebContent/  legacy application
@@ -42,7 +44,8 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 
 - **Multi-user without a database:** each user's scenarios, runs and results are kept in their own folder. Guests get a temporary area that is deleted when the session ends.
 - **Fair simulation queue:** several users can run simulations at the same time; a large batch from one user does not block the others.
-- **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version.
+- **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Tests check that each converted scenario gives exactly the same results as the original database configuration.
+- **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
 - Live progress, interactive charts, CSV and PNG downloads, a REST API and immutable share links.
 - Users can export or delete all of their data.
 
@@ -69,8 +72,12 @@ Then open http://localhost:8080. You can use the site as a guest. The `dev` prof
 ```bash
 ./mvnw -pl remoto-cli -am package -DskipTests
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/exemplo-sol-mg.json -o results/example
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 -o results/soleus
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar validate scenarios/*.json
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --list
 ```
+
+`export-legacy` converts configurations from the old HSQLDB database into JSON scenarios.
 
 ### Deployment
 
@@ -78,10 +85,12 @@ The web application is a single executable JAR with an embedded web server, inst
 
 ### Roadmap
 
-1. Record reference outputs from the legacy version for canonical scenarios (H-reflex, recruitment curve, reciprocal inhibition).
-2. Port the original models to `remoto-core`, checking them against those reference outputs.
-3. Convert the legacy configurations into JSON scenarios.
-4. Add a scenario editor, parameter sweeps, a Python client and NWB export.
+1. ~~Run the original models in the new platform, with reference outputs (golden master).~~ Done.
+2. ~~Convert the old configurations into JSON scenarios.~~ Done.
+3. Export EMG from the original models.
+4. Typed scenario parameters and a scenario editor.
+5. Port and clean up the models in `remoto-core`, checked against the reference outputs.
+6. Parameter sweeps, a Python client and NWB export.
 
 ## Legacy version
 

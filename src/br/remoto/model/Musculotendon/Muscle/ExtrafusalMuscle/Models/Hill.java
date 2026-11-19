@@ -355,7 +355,7 @@ public class Hill extends ExtrafusalMuscleSuperClass
 		acceleration = (associatedMusculotendon.getTendon().getForce() * Math.cos(pennationAngle) -
 						   force * Math.pow(Math.cos(pennationAngle),2)) / mass;
 		
-		/*Random  fRandom = new Random();
+		/*Random  fRandom = br.remoto.util.Rng.newRandom();
 		
 		double stdAcc = 0.0025 * (fRandom.nextGaussian());
 		acceleration = 0.0 + stdAcc;*/
@@ -385,7 +385,7 @@ public class Hill extends ExtrafusalMuscleSuperClass
 		velocity =  velocity + (step * (k1_v));
 		
 		
-		Random  fRandom = new Random();
+		Random  fRandom = br.remoto.util.Rng.newRandom();
 		
 		//double stdVec = 0.084* (fRandom.nextGaussian());
 		//velocity = 0.0000 + stdVec;

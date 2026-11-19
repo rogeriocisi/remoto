@@ -160,7 +160,7 @@ public class ModulatingSignal implements Serializable
 	
 	private double randomModulation( double time )
 	{
-		double ret = amp * Math.random();
+		double ret = amp * br.remoto.util.Rng.random();
 
 		return ret;
 	}

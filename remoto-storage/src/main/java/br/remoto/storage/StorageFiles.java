@@ -2,6 +2,7 @@ package br.remoto.storage;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,13 +37,34 @@ public final class StorageFiles {
         }
     }
 
+    /**
+     * Renomeia por cima do destino. No Windows, a troca falha com "acesso negado" enquanto outra
+     * thread está lendo o destino; nesse caso tenta de novo por até ~1 s. No Linux não acontece.
+     */
     public static void moveAtomically(Path source, Path target) throws IOException {
-        try {
-            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-        } catch (AtomicMoveNotSupportedException e) {
-            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+        for (int attempt = 1; ; attempt++) {
+            try {
+                try {
+                    Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+                return;
+            } catch (AccessDeniedException e) {
+                if (attempt >= MOVE_ATTEMPTS) {
+                    throw e;
+                }
+                try {
+                    Thread.sleep(Math.min(100, 5L * attempt));
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw e;
+                }
+            }
         }
     }
+
+    private static final int MOVE_ATTEMPTS = 20;
 
     public static byte[] readAllBytes(Path file) {
         try {

@@ -3,7 +3,6 @@ package br.remoto.cli;
 import br.remoto.core.engine.ResultSink;
 import br.remoto.core.engine.RunContext;
 import br.remoto.core.engine.SimulationEngine;
-import br.remoto.core.engine.placeholder.PlaceholderPoolEngine;
 import br.remoto.core.scenario.Scenario;
 import br.remoto.core.scenario.ScenarioValidator;
 import br.remoto.storage.Hashing;
@@ -36,6 +35,9 @@ final class RunCommand implements Callable<Integer> {
     @Option(names = "--seed", description = "sobrescreve a seed do cenário")
     Long seed;
 
+    @Option(names = "--duration-ms", description = "sobrescreve a duração simulada (ms)")
+    Double durationMs;
+
     @Override
     public Integer call() throws Exception {
         JsonCodec json = new JsonCodec();
@@ -43,13 +45,16 @@ final class RunCommand implements Callable<Integer> {
         if (seed != null) {
             scenario = scenario.withSeed(seed);
         }
+        if (durationMs != null) {
+            scenario = scenario.withDuration(durationMs);
+        }
         List<String> errors = ScenarioValidator.validate(scenario);
         if (!errors.isEmpty()) {
             errors.forEach(e -> System.err.println("erro: " + e));
             return 2;
         }
 
-        SimulationEngine engine = new PlaceholderPoolEngine();
+        SimulationEngine engine = RemotoCli.engines().forScenario(scenario);
         String runId = Ids.newId();
         Path dir = out != null ? out : Path.of("resultados", runId);
         Path results = dir.resolve("results");

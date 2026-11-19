@@ -21,7 +21,7 @@ public abstract class Input {
 	protected double LPcutoff;
 	
 	protected LowPassFilter butter = new LowPassFilter();
-	protected Random gaussianNoise = new Random();
+	protected Random gaussianNoise = br.remoto.util.Rng.newRandom();
 	
 	double stretch_velocity 	= 0;
 	double stretch_acceleration = 0;

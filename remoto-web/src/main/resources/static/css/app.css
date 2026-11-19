@@ -124,3 +124,12 @@ button.secundario { background: transparent; color: var(--primaria); }
 .links a { color: var(--primaria); }
 .grafico { width: 100%; margin-top: 12px; overflow-x: auto; }
 .uplot, .u-title { color: var(--texto); }
+.selo {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid var(--ok);
+  border-radius: 4px;
+  color: var(--ok);
+  font-size: .75rem;
+}

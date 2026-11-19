@@ -55,36 +55,40 @@
     for (const name of run.results) {
       links.append(link(`/api/runs/${runId}/results/${name}.csv`, `${name}.csv`),
                    link(`/api/runs/${runId}/results/${name}.png`, `${name}.png`));
-      const text = await (await fetch(`/api/runs/${runId}/results/${name}.csv`)).text();
-      const rows = text.trim().split('\n').slice(1);
-      const x = new Float64Array(rows.length);
-      const y = new Float64Array(rows.length);
-      rows.forEach((line, i) => {
-        const comma = line.indexOf(',');
-        x[i] = +line.substring(0, comma);
-        y[i] = +line.substring(comma + 1);
-      });
+      // prévia reduzida no servidor; o CSV completo fica no link acima
+      const preview = await (await fetch(`/api/runs/${runId}/results/${name}/preview?max=8000`)).json();
       const box = document.createElement('div');
       box.className = 'grafico';
       graphs.append(box);
-      charts.push(new uPlot(chartOptions(name, box.clientWidth), [x, y], box));
+      const title = preview.totalPoints > preview.x.length
+        ? `${name} (prévia: ${preview.x.length} de ${preview.totalPoints} pontos)`
+        : name;
+      charts.push(new uPlot(chartOptions(name, title, yLabel(name, preview.header), box.clientWidth),
+        [preview.x, preview.y], box));
     }
   }
 
-  function chartOptions(name, width) {
+  function yLabel(name, header) {
+    if (name.startsWith('disparos-')) return 'unidade motora';
+    const unit = /\[(.*)\]/.exec(header || '');
+    const what = name.startsWith('forca-') ? 'força' : name;
+    return unit ? `${what} (${unit[1]})` : what;
+  }
+
+  function chartOptions(name, title, label, width) {
     const spikes = name.startsWith('disparos-');
     const color = getComputedStyle(document.documentElement).getPropertyValue('--serie').trim() || '#1f5f99';
     return {
-      title: name,
+      title,
       width: Math.max(320, width),
       height: 260,
       scales: { x: { time: false } },
-      axes: [{ label: 'tempo (ms)' }, { label: spikes ? 'unidade motora' : 'força (u.a.)' }],
+      axes: [{ label: 'tempo (ms)' }, { label }],
       series: [
         { label: 't (ms)' },
         spikes
           ? { label: 'unidade', stroke: color, paths: () => null, points: { show: true, size: 3, fill: color } }
-          : { label: 'força', stroke: color, width: 1.5 },
+          : { label, stroke: color, width: 1.5 },
       ],
     };
   }

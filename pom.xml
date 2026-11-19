@@ -26,6 +26,8 @@
   <modules>
     <module>remoto-core</module>
     <module>remoto-storage</module>
+    <module>remoto-legacy-model</module>
+    <module>remoto-legacy</module>
     <module>remoto-web</module>
     <module>remoto-cli</module>
   </modules>
@@ -47,6 +49,16 @@
       <dependency>
         <groupId>br.remoto</groupId>
         <artifactId>remoto-storage</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>br.remoto</groupId>
+        <artifactId>remoto-legacy-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>br.remoto</groupId>
+        <artifactId>remoto-legacy</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

@@ -5,7 +5,7 @@ public class Distribution
 {
 	public static double poissonPoint( double m )
 	{
-		double r = Math.random();
+		double r = br.remoto.util.Rng.random();
 
 		return -m * Math.log(r);
 	}	
@@ -16,7 +16,7 @@ public class Distribution
 		double aux = 0.0;
 
 		for(int i = 1; i <= 12; i++)
-			aux += Math.random();
+			aux += br.remoto.util.Rng.random();
 
 		return( m + dp * (aux - 6.0) );
 	}
@@ -26,7 +26,7 @@ public class Distribution
 		double aux = 1.0;
 
 		for(int i = 1; i <= k; i++)
-			aux *= Math.random();
+			aux *= br.remoto.util.Rng.random();
 
 		return -a * Math.log(aux);
 	}

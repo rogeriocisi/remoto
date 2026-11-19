@@ -3,6 +3,7 @@ package br.remoto.web.sim;
 import br.remoto.core.engine.ResultSink;
 import br.remoto.core.engine.RunContext;
 import br.remoto.core.engine.SimulationCancelledException;
+import br.remoto.core.engine.Engines;
 import br.remoto.core.engine.SimulationEngine;
 import br.remoto.core.scenario.Scenario;
 import br.remoto.core.scenario.ScenarioValidator;
@@ -46,7 +47,7 @@ public class SimulationService implements DisposableBean {
     private static final Logger log = LoggerFactory.getLogger(SimulationService.class);
 
     private final RunRepository runs;
-    private final SimulationEngine engine;
+    private final Engines engines;
     private final ProgressHub progressHub;
     private final int slots;
     private final int maxActivePerUser;
@@ -59,13 +60,13 @@ public class SimulationService implements DisposableBean {
     private final Map<String, Job> jobs = new ConcurrentHashMap<>();
     private int running;
 
-    record Job(UserId owner, String runId, Scenario scenario, AtomicBoolean cancelled) {
+    record Job(UserId owner, String runId, Scenario scenario, SimulationEngine engine, AtomicBoolean cancelled) {
     }
 
-    public SimulationService(RunRepository runs, SimulationEngine engine, ProgressHub progressHub,
+    public SimulationService(RunRepository runs, Engines engines, ProgressHub progressHub,
                              RemotoProperties props) {
         this.runs = runs;
-        this.engine = engine;
+        this.engines = engines;
         this.progressHub = progressHub;
         this.slots = props.simulation().effectiveSlots();
         this.maxActivePerUser = Math.max(1, props.simulation().maxActivePerUser());
@@ -81,13 +82,14 @@ public class SimulationService implements DisposableBean {
         if (!errors.isEmpty()) {
             throw new InvalidScenarioException(errors);
         }
+        SimulationEngine engine = engines.forScenario(scenario);
         synchronized (lock) {
             if (queue.queued(owner) >= maxQueuedPerUser) {
                 throw new QuotaExceededException("Limite de " + maxQueuedPerUser
                         + " simulações aguardando na fila. Espere algumas terminarem.");
             }
             RunManifest manifest = runs.create(owner, scenario, engine.version());
-            Job job = new Job(owner, manifest.runId(), scenario, new AtomicBoolean());
+            Job job = new Job(owner, manifest.runId(), scenario, engine, new AtomicBoolean());
             jobs.put(job.runId(), job);
             queue.offer(owner, job);
             progressHub.publish(job.runId(), RunStatus.QUEUED, 0);
@@ -149,6 +151,12 @@ public class SimulationService implements DisposableBean {
             runJob(job);
         } catch (RuntimeException e) {
             log.error("Erro inesperado na execução {}", job.runId(), e);
+            try {
+                // não deixar a execução presa em QUEUED/RUNNING
+                finish(job, RunStatus.FAILED, "erro interno: " + e.getMessage());
+            } catch (RuntimeException again) {
+                log.error("Não foi possível marcar a execução {} como FAILED", job.runId(), again);
+            }
         } finally {
             jobs.remove(job.runId());
             synchronized (lock) {
@@ -191,7 +199,7 @@ public class SimulationService implements DisposableBean {
 
         long start = System.nanoTime();
         try {
-            engine.run(job.scenario(), context);
+            job.engine().run(job.scenario(), context);
             finish(job, RunStatus.DONE, null);
             log.info("Execução {} concluída em {} ms", job.runId(), (System.nanoTime() - start) / 1_000_000);
         } catch (SimulationCancelledException e) {

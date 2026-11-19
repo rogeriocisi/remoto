@@ -92,7 +92,7 @@ public class SynapsesFactory
 					// Place DTs equaly distributed in relation to MN pool
 					ConductanceVO g = conf.getSynapseType(dtNeu, mnNeu);
 					double connectivity = conf.getSynapticConnectivity(g);
-					double rand = Math.random();
+					double rand = br.remoto.util.Rng.random();
 					
 					if( connectivity < rand || connectivity < 0.01 )
 						continue;
@@ -144,7 +144,7 @@ public class SynapsesFactory
 					// Place Ins equaly distributed in relation to MN pool
 					ConductanceVO g = conf.getSynapseType(neu, mnNeu);
 					double connectivity = conf.getSynapticConnectivity(g);
-					double rand = Math.random();
+					double rand = br.remoto.util.Rng.random();
 					
 					if( connectivity < rand || connectivity < 0.01 )
 						continue;
@@ -164,7 +164,7 @@ public class SynapsesFactory
 					ConductanceVO g = conf.getSynapseType(rcNeu, mnNeu);
 					double connectivity = conf.getSynapticConnectivity(g);
 					double distance = Math.abs( rcNeu.getXPosition() - mnNeu.getXPosition() );
-					double rand = Math.random();
+					double rand = br.remoto.util.Rng.random();
 					
 					if( connectivity > 0.01 && rand < connectivity)
 					{
@@ -189,7 +189,7 @@ public class SynapsesFactory
 
 					g = conf.getSynapseType(mnNeu, rcNeu);
 					connectivity = conf.getSynapticConnectivity(g);
-					rand = Math.random();
+					rand = br.remoto.util.Rng.random();
 					
 					if( connectivity > 0.01 && rand < connectivity)
 					{
@@ -264,7 +264,7 @@ public class SynapsesFactory
 					// Place DTs equaly distributed in relation to In pool
 					ConductanceVO g = conf.getSynapseType(dtNeu, inNeu);
 					double connectivity = conf.getSynapticConnectivity(g);
-					double rand = Math.random();
+					double rand = br.remoto.util.Rng.random();
 					
 					if( connectivity < rand || connectivity < 0.01 )
 						continue;
@@ -279,7 +279,7 @@ public class SynapsesFactory
 
 					ConductanceVO g = conf.getSynapseType(neu, inNeu);
 					double connectivity = conf.getSynapticConnectivity(g);
-					double rand = Math.random();
+					double rand = br.remoto.util.Rng.random();
 					
 					if( connectivity < rand || connectivity < 0.01 )
 						continue;
@@ -364,7 +364,7 @@ public class SynapsesFactory
 
 						ConductanceVO g = conf.getSynapseType(iafNeu, mnNeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity <= rand )
 							continue;
@@ -380,7 +380,7 @@ public class SynapsesFactory
 
 						ConductanceVO g = conf.getSynapseType(iafNeu, iaInNeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity < rand )
 							continue;
@@ -396,7 +396,7 @@ public class SynapsesFactory
 
 						ConductanceVO g = conf.getSynapseType(iafNeu, gIINeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity < rand )
 							continue;
@@ -418,7 +418,7 @@ public class SynapsesFactory
 						
 						ConductanceVO g = conf.getSynapseType(ibNeu, mnNeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity <= rand )
 							continue;
@@ -434,7 +434,7 @@ public class SynapsesFactory
 						
 						ConductanceVO g = conf.getSynapseType(ibNeu, ibInNeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity < rand )
 							continue;
@@ -455,7 +455,7 @@ public class SynapsesFactory
 						
 						ConductanceVO g = conf.getSynapseType(iiNeu, mnNeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity <= rand )
 							continue;
@@ -471,7 +471,7 @@ public class SynapsesFactory
 						
 						ConductanceVO g = conf.getSynapseType(iiNeu, iaInNeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity < rand )
 							continue;
@@ -487,7 +487,7 @@ public class SynapsesFactory
 						
 						ConductanceVO g = conf.getSynapseType(iiNeu, gIINeu);
 						double connectivity = conf.getSynapticConnectivity(g);
-						double rand = Math.random();
+						double rand = br.remoto.util.Rng.random();
 						
 						if( connectivity < rand )
 							continue;

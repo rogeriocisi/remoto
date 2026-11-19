@@ -54,12 +54,13 @@ public final class ResultFiles {
                 xs[j] = x[i];
                 ys[j] = y[i];
             }
-            return new Columns(header, xs, ys);
+            return new Columns(header, xs, ys, n);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    public record Columns(String header, double[] x, double[] y) {
+    /** @param totalPoints pontos no arquivo antes da redução */
+    public record Columns(String header, double[] x, double[] y, int totalPoints) {
     }
 }

@@ -127,6 +127,38 @@ class ApiIntegrationTest {
     }
 
     @Test
+    void cenarioPublicoDoMotorOriginalRodaNoSite() throws Exception {
+        br.remoto.storage.JsonCodec codec = new br.remoto.storage.JsonCodec();
+        var original = codec.read(Path.of("..", "scenarios", "remoto-17-default-soleus-contraction.json"),
+                br.remoto.core.scenario.Scenario.class);
+        String scenario = new String(codec.toBytes(original.withDuration(20)), java.nio.charset.StandardCharsets.UTF_8);
+        MockHttpSession session = new MockHttpSession();
+
+        String body = mvc.perform(post("/api/runs").session(session).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"scenario\":" + scenario + "}"))
+                .andExpect(status().isAccepted())
+                .andExpect(jsonPath("$.engineVersion").value(br.remoto.legacy.LegacyEngine.VERSION))
+                .andReturn().getResponse().getContentAsString();
+        String runId = JsonPath.read(body, "$.runId");
+
+        assertThat(waitUntilFinished(session, runId)).isEqualTo("DONE");
+        mvc.perform(get("/api/runs/" + runId).session(session))
+                .andExpect(jsonPath("$.results", hasItem("forca-SOL")))
+                .andExpect(jsonPath("$.results", hasItem("torque")));
+        mvc.perform(get("/api/runs/" + runId + "/results/forca-SOL/preview?max=100").session(session))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalPoints").value(400))
+                .andExpect(jsonPath("$.x", hasSize(100)));
+    }
+
+    @Test
+    void motorDesconhecidoEhRecusado() throws Exception {
+        mvc.perform(post("/api/runs").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"scenario\":" + SCENARIO.replace("\"seed\":7", "\"seed\":7,\"engine\":\"outro\"") + "}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void convidadoNaoPodeExportarNemCompartilhar() throws Exception {
         mvc.perform(get("/api/me/export")).andExpect(status().isUnauthorized());
         mvc.perform(get("/api/me")).andExpect(jsonPath("$.guest").value(true));
@@ -142,7 +174,7 @@ class ApiIntegrationTest {
 
     private String waitUntilFinished(MockHttpSession session, String runId) throws Exception {
         String status = "";
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 600; i++) {
             String body = mvc.perform(get("/api/runs/" + runId).session(session)).andReturn().getResponse().getContentAsString();
             status = JsonPath.read(body, "$.run.status");
             if (status.equals("DONE") || status.equals("FAILED") || status.equals("CANCELED")) {

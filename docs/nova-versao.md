@@ -4,8 +4,10 @@ Esqueleto da nova versão proposta na modernização do ReMoto. Convive com o c�
 (`src/` e `WebContent/`, Struts 1 + Tomcat 7), que continua intacto até ser substituído.
 
 > **Estado:** a infraestrutura (multiusuário, fila, armazenamento, API, interface, CLI, CI)
-> funciona e tem testes. O **motor de simulação ainda é provisório**
-> (`PlaceholderPoolEngine`): o próximo passo é portar os modelos originais para o `remoto-core`.
+> funciona e tem testes. Os **modelos originais do ReMoto já rodam na nova plataforma**
+> (motor `legacy`, ver [Motor original](#motor-original-legacy)), com resultados reprodutíveis
+> e conferidos contra o banco antigo. O motor provisório (`placeholder`) fica só para
+> demonstração.
 
 ## Stack
 
@@ -29,11 +31,13 @@ ferramenta para instalar e manter.
 ## Módulos
 
 ```
-remoto-core     modelos e motor em Java puro (sem web, sem armazenamento)
-remoto-storage  repositórios em arquivo: cenários, execuções, perfis, compartilhamentos
-remoto-web      aplicação Spring Boot multiusuário (API REST + páginas)
-remoto-cli      execução sem servidor: remoto run cenario.json
-scenarios/      cenários públicos versionados no Git (o antigo usuário "guest")
+remoto-core          cenário, interface dos motores e motor provisório (Java puro)
+remoto-storage       repositórios em arquivo: cenários, execuções, perfis, compartilhamentos
+remoto-legacy-model  modelos numéricos originais, compilados direto de src/ (sem cópia)
+remoto-legacy        motor "legacy": exporta o banco antigo para JSON e roda os modelos originais
+remoto-web           aplicação Spring Boot multiusuário (API REST + páginas)
+remoto-cli           execução sem servidor: remoto run / validate / export-legacy
+scenarios/           cenários públicos versionados no Git (o antigo usuário "guest")
 ```
 
 ## Como rodar
@@ -195,16 +199,64 @@ Requisições que alteram dados exigem o token CSRF (cookie `XSRF-TOKEN` → cab
 ```
 
 A mesma configuração + a mesma `seed` + a mesma versão do motor reproduzem o resultado bit a bit.
-O esquema vai crescer quando os modelos originais forem portados (`schemaVersion` 2+).
+
+O campo `engine` escolhe o motor: `"placeholder"` (padrão, usa `nuclei`) ou `"legacy"` (usa o
+campo `legacy`, descrito abaixo). Um motor desconhecido é recusado com `400`.
+
+## Motor original (`legacy`)
+
+Os modelos publicados do ReMoto (motoneurônios S/F com dendritos ativos, condutâncias, Markov,
+interneurônios, sinapses com depressão/facilitação, Hill/Raikova/SOCDS, fuso, OTG, articulação)
+rodam na nova plataforma **com o mesmo código numérico do site antigo**:
+
+- **Sem cópia de código:** o módulo `remoto-legacy-model` compila direto de `src/` só as classes
+  alcançáveis a partir de `Simulation` e `ConfigurationDAO` (cerca de 105 classes); Struts,
+  JSPs, applets e o JFreeChart antigo ficam de fora.
+- **Reprodutível:** o código original usava `Math.random()` e `new Random()` sem seed. Agora
+  todas essas chamadas passam por `br.remoto.util.Rng`, um gerador por thread que o motor
+  inicializa com a `seed` do cenário. Sem seed, o site antigo se comporta como antes.
+- **Configuração sem banco:** cada configuração do HSQLDB antigo vira um cenário JSON com as
+  linhas de cada tabela (formato `remoto-legacy-db/1`, sem a tabela USER). Para montar a
+  `Configuration`, o motor carrega essas linhas num HSQLDB **em memória**, privado e descartado
+  em seguida, e chama o `ConfigurationDAO` original — assim as ~2 mil linhas de mapeamento não
+  precisaram ser reescritas. Nada é gravado em disco.
+- **Saídas:** `forca-<núcleo>` (N), `disparos-<núcleo>` (motoneurônios) e `torque` (N·m).
+  O EMG ainda não: no código original ele é calculado na camada de gráficos (`ResultDisplay`).
+
+### Garantias (testes em `remoto-legacy`)
+
+| Teste | O que garante |
+|---|---|
+| JSON × banco | A mesma configuração lida do HSQLDB original e do cenário JSON produz saídas idênticas |
+| Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
+| Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` |
+
+Ao portar ou refatorar um modelo, o golden master mostra na hora se o resultado mudou.
+
+### Exportar configurações do banco antigo
+
+```bash
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --list
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --owner guest --out scenarios
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --id 34,41 --out meus-cenarios
+```
+
+Os três cenários públicos do site antigo (`guest`: 17, 24 e 42) já estão em `scenarios/`.
+
+### Desempenho
+
+O motor original é pesado: na máquina de desenvolvimento, 40 ms simulados levam ~3 s na
+primeira execução (com aquecimento da JVM). Por isso os cenários longos (5 a 30 s simulados)
+levam minutos; o progresso aparece ao vivo e a CLI aceita `--duration-ms` para testes rápidos.
 
 ## Próximos passos
 
-1. **Testes de caracterização do legado**: rodar os cenários canônicos (reflexo H, curva de
-   recrutamento, inibição recíproca) no código antigo e guardar as saídas como referência.
-2. **Portar o motor**: condutâncias, Markov, motoneurônios S/F, interneurônios, sinapses,
-   Hill/Raikova/SOCDS, fuso (Mileusnic, Prochazka), OTG, articulação — para `remoto-core`, com
-   os testes do passo 1 passando. Usar `sealed interface` para as famílias de modelos.
-3. **`remoto-cli export-legacy`**: ler o HSQLDB atual uma última vez e gravar as 30
-   configurações como JSON (`guest` → `scenarios/`).
-4. Editor de cenários na interface, varreduras de parâmetros, cliente Python, export NWB.
-5. Licença do projeto (o repositório ainda não tem `LICENSE`).
+1. **EMG** no motor original, extraindo o cálculo de `ResultDisplay` para o `remoto-legacy-model`.
+2. **Parâmetros tipados e editor de cenários:** trocar aos poucos as tabelas do formato
+   `remoto-legacy-db/1` por campos tipados (núcleos, sinapses, comandos descendentes),
+   começando pelos mais editados, sempre com o golden master passando.
+3. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
+   famílias de modelos), o que também elimina o HSQLDB em memória.
+4. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).
+5. Varreduras de parâmetros, cliente Python, export NWB.
+6. Licença do projeto (o repositório ainda não tem `LICENSE`).

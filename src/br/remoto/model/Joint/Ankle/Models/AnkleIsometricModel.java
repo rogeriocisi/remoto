@@ -42,7 +42,7 @@ public class AnkleIsometricModel extends AnkleSuperClass
 		
 		angleArray = new double[(int) (conf.getTFin() / conf.getStep())];
 
-		double aux = Math.random();
+		double aux = br.remoto.util.Rng.random();
 		double T = 150;
 		double taux = 0;
 		//double amp = 0.015 * (180/Math.PI);
@@ -110,7 +110,7 @@ public class AnkleIsometricModel extends AnkleSuperClass
 				}
 				else{
 					taux = t;
-					aux = Math.random();
+					aux = br.remoto.util.Rng.random();
 				}
 			}
 			*/	

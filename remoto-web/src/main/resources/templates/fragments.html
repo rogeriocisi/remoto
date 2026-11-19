@@ -8,6 +8,8 @@
     <li th:each="s : ${publicScenarios}">
       <div>
         <strong th:text="${s.name}">nome</strong>
+        <span th:if="${s.engine == 'legacy'}" class="selo">modelos originais</span>
+        <small th:text="|${#numbers.formatDecimal(s.durationMs, 1, 'POINT', 0, 'COMMA')} ms simulados|">1000 ms simulados</small>
         <small th:text="${s.description}">descrição</small>
       </div>
       <div class="acoes">

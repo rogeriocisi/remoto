@@ -24,6 +24,10 @@
       <artifactId>remoto-storage</artifactId>
     </dependency>
     <dependency>
+      <groupId>br.remoto</groupId>
+      <artifactId>remoto-legacy</artifactId>
+    </dependency>
+    <dependency>
       <groupId>info.picocli</groupId>
       <artifactId>picocli</artifactId>
     </dependency>

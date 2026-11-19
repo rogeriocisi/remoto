@@ -211,7 +211,7 @@ public class PositionTaskModel extends AnkleSuperClass
 	private double calculateDisturbance (double t){
 		
 		//white noise
-		Random fRandom = new Random();
+		Random fRandom = br.remoto.util.Rng.newRandom();
 		double stdDev = 0;
 		double disturbanceTorque = stdDev * fRandom.nextGaussian();
 				

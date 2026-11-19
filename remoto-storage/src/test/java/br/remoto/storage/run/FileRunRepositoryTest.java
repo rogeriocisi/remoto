@@ -80,4 +80,32 @@ class FileRunRepositoryTest {
 
         assertThat(runs.find(ana, m.runId())).isEmpty();
     }
+
+    /** No Windows, regravar o manifesto enquanto outra thread o lê falhava com AccessDenied. */
+    @Test
+    void regravaOManifestoEnquantoOutraThreadLe() throws Exception {
+        RunManifest m = runs.create(ana, scenario("x"), "motor-1");
+        java.util.concurrent.atomic.AtomicBoolean stop = new java.util.concurrent.atomic.AtomicBoolean();
+        java.util.concurrent.atomic.AtomicReference<Throwable> readerError = new java.util.concurrent.atomic.AtomicReference<>();
+        Thread reader = Thread.ofPlatform().start(() -> {
+            while (!stop.get()) {
+                try {
+                    runs.find(ana, m.runId());
+                } catch (RuntimeException e) {
+                    readerError.set(e);
+                }
+            }
+        });
+        try {
+            for (int i = 0; i < 300; i++) {
+                runs.save(ana, m.withPinned(i % 2 == 0));
+            }
+        } finally {
+            stop.set(true);
+            reader.join();
+        }
+
+        assertThat(readerError.get()).isNull();
+        assertThat(runs.find(ana, m.runId())).hasValueSatisfying(r -> assertThat(r.pinned()).isFalse());
+    }
 }

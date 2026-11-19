@@ -196,7 +196,7 @@ public class InvertedPendulumModel extends AnkleSuperClass
 	
 	private double calculateDisturbance (double t){
 		
-		Random fRandom = new Random();
+		Random fRandom = br.remoto.util.Rng.newRandom();
 		double stdDev = 0.05;
 		double disturbanceTorque = stdDev * fRandom.nextGaussian();
 				

@@ -3,7 +3,6 @@ package br.remoto.model.Proprioceptors;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.sun.org.apache.bcel.internal.generic.Type;
 
 import br.remoto.model.Configuration;
 import br.remoto.model.ReMoto;

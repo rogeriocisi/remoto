@@ -33,6 +33,11 @@ public final class PlaceholderPoolEngine implements SimulationEngine {
     private static final double TWITCH_RANGE = 100.0;
 
     @Override
+    public String id() {
+        return Scenario.ENGINE_PLACEHOLDER;
+    }
+
+    @Override
     public String version() {
         return VERSION;
     }

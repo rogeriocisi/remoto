@@ -84,7 +84,7 @@ public class Bias
 			max = v1;
 		}
 
-		double p = Math.random();
+		double p = br.remoto.util.Rng.random();
 		
 		value = min + (max - min) * p;
 		
