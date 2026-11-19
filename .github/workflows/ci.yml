@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+    branches: [master, "modernizacao/**"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+      - name: Compilar e testar (core, storage, web, cli)
+        run: ./mvnw -B verify

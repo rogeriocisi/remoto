@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: remoto
+  mvc:
+    problemdetails:
+      enabled: true
+
+server:
+  servlet:
+    session:
+      timeout: 2h
+  # atrás de um proxy reverso (nginx/Apache do LEB), descomente:
+  # forward-headers-strategy: native
+
+remoto:
+  data-dir: ./data                    # REMOTO_DATA_DIR
+  public-scenarios-dir: ./scenarios   # REMOTO_PUBLIC_SCENARIOS_DIR
+  simulation:
+    slots: 0                 # simulações em paralelo; 0 = núcleos da CPU
+    max-active-per-user: 2
+    max-queued-per-user: 20
+  retention:
+    run-days: 30             # execuções terminadas e não fixadas
+    guest-hours: 24          # áreas de convidado abandonadas
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

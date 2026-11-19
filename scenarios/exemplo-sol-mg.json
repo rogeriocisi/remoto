@@ -1,0 +1,19 @@
+{
+  "name" : "Exemplo: sóleo e gastrocnêmio medial",
+  "description" : "Demonstração do motor provisório: dois pools sob comando descendente constante com ruído. Não é um resultado científico.",
+  "schemaVersion" : 1,
+  "seed" : 20081001,
+  "durationMs" : 1000.0,
+  "stepMs" : 0.05,
+  "nuclei" : [ {
+    "nucleus" : "SOL",
+    "motoneurons" : 100,
+    "driveNa" : 5.0,
+    "noiseNa" : 1.0
+  }, {
+    "nucleus" : "MG",
+    "motoneurons" : 60,
+    "driveNa" : 4.0,
+    "noiseNa" : 1.0
+  } ]
+}

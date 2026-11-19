@@ -1,0 +1,13 @@
+# Perfil de DESENVOLVIMENTO: login por formulário com usuários de teste.
+# Nunca use em produção (senhas em texto puro, só para testar o isolamento entre usuários).
+spring:
+  thymeleaf:
+    cache: false
+
+remoto:
+  dev:
+    users:
+      - username: ana
+        password: "{noop}ana-dev"
+      - username: bruno
+        password: "{noop}bruno-dev"

@@ -1,0 +1,9 @@
+# Nova versão (Maven)
+target/
+/data/
+/resultados/
+
+# IDEs
+.idea/
+*.iml
+.vscode/

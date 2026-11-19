@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ReMoto</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js" defer></script>
+  <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header class="topo">
+  <div class="marca">
+    <strong>ReMoto</strong>
+    <span class="sub">simulador de núcleos motores da medula espinhal</span>
+  </div>
+  <div class="conta">
+    <span th:text="${caller.displayName}">Convidado</span>
+    <a th:if="${caller.guest}" th:href="@{/login}" class="botao">Entrar</a>
+    <form th:unless="${caller.guest}" th:action="@{/logout}" method="post" class="inline">
+      <button type="submit" class="secundario">Sair</button>
+    </form>
+  </div>
+</header>
+
+<div class="avisos">
+  <p class="aviso">Versão em desenvolvimento: o motor de simulação ainda é provisório (Fase 1 da modernização).</p>
+  <p th:if="${caller.guest}" class="aviso">
+    Você está como convidado: seus cenários e simulações somem quando a sessão expirar. Entre para guardá-los.
+  </p>
+</div>
+
+<main class="grade">
+  <section class="cartao">
+    <h2>Cenários</h2>
+    <div id="cenarios" hx-get="/ui/scenarios" hx-trigger="load">Carregando…</div>
+  </section>
+  <section class="cartao">
+    <h2>Minhas simulações</h2>
+    <div id="execucoes" hx-get="/ui/runs" hx-trigger="load, every 4s">Carregando…</div>
+  </section>
+</main>
+
+<section id="detalhe" class="cartao" hidden>
+  <h2>Execução <code data-campo="id"></code></h2>
+  <p class="progresso">
+    <span data-campo="status"></span>
+    <progress max="100" value="0"></progress>
+  </p>
+  <div data-campo="links" class="links"></div>
+  <div data-campo="graficos"></div>
+</section>
+</body>
+</html>

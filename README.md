@@ -9,6 +9,10 @@ The elements that take part in the system belong to the following classes: moton
 The system simulates the following nuclei involved in flexion and extension of the human ankle: Medial Gastrocnemius (MG), Lateral Gastrocnemius (LG), Soleus (SOL), and Tibialis Anterior (TA).
 
 
+## New version (in development)
+
+A modernized version (Java 25, Spring Boot 4, multi-user, no database) is being built alongside the legacy code, in the `remoto-core`, `remoto-storage`, `remoto-web` and `remoto-cli` Maven modules. See [docs/nova-versao.md](docs/nova-versao.md) (in Portuguese). Quick start: `./mvnw -pl remoto-web -am spring-boot:run -Dspring-boot.run.profiles=dev`, then open http://localhost:8080. The simulation engine of the new version is still a placeholder; the installation guide below applies to the legacy version.
+
 ## Installation Guide
 
 This guide will walk you through the installation process for ReMoto. While the web-based architecture can make installation challenging, these step-by-step instructions should help you get started. The system has been tested on both Windows and Ubuntu platforms.

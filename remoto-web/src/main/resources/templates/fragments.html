@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block th:fragment="scenarios">
+  <h3>Públicos</h3>
+  <ul class="lista">
+    <li th:each="s : ${publicScenarios}">
+      <div>
+        <strong th:text="${s.name}">nome</strong>
+        <small th:text="${s.description}">descrição</small>
+      </div>
+      <div class="acoes">
+        <form hx-post="/ui/runs" hx-target="#execucoes">
+          <input type="hidden" name="publicScenarioId" th:value="${s.id}">
+          <button type="submit">Rodar</button>
+        </form>
+        <form hx-post="/ui/scenarios/copy" hx-target="#cenarios">
+          <input type="hidden" name="publicScenarioId" th:value="${s.id}">
+          <button type="submit" class="secundario">Copiar</button>
+        </form>
+      </div>
+    </li>
+  </ul>
+
+  <h3>Meus cenários</h3>
+  <p th:if="${#lists.isEmpty(mine)}" class="vazio">
+    Nenhum ainda. Copie um público ou envie um JSON pela API (<code>POST /api/scenarios</code>).
+  </p>
+  <ul class="lista">
+    <li th:each="s : ${mine}">
+      <div>
+        <strong th:text="${s.name}">nome</strong>
+        <a th:href="@{/api/scenarios/{id}(id=${s.id})}" class="discreto">JSON</a>
+      </div>
+      <div class="acoes">
+        <form hx-post="/ui/runs" hx-target="#execucoes">
+          <input type="hidden" name="scenarioId" th:value="${s.id}">
+          <button type="submit">Rodar</button>
+        </form>
+        <form th:hx-post="@{/ui/scenarios/{id}/delete(id=${s.id})}" hx-target="#cenarios"
+              hx-confirm="Apagar este cenário?">
+          <button type="submit" class="secundario">Apagar</button>
+        </form>
+      </div>
+    </li>
+  </ul>
+</th:block>
+
+<th:block th:fragment="runs">
+  <p th:if="${error}" class="erro" th:text="${error}">erro</p>
+  <p th:if="${#lists.isEmpty(runs)}" class="vazio">Nenhuma simulação ainda.</p>
+  <div th:unless="${#lists.isEmpty(runs)}" class="tabela-rolavel">
+    <table class="tabela">
+      <thead>
+      <tr><th>Cenário</th><th>Status</th><th>Criada</th><th></th></tr>
+      </thead>
+      <tbody>
+      <tr th:each="r : ${runs}">
+        <td th:text="${r.scenarioName}">cenário</td>
+        <td>
+          <span th:class="|status ${r.status}|" th:text="${r.status}">DONE</span>
+          <small th:if="${r.percent != null}" th:text="|${r.percent}%|">50%</small>
+        </td>
+        <td th:text="${r.created}">00/00 00:00</td>
+        <td class="acoes">
+          <button type="button" th:data-run-id="${r.runId}">Ver</button>
+          <form th:hx-post="@{/ui/runs/{id}/delete(id=${r.runId})}" hx-target="#execucoes">
+            <button type="submit" class="secundario" th:text="${r.active} ? 'Cancelar' : 'Apagar'">Apagar</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</th:block>
+
+</body>
+</html>
