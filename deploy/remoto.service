@@ -1,0 +1,32 @@
+# /etc/systemd/system/remoto.service
+# Nova versão do ReMoto como serviço do sistema (Linux), sem Docker.
+# Passo a passo: docs/nova-versao.md, seção "Instalação no servidor".
+
+[Unit]
+Description=ReMoto - simulador de núcleos motores da medula espinhal
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=remoto
+Group=remoto
+EnvironmentFile=/etc/remoto/remoto.env
+WorkingDirectory=/var/lib/remoto
+# Ajuste o caminho se o JDK 25 não for o "java" padrão do sistema.
+ExecStart=/usr/bin/java $JAVA_OPTS -jar /opt/remoto/remoto-web.jar
+# A JVM termina com 143 ao receber SIGTERM: não é falha.
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+# Endurecimento: o serviço só consegue gravar na pasta de dados.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/remoto
+
+[Install]
+WantedBy=multi-user.target

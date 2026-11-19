@@ -3,8 +3,8 @@
 Esqueleto da nova versão proposta na modernização do ReMoto. Convive com o código legado
 (`src/` e `WebContent/`, Struts 1 + Tomcat 7), que continua intacto até ser substituído.
 
-> **Estado:** a infraestrutura (multiusuário, fila, armazenamento, API, interface, CLI, Docker,
-> CI) funciona e tem testes. O **motor de simulação ainda é provisório**
+> **Estado:** a infraestrutura (multiusuário, fila, armazenamento, API, interface, CLI, CI)
+> funciona e tem testes. O **motor de simulação ainda é provisório**
 > (`PlaceholderPoolEngine`): o próximo passo é portar os modelos originais para o `remoto-core`.
 
 ## Stack
@@ -20,7 +20,11 @@ Esqueleto da nova versão proposta na modernização do ReMoto. Convive com o c�
 | Persistência | Arquivos: JSON (cenários, manifestos) e CSV.gz (resultados) — **sem banco** |
 | Execução | Fila justa por usuário + pool de threads de plataforma (CPU-bound) |
 | Progresso | Server-Sent Events |
-| Entrega | Docker / docker compose, GitHub Actions |
+| Entrega | um JAR executável (servidor web embutido) rodando como serviço systemd; CI no GitHub Actions |
+
+**Sem Docker.** Sem banco de dados, o ReMoto é um único processo Java que grava numa pasta. Basta
+o JDK 25 no servidor e o arquivo `remoto-web.jar`; um contêiner só acrescentaria mais uma
+ferramenta para instalar e manter.
 
 ## Módulos
 
@@ -47,9 +51,6 @@ Requer JDK 25. O Maven é baixado pelo wrapper.
 # CLI
 ./mvnw -pl remoto-cli -am package -DskipTests
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/exemplo-sol-mg.json -o resultados/teste
-
-# Docker
-docker compose up --build
 ```
 
 No Windows, use `mvnw.cmd` no lugar de `./mvnw`.
@@ -58,11 +59,50 @@ No Windows, use `mvnw.cmd` no lugar de `./mvnw`.
 
 1. Registre o ReMoto em cada provedor (ORCID, GitHub...) com o redirect
    `https://<host>/login/oauth2/code/<provedor>`.
-2. Defina `SPRING_PROFILES_ACTIVE=prod` e as variáveis `ORCID_CLIENT_ID`, `ORCID_CLIENT_SECRET`,
-   `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` (ou remova de `application-prod.yml` os provedores
-   que não usar).
+2. Preencha `ORCID_CLIENT_ID`, `ORCID_CLIENT_SECRET`, `GITHUB_CLIENT_ID` e `GITHUB_CLIENT_SECRET`
+   em `/etc/remoto/remoto.env` (ver abaixo), ou remova de `application-prod.yml` os provedores
+   que não usar.
 3. Sem o perfil `dev`, o app só sobe com pelo menos um provedor OIDC configurado — de propósito,
    para que os usuários de teste nunca cheguem à produção.
+
+## Instalação no servidor (Linux, sem Docker)
+
+Os arquivos de apoio estão em `deploy/`: a unidade systemd (`remoto.service`) e o modelo de
+configuração (`remoto.env.example`).
+
+```bash
+# 1. JDK 25 (Temurin, Corretto ou o pacote da distribuição)
+java -version
+
+# 2. Gerar o JAR (na sua máquina ou no próprio servidor)
+./mvnw -pl remoto-web -am package -DskipTests
+
+# 3. Usuário de sistema, pastas e arquivos
+sudo useradd --system --home-dir /var/lib/remoto --shell /usr/sbin/nologin remoto
+sudo install -d -o remoto -g remoto -m 750 /var/lib/remoto
+sudo install -D -m 644 remoto-web/target/remoto-web-3.0.0-SNAPSHOT.jar /opt/remoto/remoto-web.jar
+sudo mkdir -p /opt/remoto/scenarios && sudo cp scenarios/*.json /opt/remoto/scenarios/
+sudo install -D -m 600 deploy/remoto.env.example /etc/remoto/remoto.env   # editar: OIDC etc.
+
+# 4. Serviço
+sudo cp deploy/remoto.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now remoto
+
+# 5. Acompanhar
+systemctl status remoto
+journalctl -u remoto -f
+curl -s http://localhost:8080/actuator/health
+```
+
+- **Atualizar:** substitua `/opt/remoto/remoto-web.jar` e rode `sudo systemctl restart remoto`.
+  Execuções em andamento são canceladas e as que estavam na fila ficam marcadas como interrompidas.
+- **Backup:** tudo o que importa está em `/var/lib/remoto` (rsync, restic ou o backup do LEB).
+- **HTTPS:** coloque nginx ou Apache na frente (porta 443 → 8080) e descomente
+  `SERVER_FORWARD_HEADERS_STRATEGY=native` no `remoto.env`.
+- **Novos cenários públicos:** copie o JSON para `/opt/remoto/scenarios/`; não precisa reiniciar.
+- **Windows:** o mesmo `java -jar` pode virar serviço com o WinSW, usando as variáveis do
+  `remoto.env.example`.
 
 ## Multiusuário sem banco
 
