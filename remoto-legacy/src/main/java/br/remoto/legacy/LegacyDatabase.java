@@ -42,7 +42,7 @@ public final class LegacyDatabase implements AutoCloseable {
     }
 
     /**
-     * @param databasePath caminho sem extensão, por exemplo {@code WebContent/db/remoto}
+     * @param databasePath caminho sem extensão, por exemplo {@code legacy-db/remoto}
      */
     public static LegacyDatabase open(Path databasePath) {
         Path script = Path.of(databasePath + ".script");

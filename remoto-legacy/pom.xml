@@ -54,9 +54,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <!-- os testes leem o banco legado em WebContent/db -->
+          <!-- os testes leem o banco legado em legacy-db/ -->
           <systemPropertyVariables>
-            <remoto.legacy.db>${project.basedir}/../WebContent/db/remoto</remoto.legacy.db>
+            <remoto.legacy.db>${project.basedir}/../legacy-db/remoto</remoto.legacy.db>
           </systemPropertyVariables>
         </configuration>
       </plugin>

@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 
 /**
- * {@code remoto export-legacy --db WebContent/db/remoto --out scenarios} converte configurações
+ * {@code remoto export-legacy --db legacy-db/remoto --out scenarios} converte configurações
  * do banco HSQLDB do ReMoto original em cenários JSON da nova plataforma.
  */
 @Command(name = "export-legacy",
@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
 final class ExportLegacyCommand implements Callable<Integer> {
 
     @Option(names = "--db", required = true,
-            description = "banco legado, sem extensão (ex.: WebContent/db/remoto)")
+            description = "banco legado, sem extensão (ex.: legacy-db/remoto)")
     Path database;
 
     @Option(names = "--out", description = "pasta de saída (padrão: ./scenarios)")

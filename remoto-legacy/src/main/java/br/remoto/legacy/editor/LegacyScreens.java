@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * As telas do editor, na ordem e com os rótulos do menu do site antigo (WebContent/jsp). Cada
+ * As telas do editor, na ordem e com os rótulos do menu do site antigo (WebContent/jsp, hoje só no repositório pai). Cada
  * tela reproduz o par JSP + Action correspondente: mesmos objetos, mesmas propriedades, mesmos
  * limites ao salvar.
  */

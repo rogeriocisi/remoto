@@ -13,9 +13,9 @@
   <artifactId>remoto-legacy-model</artifactId>
   <name>ReMoto :: legacy model</name>
   <description>
-    Os modelos numéricos originais do ReMoto (src/br/remoto/model e dependências), compilados
-    direto do código legado, sem cópia. Só entram as classes alcançáveis a partir de Simulation
-    e ConfigurationDAO; Struts, JSPs e applets ficam de fora.
+    Os modelos numéricos originais do ReMoto (br.remoto.model e dependências), trazidos do
+    src/ do repositório pai sem alteração numérica. Só ficaram as classes alcançáveis a partir
+    de Simulation, ConfigurationDAO e Rng; Struts, JSPs e applets foram removidos.
   </description>
 
   <properties>
@@ -37,18 +37,11 @@
   </dependencies>
 
   <build>
-    <sourceDirectory>${project.basedir}/../src</sourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <!-- Raízes: o resto é compilado implicitamente pelo javac via -sourcepath. -->
-          <includes>
-            <include>br/remoto/model/Simulation.java</include>
-            <include>br/remoto/dao/ConfigurationDAO.java</include>
-            <include>br/remoto/util/Rng.java</include>
-          </includes>
           <compilerArgs>
             <arg>-nowarn</arg>
             <arg>-Xlint:none</arg>

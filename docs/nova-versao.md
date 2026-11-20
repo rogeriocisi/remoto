@@ -1,7 +1,8 @@
 # ReMoto — nova versão (Java 25, sem banco de dados, multiusuário)
 
-Esqueleto da nova versão proposta na modernização do ReMoto. Convive com o código legado
-(`src/` e `WebContent/`, Struts 1 + Tomcat 7), que continua intacto até ser substituído.
+Esqueleto da nova versão proposta na modernização do ReMoto. Do código legado (Struts 1 +
+Tomcat 7) ficam só os modelos numéricos, no módulo `remoto-legacy-model`, e o banco original em `legacy-db/`; o site
+JSP e as classes fora do build foram removidos e continuam no histórico e no repositório pai.
 
 > **Estado:** a infraestrutura (multiusuário, fila, armazenamento, API, interface, CLI, CI)
 > funciona e tem testes. Os **modelos originais do ReMoto já rodam na nova plataforma**
@@ -228,9 +229,9 @@ Os modelos publicados do ReMoto (motoneurônios S/F com dendritos ativos, condut
 interneurônios, sinapses com depressão/facilitação, Hill/Raikova/SOCDS, fuso, OTG, articulação)
 rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 
-- **Sem cópia de código:** o módulo `remoto-legacy-model` compila direto de `src/` só as classes
-  alcançáveis a partir de `Simulation` e `ConfigurationDAO` (cerca de 105 classes); Struts,
-  JSPs, applets e o JFreeChart antigo ficam de fora.
+- **Sem cópia de código:** o módulo `remoto-legacy-model` traz do `src/` do repositório pai só as
+  classes alcançáveis a partir de `Simulation` e `ConfigurationDAO` (104 arquivos), sem
+  alteração numérica; Struts, JSPs, applets e o JFreeChart antigo foram removidos do repositório.
 - **Reprodutível:** o código original usava `Math.random()` e `new Random()` sem seed. Agora
   todas essas chamadas passam por `br.remoto.util.Rng`, um gerador por thread que o motor
   inicializa com a `seed` do cenário. Sem seed, o site antigo se comporta como antes.
@@ -262,9 +263,9 @@ Ao portar ou refatorar um modelo, o golden master mostra na hora se o resultado 
 ### Exportar configurações do banco antigo
 
 ```bash
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --list
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --owner guest --out scenarios
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --id 34,41 --out meus-cenarios
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --owner guest --out scenarios
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --id 34,41 --out meus-cenarios
 ```
 
 Os três cenários públicos do site antigo (`guest`: 17, 24 e 42) já estão em `scenarios/`.
@@ -278,7 +279,7 @@ levam minutos; o progresso aparece ao vivo e a CLI aceita `--duration-ms` para t
 ## Editor de cenários
 
 Em "Meus cenários", o botão **Editar** abre o editor, montado a partir do editor do site antigo
-(`WebContent/jsp` + `br.remoto.control.action`): o mesmo menu lateral, as mesmas telas, os mesmos
+(`WebContent/jsp` + `br.remoto.control.action`, hoje só no repositório pai): o mesmo menu lateral, as mesmas telas, os mesmos
 rótulos e unidades. Cenários públicos são só leitura; use **Copiar** antes de editar.
 
 **Como funciona (pacote `br.remoto.legacy.editor`):**

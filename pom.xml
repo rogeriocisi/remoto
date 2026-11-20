@@ -6,8 +6,10 @@
 
   <!--
     Nova versão do ReMoto (Java 25 + Spring Boot 4, sem banco de dados).
-    O código legado (src/ e WebContent/, Struts 1 + Tomcat 7) continua intacto
-    e é ignorado por este build; ele será substituído aos poucos.
+    Do código legado ficam só os modelos numéricos, no módulo remoto-legacy-model,
+    e o banco HSQLDB original em legacy-db/ (lido pelo remoto-legacy e pelo
+    export-legacy). O site Struts/JSP e as classes fora
+    do build foram removidos; estão no histórico do Git e no repositório pai.
   -->
   <parent>
     <groupId>org.springframework.boot</groupId>

@@ -10,11 +10,11 @@ ReMoto was developed over more than a decade at the Biomedical Engineering Labor
 
 ## Repository status
 
-This repository contains two versions of ReMoto side by side:
+This repository contains the new version of ReMoto. Of the legacy version, only the parts the new one still uses are kept; the rest (the Struts/JSP site, applets and classes outside the build) was removed and remains in the Git history and in the parent repository, [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto).
 
 | | Legacy version | New version (in development) |
 |---|---|---|
-| Location | `src/`, `WebContent/` | `remoto-*/` Maven modules, `scenarios/` |
+| Location | [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto); here only the numerical models (`remoto-legacy-model`) and `legacy-db/` (original database) | `remoto-*/` Maven modules, `scenarios/` |
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
 | Simulation models | All published models | The same published models, running the original numerical code (`legacy` engine), plus a small demo engine |
 | Users | Local accounts stored in HSQLDB | Login with ORCID or GitHub (OIDC), plus guest access |
@@ -25,14 +25,14 @@ This repository contains two versions of ReMoto side by side:
 ```
 remoto-core/          scenario format and engine interfaces (plain Java)
 remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
-remoto-legacy-model/  the original numerical models, compiled straight from src/
+remoto-legacy-model/  the original numerical models (moved from the legacy src/)
 remoto-legacy/        "legacy" engine: runs the original models, converts old configurations
 remoto-web/           multi-user web application (Spring Boot)
 remoto-cli/           command-line runner for scripts and clusters
 scenarios/            public scenarios (JSON)
 deploy/            systemd service and configuration template
 docs/              documentation of the new version (in Portuguese)
-src/, WebContent/  legacy application
+legacy-db/         original HSQLDB database, read by remoto-legacy and export-legacy
 ref.bib            BibTeX references
 ```
 
@@ -87,7 +87,7 @@ Then open http://localhost:8080. You can use the site as a guest. The `dev` prof
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/exemplo-sol-mg.json -o results/example
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 -o results/soleus
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar validate scenarios/*.json
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db WebContent/db/remoto --list
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list
 ```
 
 `export-legacy` converts configurations from the old HSQLDB database into JSON scenarios.
@@ -108,7 +108,7 @@ The web application is a single executable JAR with an embedded web server, inst
 ## Legacy version
 
 > [!WARNING]
-> The legacy version depends on software that no longer receives security updates (Struts 1, Tomcat 7) and on Java applets, which no current browser runs, so the applet-based charts are not displayed. Use it only locally, for reference and to compare results with the new version.
+> The legacy web application is no longer in this repository. It depends on software that no longer receives security updates (Struts 1, Tomcat 7) and on Java applets, which no current browser runs. To run it for reference, use the parent repository, [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto).
 
 ## Support
 
