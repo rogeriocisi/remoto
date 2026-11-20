@@ -16,13 +16,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Roda os modelos originais do ReMoto (motoneurônios, interneurônios, sinapses, músculo, fuso,
  * OTG, articulação) dentro da nova plataforma.
  *
- * <p>O código numérico é o mesmo do site antigo; a única diferença é a aleatoriedade, agora
- * derivada da seed do cenário ({@link Rng}), o que torna cada execução reprodutível.
+ * <p>O código numérico é o mesmo do site antigo, com duas diferenças: a aleatoriedade, agora
+ * derivada da seed do cenário ({@link Rng}), o que torna cada execução reprodutível; e a
+ * correção do decaimento das condutâncias sinápticas ({@code MultSynapticConductance}), que
+ * desde 2016 ficavam congeladas entre um evento e outro.
  */
 public final class LegacyEngine implements SimulationEngine {
 
-    /** Código original "remoto2b5" + fonte de aleatoriedade com seed. */
-    public static final String VERSION = "remoto-legacy-2b5-rng1";
+    /**
+     * Código original "remoto2b5" + fonte de aleatoriedade com seed + correção das sinapses.
+     * Resultados de versões diferentes não são comparáveis entre si.
+     */
+    public static final String VERSION = "remoto-legacy-2b5-rng1-syn1";
 
     private static final long PROGRESS_INTERVAL_MS = 250;
 

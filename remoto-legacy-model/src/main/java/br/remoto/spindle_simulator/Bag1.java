@@ -62,14 +62,10 @@ public class Bag1 extends IntrafusalMuscleFiber{
 	
 public double calculateFiberTensionEuler(double t) {
 		
-		System.out.println("");
-		System.out.println("ITERATION");
-		System.out.println("");
 		if (t == initial_time){
 			
 			intrafusalFiberTension = 0;
 			z = 0;
-			System.out.println("t = " + t + "     T = " + intrafusalFiberTension+ "     z = " + z);
 		}
 		else{
 			try
@@ -78,7 +74,6 @@ public double calculateFiberTensionEuler(double t) {
 				
 				z = z + (time_step * f2(t, intrafusalFiberTension, z));
 				
-				System.out.println("t = " + t + "     T = " + intrafusalFiberTension+ "     z = " + z);
 				
 				
 			}

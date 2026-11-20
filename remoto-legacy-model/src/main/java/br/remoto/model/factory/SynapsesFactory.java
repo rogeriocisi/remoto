@@ -241,7 +241,6 @@ public class SynapsesFactory
 						// Make synapse only between RC and its respectively noise
 						if( noise.getIndex() == ((Interneuron)rcNeu).getIndex() )
 						{
-							System.out.println(noise.getIndex() + "  " + ((Interneuron)rcNeu).getIndex() );
 							createSynapticConductance(conf, g, noise, rcNeu, connectivity);
 						}
 					}

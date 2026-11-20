@@ -235,6 +235,18 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 - **Reprodutível:** o código original usava `Math.random()` e `new Random()` sem seed. Agora
   todas essas chamadas passam por `br.remoto.util.Rng`, um gerador por thread que o motor
   inicializa com a `seed` do cenário. Sem seed, o site antigo se comporta como antes.
+- **Correção das sinapses (motor `remoto-legacy-2b5-rng1-syn1`):** em dezembro de 2016 o
+  repositório pai trocou, em `MultSynapticConductance`, o tempo desde o último evento
+  (`t − t0`) pelo passo de integração no decaimento de `Ron` e `Roff`. Como `ron` e `roff` só
+  mudam quando um pulso começa ou termina, a condutância passou a ficar congelada entre eventos:
+  um disparo isolado subia a um sétimo do pico e não decaía mais. O motor volta à solução
+  fechada de Lytton (1996), que é a da versão de 2011 e a vigente quando o artigo de 2015 foi
+  configurado; `SynapticConductanceTest` compara a condutância com essa solução. Resultados de
+  versões diferentes do motor não são comparáveis.
+- **Sem prints no laço:** o código original imprimia no console a cada passo de cada trato
+  descendente (`"Poisson " + mean`), a cada disparo de sinapse com dinâmica, a cada passo da
+  tarefa de posição e do simulador de fuso, e a cada neurônio e sinapse criados. Isso foi
+  removido; as mensagens de erro e os avisos de criação de modelos ficaram.
 - **Configuração sem banco:** cada configuração do HSQLDB antigo vira um cenário JSON com as
   linhas de cada tabela (formato `remoto-legacy-db/1`, sem a tabela USER). Para montar a
   `Configuration`, o motor carrega essas linhas num HSQLDB **em memória**, privado e descartado

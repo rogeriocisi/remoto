@@ -156,12 +156,10 @@ public class PositionTaskModel extends AnkleSuperClass
 		passiveTorque = calculatePassiveTorque(t);
 		disturbance = calculateDisturbance(t);
 		
-		System.out.println(" Weight= " + percentageOfMVC);
 		
 		acceleration = (torque - gravitationalTorque - passiveTorque + disturbance) / footInertia;
 		//acceleration = (torque  - passiveTorque + disturbance + passiveTorque +2.5) / footInertia; //no gravity
 		
-		System.out.println(" Acceleration= " + acceleration*footInertia);
 		
 		return acceleration;
 	}

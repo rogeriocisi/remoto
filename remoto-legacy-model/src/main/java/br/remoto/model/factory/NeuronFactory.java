@@ -116,7 +116,6 @@ public class NeuronFactory
 				double rmDend = pattern.getRmDend1();
 				double ri = pattern.getRi();
 				double cm = pattern.getCm();
-				System.out.println("ri " + ri);
 				double areaDend = Math.PI * dDend * lDend;
 				double areaSoma = Math.PI * dSoma * lSoma;
 	
@@ -174,7 +173,6 @@ public class NeuronFactory
 				// Set gMax according to the soma area and put in nS
 				
 				pattern.getGNaMVO().setGmax( pattern.getGNaMVO().getGmax() * 1e6 * areaSoma );
-				System.out.println("gNaMax" + pattern.getGNaMVO().getGmax());
 				pattern.getGNaHVO().setGmax( pattern.getGNaHVO().getGmax() * 1e6 * areaSoma );
 				pattern.getGKNVO().setGmax( pattern.getGKNVO().getGmax() * 1e6 * areaSoma );
 				pattern.getGKQVO().setGmax( pattern.getGKQVO().getGmax() * 1e6 * areaSoma );
@@ -195,7 +193,6 @@ public class NeuronFactory
 				double cm = reference.getCm();
 				//double areaSoma = (Math.PI * reference.getDsoma() * reference.getLsoma()) / 1e8;
 				double area = reference.getTotalArea() / 1e8;
-				System.out.println("RC area = " +  area);
 				// Set leak conductances - convert to uS
 				neu.setGLeakSoma( calc.calcGLeak(area, reference.getRmSoma1()) );
 			

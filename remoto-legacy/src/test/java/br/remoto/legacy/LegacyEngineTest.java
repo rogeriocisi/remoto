@@ -66,7 +66,9 @@ class LegacyEngineTest {
 
     @Test
     void mesmaSeedReproduzESeedDiferenteMuda() throws Exception {
-        Scenario scenario = viaJsonFile(db.exportScenario(42)).withDuration(SHORT_RUN_MS);
+        // O 17 tem disparos já nos primeiros 40 ms. O 42 não serve: o comando dele só começa em
+        // 3 s, e sem disparos as saídas não dependem da seed.
+        Scenario scenario = viaJsonFile(db.exportScenario(17)).withDuration(SHORT_RUN_MS);
 
         Recorder a = run(scenario.withSeed(1));
         Recorder b = run(scenario.withSeed(1));

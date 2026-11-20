@@ -131,7 +131,6 @@ public class NeuralTract extends Neuron
 				if( mean > ReMoto.T_TOLERANCE || ( signal != null && t > signal.getTini() && t < signal.getTfin() + ReMoto.T_TOLERANCE ) )
 				{
 					double probability = lambda * miscellaneous.getStep() / 1000;
-					System.out.println("Poisson " + mean);	
 					double aux = br.remoto.util.Rng.random();
 					
 					if(aux <= probability){

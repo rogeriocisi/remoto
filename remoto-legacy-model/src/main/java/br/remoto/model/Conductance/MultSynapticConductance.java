@@ -172,8 +172,12 @@ public class MultSynapticConductance extends ConductanceProperties
     		return value2thSlope;
    		
     	// Calculate conductances in on and off state
-   		Ron = Non*rInf + (ron - Non*rInf) * Math.exp(-this.misc.getStep() /tauOn);
-   		Roff = roff * Math.exp(-this.misc.getStep()/tauOff);
+   		// Closed-form solution since the last event (Lytton, 1996). ron and roff are
+   		// only updated when a pulse starts or stops, so the elapsed time has to be
+   		// t - t0: with the integration step in its place (as in the 2016 version) the
+   		// conductance froze one step after each event and never decayed.
+   		Ron = Non*rInf + (ron - Non*rInf) * Math.exp(-(t - t0)/tauOn);
+   		Roff = roff * Math.exp(-(t - t0)/tauOff);
    		
    		
    		
@@ -327,21 +331,14 @@ public class MultSynapticConductance extends ConductanceProperties
     	// Depressing or facilitating dynamics
     	else
     	{
-    		System.out.println("Dynamics: " + g.getDynamics().getType());
     		double lastSpike = g.getLastSpike();
     		double gMax = g.getGmax();
-    		System.out.println("gmax = " + gMax);
-    		System.out.println("lastSpike = " + lastSpike);
-    		System.out.println("time = " + t);
     		if( lastSpike > 0 )
     		{
         		double tauDynamics = g.getDynamics().getTau();
         		double variation = g.getDynamics().getVariation();
     			double lastGmax = g.getLastGmax();
     			
-    			System.out.println("lgmax = " + lastGmax);
-    			System.out.println("var = " + variation);
-    			System.out.println("tauD = " + tauDynamics);
     			
     			if( g.getDynamics().getType() == ReMoto.DEPRESSING )
     			{
@@ -357,7 +354,6 @@ public class MultSynapticConductance extends ConductanceProperties
         			gMax = lastGmax + (gMax - lastGmax) * (1 - Math.exp( -(t - lastSpike)/tauDynamics ));
     			}
     		}
-    		System.out.println("new gmax = " + gMax);
     		synContrib = gMax / gMaxTot;
     		
     		g.setLastSpike( t );
