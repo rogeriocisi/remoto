@@ -25,15 +25,12 @@
   </div>
 </header>
 
-<div class="avisos">
-  <p class="aviso">
-    Versão em desenvolvimento. Os cenários marcados como <em>modelos originais</em> rodam o código
-    numérico do ReMoto publicado; os cenários "Exemplo" usam um motor provisório, só para demonstração.
-  </p>
-  <p th:if="${caller.guest}" class="aviso">
-    Você está como convidado: seus cenários e simulações somem quando a sessão expirar. Entre para guardá-los.
-  </p>
-</div>
+<script th:inline="javascript">
+  console.info("ReMoto: versão em desenvolvimento. Os cenários marcados como \"modelos originais\" rodam o código numérico do ReMoto publicado; os cenários \"Exemplo\" usam um motor provisório, só para demonstração.");
+  if (/*[[${caller.guest}]]*/ false) {
+    console.info("ReMoto: você está como convidado; seus cenários e simulações somem quando a sessão expirar. Entre para guardá-los.");
+  }
+</script>
 
 <main class="grade">
   <section class="cartao">

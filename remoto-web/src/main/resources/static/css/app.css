@@ -55,15 +55,6 @@ body {
 .marca .sub { color: var(--suave); margin-left: 8px; }
 .conta { display: flex; gap: 8px; align-items: center; }
 
-.avisos { padding: 0 16px; }
-.aviso {
-  margin: 12px 0 0;
-  padding: 8px 12px;
-  background: var(--aviso);
-  border: 1px solid var(--aviso-borda);
-  border-radius: 6px;
-}
-
 .grade {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
