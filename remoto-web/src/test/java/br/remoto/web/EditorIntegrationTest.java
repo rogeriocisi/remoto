@@ -27,6 +27,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -110,6 +111,33 @@ class EditorIntegrationTest {
                         .with(user("ana")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("gNaM-FR")));
+    }
+
+    @Test
+    void editarUmCenarioPublicoAbreOEditorNumaCopia() throws Exception {
+        // o Editar dos públicos é um formulário comum, que leva o token CSRF
+        mvc.perform(get("/ui/scenarios").with(user("bruno")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("action=\"/ui/scenarios/edit-copy\"")))
+                .andExpect(content().string(containsString("name=\"_csrf\"")));
+
+        MvcResult r = mvc.perform(post("/ui/scenarios/edit-copy").with(user("bruno")).with(csrf())
+                        .param("publicScenarioId", "remoto-17-default-soleus-contraction"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/editor/*"))
+                .andReturn();
+        String id = r.getResponse().getRedirectedUrl().substring("/editor/".length());
+
+        mvc.perform(get("/editor/" + id).with(user("bruno")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Default - Soleus contraction")));
+        assertThat(scenario("bruno", id).name()).isEqualTo("Default - Soleus contraction");
+
+        // cenário público inexistente volta para a página inicial, sem criar nada
+        mvc.perform(post("/ui/scenarios/edit-copy").with(user("bruno")).with(csrf())
+                        .param("publicScenarioId", "nao-existe"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
     }
 
     private String copyAs(String username) throws Exception {

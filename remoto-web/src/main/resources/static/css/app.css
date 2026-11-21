@@ -82,6 +82,10 @@ h3 { margin: 12px 0 4px; font-size: .95rem; color: var(--suave); }
   border-top: 1px solid var(--borda);
 }
 .lista small { display: block; color: var(--suave); }
+/* o texto ocupa o espaço que sobra e quebra dentro do próprio bloco; os botões ficam à direita,
+   e só descem de linha quando a tela é estreita demais, ainda alinhados à direita */
+.lista li > div:first-child { flex: 1 1 320px; min-width: 0; }
+.lista li > .acoes { flex: 0 0 auto; margin-left: auto; }
 .acoes { display: flex; gap: 6px; align-items: center; }
 .acoes form { margin: 0; }
 .inline { display: inline; margin: 0; }

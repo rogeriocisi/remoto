@@ -336,7 +336,8 @@ simulações simultâneas não disputem a CPU).
 
 Em "Meus cenários", o botão **Editar** abre o editor, montado a partir do editor do site antigo
 (`WebContent/jsp` + `br.remoto.control.action`, hoje só no repositório pai): o mesmo menu lateral, as mesmas telas, os mesmos
-rótulos e unidades. Cenários públicos são só leitura; use **Copiar** antes de editar.
+rótulos e unidades. Cenários públicos são de todos e só leitura: o **Editar** de um cenário
+público cria uma cópia em "Meus cenários" e abre o editor nela (o **Copiar** só cria a cópia).
 
 **Como funciona (pacote `br.remoto.legacy.editor`):**
 

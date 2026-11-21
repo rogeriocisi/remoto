@@ -13,6 +13,12 @@
         <small th:text="${s.description}">descrição</small>
       </div>
       <div class="acoes">
+        <!-- formulário comum (sem htmx): o servidor cria a cópia e redireciona para o editor dela -->
+        <form th:action="@{/ui/scenarios/edit-copy}" method="post">
+          <input type="hidden" name="publicScenarioId" th:value="${s.id}">
+          <button type="submit" class="secundario"
+                  title="Cria uma cópia em Meus cenários e abre o editor nela">Editar</button>
+        </form>
         <form hx-post="/ui/runs" hx-target="#execucoes">
           <input type="hidden" name="publicScenarioId" th:value="${s.id}">
           <button type="submit">Rodar</button>

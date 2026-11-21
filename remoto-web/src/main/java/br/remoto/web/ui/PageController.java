@@ -68,6 +68,17 @@ class PageController {
         return scenarios(caller, model);
     }
 
+    /**
+     * Editar um cenário público: cenários públicos são de todos e só leitura, então o editor abre
+     * numa cópia em "Meus cenários", criada aqui. O público continua intacto.
+     */
+    @PostMapping("/ui/scenarios/edit-copy")
+    String editCopy(Caller caller, @RequestParam String publicScenarioId) {
+        return catalog.find(publicScenarioId)
+                .map(s -> "redirect:/editor/" + scenarios.create(caller.id(), s).value().id())
+                .orElse("redirect:/");
+    }
+
     @PostMapping("/ui/scenarios/{id}/delete")
     String deleteScenario(Caller caller, @PathVariable String id, Model model) {
         scenarios.delete(caller.id(), id);
