@@ -21,7 +21,6 @@ import br.remoto.model.vo.JointVO;
 import br.remoto.model.vo.MotorUnitVO;
 import br.remoto.model.vo.Nucleus;
 import br.remoto.model.vo.NeuronVO;
-import br.remoto.util.Bias;
 import br.remoto.util.Point;
 
 

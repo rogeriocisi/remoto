@@ -1,5 +1,7 @@
 package br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.Models;
 
+import br.remoto.core.model.random.Rng;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -11,7 +13,7 @@ import br.remoto.model.ReMoto;
 import br.remoto.util.Conversion;
 import br.remoto.util.Sample;
 import br.remoto.util.Signal;
-import br.remoto.model.Conductance.AlphaFunction;
+import br.remoto.core.model.muscle.AlphaTwitch;
 import br.remoto.model.Musculotendon.MusculotendonSuperClass;
 import br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.ExtrafusalMuscleSuperClass;
 import br.remoto.model.Musculotendon.Tendon.NonInnerveted.NonInnervatedTendon;
@@ -20,7 +22,7 @@ import br.remoto.model.vo.MuscleVO;
 
 public class Hill extends ExtrafusalMuscleSuperClass
 {
-	protected AlphaFunction[] activationFunction;
+	protected AlphaTwitch[] activationFunction;
 	private double maximumMuscleForce;
 	private double mass;
 	private double forceParallelElement;
@@ -50,10 +52,10 @@ public class Hill extends ExtrafusalMuscleSuperClass
 	public Hill(Configuration conf, String cdMuscle, MotorUnit[] mu, String cdMuscleModel){
 		super(conf, cdMuscle, mu, cdMuscleModel);
 		
-		this.activationFunction = new AlphaFunction[motorunits.length];
+		this.activationFunction = new AlphaTwitch[motorunits.length];
 		
 		for(int i = 0; i < motorunits.length; i++){
-			activationFunction[i] = new AlphaFunction(null, null, null);
+			activationFunction[i] = new AlphaTwitch();
 		}
 		
 		MuscleVO vo = conf.getMuscle(cdMuscle, "hill");
@@ -134,9 +136,7 @@ public class Hill extends ExtrafusalMuscleSuperClass
         	return 0;
         
         if(!activationFunction[mu.getIndex() - 1].isStarted()){
-        	activationFunction[mu.getIndex() - 1].setGmax(mu.getGmax());
-        	activationFunction[mu.getIndex() - 1].setTpeak(mu.getTpeak());
-        	activationFunction[mu.getIndex() - 1].reset( mu.getMiscellaneous() );
+        	activationFunction[mu.getIndex() - 1].reset( mu.getMiscellaneous().getStep(), mu.getTpeak() );
         }
         
         if( mu.getNumberOfSpikesAtEndPlate() == 0 )
@@ -170,7 +170,7 @@ public class Hill extends ExtrafusalMuscleSuperClass
         mu.setIteration(iteration + 1);
         iteration = mu.getIteration();
        
-        double force = activationFunction[mu.getIndex() - 1].getValue(iteration);
+        double force = activationFunction[mu.getIndex() - 1].value(iteration);
         
         double output = 0;
         
@@ -355,7 +355,7 @@ public class Hill extends ExtrafusalMuscleSuperClass
 		acceleration = (associatedMusculotendon.getTendon().getForce() * Math.cos(pennationAngle) -
 						   force * Math.pow(Math.cos(pennationAngle),2)) / mass;
 		
-		/*Random  fRandom = br.remoto.util.Rng.newRandom();
+		/*Random  fRandom = Rng.newRandom();
 		
 		double stdAcc = 0.0025 * (fRandom.nextGaussian());
 		acceleration = 0.0 + stdAcc;*/
@@ -385,7 +385,7 @@ public class Hill extends ExtrafusalMuscleSuperClass
 		velocity =  velocity + (step * (k1_v));
 		
 		
-		Random  fRandom = br.remoto.util.Rng.newRandom();
+		Random  fRandom = Rng.newRandom();
 		
 		//double stdVec = 0.084* (fRandom.nextGaussian());
 		//velocity = 0.0000 + stdVec;

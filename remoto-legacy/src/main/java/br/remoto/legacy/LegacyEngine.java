@@ -1,5 +1,7 @@
 package br.remoto.legacy;
 
+import br.remoto.core.model.random.Rng;
+
 import br.remoto.core.engine.RunContext;
 import br.remoto.core.engine.SimulationCancelledException;
 import br.remoto.core.engine.SimulationEngine;
@@ -7,7 +9,6 @@ import br.remoto.core.scenario.Scenario;
 import br.remoto.model.Configuration;
 import br.remoto.model.ReMoto;
 import br.remoto.model.Simulation;
-import br.remoto.util.Rng;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;

@@ -10,7 +10,6 @@ import br.remoto.model.ReMoto;
 import br.remoto.util.Conversion;
 import br.remoto.util.Sample;
 import br.remoto.util.Signal;
-import br.remoto.model.Conductance.AlphaFunction;
 import br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.ExtrafusalMuscleSuperClass;
 
 

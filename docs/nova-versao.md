@@ -391,8 +391,17 @@ sinal guardado (o Action original também não os salvava).
       Feito: canais iônicos de pulso (`br.remoto.core.model.channel`: `SodiumChannel` m³h e
       `GatedChannel` para K rápido n⁴, K lento q² e Ca persistente p) e sinapses
       (`br.remoto.core.model.synapse`: `SynapseGroup`, a agregação de Lytton, `Synapse` e
-      `SynapticDynamics`). Faltam motoneurônios e interneurônios, tratos e ruído, sinais
-      modulantes, unidades motoras, músculo SOCDS, EMG e o tornozelo isométrico.
+      `SynapticDynamics`); aleatoriedade (`br.remoto.core.model.random`: `Rng`, `Draws` com os
+      sorteios gaussiano de 12 uniformes, gama e uniforme, e `Gradient`, a interpolação de um
+      parâmetro ao longo do pool); o abalo da unidade motora (`muscle.AlphaTwitch`, a função alfa
+      como IIR de 2ª ordem, usada pelo SOCDS e pelo Hill); e o passa-faixa do EMG
+      (`emg.BandPassFilter`). O filtro original zerava as duas primeiras amostras do EMG bruto que
+      recebia; isso agora está explícito em `LegacyOutputs`. O `ButterworthBilinear`, construído
+      nos modelos de articulação e nunca usado, saiu deles. Faltam motoneurônios e
+      interneurônios, tratos e ruído, unidades motoras, músculo SOCDS, EMG (soma dos MUAPs) e o
+      tornozelo isométrico. Os sinais modulantes vão junto com os tratos e a corrente injetada:
+      o `ModulatingSignal` também é o objeto que o editor preenche, e a forma `custom` altera a
+      própria amplitude.
    3. Aferentes e proprioceptores: fibras Ia, Ib e II, fuso (Mileusnic, Prochazka), OTG (Crago).
    4. O resto: músculos Raikova, Hill e *DistributionMoments*, pêndulo e tarefa de posição,
       estimulação do nervo e corrente injetada.

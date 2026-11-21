@@ -1,5 +1,8 @@
 package br.remoto.model.factory;
 
+import br.remoto.core.model.random.Draws;
+import br.remoto.core.model.random.Gradient;
+
 import java.util.List;
 
 import br.remoto.model.Configuration;
@@ -15,8 +18,6 @@ import br.remoto.model.Neuron.SpinalNeuron;
 import br.remoto.model.Neuron.Miscellaneous;
 import br.remoto.model.vo.ConductanceVO;
 import br.remoto.model.vo.NeuronVO;
-import br.remoto.util.Bias;
-import br.remoto.util.Distribution;
 import br.remoto.util.ElectroCalculation;
 
 public class NeuronFactory 
@@ -44,13 +45,13 @@ public class NeuronFactory
 			double recruitmentThreshold = 0;
 			
 			if(sf.getType().equals("Ia")){
-				recruitmentThreshold = Bias.gradual(conf.getInitialRecruitmentThresholdIa(), conf.getFinalRecruitmentThresholdIa(), bias);
+				recruitmentThreshold = Gradient.linear(conf.getInitialRecruitmentThresholdIa(), conf.getFinalRecruitmentThresholdIa(), bias);
 			}
 			else if(sf.getType().equals("II")){
-				recruitmentThreshold = Bias.gradual(conf.getInitialRecruitmentThresholdII(), conf.getFinalRecruitmentThresholdII(), bias);
+				recruitmentThreshold = Gradient.linear(conf.getInitialRecruitmentThresholdII(), conf.getFinalRecruitmentThresholdII(), bias);
 			}
 			else if(sf.getType().equals("Ib")){
-				recruitmentThreshold = Bias.gradual(conf.getInitialRecruitmentThresholdIb(), conf.getFinalRecruitmentThresholdIb(), bias);
+				recruitmentThreshold = Gradient.linear(conf.getInitialRecruitmentThresholdIb(), conf.getFinalRecruitmentThresholdIb(), bias);
 			}
 			
 			sf.setRecruitmentThreshold(recruitmentThreshold);
@@ -58,18 +59,18 @@ public class NeuronFactory
 			
 			if( distribution.equals( ReMoto.uniform ) )
 			{
-				sf.setAxonThreshold( Bias.uniform(reference.getAxonThreshold1(), reference.getAxonThreshold2() ) );
-				axonVelocity = Bias.uniform(reference.getAxonVelocity1(), reference.getAxonVelocity2() );
+				sf.setAxonThreshold( Draws.uniform(reference.getAxonThreshold1(), reference.getAxonThreshold2() ) );
+				axonVelocity = Draws.uniform(reference.getAxonVelocity1(), reference.getAxonVelocity2() );
 			}
 			else if( distribution.equals( ReMoto.gradualGaussian ) )
 			{
-				sf.setAxonThreshold( Bias.gradualGaussian(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias, conf.getMiscellaneous( ReMoto.axonThresholdSTD ) ) );
-				axonVelocity = Bias.gradualGaussian(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias, conf.getMiscellaneous( ReMoto.axonVelocitySTD ) );
+				sf.setAxonThreshold( Gradient.linearWithNoise(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias, conf.getMiscellaneous( ReMoto.axonThresholdSTD ) ) );
+				axonVelocity = Gradient.linearWithNoise(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias, conf.getMiscellaneous( ReMoto.axonVelocitySTD ) );
 			}
 			else
 			{
-				sf.setAxonThreshold( Bias.gradual(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias ) );
-				axonVelocity = Bias.gradual(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias );
+				sf.setAxonThreshold( Gradient.linear(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias ) );
+				axonVelocity = Gradient.linear(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias );
 			}
 			
 			sf.setAxonConductionVelocity(axonVelocity);
@@ -125,11 +126,11 @@ public class NeuronFactory
 				double cd = calc.calcCapacitance(cm, areaDend);
 				double cs = calc.calcCapacitance(cm, areaSoma);
 	
-				//double rheobase = Distribution.gaussianPoint(pattern.getRheobase1(), pattern.getRheobase1() * conf.getMiscellaneous( ReMoto.reobaseSTD ));
+				//double rheobase = Draws.gaussian(pattern.getRheobase1(), pattern.getRheobase1() * conf.getMiscellaneous( ReMoto.reobaseSTD ));
 				//double threshold = rheobase * rn;
 				
-				double threshold = Distribution.gaussianPoint(pattern.getThreshold1(), pattern.getThreshold1() * conf.getMiscellaneous( ReMoto.thresholdSTD ));
-				double thresholdCa = Distribution.gaussianPoint(pattern.getThresholdCa1(), pattern.getThresholdCa1() * conf.getMiscellaneous( ReMoto.thresholdCaSTD ) );
+				double threshold = Draws.gaussian(pattern.getThreshold1(), pattern.getThreshold1() * conf.getMiscellaneous( ReMoto.thresholdSTD ));
+				double thresholdCa = Draws.gaussian(pattern.getThresholdCa1(), pattern.getThresholdCa1() * conf.getMiscellaneous( ReMoto.thresholdCaSTD ) );
 
 				// Set capacitances - converted to nF
 				neu.setCapacitanceDend( cd );
@@ -158,10 +159,10 @@ public class NeuronFactory
 				
 				/*
 				else if(conf.getRecruitmentOrderFES().equals("gaussian")){
-					((Motoneuron)neu).setAxonThreshold( Distribution.gaussianPoint(15, 3) );
+					((Motoneuron)neu).setAxonThreshold( Draws.gaussian(15, 3) );
 				}
 				else if(conf.getRecruitmentOrderFES().equals("uniform")){
-					((Motoneuron)neu).setAxonThreshold( Bias.uniform(12, 18) );
+					((Motoneuron)neu).setAxonThreshold( Draws.uniform(12, 18) );
 				}
 				*/
 				
@@ -197,9 +198,9 @@ public class NeuronFactory
 				// Set capacitances - convert to nF
 				neu.setCapacitanceSoma( calc.calcCapacitance(cm, area) );
 			
-				//double rheobase = Bias.gradual(reference.getRheobase1(), reference.getRheobase2(), bias );
+				//double rheobase = Gradient.linear(reference.getRheobase1(), reference.getRheobase2(), bias );
 	
-				double threshold = Bias.gradual(reference.getThreshold1(), reference.getThreshold2(), bias );
+				double threshold = Gradient.linear(reference.getThreshold1(), reference.getThreshold2(), bias );
 				
 				// Set threshold according to rheobase and gLeakSoma
 				//neu.setThreshold( rheobase / neu.getGLeakSoma() );

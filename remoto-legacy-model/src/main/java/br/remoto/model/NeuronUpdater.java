@@ -1,5 +1,7 @@
 package br.remoto.model;
 
+import br.remoto.core.model.random.Rng;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
@@ -12,7 +14,6 @@ import br.remoto.model.Neuron.Interneuron;
 import br.remoto.model.Neuron.Motoneuron;
 import br.remoto.model.Neuron.Neuron;
 import br.remoto.model.Neuron.SpinalNeuron;
-import br.remoto.util.Rng;
 
 /**
  * Updates the neurons of one integration step with several threads, with exactly the results of

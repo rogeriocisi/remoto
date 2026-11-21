@@ -8,7 +8,7 @@ import br.remoto.model.Simulation;
 import br.remoto.model.Joint.Joint;
 import br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.ExtrafusalMuscleSuperClass;
 import br.remoto.model.Neuron.Neuron;
-import br.remoto.util.ButterworthImpulseInvariance;
+import br.remoto.core.model.emg.BandPassFilter;
 import br.remoto.util.Signal;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ final class LegacyOutputs {
     /**
      * Mesmo cálculo do ramo "EMG" de {@code ResultDisplay} (site antigo), com os padrões da tela de
      * resultados: atenuação ligada, ruído = média de |EMG| × noiseEMG, filtro "1st2nd"
-     * ({@code ButterworthImpulseInvariance}) de 50 a 1000 Hz. A única diferença é o ruído, que vem de
+     * ({@link BandPassFilter}, o {@code ButterworthImpulseInvariance} original) de 50 a 1000 Hz. A única diferença é o ruído, que vem de
      * um gerador com a seed do cenário em vez de {@code Math.random()}.
      */
     private static void emg(ResultSink sink, String nucleus, ExtrafusalMuscleSuperClass muscle,
@@ -90,12 +90,15 @@ final class LegacyOutputs {
         }
         meanNoise = meanNoise / totSteps * conf.getMiscellaneous(ReMoto.noiseEMG);
 
-        ButterworthImpulseInvariance filter =
-                new ButterworthImpulseInvariance(raw, EMG_FC_LOW_HZ, EMG_FC_HIGH_HZ, step * 1e-3);
+        // O filtro original zerava as duas primeiras amostras do próprio vetor de entrada, que é o
+        // EMG bruto gravado logo abaixo; mantido para o resultado não mudar.
+        raw[0] = 0;
+        raw[1] = 0;
+        BandPassFilter filter = new BandPassFilter(EMG_FC_LOW_HZ, EMG_FC_HIGH_HZ, step * 1e-3);
         RandomGenerator noise = Seeds.stream(seed, "emg-ruido/" + nucleus);
         double[] emg = new double[totSteps];
         for (int i = 0; i < totSteps; i++) {
-            emg[i] = filter.bandPass(raw[i] + meanNoise * noise.nextDouble());
+            emg[i] = filter.next(raw[i] + meanNoise * noise.nextDouble());
         }
         sink.series("emg-" + nucleus, "mV", t, emg);
         sink.series("emg-bruto-" + nucleus, "mV", t, raw);

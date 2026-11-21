@@ -11,7 +11,7 @@ import br.remoto.model.ReMoto;
 import br.remoto.util.Conversion;
 import br.remoto.util.Sample;
 import br.remoto.util.Signal;
-import br.remoto.model.Conductance.AlphaFunction;
+import br.remoto.core.model.muscle.AlphaTwitch;
 import br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.ExtrafusalMuscleSuperClass;
 
 
@@ -19,7 +19,7 @@ import br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.ExtrafusalMuscleSup
 
 public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClass
 {
-	protected AlphaFunction[] twitchFunction;
+	protected AlphaTwitch[] twitchFunction;
 	
 	private double maximumMuscleForce = 0;
 	
@@ -28,10 +28,10 @@ public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClas
 	public SecondOrderCriticallyDampedSystem(Configuration conf, String CdMuscle, MotorUnit[] mu, String cdMuscleModel) {
 		super(conf, CdMuscle, mu, cdMuscleModel);
 		
-		this.twitchFunction = new AlphaFunction[motorunits.length];
+		this.twitchFunction = new AlphaTwitch[motorunits.length];
 		
 		for(int i = 0; i < motorunits.length; i++){
-			twitchFunction[i] = new AlphaFunction(null, null, null);
+			twitchFunction[i] = new AlphaTwitch();
 			maximumMuscleForce += motorunits[i].getGpeak() * motorunits[i].getTwTet();
 		}
 		
@@ -79,9 +79,7 @@ public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClas
         	return 0;
         
         if(!twitchFunction[mu.getIndex() - 1].isStarted()){
-        	twitchFunction[mu.getIndex() - 1].setGmax(mu.getGmax());
-        	twitchFunction[mu.getIndex() - 1].setTpeak(mu.getTpeak());
-        	twitchFunction[mu.getIndex() - 1].reset( mu.getMiscellaneous() );
+        	twitchFunction[mu.getIndex() - 1].reset( mu.getMiscellaneous().getStep(), mu.getTpeak() );
         }
         
         if( mu.getNumberOfSpikesAtEndPlate() == 0 ){
@@ -120,7 +118,7 @@ public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClas
         mu.setIteration(iteration + 1);
         iteration = mu.getIteration();
         
-        force = twitchFunction[mu.getIndex() - 1].getValue(iteration);
+        force = twitchFunction[mu.getIndex() - 1].value(iteration);
         
         double output = 0;
         

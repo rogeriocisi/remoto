@@ -1,11 +1,12 @@
 package br.remoto.legacy;
 
+import br.remoto.core.model.random.Rng;
+
 import br.remoto.core.scenario.Scenario;
 import br.remoto.model.Configuration;
 import br.remoto.model.ReMoto;
 import br.remoto.model.Simulation;
 import br.remoto.storage.JsonCodec;
-import br.remoto.util.Rng;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

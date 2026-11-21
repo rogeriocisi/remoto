@@ -1,5 +1,7 @@
 package br.remoto.spindle_simulator;
 
+import br.remoto.core.model.random.Rng;
+
 import br.remoto.servlet.SpindleResults;
 import br.remoto.servlet.SpindleSimulation;
 import br.remoto.util.ButterworthBilinear;
@@ -21,7 +23,7 @@ public abstract class Input {
 	protected double LPcutoff;
 	
 	protected LowPassFilter butter = new LowPassFilter();
-	protected Random gaussianNoise = br.remoto.util.Rng.newRandom();
+	protected Random gaussianNoise = Rng.newRandom();
 	
 	double stretch_velocity 	= 0;
 	double stretch_acceleration = 0;

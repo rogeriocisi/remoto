@@ -1,9 +1,11 @@
 package br.remoto.model;
 
+import br.remoto.core.model.random.Rng;
+import br.remoto.core.model.random.Draws;
+
 import java.io.Serializable;
 import java.util.Random;
 
-import br.remoto.util.Distribution;
 
 
 public class ModulatingSignal implements Serializable 
@@ -160,7 +162,7 @@ public class ModulatingSignal implements Serializable
 	
 	private double randomModulation( double time )
 	{
-		double ret = amp * br.remoto.util.Rng.random();
+		double ret = amp * Rng.random();
 
 		return ret;
 	}
@@ -204,7 +206,7 @@ public class ModulatingSignal implements Serializable
 	
 	private double stochasticGammaModulation( double time ){
 		
-		return Distribution.gammaPoint(amp, width);
+		return Draws.gamma(amp, width);
 		
 	}
 	

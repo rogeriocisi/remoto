@@ -1,5 +1,7 @@
 package br.remoto.model.Joint.Ankle.Models;
 
+import br.remoto.core.model.random.Rng;
+
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -10,10 +12,7 @@ import br.remoto.model.Joint.Ankle.AnkleSuperClass;
 //import br.remoto.model.Musculotendon.Muscle.Muscle;
 import br.remoto.model.Musculotendon.MusculotendonSuperClass;
 import br.remoto.model.Neuron.Miscellaneous;
-import br.remoto.util.ButterworthBilinear;
-import br.remoto.util.ButterworthImpulseInvariance;
 import br.remoto.util.Conversion;
-import br.remoto.util.Distribution;
 import br.remoto.util.Sample;
 import br.remoto.util.Signal;
 
@@ -25,7 +24,6 @@ public class InvertedPendulumModel extends AnkleSuperClass
 	
 	private double angleArray[];
 	int iteration;
-	private ButterworthBilinear butterBilinear;
 	
 	MusculotendonSuperClass[] musculotendons;
 	Configuration conf;
@@ -196,7 +194,7 @@ public class InvertedPendulumModel extends AnkleSuperClass
 	
 	private double calculateDisturbance (double t){
 		
-		Random fRandom = br.remoto.util.Rng.newRandom();
+		Random fRandom = Rng.newRandom();
 		double stdDev = 0.05;
 		double disturbanceTorque = stdDev * fRandom.nextGaussian();
 				

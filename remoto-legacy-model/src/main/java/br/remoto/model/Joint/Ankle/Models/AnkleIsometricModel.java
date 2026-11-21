@@ -1,5 +1,8 @@
 package br.remoto.model.Joint.Ankle.Models;
 
+import br.remoto.core.model.random.Rng;
+import br.remoto.core.model.random.Draws;
+
 
 import java.util.ArrayList;
 
@@ -9,9 +12,6 @@ import br.remoto.model.Joint.Ankle.AnkleSuperClass;
 //import br.remoto.model.Musculotendon.Muscle.Muscle;
 import br.remoto.model.Musculotendon.MusculotendonSuperClass;
 import br.remoto.model.Neuron.Miscellaneous;
-import br.remoto.util.ButterworthBilinear;
-import br.remoto.util.ButterworthImpulseInvariance;
-import br.remoto.util.Distribution;
 import br.remoto.util.Sample;
 import br.remoto.util.Signal;
 
@@ -22,7 +22,6 @@ public class AnkleIsometricModel extends AnkleSuperClass
 	
 	private double angleArray[];
 	int iteration;
-	private ButterworthBilinear butterBilinear;
 	
 	MusculotendonSuperClass[] musculotendons;
 	Configuration conf;
@@ -38,11 +37,10 @@ public class AnkleIsometricModel extends AnkleSuperClass
 		
 		iteration = 0;
 		
-		butterBilinear = new ButterworthBilinear();
 		
 		angleArray = new double[(int) (conf.getTFin() / conf.getStep())];
 
-		double aux = br.remoto.util.Rng.random();
+		double aux = Rng.random();
 		double T = 150;
 		double taux = 0;
 		//double amp = 0.015 * (180/Math.PI);
@@ -92,7 +90,7 @@ public class AnkleIsometricModel extends AnkleSuperClass
 			double noise;
 			
 			if(t > 1000 && t <= 20000)
-				noise = Distribution.gaussianPoint(0, 0.1);
+				noise = Draws.gaussian(0, 0.1);
 			else
 				noise = 0;
 			*/
@@ -110,7 +108,7 @@ public class AnkleIsometricModel extends AnkleSuperClass
 				}
 				else{
 					taux = t;
-					aux = br.remoto.util.Rng.random();
+					aux = Rng.random();
 				}
 			}
 			*/	

@@ -1,5 +1,8 @@
 package br.remoto.util;
 
+import br.remoto.core.model.random.Draws;
+import br.remoto.core.model.random.Gradient;
+
 import br.remoto.model.Configuration;
 import br.remoto.model.ReMoto;
 import br.remoto.model.vo.ConductanceVO;
@@ -64,35 +67,35 @@ public class ElectroCalculation
 	{
 		NeuronVO pattern = new NeuronVO();
     	
-		//pattern.setRheobase1( Bias.gradual(reference.getRheobase1(), reference.getRheobase2(), bias ) );
-		pattern.setThreshold1( Bias.gradual(reference.getThreshold1(), reference.getThreshold2(), bias ) );
-		pattern.setThresholdCa1( Bias.gradual(reference.getThresholdCa1(), reference.getThresholdCa2(), bias ) );
-		pattern.setRmSoma1( Bias.gradual(reference.getRmSoma1(), reference.getRmSoma2(), bias ) );
-		pattern.setRmDend1( Bias.gradual(reference.getRmDend1(), reference.getRmDend2(), bias ) );
+		//pattern.setRheobase1( Gradient.linear(reference.getRheobase1(), reference.getRheobase2(), bias ) );
+		pattern.setThreshold1( Gradient.linear(reference.getThreshold1(), reference.getThreshold2(), bias ) );
+		pattern.setThresholdCa1( Gradient.linear(reference.getThresholdCa1(), reference.getThresholdCa2(), bias ) );
+		pattern.setRmSoma1( Gradient.linear(reference.getRmSoma1(), reference.getRmSoma2(), bias ) );
+		pattern.setRmDend1( Gradient.linear(reference.getRmDend1(), reference.getRmDend2(), bias ) );
 		pattern.setRi( reference.getRi() );
 		pattern.setCm( reference.getCm() );
 
-		pattern.setDsoma1( Bias.gradual(reference.getDsoma1(), reference.getDsoma2(), bias ) / 1e4 );
-		pattern.setDdend1( Bias.gradual(reference.getDdend1(), reference.getDdend2(), bias ) / 1e4 );
-		pattern.setLsoma1( Bias.gradual(reference.getLsoma1(), reference.getLsoma2(), bias ) / 1e4 );
-		pattern.setLdend1( Bias.gradual(reference.getLdend1(), reference.getLdend2(), bias ) / 1e4 );
+		pattern.setDsoma1( Gradient.linear(reference.getDsoma1(), reference.getDsoma2(), bias ) / 1e4 );
+		pattern.setDdend1( Gradient.linear(reference.getDdend1(), reference.getDdend2(), bias ) / 1e4 );
+		pattern.setLsoma1( Gradient.linear(reference.getLsoma1(), reference.getLsoma2(), bias ) / 1e4 );
+		pattern.setLdend1( Gradient.linear(reference.getLdend1(), reference.getLdend2(), bias ) / 1e4 );
 
 		String distribution = ReMoto.gradualGaussian;
 		
 		if( distribution.equals( ReMoto.uniform ) )
 		{
-			pattern.setAxonThreshold1( Bias.uniform(referenceS.getAxonThreshold1(), referenceFF.getAxonThreshold2() ) );
-			pattern.setAxonVelocity1( Bias.uniform(referenceS.getAxonVelocity1(), referenceFF.getAxonVelocity2() ) );
+			pattern.setAxonThreshold1( Draws.uniform(referenceS.getAxonThreshold1(), referenceFF.getAxonThreshold2() ) );
+			pattern.setAxonVelocity1( Draws.uniform(referenceS.getAxonVelocity1(), referenceFF.getAxonVelocity2() ) );
 		}
 		else if( distribution.equals( ReMoto.gradualGaussian ) )
 		{
-			pattern.setAxonThreshold1( Bias.gradualGaussian(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias, conf.getMiscellaneous( ReMoto.axonThresholdSTD ) ) );
-			pattern.setAxonVelocity1( Bias.gradualGaussian(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias, conf.getMiscellaneous( ReMoto.axonVelocitySTD ) ) );
+			pattern.setAxonThreshold1( Gradient.linearWithNoise(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias, conf.getMiscellaneous( ReMoto.axonThresholdSTD ) ) );
+			pattern.setAxonVelocity1( Gradient.linearWithNoise(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias, conf.getMiscellaneous( ReMoto.axonVelocitySTD ) ) );
 		}
 		else
 		{
-			pattern.setAxonThreshold1( Bias.gradual(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias ) );
-			pattern.setAxonVelocity1( Bias.gradual(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias ) );
+			pattern.setAxonThreshold1( Gradient.linear(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias ) );
+			pattern.setAxonVelocity1( Gradient.linear(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias ) );
 		}
 		
 		//System.out.println( pattern.getAxonThreshold1() );
@@ -335,30 +338,30 @@ public class ElectroCalculation
 		
 		if( ReMoto.uniform.equals( distribution ) )
 		{
-			pattern.setAxonThreshold1( Bias.uniform(referenceFF.getAxonThreshold2(), referenceS.getAxonThreshold1()) );
-			pattern.setAxonVelocity1( Bias.uniform(referenceFF.getAxonVelocity2(), referenceS.getAxonVelocity1() ) );
+			pattern.setAxonThreshold1( Draws.uniform(referenceFF.getAxonThreshold2(), referenceS.getAxonThreshold1()) );
+			pattern.setAxonVelocity1( Draws.uniform(referenceFF.getAxonVelocity2(), referenceS.getAxonVelocity1() ) );
 		}
 		else if( distribution.equals( ReMoto.gradualGaussian ) )
 		{
-			pattern.setAxonThreshold1( Bias.gradualGaussian(axonThreshold1, axonThreshold2, bias, conf.getMiscellaneous( ReMoto.axonThresholdSTD ) ) );
-			pattern.setAxonVelocity1( Bias.gradualGaussian(axonVelocity1, axonVelocity2, bias, conf.getMiscellaneous( ReMoto.axonVelocitySTD ) ) );
+			pattern.setAxonThreshold1( Gradient.linearWithNoise(axonThreshold1, axonThreshold2, bias, conf.getMiscellaneous( ReMoto.axonThresholdSTD ) ) );
+			pattern.setAxonVelocity1( Gradient.linearWithNoise(axonVelocity1, axonVelocity2, bias, conf.getMiscellaneous( ReMoto.axonVelocitySTD ) ) );
 		}
 		else
 		{
-			pattern.setAxonThreshold1( Bias.gradual(axonThreshold1, axonThreshold2, bias ) );
-			pattern.setAxonVelocity1( Bias.gradual(axonVelocity1, axonVelocity2, bias ) );
+			pattern.setAxonThreshold1( Gradient.linear(axonThreshold1, axonThreshold2, bias ) );
+			pattern.setAxonVelocity1( Gradient.linear(axonVelocity1, axonVelocity2, bias ) );
 		}
 
-		//pattern.setRheobase1( Bias.gradual(rheobase1, rheobase2, bias ) );
-		pattern.setThreshold1( Bias.gradual(threshold1, threshold2, bias ) );
-		pattern.setThresholdCa1( Bias.gradual(thresholdCa1, thresholdCa2, bias ) );
-		pattern.setRmSoma1( Bias.gradual(rmSoma1, rmSoma2, bias ) );
-		pattern.setRmDend1( Bias.gradual(rmDend1, rmDend2, bias ) );
+		//pattern.setRheobase1( Gradient.linear(rheobase1, rheobase2, bias ) );
+		pattern.setThreshold1( Gradient.linear(threshold1, threshold2, bias ) );
+		pattern.setThresholdCa1( Gradient.linear(thresholdCa1, thresholdCa2, bias ) );
+		pattern.setRmSoma1( Gradient.linear(rmSoma1, rmSoma2, bias ) );
+		pattern.setRmDend1( Gradient.linear(rmDend1, rmDend2, bias ) );
 
-		pattern.setDsoma1( Bias.gradual(dSoma1, dSoma2, bias ) / 1e4 );
-		pattern.setDdend1( Bias.gradual(dDend1, dDend2, bias ) / 1e4 );
-		pattern.setLsoma1( Bias.gradual(lSoma1, lSoma2, bias ) / 1e4 );
-		pattern.setLdend1( Bias.gradual(lDend1, lDend2, bias ) / 1e4 );
+		pattern.setDsoma1( Gradient.linear(dSoma1, dSoma2, bias ) / 1e4 );
+		pattern.setDdend1( Gradient.linear(dDend1, dDend2, bias ) / 1e4 );
+		pattern.setLsoma1( Gradient.linear(lSoma1, lSoma2, bias ) / 1e4 );
+		pattern.setLdend1( Gradient.linear(lDend1, lDend2, bias ) / 1e4 );
 
 		pattern.setRi( reference.getRi() );
 		pattern.setCm( reference.getCm() );
@@ -369,23 +372,23 @@ public class ElectroCalculation
 		pattern.setGKQVO( new ConductanceVO( reference.getGKQVO() ) );
 		pattern.setGCaPVO( new ConductanceVO( reference.getGCaPVO() ) );
 
-		pattern.getGNaMVO().setGmax( Bias.gradual(gNaMVO_Gmax1, gNaMVO_Gmax2, bias ) );
-		pattern.getGNaHVO().setGmax( Bias.gradual(gNaHVO_Gmax1, gNaHVO_Gmax2, bias ) );
-		pattern.getGKNVO().setGmax( Bias.gradual(gKNVO_Gmax1, gKNVO_Gmax2, bias ) );
-		pattern.getGKQVO().setGmax( Bias.gradual(gKQVO_Gmax1, gKQVO_Gmax2, bias ) );
-		pattern.getGCaPVO().setGmax( Bias.gradual(gCaPVO_Gmax1, gCaPVO_Gmax2, bias ) );
+		pattern.getGNaMVO().setGmax( Gradient.linear(gNaMVO_Gmax1, gNaMVO_Gmax2, bias ) );
+		pattern.getGNaHVO().setGmax( Gradient.linear(gNaHVO_Gmax1, gNaHVO_Gmax2, bias ) );
+		pattern.getGKNVO().setGmax( Gradient.linear(gKNVO_Gmax1, gKNVO_Gmax2, bias ) );
+		pattern.getGKQVO().setGmax( Gradient.linear(gKQVO_Gmax1, gKQVO_Gmax2, bias ) );
+		pattern.getGCaPVO().setGmax( Gradient.linear(gCaPVO_Gmax1, gCaPVO_Gmax2, bias ) );
 		
-		pattern.getGNaMVO().setAlpha( Bias.gradual(gNaMVO_Alpha1, gNaMVO_Alpha2, bias ) );
-		pattern.getGNaHVO().setAlpha( Bias.gradual(gNaHVO_Alpha1, gNaHVO_Alpha2, bias ) );
-		pattern.getGKNVO().setAlpha( Bias.gradual(gKNVO_Alpha1, gKNVO_Alpha2, bias ) );
-		pattern.getGKQVO().setAlpha( Bias.gradual(gKQVO_Alpha1, gKQVO_Alpha2, bias ) );
-		pattern.getGCaPVO().setAlpha( Bias.gradual(gCaPVO_Alpha1, gCaPVO_Alpha2, bias ) );
+		pattern.getGNaMVO().setAlpha( Gradient.linear(gNaMVO_Alpha1, gNaMVO_Alpha2, bias ) );
+		pattern.getGNaHVO().setAlpha( Gradient.linear(gNaHVO_Alpha1, gNaHVO_Alpha2, bias ) );
+		pattern.getGKNVO().setAlpha( Gradient.linear(gKNVO_Alpha1, gKNVO_Alpha2, bias ) );
+		pattern.getGKQVO().setAlpha( Gradient.linear(gKQVO_Alpha1, gKQVO_Alpha2, bias ) );
+		pattern.getGCaPVO().setAlpha( Gradient.linear(gCaPVO_Alpha1, gCaPVO_Alpha2, bias ) );
 		
-		pattern.getGNaMVO().setBeta( Bias.gradual(gNaMVO_Beta1, gNaMVO_Beta2, bias ) );
-		pattern.getGNaHVO().setBeta( Bias.gradual(gNaHVO_Beta1, gNaHVO_Beta2, bias ) );
-		pattern.getGKNVO().setBeta( Bias.gradual(gKNVO_Beta1, gKNVO_Beta2, bias ) );
-		pattern.getGKQVO().setBeta( Bias.gradual(gKQVO_Beta1, gKQVO_Beta2, bias ) );
-		pattern.getGCaPVO().setBeta( Bias.gradual(gCaPVO_Beta1, gCaPVO_Beta2, bias ) );
+		pattern.getGNaMVO().setBeta( Gradient.linear(gNaMVO_Beta1, gNaMVO_Beta2, bias ) );
+		pattern.getGNaHVO().setBeta( Gradient.linear(gNaHVO_Beta1, gNaHVO_Beta2, bias ) );
+		pattern.getGKNVO().setBeta( Gradient.linear(gKNVO_Beta1, gKNVO_Beta2, bias ) );
+		pattern.getGKQVO().setBeta( Gradient.linear(gKQVO_Beta1, gKQVO_Beta2, bias ) );
+		pattern.getGCaPVO().setBeta( Gradient.linear(gCaPVO_Beta1, gCaPVO_Beta2, bias ) );
 		
 		return pattern;
 	}

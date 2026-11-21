@@ -1,10 +1,11 @@
 
 package br.remoto.model;
 
+import br.remoto.core.model.random.Rng;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import br.remoto.model.Conductance.AlphaFunction;
 import br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.Models.Raikova;
 import br.remoto.model.Neuron.Motoneuron;
 import br.remoto.model.Neuron.Miscellaneous;
@@ -204,8 +205,8 @@ public class MotorUnit implements Serializable
 		// Pick a position inside the unitary circle
 		while( Math.pow(y, 2) + Math.pow(z, 2) >= 1 )
 		{
-			y = 2 * (0.5 - br.remoto.util.Rng.random());
-			z = 2 * (0.5 - br.remoto.util.Rng.random());
+			y = 2 * (0.5 - Rng.random());
+			z = 2 * (0.5 - Rng.random());
 			
 			cont++;
 			
@@ -221,17 +222,17 @@ public class MotorUnit implements Serializable
 		z *= (muscleThickness/2);
 
 		/* Do not work!
-		double y = 2 * (0.5 - br.remoto.util.Rng.random());
+		double y = 2 * (0.5 - Rng.random());
 		double maxZ = Math.sqrt( 1 - Math.pow(y, 2) );
-		double z = 2 * (0.5 - br.remoto.util.Rng.random()) * maxZ;
+		double z = 2 * (0.5 - Rng.random()) * maxZ;
 		
 		y = y * (muscleThickness/2) + (muscleThickness/2) + skinLayer;
 		z *= (muscleThickness/2);
 		*/
 		
 		/* Do not work, also!
-		double radius = (muscleThickness/2) * br.remoto.util.Rng.random();
-		double angle = 360 * br.remoto.util.Rng.random();
+		double radius = (muscleThickness/2) * Rng.random();
+		double angle = 360 * Rng.random();
 		
 		double y = radius * Math.sin( angle );
 		double z = radius * Math.cos( angle );

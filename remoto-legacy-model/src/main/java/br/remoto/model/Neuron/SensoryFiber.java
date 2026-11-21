@@ -6,6 +6,8 @@
  */
 package br.remoto.model.Neuron;
 
+import br.remoto.core.model.random.Draws;
+
 import java.util.ArrayList;
 
 import br.remoto.model.Nerve;
@@ -14,7 +16,6 @@ import br.remoto.model.Proprioceptors.GolgiTendonOrgan;
 import br.remoto.model.Proprioceptors.MuscleSpindle;
 import br.remoto.model.Proprioceptors.Vestibular;
 import br.remoto.model.vo.NeuronVO;
-import br.remoto.util.Distribution;
 
 
 public class SensoryFiber extends Neuron
@@ -74,9 +75,9 @@ public class SensoryFiber extends Neuron
 	{
 		super.reset();
 		
-		thresIa = Distribution.gammaPoint(1/gammaOrderIa, gammaOrderIa);
-		thresIb = Distribution.gammaPoint(1/gammaOrderIb, gammaOrderIb);
-		thresII = Distribution.gammaPoint(1/gammaOrderII, gammaOrderII);
+		thresIa = Draws.gamma(1/gammaOrderIa, gammaOrderIa);
+		thresIb = Draws.gamma(1/gammaOrderIb, gammaOrderIb);
+		thresII = Draws.gamma(1/gammaOrderII, gammaOrderII);
 
 		if( axonSpikeTrain != null )
 			axonSpikeTrain.clear();
@@ -132,7 +133,7 @@ public class SensoryFiber extends Neuron
 				double minimalFiring = 5;
 				
 				if(IbFiringRate > this.recruitmentThreshold){
-					double lambdaIb = (IbFiringRate - recruitmentThreshold) + Distribution.gaussianPoint(minimalFiring, 0.1*minimalFiring);
+					double lambdaIb = (IbFiringRate - recruitmentThreshold) + Draws.gaussian(minimalFiring, 0.1*minimalFiring);
 					
 					y_intIb = y_intIb + (lambdaIb * (miscellaneous.getStep() / 1000));
 					
@@ -140,7 +141,7 @@ public class SensoryFiber extends Neuron
 					if(y_intIb >= thresIb){
 						tAxonSpike = t + latencyStimulusEndPlate;
 						y_intIb = 0;
-						thresIb = Distribution.gammaPoint(1/gammaOrderIb, gammaOrderIb);
+						thresIb = Draws.gamma(1/gammaOrderIb, gammaOrderIb);
 						axonSpikeTrain.add(new Double(tAxonSpike));
 						}
 					}		
@@ -158,7 +159,7 @@ public class SensoryFiber extends Neuron
 				if(y_intIa >= thresIa){
 					tAxonSpike = t;
 					y_intIa = 0;
-					thresIa = Distribution.gammaPoint(1/gammaOrderIa, gammaOrderIa);
+					thresIa = Draws.gamma(1/gammaOrderIa, gammaOrderIa);
 					axonSpikeTrain.add(new Double(tAxonSpike));
 					}
 				*/
@@ -171,7 +172,7 @@ public class SensoryFiber extends Neuron
 				double minimalFiring = 5;
 				
 				if(IaFiringRate > this.recruitmentThreshold){
-					double lambdaIa = (IaFiringRate - recruitmentThreshold) + Distribution.gaussianPoint(minimalFiring, 0.1*minimalFiring);
+					double lambdaIa = (IaFiringRate - recruitmentThreshold) + Draws.gaussian(minimalFiring, 0.1*minimalFiring);
 					
 					y_intIa = y_intIa + (lambdaIa * (miscellaneous.getStep() / 1000));
 					
@@ -179,7 +180,7 @@ public class SensoryFiber extends Neuron
 					if(y_intIa >= thresIa){
 						tAxonSpike = t + latencyStimulusEndPlate;
 						y_intIa = 0;
-						thresIa = Distribution.gammaPoint(1/gammaOrderIa, gammaOrderIa);
+						thresIa = Draws.gamma(1/gammaOrderIa, gammaOrderIa);
 						axonSpikeTrain.add(new Double(tAxonSpike));
 						}
 					}
@@ -198,7 +199,7 @@ public class SensoryFiber extends Neuron
 				if(y_intII >= thresII){
 					tAxonSpike = t;
 					y_intII = 0;
-					thresII = Distribution.gammaPoint(1/gammaOrderIa, gammaOrderIa);
+					thresII = Draws.gamma(1/gammaOrderIa, gammaOrderIa);
 					axonSpikeTrain.add(new Double(tAxonSpike));
 					}
 				*/
@@ -209,7 +210,7 @@ public class SensoryFiber extends Neuron
 				double minimalFiring = 5;
 				
 				if(IIFiringRate > this.recruitmentThreshold){
-					double lambdaII = (IIFiringRate - recruitmentThreshold) + Distribution.gaussianPoint(minimalFiring, 0.1*minimalFiring);
+					double lambdaII = (IIFiringRate - recruitmentThreshold) + Draws.gaussian(minimalFiring, 0.1*minimalFiring);
 					
 					y_intII = y_intII + (lambdaII * (miscellaneous.getStep() / 1000));
 					
@@ -217,7 +218,7 @@ public class SensoryFiber extends Neuron
 					if(y_intII >= thresII){
 						tAxonSpike = t + latencyStimulusEndPlate;
 						y_intII = 0;
-						thresII = Distribution.gammaPoint(1/gammaOrderIa, gammaOrderIa);
+						thresII = Draws.gamma(1/gammaOrderIa, gammaOrderIa);
 						axonSpikeTrain.add(new Double(tAxonSpike));
 						}
 					}

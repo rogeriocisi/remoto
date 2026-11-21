@@ -1,5 +1,7 @@
 package br.remoto.model.factory;
 
+import br.remoto.core.model.random.Gradient;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -29,7 +31,6 @@ import br.remoto.model.vo.MotorUnitVO;
 import br.remoto.model.vo.MuscleVO;
 import br.remoto.model.vo.Nucleus;
 import br.remoto.model.vo.NeuronVO;
-import br.remoto.util.Bias;
 import br.remoto.util.Point;
 
 
@@ -339,25 +340,25 @@ public class JointFactory
 					twTetRaikova2 = muFF.gettwTetRaikova2();
 				}
 
-				//motorunits[n].getTwitchFunction().setGpeak( Bias.gradual(gPeak1, gPeak2, bias ) );
-				//motorunits[n].getTwitchFunction().setGmax( Bias.gradual(gMax1, gMax2, bias ) );
-				//motorunits[n].getTwitchFunction().setTpeak( Bias.gradual(tPeak1, tPeak2, bias ) );
-				motorunits[n].setGpeak( Bias.gradual(gPeak1, gPeak2, bias ) );
-				motorunits[n].setGmax( Bias.gradual(gMax1, gMax2, bias ) );
-				motorunits[n].setTpeak( Bias.gradual(tPeak1, tPeak2, bias ) );
+				//motorunits[n].getTwitchFunction().setGpeak( Gradient.linear(gPeak1, gPeak2, bias ) );
+				//motorunits[n].getTwitchFunction().setGmax( Gradient.linear(gMax1, gMax2, bias ) );
+				//motorunits[n].getTwitchFunction().setTpeak( Gradient.linear(tPeak1, tPeak2, bias ) );
+				motorunits[n].setGpeak( Gradient.linear(gPeak1, gPeak2, bias ) );
+				motorunits[n].setGmax( Gradient.linear(gMax1, gMax2, bias ) );
+				motorunits[n].setTpeak( Gradient.linear(tPeak1, tPeak2, bias ) );
 				
-				motorunits[n].setGpeakRaikova( Bias.gradual(gPeak1Raikova, gPeak2Raikova, bias ) );
-				motorunits[n].setTpeakRaikova( Bias.gradual(tPeak1Raikova, tPeak2Raikova, bias ) );
-				motorunits[n].setTHalfRaikova( Bias.gradual(tHalf1Raikova, tHalf2Raikova, bias ) );
+				motorunits[n].setGpeakRaikova( Gradient.linear(gPeak1Raikova, gPeak2Raikova, bias ) );
+				motorunits[n].setTpeakRaikova( Gradient.linear(tPeak1Raikova, tPeak2Raikova, bias ) );
+				motorunits[n].setTHalfRaikova( Gradient.linear(tHalf1Raikova, tHalf2Raikova, bias ) );
 				
-				motorunits[n].setB(Bias.gradual(b1, b2, bias));
-				motorunits[n].setTwTet(Bias.gradual(twTet1, twTet2, bias));
+				motorunits[n].setB(Gradient.linear(b1, b2, bias));
+				motorunits[n].setTwTet(Gradient.linear(twTet1, twTet2, bias));
 				
-				motorunits[n].setBRaikova(Bias.gradual(bRaikova1, bRaikova2, bias));
-				motorunits[n].setTwTetRaikova(Bias.gradual(twTetRaikova1, twTetRaikova2, bias));
+				motorunits[n].setBRaikova(Gradient.linear(bRaikova1, bRaikova2, bias));
+				motorunits[n].setTwTetRaikova(Gradient.linear(twTetRaikova1, twTetRaikova2, bias));
 								
-				motorunits[n].setAmpEMG( Bias.gradual(ampEMG1, ampEMG2, bias ) );
-				motorunits[n].setLambdaEMG( Bias.gradual(lambdaEMG1, lambdaEMG2, bias ) );
+				motorunits[n].setAmpEMG( Gradient.linear(ampEMG1, ampEMG2, bias ) );
+				motorunits[n].setLambdaEMG( Gradient.linear(lambdaEMG1, lambdaEMG2, bias ) );
 			}
 			else
 			{
@@ -368,27 +369,27 @@ public class JointFactory
 				else
 					muType = muFF;
 				
-				//motorunits[n].getTwitchFunction().setGpeak( Bias.gradual(muType.getTwitchTension1(), muType.getTwitchTension2(), bias ) );
-				//motorunits[n].getTwitchFunction().setGmax( Bias.gradual(muType.getMaxTension1(), muType.getMaxTension2(), bias ) );
-				//motorunits[n].getTwitchFunction().setTpeak( Bias.gradual(muType.getContractionTime1(), muType.getContractionTime2(), bias ) );
-				motorunits[n].setGpeak( Bias.gradual(muType.getTwitchTension1(), muType.getTwitchTension2(), bias ) );
-				motorunits[n].setGmax( Bias.gradual(muType.getMaxTension1(), muType.getMaxTension2(), bias ) );
-				motorunits[n].setTpeak( Bias.gradual(muType.getContractionTime1(), muType.getContractionTime2(), bias ) );
+				//motorunits[n].getTwitchFunction().setGpeak( Gradient.linear(muType.getTwitchTension1(), muType.getTwitchTension2(), bias ) );
+				//motorunits[n].getTwitchFunction().setGmax( Gradient.linear(muType.getMaxTension1(), muType.getMaxTension2(), bias ) );
+				//motorunits[n].getTwitchFunction().setTpeak( Gradient.linear(muType.getContractionTime1(), muType.getContractionTime2(), bias ) );
+				motorunits[n].setGpeak( Gradient.linear(muType.getTwitchTension1(), muType.getTwitchTension2(), bias ) );
+				motorunits[n].setGmax( Gradient.linear(muType.getMaxTension1(), muType.getMaxTension2(), bias ) );
+				motorunits[n].setTpeak( Gradient.linear(muType.getContractionTime1(), muType.getContractionTime2(), bias ) );
 				
 				
-				motorunits[n].setGpeakRaikova( Bias.gradual(muType.getTwitchTension1Raikova(), muType.getTwitchTension2Raikova(), bias ) );
-				motorunits[n].setTpeakRaikova( Bias.gradual(muType.getContractionTime1Raikova(), muType.getContractionTime2Raikova(), bias ) );
-				motorunits[n].setTHalfRaikova( Bias.gradual(muType.getHalfRelaxationTimeRaikova1(), muType.getHalfRelaxationTimeRaikova2(), bias ) );
+				motorunits[n].setGpeakRaikova( Gradient.linear(muType.getTwitchTension1Raikova(), muType.getTwitchTension2Raikova(), bias ) );
+				motorunits[n].setTpeakRaikova( Gradient.linear(muType.getContractionTime1Raikova(), muType.getContractionTime2Raikova(), bias ) );
+				motorunits[n].setTHalfRaikova( Gradient.linear(muType.getHalfRelaxationTimeRaikova1(), muType.getHalfRelaxationTimeRaikova2(), bias ) );
 				
-				motorunits[n].setB(Bias.gradual(muType.getb1(), muType.getb2(), bias));
-				motorunits[n].setTwTet(Bias.gradual(muType.gettwTet1(), muType.gettwTet2(), bias));
+				motorunits[n].setB(Gradient.linear(muType.getb1(), muType.getb2(), bias));
+				motorunits[n].setTwTet(Gradient.linear(muType.gettwTet1(), muType.gettwTet2(), bias));
 				
-				motorunits[n].setBRaikova(Bias.gradual(muType.getbRaikova1(), muType.getbRaikova2(), bias));
-				motorunits[n].setTwTetRaikova(Bias.gradual(muType.gettwTetRaikova1(), muType.gettwTetRaikova2(), bias));
+				motorunits[n].setBRaikova(Gradient.linear(muType.getbRaikova1(), muType.getbRaikova2(), bias));
+				motorunits[n].setTwTetRaikova(Gradient.linear(muType.gettwTetRaikova1(), muType.gettwTetRaikova2(), bias));
 				
 				
-				motorunits[n].setAmpEMG( Bias.gradual(muType.getAmpEMG1(), muType.getAmpEMG2(), bias ) );
-				motorunits[n].setLambdaEMG( Bias.gradual(muType.getLambdaEMG1(), muType.getLambdaEMG2(), bias ) );
+				motorunits[n].setAmpEMG( Gradient.linear(muType.getAmpEMG1(), muType.getAmpEMG2(), bias ) );
+				motorunits[n].setLambdaEMG( Gradient.linear(muType.getLambdaEMG1(), muType.getLambdaEMG2(), bias ) );
 			}
 			
 			if( conf.getMuDistribution() == ReMoto.muDistributionPreset )

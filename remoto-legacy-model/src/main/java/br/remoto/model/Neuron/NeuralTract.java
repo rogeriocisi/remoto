@@ -6,10 +6,12 @@
  */
 package br.remoto.model.Neuron;
 
+import br.remoto.core.model.random.Rng;
+import br.remoto.core.model.random.Draws;
+
 import br.remoto.model.ModulatingSignal;
 import br.remoto.model.ReMoto;
 import br.remoto.model.vo.NeuronVO;
-import br.remoto.util.Distribution;
 
 
 /**
@@ -72,7 +74,7 @@ public class NeuralTract extends Neuron
 	{
 		super.reset();
 		
-		thres = Distribution.gammaPoint(1/std, std);
+		thres = Draws.gamma(1/std, std);
 		
 		tTerminalSpike = ReMoto.T_MAX;
 		lastSpike = false;
@@ -131,7 +133,7 @@ public class NeuralTract extends Neuron
 				if( mean > ReMoto.T_TOLERANCE || ( signal != null && t > signal.getTini() && t < signal.getTfin() + ReMoto.T_TOLERANCE ) )
 				{
 					double probability = lambda * miscellaneous.getStep() / 1000;
-					double aux = br.remoto.util.Rng.random();
+					double aux = Rng.random();
 					
 					if(aux <= probability){
 							propagateSpike(t);
@@ -153,7 +155,7 @@ public class NeuralTract extends Neuron
 						tTerminalSpike = t;
 						propagateSpike(t);
 						y_int = 0;
-						thres = Distribution.gammaPoint(1/std, std);
+						thres = Draws.gamma(1/std, std);
 						terminalSpikeTrain.add(new Double(tTerminalSpike));
 						
 						//System.out.println(std);
@@ -192,7 +194,7 @@ public class NeuralTract extends Neuron
 		}
 		
 		if( distribution.equals( ReMoto.gaussian ) )	
-			tTerminalSpike += Distribution.gaussianPoint(instantMean, std);
+			tTerminalSpike += Draws.gaussian(instantMean, std);
 
 		if( instantMean < miscellaneous.getStep() && signal != null && tTerminalSpike > signal.getTfin() )
 		{
