@@ -171,7 +171,8 @@ data/
 ### Vários usuários simulando ao mesmo tempo
 
 - Até `remoto.simulation.slots` simulações em paralelo (padrão: núcleos da CPU); cada uma ocupa
-  uma thread porque o trabalho é de CPU.
+  uma thread porque o trabalho é de CPU. Com menos slots que núcleos, cada simulação do motor
+  original usa `threads-per-run` threads (padrão: núcleos ÷ slots); o resultado não muda.
 - **Fila justa** (`FairQueue`): uma fila por usuário, despachada em rodízio. Uma varredura de 50
   execuções de um usuário não bloqueia a simulação única de outro.
 - Cotas por usuário: `max-active-per-user` (padrão 2) e `max-queued-per-user` (padrão 20 → `429`).
@@ -247,6 +248,8 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
   descendente (`"Poisson " + mean`), a cada disparo de sinapse com dinâmica, a cada passo da
   tarefa de posição e do simulador de fuso, e a cada neurônio e sinapse criados. Isso foi
   removido; as mensagens de erro e os avisos de criação de modelos ficaram.
+- **Desempenho:** sinapses e força muscular sem buscas por texto a cada passo, e atualização
+  paralela dos neurônios, com o mesmo resultado bit a bit (ver [Desempenho](#desempenho)).
 - **Configuração sem banco:** cada configuração do HSQLDB antigo vira um cenário JSON com as
   linhas de cada tabela (formato `remoto-legacy-db/1`, sem a tabela USER). Para montar a
   `Configuration`, o motor carrega essas linhas num HSQLDB **em memória**, privado e descartado
@@ -269,6 +272,8 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 | JSON × banco | A mesma configuração lida do HSQLDB original e do cenário JSON produz saídas idênticas |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
 | Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro) |
+| Sinapse × solução analítica | Uma sinapse acionada como no Runge-Kutta segue a solução fechada de Lytton (1996): sobe durante o pulso e decai depois (`SynapticConductanceTest`) |
+| 1 thread × 4 threads | Os três cenários públicos dão saídas idênticas com qualquer número de threads, e uma thread de trabalho não consegue sortear (`ParallelUpdateTest`) |
 
 Ao portar ou refatorar um modelo, o golden master mostra na hora se o resultado mudou.
 
@@ -284,9 +289,41 @@ Os três cenários públicos do site antigo (`guest`: 17, 24 e 42) já estão em
 
 ### Desempenho
 
-O motor original é pesado: na máquina de desenvolvimento, 40 ms simulados levam ~3 s na
-primeira execução (com aquecimento da JVM). Por isso os cenários longos (5 a 30 s simulados)
-levam minutos; o progresso aparece ao vivo e a CLI aceita `--duration-ms` para testes rápidos.
+O motor original é pesado: um segundo simulado dos cenários públicos leva de 17 a 30 s com 4
+threads. Os cenários longos (5 a 30 s simulados) levam minutos; o progresso aparece ao vivo e a
+CLI aceita `--duration-ms` para testes rápidos.
+
+O resultado é o mesmo, bit a bit, antes e depois do que segue.
+
+Perfilado com JFR, o tempo ia para as sinapses (`getValue`/`getCurrent`, 4 grupos × 4 estágios
+do Runge-Kutta por motoneurônio a cada passo), para buscas em `Hashtable` por chave de texto
+montada a cada disparo e para a força muscular. Ficou assim:
+- a chave de cada neurônio e a condutância que cada disparo liga são resolvidas uma vez, e
+  não a cada disparo; um marcador por condutância substitui a varredura da lista de pulsos
+  ativos; o valor da sinapse é reaproveitado quando o Runge-Kutta pede o mesmo instante duas
+  vezes sem nenhum evento (k2 e k3); as unidades motoras de cada músculo são resolvidas uma vez;
+- **atualização paralela dos neurônios** (`NeuronUpdater`): motoneurônios e interneurônios
+  vão para várias threads; tratos, aferentes e o que mais sorteia números ficam na thread da
+  simulação, na ordem original, de modo que a sequência aleatória não muda; os disparos de
+  cada passo são entregues no fim do passo, na ordem do laço sequencial. Isso equivale ao laço
+  original porque todo atraso sináptico é maior que o passo (verificado na montagem; se não
+  for, o motor usa o laço sequencial). Uma thread de trabalho que tente sortear falha a
+  simulação (`Rng.forbid`) em vez de mudá-la em silêncio. `ParallelUpdateTest` exige saídas
+  idênticas com 1 e 4 threads, e o golden master não mudou.
+
+Tempo total (1 s simulado, máquina de 4 núcleos físicos; as saídas conferem byte a byte):
+
+| Cenário | Antes | 1 thread | 4 threads |
+|---|---|---|---|
+| 17, Soleus contraction | ~51 s | ~46 s | ~23 s |
+| 24, ISB 2013 stretch reflex | 71 s | 65 s | 30 s |
+| 42, Watanabe e Kohn (2015) | 32 s | 28 s | 17 s |
+
+Com 4 threads a thread da simulação vira o gargalo: nela ficam tratos e aferentes, a força
+muscular, o fuso e a entrega dos disparos. Oito threads não ganham de quatro numa CPU com 4
+núcleos físicos. Threads: `--threads` na CLI (padrão: núcleos da CPU) e
+`remoto.simulation.threads-per-run` no servidor (padrão: núcleos ÷ slots, para que as
+simulações simultâneas não disputem a CPU).
 
 ## Editor de cenários
 
@@ -338,6 +375,8 @@ sinal guardado (o Action original também não os salvava).
 
 1. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
    famílias de modelos), o que também elimina o HSQLDB em memória.
-2. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).
+2. ~~Desempenho do motor original.~~ Feito: ver "Desempenho" em [Motor original](#motor-original-legacy).
+   Próximo ganho: tirar da thread da simulação a força muscular, separando o que sorteia
+   (fuso, distúrbios) do que não sorteia.
 3. Varreduras de parâmetros, cliente Python, export NWB.
 4. ~~Licença do projeto.~~ Feito: MIT, em `LICENSE`.

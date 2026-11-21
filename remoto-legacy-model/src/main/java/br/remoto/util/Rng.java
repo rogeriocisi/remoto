@@ -20,8 +20,41 @@ public final class Rng
 		}
 	};
 
+	// For threads that must not draw: the parallel update of neurons relies on every draw
+	// happening on the simulation thread, in the order of the sequential loop
+	private static final Random FORBIDDEN = new Random(0)
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected int next(int bits)
+		{
+			throw new ForbiddenDraw();
+		}
+	};
+
+	/**
+	 * Thrown when a thread marked with forbid() draws a random number. An Error, so that the
+	 * catch (Exception) blocks of the model do not swallow it.
+	 */
+	public static final class ForbiddenDraw extends Error
+	{
+		private static final long serialVersionUID = 1L;
+
+		ForbiddenDraw()
+		{
+			super("random draw outside the simulation thread");
+		}
+	}
+
 	private Rng()
 	{
+	}
+
+	/** Makes any draw on the current thread fail (see ForbiddenDraw). */
+	public static void forbid()
+	{
+		CURRENT.set(FORBIDDEN);
 	}
 
 	/** Makes the current thread's sequence reproducible. */

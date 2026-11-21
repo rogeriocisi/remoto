@@ -66,7 +66,12 @@ public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClas
 	public double instantMotorUnitForce(String cdNeuron, double t)
 	{
 		// Pick mu in hashtable 
-		MotorUnit mu = pickMotorUnit(cdNeuron);
+		return instantMotorUnitForce(pickMotorUnit(cdNeuron), t);
+	}
+	
+	
+	protected double instantMotorUnitForce(MotorUnit mu, double t)
+	{
 		
 		double force;
 		
@@ -82,7 +87,7 @@ public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClas
         if( mu.getNumberOfSpikesAtEndPlate() == 0 ){
         	if(mu.isStoredSignals()){
         		
-        		samplerMotorUnitForceStore.sample(motorUnitForceStore, String.valueOf(mu.getIndex()), t, 0);
+        		samplerMotorUnitForceStore.sample(motorUnitForceStore, mu.getIndexString(), t, 0);
         		//motorUnitForceStore.add( new Signal( String.valueOf(mu.getIndex()), 0, t) );
         	}
             	
@@ -131,7 +136,7 @@ public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClas
         }
         	
         if(mu.isStoredSignals()){
-        	samplerMotorUnitForceStore.sample(motorUnitForceStore, String.valueOf(mu.getIndex()), t, output);
+        	samplerMotorUnitForceStore.sample(motorUnitForceStore, mu.getIndexString(), t, output);
         	//motorUnitForceStore.add( new Signal( String.valueOf(mu.getIndex()), output, t) );
         }
         	
@@ -145,7 +150,7 @@ public class SecondOrderCriticallyDampedSystem extends ExtrafusalMuscleSuperClas
 		
 		for(int n = 0; n < motorunits.length; n++)
 		{	
-			output += instantMotorUnitForce(motorunits[n].getCd(), t);
+			output += instantMotorUnitForce(pickMotorUnitAt(n), t);
 		}
 
 		return output;

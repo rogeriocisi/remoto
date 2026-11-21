@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.remoto.model.Conductance.MultSynapticConductance;
+import br.remoto.model.Conductance.SynapticConductance;
 import br.remoto.model.vo.NeuronVO;
 
 
@@ -27,6 +28,21 @@ public abstract class Neuron extends NeuronProperties
 	
 	protected double axonThreshold;
 	protected double axonConductionVelocity;
+	
+	// Key of this neuron in the synapses it makes (nucleus + code), built once instead of on
+	// every spike
+	private transient String synapseKey;
+	private transient String synapseKeyNucleus;
+	private transient String synapseKeyCd;
+	
+	// The conductance each transmitting synapse resolves this neuron to, looked up once after
+	// the network is built (same result as the per-spike Hashtable lookup it replaces)
+	private transient SynapticConductance resolvedConductances[];
+	
+	// Spikes held until the end of the integration step (parallel update, see Simulation)
+	private transient boolean deferSpikes;
+	private transient double pendingSpikes[];
+	private transient int pendingCount;
 	
 	public abstract void atualize(double t);
 	
@@ -61,12 +77,72 @@ public abstract class Neuron extends NeuronProperties
 		
 	protected void propagateSpike(double t)
 	{
-		// Start all post-synaptic conductances 
-
-		for(int k = 0; k < transmittingSynapses.size(); k++)
+		if( deferSpikes )
 		{
-			((MultSynapticConductance)transmittingSynapses.get(k)).receiveSpike(t, cdNucleus + cd);
+			if( pendingSpikes == null )
+				pendingSpikes = new double[4];
+			else if( pendingCount == pendingSpikes.length )
+				pendingSpikes = java.util.Arrays.copyOf(pendingSpikes, pendingCount * 2);
+			
+			pendingSpikes[pendingCount++] = t;
+			return;
 		}
+		
+		deliverSpike(t);
+	}
+	
+	
+	// Start all post-synaptic conductances
+	private void deliverSpike(double t)
+	{
+		int size = transmittingSynapses.size();
+		
+		if( resolvedConductances == null || resolvedConductances.length != size )
+		{
+			String key = getSynapseKey();
+			SynapticConductance resolved[] = new SynapticConductance[size];
+			
+			for(int k = 0; k < size; k++)
+				resolved[k] = ((MultSynapticConductance)transmittingSynapses.get(k)).getConductance(key);
+			
+			resolvedConductances = resolved;
+		}
+		
+		for(int k = 0; k < size; k++)
+		{
+			((MultSynapticConductance)transmittingSynapses.get(k)).receiveSpike(t, resolvedConductances[k]);
+		}
+	}
+	
+	
+	/** Holds the spikes of this neuron until {@link #flushSpikes()} (or delivers them at once). */
+	public void setDeferSpikes(boolean deferSpikes)
+	{
+		this.deferSpikes = deferSpikes;
+	}
+	
+	
+	/** Delivers the spikes held during the step, in the order they were fired. */
+	public void flushSpikes()
+	{
+		for(int i = 0; i < pendingCount; i++)
+			deliverSpike(pendingSpikes[i]);
+		
+		pendingCount = 0;
+	}
+	
+	
+	/** Key of this neuron in the synapses it makes: nucleus followed by code. */
+	public String getSynapseKey()
+	{
+		if( synapseKey == null || synapseKeyNucleus != cdNucleus || synapseKeyCd != cd )
+		{
+			synapseKeyNucleus = cdNucleus;
+			synapseKeyCd = cd;
+			synapseKey = cdNucleus + cd;
+		}
+		
+		return synapseKey;
 	}
 		
 	
@@ -93,6 +169,7 @@ public abstract class Neuron extends NeuronProperties
 
 	public void setTransmittingSynapses(List posSynapses) {
 		this.transmittingSynapses = posSynapses;
+		this.resolvedConductances = null;
 	}
 
 

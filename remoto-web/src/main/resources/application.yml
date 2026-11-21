@@ -19,6 +19,7 @@ remoto:
     slots: 0                 # simulações em paralelo; 0 = núcleos da CPU
     max-active-per-user: 2
     max-queued-per-user: 20
+    threads-per-run: 0       # threads do motor original por simulação; 0 = núcleos ÷ slots
   retention:
     run-days: 30             # execuções terminadas e não fixadas
     guest-hours: 24          # áreas de convidado abandonadas

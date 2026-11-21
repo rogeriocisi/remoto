@@ -208,6 +208,24 @@ public class Simulation implements Serializable, Runnable
 	}
 
 	
+	// Threads for the update of neurons; 1 keeps the original sequential loop (see NeuronUpdater)
+	private transient int threads = 1;
+	private transient int parallelNeurons;
+	
+	
+	public void setThreads(int threads)
+	{
+		this.threads = threads;
+	}
+	
+	
+	/** How many neurons the last run updated in parallel (0 when it ran sequentially). */
+	public int getParallelNeurons()
+	{
+		return parallelNeurons;
+	}
+	
+	
 	public void run()
 	{
 		ReMoto.simulations.put(cdSimulation, this);
@@ -256,6 +274,11 @@ public class Simulation implements Serializable, Runnable
 		
 		time = 0;
 		
+		NeuronUpdater updater = NeuronUpdater.create(neurons, threads, step);
+		parallelNeurons = updater == null ? 0 : updater.parallelNeurons();
+		
+		try
+		{
 		for(iteration = 0; iteration < totSteps; iteration++)
 		{
 			//System.out.println("total memory: " + Runtime.getRuntime().totalMemory());
@@ -271,14 +294,21 @@ public class Simulation implements Serializable, Runnable
 					nerves[n].atualize(time);
 			}
 
-			for(int x = 0; x < neurons.length; x++)
+			if( updater != null )
 			{
-				if( neurons[x] == null )
-					continue;
-				
-				for(int n = 0; n < neurons[x].length; n++)
+				updater.step(time);
+			}
+			else
+			{
+				for(int x = 0; x < neurons.length; x++)
 				{
-					neurons[x][n].atualize(time);
+					if( neurons[x] == null )
+						continue;
+					
+					for(int n = 0; n < neurons[x].length; n++)
+					{
+						neurons[x][n].atualize(time);
+					}
 				}
 			}
 			
@@ -301,6 +331,12 @@ public class Simulation implements Serializable, Runnable
 				percentageInt = (int) ( (double)iteration/(double)totSteps*100 );
 			}
 			
+		}
+		}
+		finally
+		{
+			if( updater != null )
+				updater.close();
 		}
 		
 		dateFinish = new Date();

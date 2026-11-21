@@ -76,7 +76,8 @@ class StorageConfig {
      * ("placeholder"), escolhidos pelo campo engine de cada cenário.
      */
     @Bean
-    Engines engines() {
-        return new Engines(java.util.List.of(new LegacyEngine(), new PlaceholderPoolEngine()));
+    Engines engines(RemotoProperties props) {
+        return new Engines(java.util.List.of(
+                new LegacyEngine(props.simulation().effectiveThreadsPerRun()), new PlaceholderPoolEngine()));
     }
 }

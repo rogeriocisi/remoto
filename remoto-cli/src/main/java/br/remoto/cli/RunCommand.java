@@ -38,6 +38,11 @@ final class RunCommand implements Callable<Integer> {
     @Option(names = "--duration-ms", description = "sobrescreve a duração simulada (ms)")
     Double durationMs;
 
+    @Option(names = "--threads",
+            description = "threads do motor original (padrão: núcleos da CPU; 1 = laço sequencial). "
+                    + "O resultado é o mesmo com qualquer valor.")
+    Integer threads;
+
     @Override
     public Integer call() throws Exception {
         JsonCodec json = new JsonCodec();
@@ -54,7 +59,7 @@ final class RunCommand implements Callable<Integer> {
             return 2;
         }
 
-        SimulationEngine engine = RemotoCli.engines().forScenario(scenario);
+        SimulationEngine engine = RemotoCli.engines(threads).forScenario(scenario);
         String runId = Ids.newId();
         Path dir = out != null ? out : Path.of("resultados", runId);
         Path results = dir.resolve("results");

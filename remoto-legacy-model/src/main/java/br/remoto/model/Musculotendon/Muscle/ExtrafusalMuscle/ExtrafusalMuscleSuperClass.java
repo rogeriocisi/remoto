@@ -137,6 +137,29 @@ public abstract class ExtrafusalMuscleSuperClass extends MuscleSuperClass
 	
 	
 	
+	// pickMotorUnit(motorunits[n].getCd()) for each n, resolved once: the force loop asked the
+	// Hashtable for it on every step
+	private transient MotorUnit pickedByPosition[];
+	private transient MotorUnit pickedFrom[];
+	
+	
+	protected MotorUnit pickMotorUnitAt(int n)
+	{
+		if( pickedByPosition == null || pickedFrom != motorunits )
+		{
+			MotorUnit picked[] = new MotorUnit[motorunits.length];
+			
+			for(int i = 0; i < motorunits.length; i++)
+				picked[i] = pickMotorUnit(motorunits[i].getCd());
+			
+			pickedByPosition = picked;
+			pickedFrom = motorunits;
+		}
+		
+		return pickedByPosition[n];
+	}
+	
+	
 	public MotorUnit pickMotorUnit(String cdNeuron)
 	{
 		// Try to pick fiber in hashtable 

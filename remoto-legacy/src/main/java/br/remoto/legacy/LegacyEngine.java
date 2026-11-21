@@ -20,6 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * derivada da seed do cenário ({@link Rng}), o que torna cada execução reprodutível; e a
  * correção do decaimento das condutâncias sinápticas ({@code MultSynapticConductance}), que
  * desde 2016 ficavam congeladas entre um evento e outro.
+ *
+ * <p>Os neurônios de cada passo podem ser atualizados por várias threads ({@code NeuronUpdater}
+ * no modelo), com exatamente o mesmo resultado do laço sequencial.
  */
 public final class LegacyEngine implements SimulationEngine {
 
@@ -30,6 +33,28 @@ public final class LegacyEngine implements SimulationEngine {
     public static final String VERSION = "remoto-legacy-2b5-rng1-syn1";
 
     private static final long PROGRESS_INTERVAL_MS = 250;
+
+    private final int threads;
+
+    /** Uma thread por núcleo da CPU para atualizar os neurônios de cada execução. */
+    public LegacyEngine() {
+        this(Runtime.getRuntime().availableProcessors());
+    }
+
+    /**
+     * @param threads threads para atualizar os neurônios de cada execução; 1 mantém o laço
+     *                sequencial original. O resultado é o mesmo, bit a bit, com qualquer valor.
+     */
+    public LegacyEngine(int threads) {
+        if (threads < 1) {
+            throw new IllegalArgumentException("threads deve ser pelo menos 1: " + threads);
+        }
+        this.threads = threads;
+    }
+
+    public int threads() {
+        return threads;
+    }
 
     @Override
     public String id() {
@@ -58,6 +83,7 @@ public final class LegacyEngine implements SimulationEngine {
 
         String cdSimulation = "remoto-" + UUID.randomUUID();
         Simulation sim = new Simulation(conf, cdSimulation);
+        sim.setThreads(threads);
         AtomicBoolean finished = new AtomicBoolean();
         Thread watcher = Thread.ofVirtual().name("progresso-" + cdSimulation).start(() -> {
             while (!finished.get()) {

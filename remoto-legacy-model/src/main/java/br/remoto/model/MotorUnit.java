@@ -339,6 +339,18 @@ public class MotorUnit implements Serializable
 		this.twitchFunction = twitchFunction;
 	}
 	*/
+	// String.valueOf(index), kept because the force samplers ask for it on every step
+	private transient String indexString;
+	private transient int indexStringOf;
+	
+	public String getIndexString() {
+		if( indexString == null || indexStringOf != index ) {
+			indexString = String.valueOf(index);
+			indexStringOf = index;
+		}
+		return indexString;
+	}
+	
 	public int getIndex() {
 		return index;
 	}

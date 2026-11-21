@@ -68,6 +68,24 @@ public class MultSynapticConductance extends ConductanceProperties
 	protected double value2thSlope = 0;
 	protected double value4thSlope = 0;
 	
+	// Value at the last time asked for, kept only when that call started or stopped no pulse:
+	// the Runge-Kutta stages k2 and k3 ask for the same time twice in a row
+	private transient double cachedT = Double.NaN;
+	private transient double cachedValue;
+	
+	// A spike on its way to this synapse, with the conductance it starts
+	private static final class Received
+	{
+		final double time;
+		final SynapticConductance conductance;
+		
+		Received(double time, SynapticConductance conductance)
+		{
+			this.time = time;
+			this.conductance = conductance;
+		}
+	}
+	
 	
 	public MultSynapticConductance(ConductanceVO g, String cd, Miscellaneous misc)
 	{
@@ -105,8 +123,7 @@ public class MultSynapticConductance extends ConductanceProperties
 		roff = 0.0;
 		t0 = 0.0;
 		value4thSlope = 0.0;
-		
-		
+		cachedT = Double.NaN;
 		
 		conductancesOn = new ArrayList();
 		spikesReceived = new ArrayList();
@@ -139,12 +156,25 @@ public class MultSynapticConductance extends ConductanceProperties
 	// Add spike with proper synapse latency
     public void receiveSpike(double t, String cd)
 	{
+		receiveSpike(t, getConductance(cd));
+	}
+    
+    
+    // Same as above, with the conductance already looked up by the presynaptic neuron
+    public void receiveSpike(double t, SynapticConductance cond)
+	{
 		active = true;
 		numberOfSpikesReceived++;
 		
-		SynapticConductance cond = (SynapticConductance)conductances.get(cd);
-		
-		spikesReceived.add( new Spike(cd, t += cond.getDelay()) );
+		spikesReceived.add( new Received(t + cond.getDelay(), cond) );
+		cachedT = Double.NaN;
+	}
+    
+    
+    /** The conductance started by spikes of the neuron with this key, as receiveSpike finds it. */
+    public SynapticConductance getConductance(String cd)
+	{
+		return (SynapticConductance)conductances.get(cd);
 	}
     
     	
@@ -170,6 +200,18 @@ public class MultSynapticConductance extends ConductanceProperties
     		return value4thSlope;
     	else if( slope == 3 )
     		return value2thSlope;
+    	
+    	if( t == cachedT )
+    	{
+    		if( slope == 2 )
+        		value2thSlope = cachedValue;
+        	else if( slope == 4 )
+        		value4thSlope = cachedValue;
+    		
+    		return cachedValue;
+    	}
+    	
+    	boolean changed = false;
    		
     	// Calculate conductances in on and off state
    		// Closed-form solution since the last event (Lytton, 1996). ron and roff are
@@ -184,12 +226,13 @@ public class MultSynapticConductance extends ConductanceProperties
     	// Verify whether is time to start synaptic conductances
     	while( spikesReceived.size() > 0 )
     	{
-    		Spike spike = (Spike)spikesReceived.get(0);
+    		Received spike = (Received)spikesReceived.get(0);
     		
-    		if( t > spike.getTime() - ReMoto.T_TOLERANCE )
+    		if( t > spike.time - ReMoto.T_TOLERANCE )
     		{
     			//start(t, spike.getCd());
-    			startAlternativeDynamics(t, spike.getCd());
+    			startAlternativeDynamics(t, spike.conductance);
+    			changed = true;
     			
     			spikesReceived.remove(0);
     		}
@@ -205,14 +248,24 @@ public class MultSynapticConductance extends ConductanceProperties
    			if( t > g.getEndOfPulse() - ReMoto.T_TOLERANCE )
    			{
    				stop(t, g);
+   				changed = true;
    		    	
    				conductancesOn.remove(0);
+   				g.setOn(false);
    			}
    			else
    				break;
     	}
     	
     	double value = gMaxTot * (Ron + Roff);
+    	
+    	if( changed )
+    		cachedT = Double.NaN;
+    	else
+    	{
+    		cachedT = t;
+    		cachedValue = value;
+    	}
 
     	// If the Runge–Kutta method is in the second or fourth slope, keep the value
     	if( slope == 2 )
@@ -275,19 +328,8 @@ public class MultSynapticConductance extends ConductanceProperties
     		g.setLastTmax( tMaxDynamics );
     	}
     	
-    	boolean synapseOn = false;
-    	
     	// Verify if the conductance to be started is already On
-		for(int i = 0; i < conductancesOn.size(); i++) 
-   		{
-   			SynapticConductance gOn = (SynapticConductance)conductancesOn.get(i);
-   			
-   			if( gOn.getCd().equals( cd ) )
-   			{
-   				synapseOn = true;
-   				break;
-   			}
-    	}
+    	boolean synapseOn = g.isOn();
 
 		// Contribution of a single conductance in relation to all synaptic conductances of the target neuron
 		double synContrib = g.getGmax() / gMaxTot;
@@ -305,6 +347,7 @@ public class MultSynapticConductance extends ConductanceProperties
 	    	t0 = t;
 
 	    	conductancesOn.add(g);
+	    	g.setOn(true);
 		}
 
 		g.setEndOfPulse( t + tpeak );
@@ -315,11 +358,16 @@ public class MultSynapticConductance extends ConductanceProperties
     // This method could use Gmax dynamics
     public void startAlternativeDynamics(double t, String cd) 
 	{
+    	// Verify which synapse is beeing started
+		startAlternativeDynamics(t, (SynapticConductance)conductances.get(cd));
+	}
+    
+    
+    private void startAlternativeDynamics(double t, SynapticConductance g) 
+	{
 		// Contribution of a single conductance in relation to all synaptic conductances of the target neuron
 		double synContrib;
 		
-		// Verify which synapse is beeing started
-		SynapticConductance g = (SynapticConductance)conductances.get(cd);
     	
 		// Verify synaptic dynamics
 		
@@ -360,19 +408,8 @@ public class MultSynapticConductance extends ConductanceProperties
     		g.setLastGmax( gMax );
     	}
     	
-    	boolean synapseOn = false;
-    	
     	// Verify if the conductance to be started is already On
-		for(int i = 0; i < conductancesOn.size(); i++) 
-   		{
-   			SynapticConductance gOn = (SynapticConductance)conductancesOn.get(i);
-   			
-   			if( gOn.getCd().equals( cd ) )
-   			{
-   				synapseOn = true;
-   				break;
-   			}
-    	}
+    	boolean synapseOn = g.isOn();
 
 		if( synapseOn == false )
 		{
@@ -387,6 +424,7 @@ public class MultSynapticConductance extends ConductanceProperties
 	    	t0 = t;
 
 	    	conductancesOn.add(g);
+	    	g.setOn(true);
 		}
 
 		g.setEndOfPulse( t + tpeak );

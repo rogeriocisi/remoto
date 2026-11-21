@@ -85,12 +85,12 @@ Then open http://localhost:8080. You can use the site as a guest. The `dev` prof
 ```bash
 ./mvnw -pl remoto-cli -am package -DskipTests
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/exemplo-sol-mg.json -o results/example
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 -o results/soleus
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 --threads 4 -o results/soleus
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar validate scenarios/*.json
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list
 ```
 
-`export-legacy` converts configurations from the old HSQLDB database into JSON scenarios.
+`export-legacy` converts configurations from the old HSQLDB database into JSON scenarios. `--threads` sets how many threads update the neurons (default: CPU cores); the results are identical, bit for bit, with any value.
 
 ### Deployment
 

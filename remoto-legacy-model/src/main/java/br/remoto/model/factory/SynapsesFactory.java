@@ -515,7 +515,7 @@ public class SynapsesFactory
 		DynamicVO dynamics = conf.getDynamicType(gType.getCdConductanceType(), gType.getCdNucleusPre(), gType.getCdNucleus());
 		gType.setDynamics( dynamics );
 		
-		String cd = neuronPre.getCdNucleus() + neuronPre.getCd();
+		String cd = neuronPre.getSynapseKey();
 		
 		//System.out.println("cd: " + cd);
 		//System.out.println("cd: " + cd + "    gType.getDynamicType(): " + gType.getDynamicType());

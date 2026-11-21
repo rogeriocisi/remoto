@@ -22,6 +22,9 @@ public class SynapticConductance implements Serializable
 	protected double lastSpike;
 	protected double lastGmax; // for gMax dynamics
 	protected double lastTmax; // for TMax dynamics
+	
+	// Whether this conductance is in the list of pulses being transmitted
+	protected transient boolean on;
 
 	
 	public SynapticConductance(String cd, double gi, double tmax, double delay, DynamicVO dynamics)
@@ -44,6 +47,15 @@ public class SynapticConductance implements Serializable
 		lastSpike = -ReMoto.T_MAX;
 		setLastGmax( gmax );
 		setLastTmax( tmax );
+		on = false;
+	}
+	
+	
+	public boolean isOn() {
+		return on;
+	}
+	public void setOn(boolean on) {
+		this.on = on;
 	}
 
 	

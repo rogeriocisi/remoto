@@ -87,7 +87,7 @@ public class Raikova extends ExtrafusalMuscleSuperClass
 		
 		for(int n = 0; n < motorunits.length; n++)
 		{
-			output += instantMotorUnitForce(motorunits[n].getCd(), t);
+			output += instantMotorUnitForce(pickMotorUnitAt(n), t);
 			
 		}
 
@@ -98,7 +98,12 @@ public class Raikova extends ExtrafusalMuscleSuperClass
 	public double instantMotorUnitForce(String cdNeuron, double t)
 	{
 		// Pick mu in hashtable 
-		MotorUnit mu = pickMotorUnit(cdNeuron);
+		return instantMotorUnitForce(pickMotorUnit(cdNeuron), t);
+	}
+	
+	
+	protected double instantMotorUnitForce(MotorUnit mu, double t)
+	{
 				
 		double force = 0;
 		double output = 0;
@@ -108,7 +113,7 @@ public class Raikova extends ExtrafusalMuscleSuperClass
         
         if( mu.getNumberOfSpikesAtEndPlate() == 0 ){
         	if(mu.isStoredSignals()){
-        		samplerMotorUnitForceStore.sample(motorUnitForceStore, String.valueOf(mu.getIndex()), t, 0);
+        		samplerMotorUnitForceStore.sample(motorUnitForceStore, mu.getIndexString(), t, 0);
         		//motorUnitForceStore.add( new Signal( String.valueOf(mu.getIndex()), 0, t) );
         	}
             	
@@ -157,7 +162,7 @@ public class Raikova extends ExtrafusalMuscleSuperClass
     	}
     	
     	if(mu.isStoredSignals()){
-    		samplerMotorUnitForceStore.sample(motorUnitForceStore, String.valueOf(mu.getIndex()), t, output);
+    		samplerMotorUnitForceStore.sample(motorUnitForceStore, mu.getIndexString(), t, output);
 			//motorUnitForceStore.add( new Signal( String.valueOf(mu.getIndex()), output, t) );
     	}
     	

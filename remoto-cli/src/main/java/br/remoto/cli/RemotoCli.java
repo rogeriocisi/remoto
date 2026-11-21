@@ -25,7 +25,13 @@ public final class RemotoCli implements Runnable {
 
     /** Os mesmos motores do site. */
     static Engines engines() {
-        return new Engines(List.of(new LegacyEngine(), new PlaceholderPoolEngine()));
+        return engines(null);
+    }
+
+    /** @param threads threads do motor original; null = núcleos da CPU */
+    static Engines engines(Integer threads) {
+        LegacyEngine legacy = threads == null ? new LegacyEngine() : new LegacyEngine(threads);
+        return new Engines(List.of(legacy, new PlaceholderPoolEngine()));
     }
 
     @Override
