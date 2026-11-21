@@ -3,6 +3,9 @@ package br.remoto.legacy;
 import br.remoto.dao.BasicDAO;
 import br.remoto.dao.ConfigurationDAO;
 import br.remoto.model.Configuration;
+import br.remoto.core.model.config.LegacyTablesReader;
+import br.remoto.core.model.config.ModelConfig;
+import br.remoto.core.model.config.TableData;
 import br.remoto.model.vo.User;
 
 import java.io.IOException;
@@ -15,6 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,12 +26,14 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Reconstrói a {@code Configuration} do código original.
  *
- * <p>O {@code ConfigurationDAO} legado só sabe ler de um banco JDBC. Para reaproveitá-lo sem
- * reescrever as ~2 mil linhas de mapeamento, as linhas do cenário JSON são carregadas num HSQLDB
- * <em>em memória</em>, privado e descartado logo depois — nada é gravado em disco. Quando os
- * modelos forem portados para o remoto-core com parâmetros tipados, esta classe deixa de existir.
+ * <p>Para rodar, as tabelas do cenário viram parâmetros tipados ({@link ModelConfig}, lidos pelo
+ * {@link LegacyTablesReader} com a semântica do HSQLDB), e o {@code ConfigurationDAO} original
+ * monta a {@code Configuration} a partir deles, com o mesmo mapeamento de sempre, sem JDBC.
  *
- * <p>O DAO legado usa uma conexão estática; por isso as cargas são serializadas.
+ * <p>Gravar uma configuração editada ainda passa pelo {@code saveConfiguration} original, num
+ * HSQLDB em memória, privado e descartado logo depois; {@link #loadThroughHsqldb} faz a leitura
+ * pelo mesmo caminho e serve de referência nos testes. O DAO legado usa uma conexão estática; por
+ * isso os caminhos JDBC são serializados.
  */
 public final class LegacyConfigurations {
 
@@ -37,8 +43,25 @@ public final class LegacyConfigurations {
     private LegacyConfigurations() {
     }
 
-    /** A partir das linhas exportadas (cenário JSON). */
-    public static synchronized Configuration load(LegacyConfig config) {
+    /** A partir das linhas exportadas (cenário JSON), sem banco de dados. */
+    public static Configuration load(LegacyConfig config) {
+        Configuration conf = new ConfigurationDAO().getConfiguration(modelConfig(config));
+        LegacySettings.apply(conf, config.settings());
+        return conf;
+    }
+
+    /** As tabelas do cenário como parâmetros tipados, na ordem em que o DAO original as lia. */
+    public static ModelConfig modelConfig(LegacyConfig config) {
+        Map<String, TableData> tables = new LinkedHashMap<>();
+        config.tables().forEach((name, table) -> tables.put(name, new TableData(table.columns(), table.rows())));
+        return LegacyTablesReader.read(config.idConfiguration(), tables);
+    }
+
+    /**
+     * O caminho anterior: as linhas num HSQLDB em memória e o DAO lendo por JDBC. Referência dos
+     * testes de equivalência de {@link #load}.
+     */
+    static synchronized Configuration loadThroughHsqldb(LegacyConfig config) {
         String url = "jdbc:hsqldb:mem:remoto-legacy-" + COUNTER.incrementAndGet();
         try (Connection connection = DriverManager.getConnection(url, "SA", "")) {
             try (Statement st = connection.createStatement()) {

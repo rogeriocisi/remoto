@@ -27,18 +27,62 @@ import br.remoto.model.vo.GeneralVO;
 import br.remoto.model.vo.NeuronVO;
 import br.remoto.model.vo.User;
 import br.remoto.util.Point;
+import br.remoto.core.model.config.*;
 
 
 public class ConfigurationDAO extends BasicDAO
 {
 	private Configuration conf;
 	
+	// When set, the loaders read these parameters instead of the database (see select)
+	private ModelConfig source;
+
+
 	public Configuration getConfiguration(int idConfiguration)
 	{
 		//System.out.println("ConfigurationDAO.getConfiguration()");
-		
+
 		connect();
-    	
+
+		Configuration result = assemble(idConfiguration);
+
+		disconnect();
+
+		return result;
+	}
+
+
+	/**
+	 * The same Configuration as getConfiguration(int), built from typed parameters (read from the
+	 * tables of a scenario) instead of the database: no JDBC, no HSQLDB.
+	 */
+	public Configuration getConfiguration(ModelConfig params)
+	{
+		source = params;
+		try
+		{
+			return assemble(params.id());
+		}
+		finally
+		{
+			source = null;
+		}
+	}
+
+
+	// Rows of one loader: from the database, or projected from the typed parameters
+	private Rows select(String sql, java.util.function.Supplier<Rows> fromParams) throws java.sql.SQLException
+	{
+		if( source != null )
+			return fromParams.get();
+
+		st = con.createStatement();
+		return Rows.of(st, st.executeQuery(sql));
+	}
+
+
+	private Configuration assemble(int idConfiguration)
+	{
 		conf = new Configuration();
 		
 		conf.setJoints( loadJoints() );
@@ -94,8 +138,6 @@ public class ConfigurationDAO extends BasicDAO
     	conf.setFinalRecruitmentThresholdIb(50);
     	
     	conf.setpercentageOfMVC(0.15);
-    	
-    	disconnect();
     	
     	return conf;
 	}
@@ -287,8 +329,8 @@ public class ConfigurationDAO extends BasicDAO
 		    			  " where id_configuration = " + idConfiguration +
 		    			  " order by nm_configuration";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.simulation(), (SimulationParams r) -> new Object[] {
+        			r.id(), r.name(), r.description(), r.tFin(), r.step(), r.merge(), r.user(), r.keepProperties(), r.storeResults(), r.storeSignals() }));
         	
         	if( rs.next() )
         	{
@@ -304,8 +346,7 @@ public class ConfigurationDAO extends BasicDAO
         		general.setStoreSignals( rs.getBoolean(10) );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -324,8 +365,8 @@ public class ConfigurationDAO extends BasicDAO
     		String sql = "select cd_joint, nm_joint, num_nuclei, index" +
     					 " from joints order by index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.joints(), (JointParams r) -> new Object[] {
+        			r.cd(), r.name(), r.numNuclei(), r.index() }));
         	
         	while( rs.next() )
         	{
@@ -339,8 +380,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( vo );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -366,8 +406,8 @@ public class ConfigurationDAO extends BasicDAO
     		String sql = "select cd_nucleus, nm_nucleus, layer, index, joint" +
 			 " from nucleus order by index";
 			
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.nuclei(), (NucleusParams r) -> new Object[] {
+        			r.cd(), r.name(), r.layer(), r.index(), r.joint() }));
         	
         	while( rs.next() )
         	{
@@ -382,8 +422,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( nucleus );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -404,8 +443,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " from category" +
     					 " order by nm_category desc";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.categories(), (CategoryParams r) -> new Object[] {
+        			r.cd(), r.name() }));
         	
         	while( rs.next() )
         	{
@@ -417,8 +456,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( category );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -442,8 +480,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
     					 " order by cd_nucleus, index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.injectedCurrents(), (InjectedCurrentParams r) -> new Object[] {
+        			r.imax(), r.nucleus(), r.neuronType(), r.signal(), r.tIni(), r.tFin(), r.amp(), r.freq(), r.width(), r.compartment(), r.active(), r.index(), r.delay() }));
         	
         	while( rs.next() )
         	{
@@ -486,8 +524,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( inj );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -512,8 +549,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
     					 " order by cd_nucleus";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.descendingCommands(), (DescendingCommandParams r) -> new Object[] {
+        			r.signal(), r.nucleus(), r.neuronType(), r.modType(), r.tIni(), r.tFin(), r.amp(), r.freq(), r.width(), r.delay() }));
         	
         	while( rs.next() )
         	{
@@ -535,8 +572,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( signal );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -559,8 +595,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
   		  		  		 " order by compartment, index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.synapses(), (SynapseParams r) -> new Object[] {
+        			r.conductanceType(), r.nucleus(), r.nucleusPre(), r.e(), r.gmax(), r.connectivity(), r.compartment(), r.active(), r.delay(), r.index() }));
         	
         	while( rs.next() )
         	{
@@ -581,8 +617,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( g );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -605,8 +640,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
   		  		  		 " order by index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.ionicChannels(), (IonicChannelParams r) -> new Object[] {
+        			r.type(), r.nucleus(), r.e(), r.gmax(), r.tpeak(), r.tmax(), r.alpha(), r.beta(), r.index() }));
         	
         	while( rs.next() )
         	{
@@ -641,8 +676,7 @@ public class ConfigurationDAO extends BasicDAO
         		hash.put( g.getCdNucleus() + g.getCdConductanceType() + g.getPolarity(), g);
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -664,8 +698,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " from synaptic_dynamics" +
     					 " where id_configuration = " + idConfiguration;
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.synapticDynamics(), (SynapticDynamicsParams r) -> new Object[] {
+        			r.nucleus(), r.nucleusPre(), r.conductanceType(), r.dynamicType(), r.tau(), r.variation() }));
         	
         	while( rs.next() )
         	{
@@ -681,8 +715,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( vo );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -709,8 +742,8 @@ public class ConfigurationDAO extends BasicDAO
 			 " order by cd_nucleus, index";
 
     		
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.neuronTypes(), (NeuronTypeParams r) -> new Object[] {
+        			r.type(), r.category(), r.nucleus(), r.threshold1(), r.threshold2(), r.cm(), r.ri(), r.rmDend1(), r.rmDend2(), r.rmSoma1(), r.rmSoma2(), r.dDend1(), r.dDend2(), r.lDend1(), r.lDend2(), r.dSoma1(), r.dSoma2(), r.lSoma1(), r.lSoma2(), r.totalArea(), r.distribution(), r.mean(), r.std(), r.axonVelocity1(), r.axonVelocity2(), r.axonThreshold1(), r.axonThreshold2(), r.quantity(), r.nerve(), r.active(), r.index(), r.thresholdCa1(), r.thresholdCa2() }));
         	
         	while( rs.next() )
         	{
@@ -772,8 +805,7 @@ public class ConfigurationDAO extends BasicDAO
     			
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -800,8 +832,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
   		  		  		 " order by cd_motorunit_type, index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.motorUnitTypes(), (MotorUnitTypeParams r) -> new Object[] {
+        			r.type(), r.nucleus(), r.twitchTension1(), r.twitchTension2(), r.tetanicTension1(), r.tetanicTension2(), r.tauForce1(), r.tauForce2(), r.ampEmg1(), r.ampEmg2(), r.durEmg1(), r.durEmg2() }));
         	
         	while( rs.next() )
         	{
@@ -1162,8 +1194,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( mu );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -1187,8 +1218,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
     					 " order by index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.nerves(), (NerveParams r) -> new Object[] {
+        			r.cd(), r.joint(), r.active(), r.stimulusSpinalEntry(), r.stimulusEndPlate(), r.index(), r.start(), r.stop(), r.peak(), r.frequency(), r.signal(), r.tIni(), r.tFin(), r.amp(), r.freq(), r.width(), r.delay() }));
         	
         	while( rs.next() )
         	{
@@ -1233,8 +1264,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( nerve );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -1263,8 +1293,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
     					 " order by index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.muscles(), (HillMuscleParams r) -> new Object[] {
+        			r.muscle(), r.optimalLength(), r.viscosityCoefficient(), r.elasticCoefParallel(), r.cT(), r.kT(), r.lrT(), r.pennationAngle(), r.slackTendonLength(), r.maximumMuscleForce(), r.muscleMass(), r.index() }));
         	
         	while( rs.next() )
         	{
@@ -1286,8 +1316,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( vo );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
 			
     	    /*
     		MuscleVO muscle = new MuscleVO();
@@ -1497,8 +1526,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
     					 " order by cd_nucleus, index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.injectedCurrents(), (InjectedCurrentParams r) -> new Object[] {
+        			r.imax(), r.nucleus(), r.neuronType(), r.signal(), r.tIni(), r.tFin(), r.amp(), r.freq(), r.width(), r.compartment(), r.active(), r.index(), r.delay() }));
         	
         	while( rs.next() )
         	{
@@ -1543,8 +1572,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( biomechanicalInput );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -1567,8 +1595,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " where id_configuration = " + idConfiguration +
     					 " order by index";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.miscellaneous(), (MiscellaneousParam r) -> new Object[] {
+        			r.property(), r.description(), r.value(), r.index(), r.division() }));
         	
         	while( rs.next() )
         	{
@@ -1583,8 +1611,7 @@ public class ConfigurationDAO extends BasicDAO
         		list.add( vo );
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -1604,8 +1631,8 @@ public class ConfigurationDAO extends BasicDAO
     		String sql = "select cd_nucleus, cd_mu, position_y, position_z" +
     					 " from mu_position";
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.motorUnitPositions(), (MotorUnitPosition r) -> new Object[] {
+        			r.nucleus(), r.mu(), r.y(), r.z() }));
         	
         	while( rs.next() )
         	{
@@ -1620,8 +1647,7 @@ public class ConfigurationDAO extends BasicDAO
         		hash.put( cdNucleus + cd, point);
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{
@@ -1642,8 +1668,8 @@ public class ConfigurationDAO extends BasicDAO
     					 " from interface_parameters" +
     					 " where id_configuration = " + idConfiguration ;
 
-        	st = con.createStatement();
-        	rs = st.executeQuery(sql);
+        	Rows rs = select(sql, () -> Rows.of(source.interfaces(), (InterfaceParams r) -> new Object[] {
+        			r.nucleus() }));
         	
         	while( rs.next() )
         	{
@@ -1651,8 +1677,7 @@ public class ConfigurationDAO extends BasicDAO
             	conf.setCdNucleus(rs.getString(1));
         	}
 
-        	rs.close();
-			st.close(); 
+        	rs.close(); 
     	}
     	catch(Exception e)
     	{

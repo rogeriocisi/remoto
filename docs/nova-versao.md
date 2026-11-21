@@ -251,10 +251,16 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 - **Desempenho:** sinapses e força muscular sem buscas por texto a cada passo, e atualização
   paralela dos neurônios, com o mesmo resultado bit a bit (ver [Desempenho](#desempenho)).
 - **Configuração sem banco:** cada configuração do HSQLDB antigo vira um cenário JSON com as
-  linhas de cada tabela (formato `remoto-legacy-db/1`, sem a tabela USER). Para montar a
-  `Configuration`, o motor carrega essas linhas num HSQLDB **em memória**, privado e descartado
-  em seguida, e chama o `ConfigurationDAO` original — assim as ~2 mil linhas de mapeamento não
-  precisaram ser reescritas. Nada é gravado em disco.
+  linhas de cada tabela (formato `remoto-legacy-db/1`, sem a tabela USER). Para rodar, essas
+  linhas viram parâmetros tipados no `remoto-core` (`br.remoto.core.model.config`: um record por
+  tabela, reunidos em `ModelConfig`), e o `ConfigurationDAO` original monta a `Configuration` a
+  partir deles, com o mesmo mapeamento de sempre e sem JDBC. O leitor (`LegacyTablesReader`)
+  reproduz o que o HSQLDB fazia: `NUMERIC(128,4)` arredondado para 4 casas com a metade para
+  baixo, decimal em coluna inteira truncado, nulo lido como 0, e a ordem das linhas do
+  `ORDER BY` de cada consulta do DAO, com o mesmo algoritmo de ordenação do HSQLDB 2.7.3. Esse
+  algoritmo não é estável, e a ordem dos empates (os tratos de um mesmo núcleo, por exemplo)
+  decide a ordem de criação dos neurônios e, com ela, a dos sorteios. Só a gravação do editor
+  ainda passa por um HSQLDB em memória.
 - **Saídas:** `forca-<núcleo>` (N), `disparos-<núcleo>` (motoneurônios), `torque` (N·m) e
   o EMG de cada músculo, em mV:
   - `emg-bruto-<núcleo>`: soma dos MUAPs das unidades motoras (`instantMuscleEMG` original,
@@ -270,6 +276,7 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 | Teste | O que garante |
 |---|---|
 | JSON × banco | A mesma configuração lida do HSQLDB original e do cenário JSON produz saídas idênticas |
+| Parâmetros tipados × HSQLDB | A `Configuration` montada dos parâmetros tipados é idêntica, campo a campo e na ordem das listas, à que o DAO montava pelo HSQLDB, nas 30 configurações do banco original, nos três cenários públicos e em tabelas aleatórias com empates, nulos e valores com mais de 4 casas (`TypedConfigurationTest`, `TypedConfigurationEdgeCasesTest`) |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
 | Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro) |
 | Sinapse × solução analítica | Uma sinapse acionada como no Runge-Kutta segue a solução fechada de Lytton (1996): sobe durante o pulso e decai depois (`SynapticConductanceTest`) |
@@ -374,7 +381,15 @@ sinal guardado (o Action original também não os salvava).
 ## Próximos passos
 
 1. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
-   famílias de modelos), o que também elimina o HSQLDB em memória.
+   famílias de modelos), em fases, cada uma com saídas idênticas bit a bit ao motor original:
+   1. ~~Configuração tipada, sem HSQLDB na execução.~~ Feito: `br.remoto.core.model.config`.
+   2. Núcleo numérico: condutâncias, sinapses, motoneurônios e interneurônios, tratos e ruído,
+      músculo SOCDS, tornozelo isométrico e EMG (cenário 17 inteiro no motor novo).
+   3. Aferentes e proprioceptores: fibras Ia, Ib e II, fuso (Mileusnic, Prochazka), OTG (Crago).
+   4. O resto: músculos Raikova, Hill e *DistributionMoments*, pêndulo e tarefa de posição,
+      estimulação do nervo, corrente injetada e sinais modulantes.
+   5. O motor do `remoto-core` vira o padrão, e o editor passa a gravar os parâmetros tipados,
+      o que elimina o HSQLDB de vez.
 2. ~~Desempenho do motor original.~~ Feito: ver "Desempenho" em [Motor original](#motor-original-legacy).
    Próximo ganho: tirar da thread da simulação a força muscular, separando o que sorteia
    (fuso, distúrbios) do que não sorteia.
