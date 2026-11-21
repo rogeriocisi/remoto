@@ -406,10 +406,19 @@ sinal guardado (o Action original também não os salvava).
       (`t − último > refratário` no motoneurônio, `t > último + refratário` no interneurônio), que
       em ponto flutuante não são equivalentes. Saiu a gravação "VsxVdot" a cada estágio do
       Runge-Kutta, um resto de depuração que guardava a corrente injetada e não chegava a nenhuma
-      saída. Faltam tratos e ruído, aferentes, unidades motoras, músculo SOCDS, EMG (soma dos
-      MUAPs) e o tornozelo isométrico. Os sinais modulantes vão junto com os tratos e a corrente injetada:
-      o `ModulatingSignal` também é o objeto que o editor preenche, e a forma `custom` altera a
-      própria amplitude.
+      saída. Os sinais modulantes (`br.remoto.core.model.signal.Modulation`: constante, senoide,
+      AM, quadrada, rampa, triângulo, trapézio, aleatório, gama e `custom`) e os disparos dos
+      tratos descendentes e dos ruídos (`br.remoto.core.model.tract.TractSpikeGenerator`:
+      Poisson, gama de ordem inteira e intervalos gaussianos, com a média modulada no intervalo
+      ou na taxa) também foram. O `ModulatingSignal` segue como o objeto que o editor preenche e
+      grava, e calcula os valores pelo `Modulation`; o `NeuralTract` ficou como casca. Ficaram as
+      particularidades do original: a senoide perde 7 depois de 120 s, o limiar do processo gama
+      é sorteado em todo reset, o reset anota no trem um disparo inicial que não chega às
+      sinapses e a integral da taxa do processo gama não volta a zero. A forma `custom` deixou de
+      gravar no sinal a amplitude que usa (12,35 e depois 13,75); o valor calculado é o mesmo.
+      Saíram o `isActive(t)` do sinal e o `setSignal` do trato, que ninguém chamava. Faltam
+      aferentes, unidades motoras, músculo SOCDS, EMG (soma dos MUAPs), o tornozelo isométrico
+      e, já sobre o `Modulation`, a corrente injetada e a estimulação do nervo.
    3. Aferentes e proprioceptores: fibras Ia, Ib e II, fuso (Mileusnic, Prochazka), OTG (Crago).
    4. O resto: músculos Raikova, Hill e *DistributionMoments*, pêndulo e tarefa de posição,
       estimulação do nervo e corrente injetada.
