@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /** Contexto em memória: guarda os resultados como texto CSV para comparar e calcular hash. */
-final class Recorder implements RunContext, ResultSink {
+class Recorder implements RunContext, ResultSink {
 
     final Map<String, String> outputs = new TreeMap<>();
     double lastProgress;
