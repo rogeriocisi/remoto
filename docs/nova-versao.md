@@ -397,9 +397,17 @@ sinal guardado (o Action original também não os salvava).
       como IIR de 2ª ordem, usada pelo SOCDS e pelo Hill); e o passa-faixa do EMG
       (`emg.BandPassFilter`). O filtro original zerava as duas primeiras amostras do EMG bruto que
       recebia; isso agora está explícito em `LegacyOutputs`. O `ButterworthBilinear`, construído
-      nos modelos de articulação e nunca usado, saiu deles. Faltam motoneurônios e
-      interneurônios, tratos e ruído, unidades motoras, músculo SOCDS, EMG (soma dos MUAPs) e o
-      tornozelo isométrico. Os sinais modulantes vão junto com os tratos e a corrente injetada:
+      nos modelos de articulação e nunca usado, saiu deles. E a membrana dos neurônios espinhais
+      (`br.remoto.core.model.neuron`: `MotoneuronMembrane`, dois compartimentos com a PIC no
+      dendrito, e `InterneuronMembrane`, um compartimento): potenciais, canais, sinapses, fugas e o
+      Runge-Kutta. As classes `Motoneuron` e `Interneuron` do original ficaram como casca, com a
+      identidade, os trens de disparo e o axônio (latências e colisão antidrômica). Foram mantidas
+      duas assimetrias do original: a ordem da soma das correntes e o teste do refratário
+      (`t − último > refratário` no motoneurônio, `t > último + refratário` no interneurônio), que
+      em ponto flutuante não são equivalentes. Saiu a gravação "VsxVdot" a cada estágio do
+      Runge-Kutta, um resto de depuração que guardava a corrente injetada e não chegava a nenhuma
+      saída. Faltam tratos e ruído, aferentes, unidades motoras, músculo SOCDS, EMG (soma dos
+      MUAPs) e o tornozelo isométrico. Os sinais modulantes vão junto com os tratos e a corrente injetada:
       o `ModulatingSignal` também é o objeto que o editor preenche, e a forma `custom` altera a
       própria amplitude.
    3. Aferentes e proprioceptores: fibras Ia, Ib e II, fuso (Mileusnic, Prochazka), OTG (Crago).

@@ -1,350 +1,237 @@
-
 package br.remoto.model.Neuron;
 
 import java.util.ArrayList;
 
+import br.remoto.core.model.channel.PulseChannel;
+import br.remoto.core.model.neuron.MotoneuronMembrane;
+import br.remoto.core.model.neuron.SpinalMembrane;
+import br.remoto.core.model.synapse.SynapseGroup;
 import br.remoto.model.Current;
 import br.remoto.model.ReMoto;
-import br.remoto.core.model.synapse.SynapseGroup;
-import br.remoto.core.model.channel.PulseChannel;
 import br.remoto.model.vo.NeuronVO;
 import br.remoto.util.Signal;
 
-//Modified in 05-10-11 by L. A. Elias
 
+/**
+ * A spinal neuron of the original model. Its membrane (potentials, channels, synapses and the
+ * Runge-Kutta integration) lives in br.remoto.core.model.neuron; this class keeps the identity of
+ * the neuron, its spike trains, the injected current and the signals stored for display.
+ */
 public abstract class SpinalNeuron extends Neuron
 {
-	protected double threshold;
 	protected double rn;
-	protected double thresholdCa;
-	
+
 	protected ArrayList somaSpikeTrain = new ArrayList();
 	protected ArrayList signalStore = new ArrayList();
-
-	protected double tSomaSpike;
-	protected double tDendritePIC;
-
-	// Ionic conductances
-	protected PulseChannel gKf;
-	protected PulseChannel gKs;
-	protected PulseChannel gNa;
-	
 
 	// Injected current
 	protected Current current;
 
-	// Electrotonic properties
-	protected double vs;
-	protected double vd;
-	protected double capacitanceSoma;
-	protected double capacitanceDend;
-	protected double gLeakSoma;
-	protected double gLeakDend;
-	protected double gCoupling;
-	
-	// Synapses which this neuron receives
-	protected SynapseGroup dendExcitSynapses; 
-	protected SynapseGroup dendInhibSynapses; 
-	protected SynapseGroup somaExcitSynapses; 
-	protected SynapseGroup somaInhibSynapses; 
 
-	
 	public SpinalNeuron()
 	{
 		super();
 
 		storedSignals = false;
 	}
-	
-	
+
+
 	public SpinalNeuron(NeuronVO neu, int index, Miscellaneous misc)
 	{
 		super(neu, index, misc);
 	}
-	
-		
+
+
+	/** The membrane of this neuron, in br.remoto.core.model.neuron. */
+	public abstract SpinalMembrane membrane();
+
+
 	public void reset()
 	{
 		super.reset();
-		
+
 		if( somaSpikeTrain != null )
 			somaSpikeTrain.clear();
 		else
 			somaSpikeTrain = new ArrayList();
-		
+
 		signalStore.clear();
 
-		tSomaSpike = -ReMoto.T_MAX;
-		tDendritePIC = -ReMoto.T_MAX;
+		membrane().reset();
+	}
 
-		vs = 0;
-		vd = 0;
 
-		if( gKf != null )
-			gKf.reset();
-
-		if( gKs != null )
-			gKs.reset();
-
-		if( gNa != null )
-			gNa.reset();
-		
-		
-		
-		// rcisi@27mai2009 - error on keep the same...
-		//current = null;
-	}		
-		
-	
 	public void ensureCapacity(int size)
 	{
 		super.ensureCapacity(size);
-		
+
 		somaSpikeTrain.ensureCapacity(size);
 	}
 
-		
-	public void atualize(double t) 
+
+	public void atualize(double t)
 	{
 		// Store signals as marked
 		if( storedSignals == true )
 		{
-			signalStore.add( new Signal(ReMoto.Vd, vd, t) );
-			signalStore.add( new Signal(ReMoto.Vs, vs, t) );
+			SpinalMembrane m = membrane();
 
-			signalStore.add( new Signal(ReMoto.gNa, gNa.lastValue(), t) );
-			signalStore.add( new Signal(ReMoto.gKf, gKf.lastValue(), t) );
-			signalStore.add( new Signal(ReMoto.gKs, gKs.lastValue(), t) );
-			
-			if( dendExcitSynapses != null ) signalStore.add( new Signal(ReMoto.gExcDend, dendExcitSynapses.lastValue(), t) );
-			if( dendInhibSynapses != null ) signalStore.add( new Signal(ReMoto.gInibDend, dendInhibSynapses.lastValue(), t) );
-			if( somaExcitSynapses != null ) signalStore.add( new Signal(ReMoto.gExcSoma, somaExcitSynapses.lastValue(), t) );
-			if( somaInhibSynapses != null ) signalStore.add( new Signal(ReMoto.gInibSoma, somaInhibSynapses.lastValue(), t) );
+			signalStore.add( new Signal(ReMoto.Vd, getVd(), t) );
+			signalStore.add( new Signal(ReMoto.Vs, m.vs(), t) );
+
+			signalStore.add( new Signal(ReMoto.gNa, m.na().lastValue(), t) );
+			signalStore.add( new Signal(ReMoto.gKf, m.kf().lastValue(), t) );
+			signalStore.add( new Signal(ReMoto.gKs, m.ks().lastValue(), t) );
+
+			if( m.dendExcit() != null ) signalStore.add( new Signal(ReMoto.gExcDend, m.dendExcit().lastValue(), t) );
+			if( m.dendInhib() != null ) signalStore.add( new Signal(ReMoto.gInibDend, m.dendInhib().lastValue(), t) );
+			if( m.somaExcit() != null ) signalStore.add( new Signal(ReMoto.gExcSoma, m.somaExcit().lastValue(), t) );
+			if( m.somaInhib() != null ) signalStore.add( new Signal(ReMoto.gInibSoma, m.somaInhib().lastValue(), t) );
 		}
 	}
 
-	
-	protected double saturate(double var)  // limita o valor de E a P0 ou EsE
+
+	// Only motoneurons have a dendritic compartment
+	private MotoneuronMembrane dendrite()
 	{
-		if( var < ReMoto.P0 )
-			return ReMoto.P0;
-		else if( var > ReMoto.EsE )
-			return ReMoto.EsE;
-		else
-			return var;
+		return (MotoneuronMembrane)membrane();
 	}
 
 
 	public double getCapacitanceDend() {
-		return capacitanceDend;
+		return membrane() instanceof MotoneuronMembrane m ? m.capacitanceDend() : 0;
 	}
-
-
 	public void setCapacitanceDend(double capacitanceDend) {
-		this.capacitanceDend = capacitanceDend;
+		dendrite().setCapacitanceDend(capacitanceDend);
 	}
-
-
 	public double getCapacitanceSoma() {
-		return capacitanceSoma;
+		return membrane().capacitanceSoma();
 	}
-
-
 	public void setCapacitanceSoma(double capacitanceSoma) {
-		this.capacitanceSoma = capacitanceSoma;
+		membrane().setCapacitanceSoma(capacitanceSoma);
 	}
-
-
 	public double getGCoupling() {
-		return gCoupling;
+		return membrane() instanceof MotoneuronMembrane m ? m.gCoupling() : 0;
 	}
-
-
 	public void setGCoupling(double coupling) {
-		gCoupling = coupling;
+		dendrite().setGCoupling(coupling);
 	}
-
-
 	public double getGLeakDend() {
-		return gLeakDend;
+		return membrane() instanceof MotoneuronMembrane m ? m.gLeakDend() : 0;
 	}
-
-
 	public void setGLeakDend(double leakDend) {
-		gLeakDend = leakDend;
+		dendrite().setGLeakDend(leakDend);
 	}
-
-
 	public double getGLeakSoma() {
-		return gLeakSoma;
+		return membrane().gLeakSoma();
 	}
-
-
 	public void setGLeakSoma(double leakSoma) {
-		gLeakSoma = leakSoma;
+		membrane().setGLeakSoma(leakSoma);
 	}
-
-
 	public Current getCurrent() {
 		return current;
 	}
-
-
 	public void setCurrent(Current current) {
 		this.current = current;
+		injectionChanged();
 	}
-
+	/** Hands the injected current to the membrane, in the compartment it goes to. */
+	protected abstract void injectionChanged();
 
 	public double getThreshold() {
-		return threshold;
+		return membrane().threshold();
 	}
-
-
 	public void setThreshold(double threshold) {
-		this.threshold = threshold;
+		membrane().setThreshold(threshold);
 	}
-
 	public double getThresholdCa() {
-		return thresholdCa;
+		return membrane() instanceof MotoneuronMembrane m ? m.thresholdCa() : 0;
 	}
-
 	public void setThresholdCa(double thresholdCa) {
-		this.thresholdCa = thresholdCa;
+		dendrite().setThresholdCa(thresholdCa);
 	}
-	
 	public double getVd() {
-		return vd;
+		return membrane() instanceof MotoneuronMembrane m ? m.vd() : 0;
 	}
-
-
 	public void setVd(double vd) {
-		this.vd = vd;
+		dendrite().setVd(vd);
 	}
-
-
 	public double getVs() {
-		return vs;
+		return membrane().vs();
 	}
-
-
 	public void setVs(double vs) {
-		this.vs = vs;
+		membrane().setVs(vs);
 	}
-
-
 	public PulseChannel getGKf() {
-		return gKf;
+		return membrane().kf();
 	}
-
-
 	public void setGKf(PulseChannel gK) {
-		this.gKf = gK;
+		membrane().setKf(gK);
 	}
-
-
 	public PulseChannel getGNa() {
-		return gNa;
+		return membrane().na();
 	}
-
-
 	public void setGNa(PulseChannel gNa) {
-		this.gNa = gNa;
+		membrane().setNa(gNa);
 	}
-
-
 	public PulseChannel getGKs() {
-		return gKs;
+		return membrane().ks();
 	}
-
-
 	public void setGKs(PulseChannel ks) {
-		gKs = ks;
+		membrane().setKs(ks);
 	}
-
 	public SynapseGroup getDendInhibSynapses() {
-		return dendInhibSynapses;
+		return membrane().dendInhib();
 	}
-
-
 	public void setDendInhibSynapses(SynapseGroup inhibPre) {
-		this.dendInhibSynapses = inhibPre;
+		membrane().setDendInhib(inhibPre);
 	}
-
-	
 	public ArrayList getSomaSpikeTrain() {
 		return somaSpikeTrain;
 	}
-
-
 	public void setSomaSpikeTrain(ArrayList spikeTrain) {
 		this.somaSpikeTrain = spikeTrain;
 	}
-	
-	
 	public ArrayList getSignalStore() {
 		return signalStore;
 	}
-
-
 	public void setSignalStore(ArrayList signalStore) {
 		this.signalStore = signalStore;
 	}
-
-
 	public double getTSomaSpike() {
-		return tSomaSpike;
+		return membrane().tSomaSpike();
 	}
-
-
 	public void setTSomaSpike(double somaSpike) {
-		tSomaSpike = somaSpike;
+		membrane().setTSomaSpike(somaSpike);
 	}
-	
 	public double getTDendritePIC() {
-		return tDendritePIC;
+		return membrane() instanceof MotoneuronMembrane m ? m.tDendritePIC() : 0;
 	}
-
 	public void setTDendriteSpike(double dendritePIC) {
-		tDendritePIC = dendritePIC;		
+		dendrite().setTDendritePIC(dendritePIC);
 	}
-
 	public SynapseGroup getDendExcitSynapses() {
-		return dendExcitSynapses;
+		return membrane().dendExcit();
 	}
-
-
 	public void setDendExcitSynapses(SynapseGroup excitPre) {
-		this.dendExcitSynapses = excitPre;
+		membrane().setDendExcit(excitPre);
 	}
-
-
 	public SynapseGroup getSomaExcitSynapses() {
-		return somaExcitSynapses;
+		return membrane().somaExcit();
 	}
-
-
 	public void setSomaExcitSynapses(SynapseGroup excitPreSoma) {
-		this.somaExcitSynapses = excitPreSoma;
+		membrane().setSomaExcit(excitPreSoma);
 	}
-
-
 	public SynapseGroup getSomaInhibSynapses() {
-		return somaInhibSynapses;
+		return membrane().somaInhib();
 	}
-
-
 	public void setSomaInhibSynapses(SynapseGroup inhibPreSoma) {
-		this.somaInhibSynapses = inhibPreSoma;
+		membrane().setSomaInhib(inhibPreSoma);
 	}
-
-
 	public double getRn() {
 		return rn;
 	}
-
-
 	public void setRn(double rn) {
 		this.rn = rn;
 	}
-	
 }

@@ -1,10 +1,12 @@
 package br.remoto.model.Neuron;
 
+import br.remoto.core.model.neuron.MembraneSettings;
+
 import java.io.Serializable;
 
 //Modified in 05-10-11 by L. A. Elias
 
-public class Miscellaneous implements Serializable
+public class Miscellaneous implements Serializable, MembraneSettings
 {
 	private static final long serialVersionUID = 1L;
 
@@ -88,4 +90,11 @@ public class Miscellaneous implements Serializable
 		this.gIISomaRefractoryPeriod = gIISomaRefractoryPeriod;
 	}
 
+
+	// MembraneSettings: read live by the membranes of br.remoto.core.model.neuron
+	public double step() { return getStep(); }
+	public double stepByTwo() { return getStepByTwo(); }
+	public double stepBySix() { return getStepBySix(); }
+	public double gammaCa() { return getGammaCa(); }
+	public double motoneuronSomaRefractoryPeriod() { return getMnSomaRefractoryPeriod(); }
 }
