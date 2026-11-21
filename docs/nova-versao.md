@@ -237,12 +237,12 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
   todas essas chamadas passam por `br.remoto.util.Rng`, um gerador por thread que o motor
   inicializa com a `seed` do cenário. Sem seed, o site antigo se comporta como antes.
 - **Correção das sinapses (motor `remoto-legacy-2b5-rng1-syn1`):** em dezembro de 2016 o
-  repositório pai trocou, em `MultSynapticConductance`, o tempo desde o último evento
+  repositório pai trocou, em `MultSynapticConductance` (hoje `SynapseGroup`, no `remoto-core`), o tempo desde o último evento
   (`t − t0`) pelo passo de integração no decaimento de `Ron` e `Roff`. Como `ron` e `roff` só
   mudam quando um pulso começa ou termina, a condutância passou a ficar congelada entre eventos:
   um disparo isolado subia a um sétimo do pico e não decaía mais. O motor volta à solução
   fechada de Lytton (1996), que é a da versão de 2011 e a vigente quando o artigo de 2015 foi
-  configurado; `SynapticConductanceTest` compara a condutância com essa solução. Resultados de
+  configurado; `SynapseGroupTest` compara a condutância com essa solução. Resultados de
   versões diferentes do motor não são comparáveis.
 - **Sem prints no laço:** o código original imprimia no console a cada passo de cada trato
   descendente (`"Poisson " + mean`), a cada disparo de sinapse com dinâmica, a cada passo da
@@ -279,7 +279,7 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 | Parâmetros tipados × HSQLDB | A `Configuration` montada dos parâmetros tipados é idêntica, campo a campo e na ordem das listas, à que o DAO montava pelo HSQLDB, nas 30 configurações do banco original, nos três cenários públicos e em tabelas aleatórias com empates, nulos e valores com mais de 4 casas (`TypedConfigurationTest`, `TypedConfigurationEdgeCasesTest`) |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
 | Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro) |
-| Sinapse × solução analítica | Uma sinapse acionada como no Runge-Kutta segue a solução fechada de Lytton (1996): sobe durante o pulso e decai depois (`SynapticConductanceTest`) |
+| Sinapse × solução analítica | Uma sinapse acionada como no Runge-Kutta segue a solução fechada de Lytton (1996): sobe durante o pulso e decai depois (`SynapseGroupTest`, no `remoto-core`) |
 | 1 thread × 4 threads | Os três cenários públicos dão saídas idênticas com qualquer número de threads, e uma thread de trabalho não consegue sortear (`ParallelUpdateTest`) |
 
 Ao portar ou refatorar um modelo, o golden master mostra na hora se o resultado mudou.
@@ -384,13 +384,20 @@ sinal guardado (o Action original também não os salvava).
 1. **Portar e limpar os modelos** para o `remoto-core` (records, `sealed interface` para as
    famílias de modelos), em fases, cada uma com saídas idênticas bit a bit ao motor original:
    1. ~~Configuração tipada, sem HSQLDB na execução.~~ Feito: `br.remoto.core.model.config`.
-   2. Núcleo numérico: condutâncias, sinapses, motoneurônios e interneurônios, tratos e ruído,
-      músculo SOCDS, tornozelo isométrico e EMG (cenário 17 inteiro no motor novo).
+   2. Núcleo numérico, **por fatias**: cada família de modelos vai para o `remoto-core` e o
+      motor original passa a usá-la na mesma hora, em vez de um motor novo em paralelo que só
+      seria comparável no fim (os três cenários públicos carregam as mesmas 83 classes). A cada
+      fatia, golden master, 1 × 4 threads e 1 s dos três cenários conferem bit a bit.
+      Feito: canais iônicos de pulso (`br.remoto.core.model.channel`: `SodiumChannel` m³h e
+      `GatedChannel` para K rápido n⁴, K lento q² e Ca persistente p) e sinapses
+      (`br.remoto.core.model.synapse`: `SynapseGroup`, a agregação de Lytton, `Synapse` e
+      `SynapticDynamics`). Faltam motoneurônios e interneurônios, tratos e ruído, sinais
+      modulantes, unidades motoras, músculo SOCDS, EMG e o tornozelo isométrico.
    3. Aferentes e proprioceptores: fibras Ia, Ib e II, fuso (Mileusnic, Prochazka), OTG (Crago).
    4. O resto: músculos Raikova, Hill e *DistributionMoments*, pêndulo e tarefa de posição,
-      estimulação do nervo, corrente injetada e sinais modulantes.
-   5. O motor do `remoto-core` vira o padrão, e o editor passa a gravar os parâmetros tipados,
-      o que elimina o HSQLDB de vez.
+      estimulação do nervo e corrente injetada.
+   5. O motor roda só sobre o `remoto-core`, o editor passa a gravar os parâmetros tipados (o
+      que elimina o HSQLDB de vez) e o `remoto-legacy-model` deixa de existir.
 2. ~~Desempenho do motor original.~~ Feito: ver "Desempenho" em [Motor original](#motor-original-legacy).
    Próximo ganho: tirar da thread da simulação a força muscular, separando o que sorteia
    (fuso, distúrbios) do que não sorteia.

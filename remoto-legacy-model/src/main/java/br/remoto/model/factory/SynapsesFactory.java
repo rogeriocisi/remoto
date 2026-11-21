@@ -13,6 +13,10 @@ import br.remoto.model.vo.ConductanceVO;
 import br.remoto.model.vo.DynamicVO;
 
 
+import br.remoto.core.model.synapse.SynapseGroup;
+import br.remoto.core.model.synapse.SynapticDynamics;
+import br.remoto.model.vo.DynamicVO;
+
 public class SynapsesFactory 
 {
 	// ??? teste para saber o numero de sinapses de uma simulacao de larga escala
@@ -525,12 +529,12 @@ public class SynapsesFactory
 		{
 			if( gType.getCompartment() != null && gType.getCompartment().equals( ReMoto.somaCompartment ) )
 			{
-				((SpinalNeuron)neuronPos).getSomaExcitSynapses().addConductance( gType, weight, cd );
+				addSynapse( ((SpinalNeuron)neuronPos).getSomaExcitSynapses(), gType, weight, cd );
 				neuronPre.getTransmittingSynapses().add( ((SpinalNeuron)neuronPos).getSomaExcitSynapses() );
 			}
 			else
 			{
-				((SpinalNeuron)neuronPos).getDendExcitSynapses().addConductance( gType, weight, cd );
+				addSynapse( ((SpinalNeuron)neuronPos).getDendExcitSynapses(), gType, weight, cd );
 				neuronPre.getTransmittingSynapses().add( ((SpinalNeuron)neuronPos).getDendExcitSynapses() );
 			}
 		}
@@ -538,12 +542,12 @@ public class SynapsesFactory
 		{
 			if( gType.getCompartment() != null && gType.getCompartment().equals( ReMoto.somaCompartment ) )
 			{
-				((SpinalNeuron)neuronPos).getSomaInhibSynapses().addConductance( gType, weight, cd );
+				addSynapse( ((SpinalNeuron)neuronPos).getSomaInhibSynapses(), gType, weight, cd );
 				neuronPre.getTransmittingSynapses().add( ((SpinalNeuron)neuronPos).getSomaInhibSynapses() );
 			}
 			else
 			{
-				((SpinalNeuron)neuronPos).getDendInhibSynapses().addConductance( gType, weight, cd );
+				addSynapse( ((SpinalNeuron)neuronPos).getDendInhibSynapses(), gType, weight, cd );
 				neuronPre.getTransmittingSynapses().add( ((SpinalNeuron)neuronPos).getDendInhibSynapses() );
 			}
 		}
@@ -720,4 +724,25 @@ public class SynapsesFactory
 	}
 */
 
+
+	// One synapse of br.remoto.core.model.synapse: gmax goes from nS to uS, scaled by the weight
+	private static void addSynapse(SynapseGroup group, ConductanceVO g, double weight, String cd)
+	{
+		group.add(cd, (g.getGmax() * weight) / 1000.0, g.getDelay(), dynamics(g.getDynamics()));
+	}
+	
+	// Same reading as the original DynamicProperties: no VO means no dynamics, an unknown type too
+	private static SynapticDynamics dynamics(DynamicVO vo)
+	{
+		if( vo == null )
+			vo = new DynamicVO();
+		
+		SynapticDynamics.Kind kind = SynapticDynamics.Kind.NONE;
+		if( vo.getDynamicType().equals( ReMoto.depressing ) )
+			kind = SynapticDynamics.Kind.DEPRESSING;
+		else if( vo.getDynamicType().equals( ReMoto.facilitating ) )
+			kind = SynapticDynamics.Kind.FACILITATING;
+		
+		return new SynapticDynamics(kind, vo.getTau(), vo.getVariation());
+	}
 }

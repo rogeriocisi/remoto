@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * <p>O código numérico é o mesmo do site antigo, com duas diferenças: a aleatoriedade, agora
  * derivada da seed do cenário ({@link Rng}), o que torna cada execução reprodutível; e a
- * correção do decaimento das condutâncias sinápticas ({@code MultSynapticConductance}), que
+ * correção do decaimento das condutâncias sinápticas (hoje {@code SynapseGroup}, no remoto-core), que
  * desde 2016 ficavam congeladas entre um evento e outro.
  *
  * <p>Os neurônios de cada passo podem ser atualizados por várias threads ({@code NeuronUpdater}

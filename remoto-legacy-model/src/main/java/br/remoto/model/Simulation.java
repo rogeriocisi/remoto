@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import br.remoto.model.Conductance.MultSynapticConductance;
+import br.remoto.core.model.synapse.SynapseGroup;
 import br.remoto.model.Joint.Joint;
 import br.remoto.model.Joint.Ankle.Models.AnkleIsometricModel;
 import br.remoto.model.Musculotendon.MusculotendonSuperClass;
@@ -553,7 +553,7 @@ public class Simulation implements Serializable, Runnable
 				    // Reset post-synapses
 					for(int i = 0; i < neu.getTransmittingSynapses().size(); i++)
 					{
-						((MultSynapticConductance)neu.getTransmittingSynapses().get(i)).reset();
+						((SynapseGroup)neu.getTransmittingSynapses().get(i)).reset();
 					}
 				}
 			}

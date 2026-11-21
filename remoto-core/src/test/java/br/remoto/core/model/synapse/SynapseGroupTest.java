@@ -1,14 +1,9 @@
-package br.remoto.legacy;
+package br.remoto.core.model.synapse;
+
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
-
-import br.remoto.model.ReMoto;
-import br.remoto.model.Conductance.MultSynapticConductance;
-import br.remoto.model.Neuron.Miscellaneous;
-import br.remoto.model.vo.ConductanceVO;
-import br.remoto.model.vo.DynamicVO;
-import org.junit.jupiter.api.Test;
 
 /**
  * A synapse of the original model, driven the way the neuron drives it: four calls per
@@ -19,7 +14,7 @@ import org.junit.jupiter.api.Test;
  * decays with τoff. Both have closed forms, so the integrated conductance can be compared
  * against them point by point.
  */
-class SynapticConductanceTest {
+class SynapseGroupTest {
 
     private static final double STEP = 0.05;      // ms
     private static final double ALPHA = 1.1;      // 1/(mM ms)
@@ -67,39 +62,46 @@ class SynapticConductanceTest {
         assertThat(afterFiveTau).isLessThan(0.01 * peak);
     }
 
+    @Test
+    void comDepressaoOSegundoDisparoProximoAbreMenos() {
+        SynapticDynamics depressing = new SynapticDynamics(SynapticDynamics.Kind.DEPRESSING, 100, 50);
+        double[] g = simulate(60.0, depressing, SPIKE_AT, SPIKE_AT + 30);
+        double first = max(g, SPIKE_AT, SPIKE_AT + 10);
+        double second = max(g, SPIKE_AT + 30, SPIKE_AT + 40);
+
+        // o primeiro disparo não tem anterior: a condutância é a máxima
+        assertThat(first).isCloseTo(max(simulate(40.0), SPIKE_AT, SPIKE_AT + 10), within(1e-15));
+        assertThat(second).isLessThan(0.8 * first);
+    }
+
+    private static double max(double[] g, double from, double to) {
+        double m = 0;
+        for (int n = (int) Math.round(from / STEP); n < Math.round(to / STEP); n++) {
+            m = Math.max(m, g[n]);
+        }
+        return m;
+    }
+
     /** Conductance (uS) at the start of each step, one presynaptic spike at {@link #SPIKE_AT}. */
     static double[] simulate(double durationMs) {
-        Miscellaneous misc = new Miscellaneous();
-        misc.setStep(STEP);
-        misc.setStepByTwo(STEP / 2);
-        misc.setStepBySix(STEP / 6);
+        return simulate(durationMs, SynapticDynamics.NONE, SPIKE_AT);
+    }
 
-        DynamicVO noDynamics = new DynamicVO();
-        noDynamics.setDynamicType(ReMoto.noDynamics);
-
-        ConductanceVO vo = new ConductanceVO("exc", "post", "pre");
-        vo.setAlpha(ALPHA);
-        vo.setBeta(BETA);
-        vo.setTmax(TMAX);
-        vo.setTpeak(PULSE);
-        vo.setGmax(GMAX_NS);
-        vo.setE(70);
-        vo.setDelay(0);
-        vo.setActive(true);
-        vo.setDynamics(noDynamics);
-
-        MultSynapticConductance synapse = new MultSynapticConductance(vo, "post", misc);
-        synapse.addConductance(vo, 1.0, "pre");
-        synapse.receiveSpike(SPIKE_AT, "pre");
+    static double[] simulate(double durationMs, SynapticDynamics dynamics, double... spikes) {
+        SynapseGroup group = new SynapseGroup(70, PULSE, TMAX, ALPHA, BETA, true);
+        Synapse pre = group.add("pre", GMAX_NS / 1000.0, 0, dynamics);
+        for (double spike : spikes) {
+            group.receiveSpike(spike, pre);
+        }
 
         int steps = (int) Math.round(durationMs / STEP);
         double[] g = new double[steps];
         for (int n = 0; n < steps; n++) {
             double t = n * STEP;
-            g[n] = synapse.getValue(2, t);
-            synapse.getValue(2, t + STEP / 2);
-            synapse.getValue(2, t + STEP / 2);
-            synapse.getValue(2, t + STEP);
+            g[n] = group.value(t);
+            group.value(t + STEP / 2);
+            group.value(t + STEP / 2);
+            group.value(t + STEP);
         }
         return g;
     }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import br.remoto.model.Nerve;
 import br.remoto.model.ReMoto;
-import br.remoto.model.Conductance.PulseConductance;
+import br.remoto.core.model.channel.PulseChannel;
 import br.remoto.model.vo.NeuronVO;
 import br.remoto.util.Signal;
 
@@ -32,7 +32,7 @@ public class Motoneuron extends SpinalNeuron
 	
 	protected Nerve nerve;
 
-	protected PulseConductance gCa;
+	protected PulseChannel gCa;
 	
 	public Motoneuron()
 	{
@@ -83,7 +83,7 @@ public class Motoneuron extends SpinalNeuron
 			// Store signals as marked
 			if( storedSignals == true )
 			{
-				signalStore.add( new Signal(ReMoto.gCa, gCa.getLastValue(), t) );
+				signalStore.add( new Signal(ReMoto.gCa, gCa.lastValue(), t) );
 			}
 			
 			atualizeDendrite(t);
@@ -228,14 +228,14 @@ public class Motoneuron extends SpinalNeuron
 		double iSynaptic = 0;
 		
 		if(miscellaneous.getGammaCa() > 0){
-			iIonic += gCa.getCurrent(slope, t, Vd) * miscellaneous.getGammaCa();
+			iIonic += gCa.current(t, Vd) * miscellaneous.getGammaCa();
 		}
 		
 		
 		
 		// Synapses include all inputs and noises
-		iSynaptic += dendExcitSynapses.getCurrent(2, t, Vd);
-		iSynaptic += dendInhibSynapses.getCurrent(2, t, Vd);
+		iSynaptic += dendExcitSynapses.current(t, Vd);
+		iSynaptic += dendInhibSynapses.current(t, Vd);
 		
 		
 		
@@ -270,13 +270,13 @@ public class Motoneuron extends SpinalNeuron
 		double iIonic = 0;
 		double iSynaptic = 0;
 
-		iIonic += gNa.getCurrent(slope, t, Vs);
-		iIonic += gKf.getCurrent(slope, t, Vs);
-		iIonic += gKs.getCurrent(slope, t, Vs);
+		iIonic += gNa.current(t, Vs);
+		iIonic += gKf.current(t, Vs);
+		iIonic += gKs.current(t, Vs);
 
 		// Synapses include all inputs and noises
-		iSynaptic += somaExcitSynapses.getCurrent(2, t, Vs);
-		iSynaptic += somaInhibSynapses.getCurrent(2, t, Vs);
+		iSynaptic += somaExcitSynapses.current(t, Vs);
+		iSynaptic += somaInhibSynapses.current(t, Vs);
 		
 		double iDendrite = gCoupling * (vd - Vs);
 		double iLeak = gLeakSoma * (ReMoto.E0 - Vs);
@@ -402,11 +402,11 @@ public class Motoneuron extends SpinalNeuron
 		this.nerve = nerve;
 	}
 
-	public PulseConductance getGCa() {
+	public PulseChannel getGCa() {
 		return gCa;
 	}
 	
-	public void setGCa(PulseConductance gCa){
+	public void setGCa(PulseChannel gCa){
 		this.gCa = gCa;
 	}
 	

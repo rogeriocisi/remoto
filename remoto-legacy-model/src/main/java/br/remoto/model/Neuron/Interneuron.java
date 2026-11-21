@@ -86,13 +86,13 @@ public class Interneuron extends SpinalNeuron
 
 		double iLeak = gLeakSoma * (ReMoto.E0 - V);
 
-		iIonic += gNa.getCurrent(slope, t, V);
-		iIonic += gKf.getCurrent(slope, t, V);
-		iIonic += gKs.getCurrent(slope, t, V);
+		iIonic += gNa.current(t, V);
+		iIonic += gKf.current(t, V);
+		iIonic += gKs.current(t, V);
 
 		// Synapses include all inputs and noises
-		iSynaptic += dendExcitSynapses.getCurrent(slope, t, V);
-		iSynaptic += dendInhibSynapses.getCurrent(slope, t, V);
+		iSynaptic += dendExcitSynapses.current(t, V);
+		iSynaptic += dendInhibSynapses.current(t, V);
 
 		if( current != null )
 		{

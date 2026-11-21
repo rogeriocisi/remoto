@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import br.remoto.model.Current;
 import br.remoto.model.ReMoto;
-import br.remoto.model.Conductance.MultSynapticConductance;
-import br.remoto.model.Conductance.PulseConductance;
+import br.remoto.core.model.synapse.SynapseGroup;
+import br.remoto.core.model.channel.PulseChannel;
 import br.remoto.model.vo.NeuronVO;
 import br.remoto.util.Signal;
 
@@ -25,9 +25,9 @@ public abstract class SpinalNeuron extends Neuron
 	protected double tDendritePIC;
 
 	// Ionic conductances
-	protected PulseConductance gKf;
-	protected PulseConductance gKs;
-	protected PulseConductance gNa;
+	protected PulseChannel gKf;
+	protected PulseChannel gKs;
+	protected PulseChannel gNa;
 	
 
 	// Injected current
@@ -43,10 +43,10 @@ public abstract class SpinalNeuron extends Neuron
 	protected double gCoupling;
 	
 	// Synapses which this neuron receives
-	protected MultSynapticConductance dendExcitSynapses; 
-	protected MultSynapticConductance dendInhibSynapses; 
-	protected MultSynapticConductance somaExcitSynapses; 
-	protected MultSynapticConductance somaInhibSynapses; 
+	protected SynapseGroup dendExcitSynapses; 
+	protected SynapseGroup dendInhibSynapses; 
+	protected SynapseGroup somaExcitSynapses; 
+	protected SynapseGroup somaInhibSynapses; 
 
 	
 	public SpinalNeuron()
@@ -112,14 +112,14 @@ public abstract class SpinalNeuron extends Neuron
 			signalStore.add( new Signal(ReMoto.Vd, vd, t) );
 			signalStore.add( new Signal(ReMoto.Vs, vs, t) );
 
-			signalStore.add( new Signal(ReMoto.gNa, gNa.getLastValue(), t) );
-			signalStore.add( new Signal(ReMoto.gKf, gKf.getLastValue(), t) );
-			signalStore.add( new Signal(ReMoto.gKs, gKs.getLastValue(), t) );
+			signalStore.add( new Signal(ReMoto.gNa, gNa.lastValue(), t) );
+			signalStore.add( new Signal(ReMoto.gKf, gKf.lastValue(), t) );
+			signalStore.add( new Signal(ReMoto.gKs, gKs.lastValue(), t) );
 			
-			if( dendExcitSynapses != null ) signalStore.add( new Signal(ReMoto.gExcDend, dendExcitSynapses.getLastValue(), t) );
-			if( dendInhibSynapses != null ) signalStore.add( new Signal(ReMoto.gInibDend, dendInhibSynapses.getLastValue(), t) );
-			if( somaExcitSynapses != null ) signalStore.add( new Signal(ReMoto.gExcSoma, somaExcitSynapses.getLastValue(), t) );
-			if( somaInhibSynapses != null ) signalStore.add( new Signal(ReMoto.gInibSoma, somaInhibSynapses.getLastValue(), t) );
+			if( dendExcitSynapses != null ) signalStore.add( new Signal(ReMoto.gExcDend, dendExcitSynapses.lastValue(), t) );
+			if( dendInhibSynapses != null ) signalStore.add( new Signal(ReMoto.gInibDend, dendInhibSynapses.lastValue(), t) );
+			if( somaExcitSynapses != null ) signalStore.add( new Signal(ReMoto.gExcSoma, somaExcitSynapses.lastValue(), t) );
+			if( somaInhibSynapses != null ) signalStore.add( new Signal(ReMoto.gInibSoma, somaInhibSynapses.lastValue(), t) );
 		}
 	}
 
@@ -232,41 +232,41 @@ public abstract class SpinalNeuron extends Neuron
 	}
 
 
-	public PulseConductance getGKf() {
+	public PulseChannel getGKf() {
 		return gKf;
 	}
 
 
-	public void setGKf(PulseConductance gK) {
+	public void setGKf(PulseChannel gK) {
 		this.gKf = gK;
 	}
 
 
-	public PulseConductance getGNa() {
+	public PulseChannel getGNa() {
 		return gNa;
 	}
 
 
-	public void setGNa(PulseConductance gNa) {
+	public void setGNa(PulseChannel gNa) {
 		this.gNa = gNa;
 	}
 
 
-	public PulseConductance getGKs() {
+	public PulseChannel getGKs() {
 		return gKs;
 	}
 
 
-	public void setGKs(PulseConductance ks) {
+	public void setGKs(PulseChannel ks) {
 		gKs = ks;
 	}
 
-	public MultSynapticConductance getDendInhibSynapses() {
+	public SynapseGroup getDendInhibSynapses() {
 		return dendInhibSynapses;
 	}
 
 
-	public void setDendInhibSynapses(MultSynapticConductance inhibPre) {
+	public void setDendInhibSynapses(SynapseGroup inhibPre) {
 		this.dendInhibSynapses = inhibPre;
 	}
 
@@ -308,32 +308,32 @@ public abstract class SpinalNeuron extends Neuron
 		tDendritePIC = dendritePIC;		
 	}
 
-	public MultSynapticConductance getDendExcitSynapses() {
+	public SynapseGroup getDendExcitSynapses() {
 		return dendExcitSynapses;
 	}
 
 
-	public void setDendExcitSynapses(MultSynapticConductance excitPre) {
+	public void setDendExcitSynapses(SynapseGroup excitPre) {
 		this.dendExcitSynapses = excitPre;
 	}
 
 
-	public MultSynapticConductance getSomaExcitSynapses() {
+	public SynapseGroup getSomaExcitSynapses() {
 		return somaExcitSynapses;
 	}
 
 
-	public void setSomaExcitSynapses(MultSynapticConductance excitPreSoma) {
+	public void setSomaExcitSynapses(SynapseGroup excitPreSoma) {
 		this.somaExcitSynapses = excitPreSoma;
 	}
 
 
-	public MultSynapticConductance getSomaInhibSynapses() {
+	public SynapseGroup getSomaInhibSynapses() {
 		return somaInhibSynapses;
 	}
 
 
-	public void setSomaInhibSynapses(MultSynapticConductance inhibPreSoma) {
+	public void setSomaInhibSynapses(SynapseGroup inhibPreSoma) {
 		this.somaInhibSynapses = inhibPreSoma;
 	}
 

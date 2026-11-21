@@ -6,8 +6,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import br.remoto.model.Conductance.MultSynapticConductance;
-import br.remoto.model.Conductance.SynapticConductance;
+import br.remoto.core.model.synapse.Synapse;
+import br.remoto.core.model.synapse.SynapseGroup;
 import br.remoto.model.Neuron.Interneuron;
 import br.remoto.model.Neuron.Motoneuron;
 import br.remoto.model.Neuron.Neuron;
@@ -145,9 +145,9 @@ final class NeuronUpdater implements AutoCloseable
 
 		for( int k = 0; k < synapses.size(); k++ )
 		{
-			SynapticConductance g = ((MultSynapticConductance)synapses.get(k)).getConductance(key);
+			Synapse g = ((SynapseGroup)synapses.get(k)).synapse(key);
 
-			if( g == null || g.getDelay() < step + ReMoto.T_TOLERANCE )
+			if( g == null || g.delay() < step + ReMoto.T_TOLERANCE )
 				return false;
 		}
 

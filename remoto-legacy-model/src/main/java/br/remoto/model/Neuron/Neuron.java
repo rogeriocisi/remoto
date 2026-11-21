@@ -4,8 +4,8 @@ package br.remoto.model.Neuron;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.remoto.model.Conductance.MultSynapticConductance;
-import br.remoto.model.Conductance.SynapticConductance;
+import br.remoto.core.model.synapse.Synapse;
+import br.remoto.core.model.synapse.SynapseGroup;
 import br.remoto.model.vo.NeuronVO;
 
 
@@ -37,7 +37,7 @@ public abstract class Neuron extends NeuronProperties
 	
 	// The conductance each transmitting synapse resolves this neuron to, looked up once after
 	// the network is built (same result as the per-spike Hashtable lookup it replaces)
-	private transient SynapticConductance resolvedConductances[];
+	private transient Synapse resolvedConductances[];
 	
 	// Spikes held until the end of the integration step (parallel update, see Simulation)
 	private transient boolean deferSpikes;
@@ -100,17 +100,17 @@ public abstract class Neuron extends NeuronProperties
 		if( resolvedConductances == null || resolvedConductances.length != size )
 		{
 			String key = getSynapseKey();
-			SynapticConductance resolved[] = new SynapticConductance[size];
+			Synapse resolved[] = new Synapse[size];
 			
 			for(int k = 0; k < size; k++)
-				resolved[k] = ((MultSynapticConductance)transmittingSynapses.get(k)).getConductance(key);
+				resolved[k] = ((SynapseGroup)transmittingSynapses.get(k)).synapse(key);
 			
 			resolvedConductances = resolved;
 		}
 		
 		for(int k = 0; k < size; k++)
 		{
-			((MultSynapticConductance)transmittingSynapses.get(k)).receiveSpike(t, resolvedConductances[k]);
+			((SynapseGroup)transmittingSynapses.get(k)).receiveSpike(t, resolvedConductances[k]);
 		}
 	}
 	

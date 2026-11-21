@@ -5,11 +5,9 @@ import java.util.List;
 import br.remoto.model.Configuration;
 import br.remoto.model.Neuron.Neuron;
 import br.remoto.model.ReMoto;
-import br.remoto.model.Conductance.MultSynapticConductance;
-import br.remoto.model.Conductance.PulseCaConductance;
-import br.remoto.model.Conductance.PulseKfConductance;
-import br.remoto.model.Conductance.PulseKsConductance;
-import br.remoto.model.Conductance.PulseNaConductance;
+import br.remoto.core.model.synapse.SynapseGroup;
+import br.remoto.core.model.channel.GatedChannel;
+import br.remoto.core.model.channel.SodiumChannel;
 import br.remoto.model.Neuron.Interneuron;
 import br.remoto.model.Neuron.Motoneuron;
 import br.remoto.model.Neuron.SensoryFiber;
@@ -179,12 +177,12 @@ public class NeuronFactory
 				pattern.getGCaPVO().setGmax( pattern.getGCaPVO().getGmax() * 1e6 * areaDend );
 					
 				// Create Na and K conductances for somatic compartment
-				neu.setGNa( new PulseNaConductance( pattern.getGNaMVO(), pattern.getGNaHVO() ) );
-				neu.setGKf( new PulseKfConductance( pattern.getGKNVO() ) );
-				neu.setGKs( new PulseKsConductance( pattern.getGKQVO() ) );
+				neu.setGNa( sodium( pattern.getGNaMVO(), pattern.getGNaHVO() ) );
+				neu.setGKf( fastPotassium( pattern.getGKNVO() ) );
+				neu.setGKs( slowPotassium( pattern.getGKQVO() ) );
 				
 				// Create Ca conductances for dendritic compartment
-				((Motoneuron)neu).setGCa( new PulseCaConductance( pattern.getGCaPVO() ) );
+				((Motoneuron)neu).setGCa( calcium( pattern.getGCaPVO() ) );
 			}
 			else
 			{
@@ -222,9 +220,9 @@ public class NeuronFactory
 				gKQVO.setGmax( reference.getGKQVO().getGmax() * 1e6 * area );
 					
 				// Create Na and K conductances for somatic compartment
-				neu.setGNa( new PulseNaConductance( gNaMVO, gNaHVO ) );
-				neu.setGKf( new PulseKfConductance( gKNVO ) );
-				neu.setGKs( new PulseKsConductance( gKQVO ) );
+				neu.setGNa( sodium( gNaMVO, gNaHVO ) );
+				neu.setGKf( fastPotassium( gKNVO ) );
+				neu.setGKs( slowPotassium( gKQVO ) );
 			}
 			
 			// Ensure an estimated initial capacity for the spike train
@@ -234,10 +232,10 @@ public class NeuronFactory
 			ConductanceVO gExc = conf.getMarcovType(neu.getCdNucleus(), neu.getType(), ReMoto.excitatory);
 			ConductanceVO gInh = conf.getMarcovType(neu.getCdNucleus(), neu.getType(), ReMoto.inhibitory);
 			
-			neu.setDendExcitSynapses( new MultSynapticConductance(gExc, neu.getCd(), misc) );
-			neu.setDendInhibSynapses( new MultSynapticConductance(gInh, neu.getCd(), misc) );
-			neu.setSomaExcitSynapses( new MultSynapticConductance(gExc, neu.getCd(), misc) );
-			neu.setSomaInhibSynapses( new MultSynapticConductance(gInh, neu.getCd(), misc) );
+			neu.setDendExcitSynapses( synapseGroup(gExc) );
+			neu.setDendInhibSynapses( synapseGroup(gInh) );
+			neu.setSomaExcitSynapses( synapseGroup(gExc) );
+			neu.setSomaInhibSynapses( synapseGroup(gInh) );
 
 			/* Included in StimulationFactory::injectCurrent(Configuration conf, Neuron neurons[][])
 			 * 
@@ -267,4 +265,34 @@ public class NeuronFactory
 		return null;
 	}
 
+
+	// Ionic channels of br.remoto.core.model.channel, from the conductance types of the
+	// configuration: gmax goes from nS to uS, and the pulse lasts TPEAK
+	private static SodiumChannel sodium(ConductanceVO m, ConductanceVO h)
+	{
+		return new SodiumChannel(m.getGmax() / 1000, m.getE(), m.getTpeak(),
+				m.getAlpha(), m.getBeta(), h.getAlpha(), h.getBeta());
+	}
+	
+	private static GatedChannel fastPotassium(ConductanceVO g)
+	{
+		return GatedChannel.fastPotassium(g.getGmax() / 1000, g.getE(), g.getTpeak(), g.getAlpha(), g.getBeta());
+	}
+	
+	private static GatedChannel slowPotassium(ConductanceVO g)
+	{
+		return GatedChannel.slowPotassium(g.getGmax() / 1000, g.getE(), g.getTpeak(), g.getAlpha(), g.getBeta());
+	}
+	
+	private static GatedChannel calcium(ConductanceVO g)
+	{
+		return GatedChannel.calcium(g.getGmax() / 1000, g.getE(), g.getTpeak(), g.getAlpha(), g.getBeta());
+	}
+
+	// Synapses of one kind on one compartment (br.remoto.core.model.synapse), with the kinetics of
+	// the MARKOV_TYPE of the neuron
+	private static SynapseGroup synapseGroup(ConductanceVO g)
+	{
+		return new SynapseGroup(g.getE(), g.getTpeak(), g.getTmax(), g.getAlpha(), g.getBeta(), g.isActive());
+	}
 }
