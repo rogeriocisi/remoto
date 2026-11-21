@@ -10,3 +10,9 @@ target/
 
 # Configuração local do Claude Code (preview)
 .claude/
+
+# Eclipse / extensão Java do IDE (arquivos locais)
+.project
+.classpath
+.settings/
+bin/
