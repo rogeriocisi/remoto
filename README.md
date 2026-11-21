@@ -110,6 +110,10 @@ The web application is a single executable JAR with an embedded web server, inst
 > [!WARNING]
 > The legacy web application is no longer in this repository. It depends on software that no longer receives security updates (Struts 1, Tomcat 7) and on Java applets, which no current browser runs. To run it for reference, use the parent repository, [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto).
 
+## License
+
+ReMoto is released under the [MIT License](LICENSE).
+
 ## Support
 
 To report problems or ask questions, open an issue in this repository.

@@ -340,4 +340,4 @@ sinal guardado (o Action original também não os salvava).
    famílias de modelos), o que também elimina o HSQLDB em memória.
 2. Desempenho do motor original (perfilar com JFR; paralelizar a atualização dos neurônios).
 3. Varreduras de parâmetros, cliente Python, export NWB.
-4. Licença do projeto (o repositório ainda não tem `LICENSE`).
+4. ~~Licença do projeto.~~ Feito: MIT, em `LICENSE`.

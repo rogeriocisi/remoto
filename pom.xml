@@ -24,6 +24,13 @@
   <packaging>pom</packaging>
   <name>ReMoto</name>
   <description>Simulador de núcleos motores da medula espinhal (nova versão, sem banco de dados)</description>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <modules>
     <module>remoto-core</module>
