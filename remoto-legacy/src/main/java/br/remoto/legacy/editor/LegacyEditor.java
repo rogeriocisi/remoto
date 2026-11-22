@@ -2,7 +2,7 @@ package br.remoto.legacy.editor;
 
 import br.remoto.legacy.LegacyConfig;
 import br.remoto.legacy.LegacyConfigurations;
-import br.remoto.model.Configuration;
+import br.remoto.core.simulation.setup.Configuration;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,8 @@ import java.util.NoSuchElementException;
 /**
  * Editor de cenários do motor original, no mesmo modelo do site antigo: a configuração é
  * carregada como {@code Configuration}, editada tela a tela pelas mesmas propriedades dos JSPs, e
- * gravada de volta pelo {@code ConfigurationDAO.saveConfiguration} original.
+ * gravada de volta nas tabelas do cenário como o {@code ConfigurationDAO.saveConfiguration}
+ * original as gravava, sem banco de dados.
  */
 public final class LegacyEditor {
 

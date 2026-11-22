@@ -7,12 +7,16 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LegacyEngineTest {
 
     private static final double SHORT_RUN_MS = 40;
+    private static final JsonMapper MAPPER = JsonMapper.builder().build();
     private static LegacyDatabase db;
     private final LegacyEngine engine = new LegacyEngine();
     private final JsonCodec json = new JsonCodec();
@@ -53,15 +58,20 @@ class LegacyEngineTest {
         assertThat(text).doesNotContain("\"USER\"").doesNotContain("PASSWORD").doesNotContain("EMAIL");
     }
 
-    @Test
-    void cenarioJsonReproduzExatamenteOBancoOriginal() throws Exception {
-        Recorder fromDatabase = new Recorder();
-        engine.run(LegacyConfigurations.loadFromJdbc(db.jdbcUrl(), 17), 7, SHORT_RUN_MS, 0.05, fromDatabase);
+    /** O export lê o arquivo do banco sem o HSQLDB; os cenários públicos foram exportados por ele. */
+    @ParameterizedTest
+    @ValueSource(ints = {17, 24, 42})
+    void exportDoBancoReproduzOsCenariosPublicos(int id) throws Exception {
+        Path file;
+        try (var files = Files.list(Path.of(System.getProperty("remoto.legacy.db")).getParent().getParent()
+                .resolve("scenarios"))) {
+            file = files.filter(p -> p.getFileName().toString().startsWith("remoto-" + id + "-")).findFirst()
+                    .orElseThrow();
+        }
+        Object published = MAPPER.readValue(Files.readAllBytes(file), Object.class);
+        Object exported = MAPPER.readValue(json.toBytes(db.exportScenario(id)), Object.class);
 
-        Recorder fromJson = new Recorder();
-        engine.run(viaJsonFile(db.exportScenario(17)).withSeed(7).withDuration(SHORT_RUN_MS), fromJson);
-
-        assertThat(fromJson.outputs).isNotEmpty().isEqualTo(fromDatabase.outputs);
+        assertThat(exported).isEqualTo(published);
     }
 
     @Test
@@ -94,6 +104,30 @@ class LegacyEngineTest {
                 .isEqualTo(golden().getProperty(key));
         assertThat(emgHash).as("golden master %s.emg (valor atual: %s)", key, emgHash)
                 .isEqualTo(golden().getProperty(key + ".emg"));
+    }
+
+    /**
+     * As 30 configurações do banco original, com a seed igual ao ID. As referências foram geradas
+     * pelo motor quando ele ainda montava a configuração com o {@code ConfigurationDAO} original,
+     * lendo do HSQLDB.
+     */
+    @ParameterizedTest
+    @MethodSource("databaseConfigurations")
+    void todasAsConfiguracoesDoBancoBatemComAReferencia(int id) throws Exception {
+        Scenario scenario = viaJsonFile(db.exportScenario(id)).withDuration(SHORT_RUN_MS);
+        String key = "db." + id + "." + scenario.seed() + "." + (int) SHORT_RUN_MS;
+
+        Recorder r = run(scenario);
+
+        assertThat(r.sha256()).as("golden master %s%n%s", key, r.summary()).isEqualTo(golden().getProperty(key));
+    }
+
+    static IntStream databaseConfigurations() {
+        try (LegacyDatabase database = LegacyDatabase.open(Path.of(System.getProperty("remoto.legacy.db")))) {
+            int[] ids = database.configurations().stream().mapToInt(LegacyDatabase.ConfigurationInfo::id).toArray();
+            assertThat(ids).hasSizeGreaterThanOrEqualTo(30);
+            return IntStream.of(ids);
+        }
     }
 
     @Test

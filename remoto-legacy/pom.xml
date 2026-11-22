@@ -13,18 +13,15 @@
   <artifactId>remoto-legacy</artifactId>
   <name>ReMoto :: legacy engine</name>
   <description>
-    Liga os modelos originais (remoto-legacy-model) à nova plataforma: exporta as configurações
-    do HSQLDB antigo para JSON e roda o motor original como um SimulationEngine.
+    Liga os modelos do ReMoto original (portados para o remoto-core) à nova plataforma: o motor
+    "legacy" como um SimulationEngine, o editor de cenários e a conversão do banco original para
+    cenários JSON.
   </description>
 
   <dependencies>
     <dependency>
       <groupId>br.remoto</groupId>
       <artifactId>remoto-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>br.remoto</groupId>
-      <artifactId>remoto-legacy-model</artifactId>
     </dependency>
     <dependency>
       <groupId>tools.jackson.core</groupId>

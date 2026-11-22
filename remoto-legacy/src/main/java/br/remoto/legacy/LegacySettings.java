@@ -1,6 +1,6 @@
 package br.remoto.legacy;
 
-import br.remoto.model.Configuration;
+import br.remoto.core.simulation.setup.Configuration;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;

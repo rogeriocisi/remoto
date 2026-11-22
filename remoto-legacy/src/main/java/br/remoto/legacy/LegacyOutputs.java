@@ -2,14 +2,14 @@ package br.remoto.legacy;
 
 import br.remoto.core.engine.ResultSink;
 import br.remoto.core.engine.Seeds;
-import br.remoto.model.Configuration;
-import br.remoto.model.ReMoto;
-import br.remoto.model.Simulation;
-import br.remoto.model.Joint.Joint;
-import br.remoto.model.Musculotendon.Muscle.ExtrafusalMuscle.ExtrafusalMuscleSuperClass;
-import br.remoto.model.Neuron.Neuron;
+import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.ReMoto;
+import br.remoto.core.simulation.Simulation;
+import br.remoto.core.simulation.joint.Joint;
+import br.remoto.core.simulation.musculotendon.ExtrafusalMuscleSuperClass;
+import br.remoto.core.simulation.neuron.Neuron;
 import br.remoto.core.model.emg.BandPassFilter;
-import br.remoto.util.Signal;
+import br.remoto.core.simulation.util.Signal;
 
 import java.util.ArrayList;
 import java.util.Arrays;

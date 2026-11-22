@@ -1,7 +1,7 @@
 package br.remoto.legacy.editor;
 
-import br.remoto.model.Configuration;
-import br.remoto.model.vo.MiscellaneousVO;
+import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.setup.MiscellaneousVO;
 
 /**
  * Pequenos "beans" para campos que, no site antigo, eram propriedades do formulário ligadas

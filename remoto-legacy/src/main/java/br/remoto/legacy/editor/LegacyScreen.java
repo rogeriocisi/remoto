@@ -1,6 +1,6 @@
 package br.remoto.legacy.editor;
 
-import br.remoto.model.Configuration;
+import br.remoto.core.simulation.setup.Configuration;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -185,6 +185,6 @@ public final class LegacyScreen {
 
     /** Linhas de título da tela "Miscellaneous" (MiscellaneousVO com division = true). */
     private static boolean isDivision(Object item) {
-        return item instanceof br.remoto.model.vo.MiscellaneousVO m && m.isDivision();
+        return item instanceof br.remoto.core.simulation.setup.MiscellaneousVO m && m.isDivision();
     }
 }

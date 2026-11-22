@@ -1,14 +1,15 @@
 # ReMoto — nova versão (Java 25, sem banco de dados, multiusuário)
 
-Esqueleto da nova versão proposta na modernização do ReMoto. Do código legado (Struts 1 +
-Tomcat 7) ficam só os modelos numéricos, no módulo `remoto-legacy-model`, e o banco original em `legacy-db/`; o site
-JSP e as classes fora do build foram removidos e continuam no histórico e no repositório pai.
+Nova versão do ReMoto, resultado da modernização do site original (Struts 1 + Tomcat 7). Os
+modelos numéricos foram portados para o `remoto-core`, com saídas idênticas bit a bit às do código
+original; do legado fica só o banco original em `legacy-db/`, lido sem o HSQLDB. O site JSP e o
+código original continuam no histórico e no repositório pai.
 
 > **Estado:** a infraestrutura (multiusuário, fila, armazenamento, API, interface, CLI, CI)
-> funciona e tem testes. Os **modelos originais do ReMoto já rodam na nova plataforma**
-> (motor `legacy`, ver [Motor original](#motor-original-legacy)), com resultados reprodutíveis
-> e conferidos contra o banco antigo. O motor provisório (`placeholder`) fica só para
-> demonstração.
+> funciona e tem testes. Os **modelos originais do ReMoto rodam na nova plataforma** (motor
+> `legacy`, ver [Motor original](#motor-original-legacy)), portados para o `remoto-core`, sem
+> banco de dados em nenhuma etapa, com resultados reprodutíveis e conferidos contra o código e o
+> banco originais. O motor provisório (`placeholder`) fica só para demonstração.
 
 ## Stack
 
@@ -32,10 +33,9 @@ ferramenta para instalar e manter.
 ## Módulos
 
 ```
-remoto-core          cenário, interface dos motores e motor provisório (Java puro)
+remoto-core          cenário, interface dos motores, motor provisório e os modelos do ReMoto (Java puro)
 remoto-storage       repositórios em arquivo: cenários, execuções, perfis, compartilhamentos
-remoto-legacy-model  modelos numéricos originais, compilados direto de src/ (sem cópia)
-remoto-legacy        motor "legacy": exporta o banco antigo para JSON e roda os modelos originais
+remoto-legacy        motor "legacy", editor de cenários e conversão do banco antigo para JSON
 remoto-web           aplicação Spring Boot multiusuário (API REST + páginas)
 remoto-cli           execução sem servidor: remoto run / validate / export-legacy
 scenarios/           cenários públicos versionados no Git (o antigo usuário "guest")
@@ -228,14 +228,20 @@ campo `legacy`, descrito abaixo). Um motor desconhecido é recusado com `400`.
 
 Os modelos publicados do ReMoto (motoneurônios S/F com dendritos ativos, condutâncias, Markov,
 interneurônios, sinapses com depressão/facilitação, Hill/Raikova/SOCDS, fuso, OTG, articulação)
-rodam na nova plataforma **com o mesmo código numérico do site antigo**:
+rodam na nova plataforma **com os mesmos resultados, bit a bit, do código numérico do site
+antigo**:
 
-- **Sem cópia de código:** o módulo `remoto-legacy-model` traz do `src/` do repositório pai só as
-  classes alcançáveis a partir de `Simulation` e `ConfigurationDAO` (104 arquivos), sem
-  alteração numérica; Struts, JSPs, applets e o JFreeChart antigo foram removidos do repositório.
+- **Portados para o `remoto-core`:** os modelos ficam em `br.remoto.core.model` (canais,
+  sinapses, membranas, fibras aferentes, tratos, sinais, estímulos, unidades motoras, músculos,
+  fusos, OTG, articulações), e a montagem da rede e o laço de simulação em
+  `br.remoto.core.simulation`: a `Simulation`, as fábricas, as classes de cada elemento (que
+  ligam a configuração aos modelos) e, em `simulation.setup`, a `Configuration` com os objetos que
+  o editor edita. O código original (104 arquivos do `src/` do repositório pai, que ficavam no
+  módulo `remoto-legacy-model`) foi substituído fatia por fatia, e o módulo deixou de existir;
+  Struts, JSPs, applets e o JFreeChart antigo já tinham saído do repositório.
 - **Reprodutível:** o código original usava `Math.random()` e `new Random()` sem seed. Agora
-  todas essas chamadas passam por `br.remoto.util.Rng`, um gerador por thread que o motor
-  inicializa com a `seed` do cenário. Sem seed, o site antigo se comporta como antes.
+  todas essas chamadas passam por `Rng` (`br.remoto.core.model.random`), um gerador por thread
+  que o motor inicializa com a `seed` do cenário.
 - **Correção das sinapses (motor `remoto-legacy-2b5-rng1-syn1`):** em dezembro de 2016 o
   repositório pai trocou, em `MultSynapticConductance` (hoje `SynapseGroup`, no `remoto-core`), o tempo desde o último evento
   (`t − t0`) pelo passo de integração no decaimento de `Ron` e `Roff`. Como `ron` e `roff` só
@@ -247,20 +253,26 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 - **Sem prints no laço:** o código original imprimia no console a cada passo de cada trato
   descendente (`"Poisson " + mean`), a cada disparo de sinapse com dinâmica, a cada passo da
   tarefa de posição e do simulador de fuso, e a cada neurônio e sinapse criados. Isso foi
-  removido; as mensagens de erro e os avisos de criação de modelos ficaram.
+  removido, assim como os prints de depuração da montagem; as mensagens de erro e os avisos de
+  criação de modelos ficaram.
 - **Desempenho:** sinapses e força muscular sem buscas por texto a cada passo, e atualização
   paralela dos neurônios, com o mesmo resultado bit a bit (ver [Desempenho](#desempenho)).
 - **Configuração sem banco:** cada configuração do HSQLDB antigo vira um cenário JSON com as
   linhas de cada tabela (formato `remoto-legacy-db/1`, sem a tabela USER). Para rodar, essas
   linhas viram parâmetros tipados no `remoto-core` (`br.remoto.core.model.config`: um record por
-  tabela, reunidos em `ModelConfig`), e o `ConfigurationDAO` original monta a `Configuration` a
-  partir deles, com o mesmo mapeamento de sempre e sem JDBC. O leitor (`LegacyTablesReader`)
+  tabela, reunidos em `ModelConfig`), e o `ConfigurationAssembler` (a leitura do
+  `ConfigurationDAO` original, sem JDBC) monta a `Configuration` a partir deles, com o mesmo
+  mapeamento de sempre. O leitor (`LegacyTablesReader`)
   reproduz o que o HSQLDB fazia: `NUMERIC(128,4)` arredondado para 4 casas com a metade para
   baixo, decimal em coluna inteira truncado, nulo lido como 0, e a ordem das linhas do
   `ORDER BY` de cada consulta do DAO, com o mesmo algoritmo de ordenação do HSQLDB 2.7.3. Esse
   algoritmo não é estável, e a ordem dos empates (os tratos de um mesmo núcleo, por exemplo)
-  decide a ordem de criação dos neurônios e, com ela, a dos sorteios. Só a gravação do editor
-  ainda passa por um HSQLDB em memória.
+  decide a ordem de criação dos neurônios e, com ela, a dos sorteios. A gravação do editor
+  também dispensa o banco: o `ConfigurationTables` (em `simulation.setup`) gera as linhas que o
+  `saveConfiguration` original inseria, e o `LegacySchema` (o esquema original, em
+  `legacy-schema.sql`) faz o que o HSQLDB fazia com elas: os mesmos tipos e arredondamentos
+  (`setDouble` passa por `BigDecimal.valueOf`), `NOT NULL`, chave primária e a ordem do
+  `SELECT` (a da chave primária, ou a de inserção nas tabelas sem chave).
 - **Saídas:** `forca-<núcleo>` (N), `disparos-<núcleo>` (motoneurônios), `torque` (N·m) e
   o EMG de cada músculo, em mV:
   - `emg-bruto-<núcleo>`: soma dos MUAPs das unidades motoras (`instantMuscleEMG` original,
@@ -275,10 +287,11 @@ rodam na nova plataforma **com o mesmo código numérico do site antigo**:
 
 | Teste | O que garante |
 |---|---|
-| JSON × banco | A mesma configuração lida do HSQLDB original e do cenário JSON produz saídas idênticas |
-| Parâmetros tipados × HSQLDB | A `Configuration` montada dos parâmetros tipados é idêntica, campo a campo e na ordem das listas, à que o DAO montava pelo HSQLDB, nas 30 configurações do banco original, nos três cenários públicos e em tabelas aleatórias com empates, nulos e valores com mais de 4 casas (`TypedConfigurationTest`, `TypedConfigurationEdgeCasesTest`) |
+| Banco original × referência | As 30 configurações do banco original (40 ms, seed = ID) batem com hashes gerados quando a configuração ainda era montada pelo `ConfigurationDAO` original lendo do HSQLDB (antes, um teste comparava os dois caminhos campo a campo) |
+| Export sem HSQLDB | O export lê o `remoto.script` direto e reproduz os três cenários públicos de `scenarios/`, que foram exportados pelo HSQLDB |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
 | Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro) |
+| Editor × DAO original | Editar todas as telas de uma vez e gravar dá as mesmas tabelas que o `saveConfiguration` original gravava num HSQLDB, nos três cenários públicos (`LegacyEditorTest`); gravar sem editar preserva as tabelas e a simulação (`LegacyStoreTest`) |
 | Sinapse × solução analítica | Uma sinapse acionada como no Runge-Kutta segue a solução fechada de Lytton (1996): sobe durante o pulso e decai depois (`SynapseGroupTest`, no `remoto-core`) |
 | 1 thread × 4 threads | Os três cenários públicos dão saídas idênticas com qualquer número de threads, e uma thread de trabalho não consegue sortear (`ParallelUpdateTest`) |
 
@@ -292,7 +305,9 @@ java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db leg
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --id 34,41 --out meus-cenarios
 ```
 
-Os três cenários públicos do site antigo (`guest`: 17, 24 e 42) já estão em `scenarios/`.
+Os três cenários públicos do site antigo (`guest`: 17, 24 e 42) já estão em `scenarios/`. O
+banco é um arquivo de texto (`remoto.script`, com um `CREATE TABLE` por tabela e um `INSERT` por
+linha), e o `LegacyDatabase` o lê direto, sem o HSQLDB.
 
 ### Desempenho
 
@@ -347,11 +362,13 @@ público cria uma cópia em "Meus cenários" e abre o editor nela (o **Copiar** 
    métodos da `Configuration`, e edita as mesmas propriedades JavaBean dos JSPs.
 3. Ao salvar, a tela repete o `setConfProperties` do Action (limites como no máximo 1000
    neurônios por tipo, ISI mínimo, passo mínimo, períodos refratários mínimos).
-4. A `Configuration` é gravada de volta com o **`ConfigurationDAO.saveConfiguration` original**,
-   num HSQLDB em memória, e exportada de novo para o JSON do cenário.
+4. A `Configuration` é gravada de volta nas tabelas do cenário como o
+   **`ConfigurationDAO.saveConfiguration` original** as gravava (`ConfigurationTables`), sem
+   banco de dados.
 
-Testes (`LegacyStoreTest`) garantem que carregar e gravar sem editar devolve as mesmas tabelas e
-a mesma simulação. Duas diferenças, ambas do código original: `DT_CONFIGURATION` passa a ser a
+Testes garantem que carregar e gravar sem editar devolve as mesmas tabelas e a mesma simulação
+(`LegacyStoreTest`), e que editar todas as telas grava o mesmo que o DAO original gravava
+(`LegacyEditorTest`). Duas diferenças, ambas do código original: `DT_CONFIGURATION` passa a ser a
 data da gravação, e a tabela `NOTHING` (que o DAO só escreve e ninguém lê) é mantida como estava.
 
 **Telas (todas as do menu antigo):**
@@ -454,8 +471,21 @@ sinal guardado (o Action original também não os salvava).
       Saíram, sem uso: o `Vestibular`, o simulador de fuso dos servlets antigos
       (`br.remoto.servlet`, `br.remoto.spindle_simulator`) e a dependência `javax.servlet`. As
       classes do original que restam nesses pacotes guardam só a amostragem dos sinais.
-   4. O motor roda só sobre o `remoto-core`, o editor passa a gravar os parâmetros tipados (o
-      que elimina o HSQLDB de vez) e o `remoto-legacy-model` deixa de existir.
+   4. ~~O motor roda só sobre o `remoto-core`, o editor grava sem banco e o
+      `remoto-legacy-model` deixa de existir.~~ Feito. O que restava do original (a `Simulation`,
+      o `NeuronUpdater`, as fábricas, as classes de cada elemento, a `Configuration` e os VOs)
+      foi para `br.remoto.core.simulation`, em UTF-8 e sem o código comentado e morto (a gravação
+      do `.sim`, o registro estático de simulações, a configuração da tela de resultados antiga,
+      o `BasicDAO` e o `User`). Do `ConfigurationDAO` ficaram a leitura, como
+      `ConfigurationAssembler`, e a gravação, como `ConfigurationTables`; o export do banco antigo
+      lê o `remoto.script` como texto. O HSQLDB saiu das dependências. Antes de tirar o código
+      original, os três cenários públicos com 1 s, as 30 configurações do banco com 100 ms e 18
+      variantes do 17 (os modelos de músculo, articulação e fuso, a distribuição das unidades, o
+      nervo, a corrente injetada e os sinais e distribuições dos tratos) deram saídas idênticas,
+      bit a bit, às do código original; as gravações do editor (sem editar, editando todas as
+      telas e reabrindo) deram as mesmas tabelas nas 33 configurações; e o export sem HSQLDB deu
+      arquivos idênticos nas 30. Os testes que comparavam com o DAO pelo HSQLDB viraram golden
+      masters gerados por ele. Os diagramas UML do código original estão em `docs/uml-original/`.
 2. ~~Desempenho do motor original.~~ Feito: ver "Desempenho" em [Motor original](#motor-original-legacy).
    Próximo ganho: tirar da thread da simulação a força muscular, separando o que sorteia
    (fuso, distúrbios) do que não sorteia.

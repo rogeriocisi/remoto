@@ -6,10 +6,10 @@
 
   <!--
     Nova versão do ReMoto (Java 25 + Spring Boot 4, sem banco de dados).
-    Do código legado ficam só os modelos numéricos, no módulo remoto-legacy-model,
-    e o banco HSQLDB original em legacy-db/ (lido pelo remoto-legacy e pelo
-    export-legacy). O site Struts/JSP e as classes fora
-    do build foram removidos; estão no histórico do Git e no repositório pai.
+    Os modelos do ReMoto original foram portados para o remoto-core, com saídas idênticas bit a
+    bit; do código legado fica só o banco HSQLDB original em legacy-db/, um arquivo de texto que o
+    export-legacy lê sem o HSQLDB. O site Struts/JSP e o código original estão no histórico do
+    Git e no repositório pai.
   -->
   <parent>
     <groupId>org.springframework.boot</groupId>
@@ -35,7 +35,6 @@
   <modules>
     <module>remoto-core</module>
     <module>remoto-storage</module>
-    <module>remoto-legacy-model</module>
     <module>remoto-legacy</module>
     <module>remoto-web</module>
     <module>remoto-cli</module>
@@ -63,11 +62,6 @@
       <dependency>
         <groupId>br.remoto</groupId>
         <artifactId>remoto-storage</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>br.remoto</groupId>
-        <artifactId>remoto-legacy-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

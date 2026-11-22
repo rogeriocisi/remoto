@@ -14,25 +14,24 @@ This repository contains the new version of ReMoto. Of the legacy version, only 
 
 | | Legacy version | New version (in development) |
 |---|---|---|
-| Location | [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto); here only the numerical models (`remoto-legacy-model`) and `legacy-db/` (original database) | `remoto-*/` Maven modules, `scenarios/` |
+| Location | [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto); here only `legacy-db/` (the original database, as a text file) | `remoto-*/` Maven modules, `scenarios/` |
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
-| Simulation models | All published models | The same published models, running the original numerical code (`legacy` engine), plus a small demo engine |
+| Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine), plus a small demo engine |
 | Users | Local accounts stored in HSQLDB | Login with ORCID or GitHub (OIDC), plus guest access |
 | Status | Unmaintained; depends on software without security updates | Working and tested; muscle force, motoneuron spikes, joint torque and EMG are available |
 
 ### Repository layout
 
 ```
-remoto-core/          scenario format and engine interfaces (plain Java)
+remoto-core/          scenario format, engine interfaces and the ported ReMoto models (plain Java)
 remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
-remoto-legacy-model/  the original numerical models (moved from the legacy src/)
-remoto-legacy/        "legacy" engine: runs the original models, converts old configurations
+remoto-legacy/        "legacy" engine, scenario editor and converter of old configurations
 remoto-web/           multi-user web application (Spring Boot)
 remoto-cli/           command-line runner for scripts and clusters
 scenarios/            public scenarios (JSON)
 deploy/            systemd service and configuration template
 docs/              documentation of the new version (in Portuguese)
-legacy-db/         original HSQLDB database, read by remoto-legacy and export-legacy
+legacy-db/         original HSQLDB database (text script), read by export-legacy without HSQLDB
 ref.bib            BibTeX references
 ```
 
@@ -45,7 +44,7 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 - **Multi-user without a database:** each user's scenarios, runs and results are kept in their own folder. Guests get a temporary area that is deleted when the session ends.
 - **Fair simulation queue:** several users can run simulations at the same time; a large batch from one user does not block the others.
 - **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Tests check that each converted scenario gives exactly the same results as the original database configuration. Results include muscle force, motoneuron spikes, joint torque and EMG (raw, and filtered with noise as on the old results page).
-- **Scenario editor modeled on the original site:** copy a public scenario and edit it through the same menu, screens, fields and limits as the old editor: structure (descending commands, neural elements), neural parameters (synapses, kinetics, synaptic dynamics, conductances, motoneurons, interneurons, sensory fibers), proprioceptors (muscle spindle, GTO), biomechanics (joint and muscle models, musculotendon, muscle units, EMG, miscellaneous), stimulation (nerve, injected current) and run settings. Changes are saved with the original `ConfigurationDAO`; settings the old DAO did not store (model choices, spindle gains, joint angles) are kept with the scenario.
+- **Scenario editor modeled on the original site:** copy a public scenario and edit it through the same menu, screens, fields and limits as the old editor: structure (descending commands, neural elements), neural parameters (synapses, kinetics, synaptic dynamics, conductances, motoneurons, interneurons, sensory fibers), proprioceptors (muscle spindle, GTO), biomechanics (joint and muscle models, musculotendon, muscle units, EMG, miscellaneous), stimulation (nerve, injected current) and run settings. Changes are saved exactly as the original `ConfigurationDAO` saved them, now without a database; settings the old DAO did not store (model choices, spindle gains, joint angles) are kept with the scenario.
 - **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
 - Live progress, interactive charts, CSV and PNG downloads, a REST API and immutable share links.
 - Users can export or delete all of their data.
@@ -90,7 +89,7 @@ java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar validate scenarios/*.j
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list
 ```
 
-`export-legacy` converts configurations from the old HSQLDB database into JSON scenarios. `--threads` sets how many threads update the neurons (default: CPU cores); the results are identical, bit for bit, with any value.
+`export-legacy` converts configurations from the old HSQLDB database file into JSON scenarios (it reads the file directly; HSQLDB is not needed). `--threads` sets how many threads update the neurons (default: CPU cores); the results are identical, bit for bit, with any value.
 
 ### Deployment
 
@@ -102,7 +101,7 @@ The web application is a single executable JAR with an embedded web server, inst
 2. ~~Convert the old configurations into JSON scenarios.~~ Done.
 3. ~~Scenario editor with all the screens of the original site.~~ Done.
 4. ~~Export EMG from the original models.~~ Done.
-5. Port and clean up the models in `remoto-core`, checked against the reference outputs.
+5. ~~Port the models to `remoto-core`, checked against the reference outputs, and drop the original model code and HSQLDB.~~ Done.
 6. Parameter sweeps, a Python client and NWB export.
 
 ## Legacy version

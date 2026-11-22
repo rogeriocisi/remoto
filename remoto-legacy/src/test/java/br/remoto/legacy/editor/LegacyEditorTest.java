@@ -5,6 +5,8 @@ import br.remoto.legacy.LegacyDatabase;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -173,6 +175,25 @@ class LegacyEditorTest {
         });
 
         assertThat(sizes).containsKey("torque");
+    }
+
+    /**
+     * Todas as telas editadas de uma vez e gravadas: as tabelas têm de sair iguais às que o
+     * {@code ConfigurationDAO.saveConfiguration} original gravava num HSQLDB (referências geradas
+     * por ele, antes de o editor passar a gravar sem banco).
+     */
+    @ParameterizedTest
+    @ValueSource(ints = {17, 24, 42})
+    void editarTodasAsTelasGravaComoODaoOriginal(int id) throws Exception {
+        br.remoto.core.scenario.Scenario scenario = db.exportScenario(id);
+        String hash = EditEverything.hash(br.remoto.legacy.LegacyJson.toConfig(scenario.legacy()),
+                scenario.durationMs(), scenario.stepMs());
+
+        java.util.Properties golden = new java.util.Properties();
+        try (java.io.InputStream in = LegacyEditorTest.class.getResourceAsStream("/br/remoto/legacy/golden-master.properties")) {
+            golden.load(in);
+        }
+        assertThat(hash).as("golden master editor.%d", id).isEqualTo(golden.getProperty("editor." + id));
     }
 
     private static String cellOf(ScreenView view, String rowLabel, int section) {

@@ -6,9 +6,8 @@ import br.remoto.core.engine.RunContext;
 import br.remoto.core.engine.SimulationCancelledException;
 import br.remoto.core.engine.SimulationEngine;
 import br.remoto.core.scenario.Scenario;
-import br.remoto.model.Configuration;
-import br.remoto.model.ReMoto;
-import br.remoto.model.Simulation;
+import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.Simulation;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -77,7 +76,7 @@ public final class LegacyEngine implements SimulationEngine {
     void run(Configuration conf, long seed, double durationMs, double stepMs, RunContext context) {
         conf.setTFin(durationMs);
         conf.setStep(stepMs);
-        conf.setStoreResults(false);   // o código original gravaria um .sim em ReMoto.path
+        conf.setStoreResults(false);
         conf.setStoreSignals(true);    // necessário para guardar força, torque e disparos
         conf.setChangedConfiguration(true);
         conf.setKeepProperties(false);
@@ -107,7 +106,6 @@ public final class LegacyEngine implements SimulationEngine {
             finished.set(true);
             watcher.interrupt();
             Rng.reset();
-            ReMoto.simulations.remove(cdSimulation);
         }
         if (context.isCancelled()) {
             throw new SimulationCancelledException();

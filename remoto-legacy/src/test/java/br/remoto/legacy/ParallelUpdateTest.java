@@ -3,9 +3,8 @@ package br.remoto.legacy;
 import br.remoto.core.model.random.Rng;
 
 import br.remoto.core.scenario.Scenario;
-import br.remoto.model.Configuration;
-import br.remoto.model.ReMoto;
-import br.remoto.model.Simulation;
+import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.Simulation;
 import br.remoto.storage.JsonCodec;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -68,7 +67,6 @@ class ParallelUpdateTest {
             sim.run();
         } finally {
             Rng.reset();
-            ReMoto.simulations.remove("teste-paralelo");
         }
 
         // os motoneurônios vão para as threads; tratos e aferentes ficam na thread principal

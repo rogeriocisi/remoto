@@ -1,0 +1,258 @@
+package br.remoto.core.simulation.factory;
+
+import br.remoto.core.model.random.Draws;
+import br.remoto.core.model.random.Gradient;
+
+import java.util.List;
+
+import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.neuron.Neuron;
+import br.remoto.core.simulation.ReMoto;
+import br.remoto.core.model.synapse.SynapseGroup;
+import br.remoto.core.model.channel.GatedChannel;
+import br.remoto.core.model.channel.SodiumChannel;
+import br.remoto.core.simulation.neuron.Interneuron;
+import br.remoto.core.simulation.neuron.Motoneuron;
+import br.remoto.core.simulation.neuron.SensoryFiber;
+import br.remoto.core.simulation.neuron.SpinalNeuron;
+import br.remoto.core.simulation.neuron.Miscellaneous;
+import br.remoto.core.simulation.setup.ConductanceVO;
+import br.remoto.core.simulation.setup.NeuronVO;
+import br.remoto.core.simulation.util.ElectroCalculation;
+
+public class NeuronFactory
+{
+	public Neuron create(List listNucleus, Configuration conf, Miscellaneous misc, NeuronVO reference, NeuronVO referenceS, NeuronVO referenceFR, NeuronVO referenceFF, int index)
+	{
+		// Bias is used for properties that have two values
+		double bias = 0;
+
+		if( reference.getQuantity() > 1 )
+			bias = (double)(index)/(double)(reference.getQuantity() - 1);
+
+		// Verify which category of neuron will be created
+		if( reference.getCategory().equals( ReMoto.AF ) )
+		{
+			SensoryFiber sf = new SensoryFiber(reference, index, misc);
+
+			String distribution = ReMoto.gradualGaussian;
+
+			double axonVelocity = 0;
+			double stimulusSpinalDistance = conf.getNerve( reference.getCdNerve() ).getStimulusSpinalEntry();
+			double stimulusEndPlateDistance = conf.getNerve( reference.getCdNerve() ).getStimulusEndPlate();
+
+			double recruitmentThreshold = 0;
+
+			if(sf.getType().equals("Ia")){
+				recruitmentThreshold = Gradient.linear(conf.getInitialRecruitmentThresholdIa(), conf.getFinalRecruitmentThresholdIa(), bias);
+			}
+			else if(sf.getType().equals("II")){
+				recruitmentThreshold = Gradient.linear(conf.getInitialRecruitmentThresholdII(), conf.getFinalRecruitmentThresholdII(), bias);
+			}
+			else if(sf.getType().equals("Ib")){
+				recruitmentThreshold = Gradient.linear(conf.getInitialRecruitmentThresholdIb(), conf.getFinalRecruitmentThresholdIb(), bias);
+			}
+
+			sf.setRecruitmentThreshold(recruitmentThreshold);
+
+			if( distribution.equals( ReMoto.uniform ) )
+			{
+				sf.setAxonThreshold( Draws.uniform(reference.getAxonThreshold1(), reference.getAxonThreshold2() ) );
+				axonVelocity = Draws.uniform(reference.getAxonVelocity1(), reference.getAxonVelocity2() );
+			}
+			else if( distribution.equals( ReMoto.gradualGaussian ) )
+			{
+				sf.setAxonThreshold( Gradient.linearWithNoise(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias, conf.getMiscellaneous( ReMoto.axonThresholdSTD ) ) );
+				axonVelocity = Gradient.linearWithNoise(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias, conf.getMiscellaneous( ReMoto.axonVelocitySTD ) );
+			}
+			else
+			{
+				sf.setAxonThreshold( Gradient.linear(reference.getAxonThreshold1(), reference.getAxonThreshold2(), bias ) );
+				axonVelocity = Gradient.linear(reference.getAxonVelocity1(), reference.getAxonVelocity2(), bias );
+			}
+
+			sf.setAxonConductionVelocity(axonVelocity);
+			sf.setLatency( axonVelocity, stimulusSpinalDistance, stimulusEndPlateDistance  );
+
+			return sf;
+		}
+		else if( reference.getCategory().equals( ReMoto.MN ) || reference.getCategory().equals( ReMoto.IN ) )
+		{
+			SpinalNeuron neu = null;
+			ElectroCalculation calc = new ElectroCalculation();
+			int indexCategory = index + 1;
+
+			if( reference.getCategory().equals( ReMoto.MN ) )
+			{
+				if( reference.getType().equals( ReMoto.FR ) )
+					indexCategory += referenceS.getQuantity();
+				else if( reference.getType().equals( ReMoto.FF ) )
+					indexCategory += referenceS.getQuantity() + referenceFR.getQuantity();
+
+				neu = new Motoneuron(reference, index, indexCategory, misc);
+
+				NeuronVO pattern = null;
+
+				// Always true: no more used
+				if( conf.isMerge() == true )
+				{
+					pattern = calc.getPatternMerged(conf, reference, referenceS, referenceFR, referenceFF, bias);
+				}
+				else
+				{
+					pattern = calc.getPattern(conf, reference, referenceS, referenceFF, bias);
+				}
+
+				double axonVelocity = pattern.getAxonVelocity1();
+				double axonThreshold = pattern.getAxonThreshold1();
+				double dSoma = pattern.getDsoma1();
+				double dDend = pattern.getDdend1();
+				double lSoma = pattern.getLsoma1();
+				double lDend = pattern.getLdend1();
+				double rmSoma = pattern.getRmSoma1();
+				double rmDend = pattern.getRmDend1();
+				double ri = pattern.getRi();
+				double cm = pattern.getCm();
+				double areaDend = Math.PI * dDend * lDend;
+				double areaSoma = Math.PI * dSoma * lSoma;
+
+				double gCoupling = calc.calcGCoupling(ri, lDend, dDend, lSoma, dSoma);
+				double gLeakSoma = calc.calcGLeak(areaSoma, rmSoma);
+				double gLeakDend = calc.calcGLeak(areaDend, rmDend);
+				double rn = calc.calcRn(gCoupling, gLeakSoma, gLeakDend);
+
+				double cd = calc.calcCapacitance(cm, areaDend);
+				double cs = calc.calcCapacitance(cm, areaSoma);
+
+				double threshold = Draws.gaussian(pattern.getThreshold1(), pattern.getThreshold1() * conf.getMiscellaneous( ReMoto.thresholdSTD ));
+				double thresholdCa = Draws.gaussian(pattern.getThresholdCa1(), pattern.getThresholdCa1() * conf.getMiscellaneous( ReMoto.thresholdCaSTD ) );
+
+				// Set capacitances - converted to nF
+				neu.setCapacitanceDend( cd );
+				neu.setCapacitanceSoma( cs );
+
+				// Set coupling conductance between soma and dendrites - converted to uS
+				neu.setGCoupling( gCoupling );
+
+				// Set leak conductances - converted to uS
+				neu.setGLeakSoma( gLeakSoma );
+				neu.setGLeakDend( gLeakDend );
+
+				// Set threshold according to rheobase, gLeakSoma, gLeakDend and gCoupling
+				neu.setThreshold( threshold );
+				neu.setThresholdCa( thresholdCa );
+				neu.setRn( rn );
+
+				double stimulusSpinalDistance = conf.getNerve( reference.getCdNerve() ).getStimulusSpinalEntry();
+				double stimulusEndPlateDistance = conf.getNerve( reference.getCdNerve() ).getStimulusEndPlate();
+
+				// Set axon threshold and latencies
+
+				if(conf.getRecruitmentOrderFES().equals("linear")){
+					((Motoneuron)neu).setAxonThreshold( axonThreshold );
+				}
+
+				((Motoneuron)neu).setAxonConductionVelocity( axonVelocity );
+				((Motoneuron)neu).setLatencies( axonVelocity, stimulusSpinalDistance, stimulusEndPlateDistance );
+
+				// Set gMax according to the soma area and put in nS
+
+				pattern.getGNaMVO().setGmax( pattern.getGNaMVO().getGmax() * 1e6 * areaSoma );
+				pattern.getGNaHVO().setGmax( pattern.getGNaHVO().getGmax() * 1e6 * areaSoma );
+				pattern.getGKNVO().setGmax( pattern.getGKNVO().getGmax() * 1e6 * areaSoma );
+				pattern.getGKQVO().setGmax( pattern.getGKQVO().getGmax() * 1e6 * areaSoma );
+				pattern.getGCaPVO().setGmax( pattern.getGCaPVO().getGmax() * 1e6 * areaDend );
+
+				// Create Na and K conductances for somatic compartment
+				neu.setGNa( sodium( pattern.getGNaMVO(), pattern.getGNaHVO() ) );
+				neu.setGKf( fastPotassium( pattern.getGKNVO() ) );
+				neu.setGKs( slowPotassium( pattern.getGKQVO() ) );
+
+				// Create Ca conductances for dendritic compartment
+				((Motoneuron)neu).setGCa( calcium( pattern.getGCaPVO() ) );
+			}
+			else
+			{
+				neu = new Interneuron(reference, index, indexCategory, misc);
+
+				double cm = reference.getCm();
+				double area = reference.getTotalArea() / 1e8;
+				// Set leak conductances - convert to uS
+				neu.setGLeakSoma( calc.calcGLeak(area, reference.getRmSoma1()) );
+
+				// Set capacitances - convert to nF
+				neu.setCapacitanceSoma( calc.calcCapacitance(cm, area) );
+
+				double threshold = Gradient.linear(reference.getThreshold1(), reference.getThreshold2(), bias );
+
+				// Set threshold according to rheobase and gLeakSoma
+				neu.setThreshold( threshold );
+
+				neu.setRn( 1 / neu.getGLeakSoma() );
+
+				// Set gMax according to the soma area and put in nS
+				ConductanceVO gNaMVO = new ConductanceVO( reference.getGNaMVO() );
+				ConductanceVO gNaHVO = new ConductanceVO( reference.getGNaHVO() );
+				ConductanceVO gKNVO = new ConductanceVO( reference.getGKNVO() );
+				ConductanceVO gKQVO = new ConductanceVO( reference.getGKQVO() );
+
+				gNaMVO.setGmax( reference.getGNaMVO().getGmax() * 1e6 * area );
+				gNaHVO.setGmax( reference.getGNaHVO().getGmax() * 1e6 * area );
+				gKNVO.setGmax( reference.getGKNVO().getGmax() * 1e6 * area );
+				gKQVO.setGmax( reference.getGKQVO().getGmax() * 1e6 * area );
+
+				// Create Na and K conductances for somatic compartment
+				neu.setGNa( sodium( gNaMVO, gNaHVO ) );
+				neu.setGKf( fastPotassium( gKNVO ) );
+				neu.setGKs( slowPotassium( gKQVO ) );
+			}
+
+			// Ensure an estimated initial capacity for the spike train
+		    neu.ensureCapacity( (int)( conf.getTFin() ) );
+
+		    // Create synapses
+			ConductanceVO gExc = conf.getMarcovType(neu.getCdNucleus(), neu.getType(), ReMoto.excitatory);
+			ConductanceVO gInh = conf.getMarcovType(neu.getCdNucleus(), neu.getType(), ReMoto.inhibitory);
+
+			neu.setDendExcitSynapses( synapseGroup(gExc) );
+			neu.setDendInhibSynapses( synapseGroup(gInh) );
+			neu.setSomaExcitSynapses( synapseGroup(gExc) );
+			neu.setSomaInhibSynapses( synapseGroup(gInh) );
+
+			return neu;
+		}
+
+		// If reference is not AF, MN or IN, return null
+		return null;
+	}
+
+	// Ionic channels of br.remoto.core.model.channel, from the conductance types of the
+	// configuration: gmax goes from nS to uS, and the pulse lasts TPEAK
+	private static SodiumChannel sodium(ConductanceVO m, ConductanceVO h)
+	{
+		return new SodiumChannel(m.getGmax() / 1000, m.getE(), m.getTpeak(),
+				m.getAlpha(), m.getBeta(), h.getAlpha(), h.getBeta());
+	}
+
+	private static GatedChannel fastPotassium(ConductanceVO g)
+	{
+		return GatedChannel.fastPotassium(g.getGmax() / 1000, g.getE(), g.getTpeak(), g.getAlpha(), g.getBeta());
+	}
+
+	private static GatedChannel slowPotassium(ConductanceVO g)
+	{
+		return GatedChannel.slowPotassium(g.getGmax() / 1000, g.getE(), g.getTpeak(), g.getAlpha(), g.getBeta());
+	}
+
+	private static GatedChannel calcium(ConductanceVO g)
+	{
+		return GatedChannel.calcium(g.getGmax() / 1000, g.getE(), g.getTpeak(), g.getAlpha(), g.getBeta());
+	}
+
+	// Synapses of one kind on one compartment (br.remoto.core.model.synapse), with the kinetics of
+	// the MARKOV_TYPE of the neuron
+	private static SynapseGroup synapseGroup(ConductanceVO g)
+	{
+		return new SynapseGroup(g.getE(), g.getTpeak(), g.getTmax(), g.getAlpha(), g.getBeta(), g.isActive());
+	}
+}
