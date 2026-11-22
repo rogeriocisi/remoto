@@ -15,8 +15,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -61,8 +63,15 @@ class LegacyEngineTest {
     }
 
     /**
+     * Configurações publicadas com os tratos gama como Poisson: a ordem do processo gama não foi
+     * gravada no banco, e o trato só disparava em t = 0 (ver docs/nova-versao.md).
+     */
+    private static final Set<Integer> GAMMA_AS_POISSON = Set.of(24, 42);
+
+    /**
      * O export lê o arquivo do banco sem o HSQLDB; os cenários públicos "remoto-&lt;id&gt;-..." foram
-     * exportados por ele. Só a descrição pode ter sido escrita depois, à mão.
+     * exportados por ele. Depois, só a descrição pode ter sido escrita à mão e, nos
+     * {@link #GAMMA_AS_POISSON}, os tratos gama passaram a Poisson.
      */
     @ParameterizedTest
     @MethodSource("publishedConfigurations")
@@ -72,6 +81,9 @@ class LegacyEngineTest {
         Map<?, ?> exported = MAPPER.readValue(json.toBytes(db.exportScenario(id)), Map.class);
         published.remove("description");
         exported.remove("description");
+        if (GAMMA_AS_POISSON.contains(id)) {
+            assertThat(gammaTractsAsPoisson(exported)).isNotEmpty();
+        }
 
         assertThat(exported).usingRecursiveComparison().isEqualTo(published);
     }
@@ -84,6 +96,25 @@ class LegacyEngineTest {
                     .toList()
                     .stream();
         }
+    }
+
+    /** Troca a distribuição dos tratos gama por Poisson; devolve os tipos trocados. */
+    @SuppressWarnings("unchecked")
+    private static List<Object> gammaTractsAsPoisson(Map<?, ?> scenario) {
+        Map<String, Object> tables = (Map<String, Object>) ((Map<String, Object>) scenario.get("legacy")).get("tables");
+        Map<String, Object> table = (Map<String, Object>) tables.get("NEURON_TYPE");
+        List<String> columns = (List<String>) table.get("columns");
+        int category = columns.indexOf("CD_CATEGORY");
+        int distribution = columns.indexOf("DISTRIBUTION");
+        int type = columns.indexOf("CD_NEURON_TYPE");
+        List<Object> changed = new java.util.ArrayList<>();
+        for (List<Object> row : (List<List<Object>>) table.get("rows")) {
+            if ("TR".equals(row.get(category)) && "Gm".equals(row.get(distribution))) {
+                row.set(distribution, "P");
+                changed.add(row.get(type));
+            }
+        }
+        return changed;
     }
 
     private static Path scenariosDir() {

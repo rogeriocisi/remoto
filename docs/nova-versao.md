@@ -309,10 +309,10 @@ antigo**:
 | Teste | O que garante |
 |---|---|
 | Banco original × referência | As 30 configurações do banco original (40 ms, seed = ID) batem com hashes gerados quando a configuração ainda era montada pelo `ConfigurationDAO` original lendo do HSQLDB (antes, um teste comparava os dois caminhos campo a campo) |
-| Export sem HSQLDB | O export lê o `remoto.script` direto e reproduz os cenários `remoto-*` de `scenarios/`, fora a descrição, escrita à mão nos que não tinham uma (os três do site antigo tinham sido exportados pelo HSQLDB) |
+| Export sem HSQLDB | O export lê o `remoto.script` direto e reproduz os cenários `remoto-*` de `scenarios/`, fora a descrição, escrita à mão nos que não tinham uma, e os tratos gama do 24 e do 42, publicados como Poisson (os três do site antigo tinham sido exportados pelo HSQLDB) |
 | Modelo completo | O `modelo-completo.json` liga todos os elementos do modelo, e cada um (músculos, fusos, OTG, aferentes, interneurônios, tratos, articulação) aparece nas saídas |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
-| Golden master | As saídas dos três cenários públicos do site antigo (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro; todas as saídas, as da tela de resultados incluídas, num terceiro) |
+| Golden master | As saídas das configurações 17, 24 e 42 do banco (os três cenários públicos do site antigo, como estão lá), com 40 ms, batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro; todas as saídas, as da tela de resultados incluídas, num terceiro) |
 | Editor × DAO original | Editar todas as telas de uma vez e gravar dá as mesmas tabelas que o `saveConfiguration` original gravava num HSQLDB, nos três cenários públicos do site antigo (`LegacyEditorTest`); gravar sem editar preserva as tabelas e a simulação (`LegacyStoreTest`) |
 | Sinapse × solução analítica | Uma sinapse acionada como no Runge-Kutta segue a solução fechada de Lytton (1996): sobe durante o pulso e decai depois (`SynapseGroupTest`, no `remoto-core`) |
 | 1 thread × 4 threads | Os três cenários públicos do site antigo dão saídas idênticas com qualquer número de threads, e uma thread de trabalho não consegue sortear (`ParallelUpdateTest`) |
@@ -336,8 +336,8 @@ linha), e o `LegacyDatabase` o lê direto, sem o HSQLDB.
 | Arquivo | Cenário | Simulado |
 |---|---|---|
 | `remoto-17-…` | *Default - Soleus contraction*: o sóleo movido por 100 axônios descendentes (Poisson) | 5 s |
-| `remoto-24-…` | *ISB_2013 - Stretch Reflex*: os quatro músculos, com aferentes Ia | 30 s |
-| `remoto-42-…` | *JN - Watanabe and Kohn (2015)*: o sóleo, com o comando modulado a 20 Hz a partir de 3 s | 15 s |
+| `remoto-24-…` | *ISB_2013 - Stretch Reflex*: os quatro músculos, com aferentes Ia; o tríceps sural recebe o comando (trato em Poisson) | 30 s |
+| `remoto-42-…` | *JN - Watanabe and Kohn (2015)*: o sóleo, com o comando modulado a 20 Hz a partir de 3 s (trato em Poisson) | 15 s |
 | `remoto-14-…` | *Isometric contraction*: o tríceps sural (SOL, MG e LG) com 400 axônios descendentes (Poisson, 11 ms) | 5 s |
 | `remoto-16-…` | *Recruitment*: o mesmo, com o intervalo dos axônios caindo em rampa de 20 para 4 ms | 20 s |
 | `remoto-18-…` | *Neuroscience Meeting 2012*: reflexo H do sóleo e a via da inibição recíproca pelo nervo fibular | 0,2 s |
@@ -357,8 +357,9 @@ mostrar todos os elementos, não para reproduzir um experimento.
 `order`, que nada lê, e a lia de volta no mesmo campo. Assim, nas configurações do banco com um
 trato gama, o trato só dispara em t = 0, e os motoneurônios não recebem o comando; no site
 antigo, o Std precisava ser digitado na tela de comandos descendentes a cada sessão, e, como lá,
-o Std editado se perde ao gravar. É o caso do 24 e do 42, que ficaram como estão no banco, e das
-configurações 25 a 28, 32, 34 a 36, 38, 39, 41 e 44, que não foram publicadas. Também ficaram de
+o Std editado se perde ao gravar. Nos cenários públicos 24 e 42, os tratos gama passaram a
+Poisson, com o mesmo intervalo médio; fora isso e a descrição, as tabelas são as do banco. As
+outras configurações com tratos gama (25 a 28, 32, 34 a 36, 38, 39, 41 e 44) não foram publicadas. Também ficaram de
 fora os testes (29, 33, 37 e 40), a 20 e a 21 (sem comando descendente, os pulsos no nervo não
 fazem os motoneurônios dispararem) e as variações delas (22 e 23), as variações próximas da 14
 (30 e 31) e a de 100 s (43).
