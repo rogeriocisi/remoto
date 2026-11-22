@@ -57,6 +57,12 @@ final class EditEverything {
                                 if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")) {
                                     continue; // campo novo, que o DAO original não gravava: a referência é anterior a ele
                                 }
+                                if (cell.name().endsWith(".std")) {
+                                    // o Std dos tratos existia na referência, mas o DAO original o perdia ao
+                                    // gravar; hoje fica no settings. Conta na numeração e fica como estava.
+                                    k++;
+                                    continue;
+                                }
                                 k++;
                                 form.put(cell.name(), changed(cell, k));
                             }

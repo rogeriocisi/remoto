@@ -347,11 +347,27 @@ linha), e o `LegacyDatabase` o lê direto, sem o HSQLDB.
 | `remoto-16-…` | *Recruitment*: o mesmo, com o intervalo dos axônios caindo em rampa de 20 para 4 ms | 20 s |
 | `remoto-18-…` | *Neuroscience Meeting 2012*: reflexo H do sóleo e a via da inibição recíproca pelo nervo fibular | 0,2 s |
 | `remoto-19-…` | *Biceps Brachii - Stim Ia*: pulsos a 5 Hz no nervo durante uma contração (no núcleo SOL) | 30 s |
+| `remoto-25-…` | *Position Task*: tarefa de posição do tornozelo com o tríceps sural e aferentes Ia | 30 s |
+| `remoto-26-…` | *Position Task - IIa*: o mesmo, com aferentes do grupo II | 30 s |
+| `remoto-27-…` | *Position Task - IIa no Ia*: o mesmo, só com os aferentes do grupo II | 30 s |
+| `remoto-28-…` | *Position Task - Ib*: o 25 com aferentes Ib e interneurônios Ib | 30 s |
+| `remoto-32-…` | *variability_gamma*: contração isométrica do tríceps sural, intervalo de 3 ms | 5 s |
+| `remoto-34-…` | *Identification_SOL_MG*: o tríceps sural com o comando modulado a 20 Hz a partir de 2 s | 15 s |
+| `remoto-35-…` | *Identification_LG*: os dois gastrocnêmios, intervalo de 3 ms | 1,5 s |
+| `remoto-36-…` | *Identification SOL_MG*: o 34 com 1,5 s (a modulação não chega a começar) | 1,5 s |
+| `remoto-38-…` | *IdentSOL*: o sóleo, intervalo de 12 ms | 1,5 s |
+| `remoto-39-…` | *IsometricTaskAM*: contração isométrica do tríceps sural com aferentes Ia | 8 s |
+| `remoto-41-…` | *AMmodRenshaw*: o sóleo, com o comando modulado a 20 Hz a partir de 3 s | 15 s |
+| `remoto-44-…` | *identSOLRenshaw*: o sóleo com as células de Renshaw (inibição recorrente) | 1,5 s |
 | `modelo-completo` | Todos os elementos do modelo ligados, a partir do 24 (detalhes na descrição do cenário) | 2 s |
 
-Os três primeiros são os públicos do site antigo (usuário `guest`). Os quatro seguintes são
+Os três primeiros são os públicos do site antigo (usuário `guest`). Os seguintes são
 configurações de outros usuários do banco, publicadas com uma descrição escrita a partir do que
-cada uma liga; as tabelas são as do banco. O `modelo-completo` parte do 24 e liga os aferentes II
+cada uma liga; as tabelas são as do banco, com duas exceções: os tratos gama passaram a Poisson
+(ver abaixo), e as *Position Task* (25 a 28) levam no `settings` o tornozelo em tarefa de
+posição. O banco não gravava o modelo de articulação, e com o tornozelo isométrico e o músculo
+padrão o fuso não é integrado e os aferentes não disparam; com o de posição, o pé se move contra
+uma carga de 15% do torque voluntário máximo, e os aferentes respondem. O `modelo-completo` parte do 24 e liga os aferentes II
 e Ib, os interneurônios (Ia recíprocos, Ib, grupo II e Renshaw) dos extensores e dos flexores, os
 seis tratos descendentes com Poisson e um pulso no nervo tibial, e escolhe, no `settings`, o
 músculo de Hill e o tornozelo em pêndulo invertido; as taxas e o pulso foram escolhidos para
@@ -361,11 +377,12 @@ mostrar todos os elementos, não para reproduzir um experimento.
 `NeuronVO`, que o `ConfigurationDAO` original não gravava: ele gravava na coluna `STD` o campo
 `order`, que nada lê, e a lia de volta no mesmo campo. Assim, nas configurações do banco com um
 trato gama, o trato só dispara em t = 0, e os motoneurônios não recebem o comando; no site
-antigo, o Std precisava ser digitado na tela de comandos descendentes a cada sessão, e, como lá,
-o Std editado se perde ao gravar. Nos cenários públicos 24 e 42, os tratos gama passaram a
-Poisson, com o mesmo intervalo médio; fora isso e a descrição, as tabelas são as do banco. As
-outras configurações com tratos gama (25 a 28, 32, 34 a 36, 38, 39, 41 e 44) não foram publicadas. Também ficaram de
-fora os testes (29, 33, 37 e 40), a 20 e a 21 (sem comando descendente, os pulsos no nervo não
+antigo, o Std precisava ser digitado na tela de comandos descendentes a cada sessão. Nas
+configurações publicadas com tratos gama (24, 25 a 28, 32, 34 a 36, 38, 39, 41, 42 e 44), os
+tratos passaram a Poisson, com o mesmo intervalo médio. No 32 (*variability_gamma*), isso
+apaga a diferença que ele estudava; para um trato gama, escolha *Gamma* e a ordem em *Std* na
+tela *Descending Commands*: o editor agora grava o Std (ver [Editor de cenários](#editor-de-cenários)).
+Ficaram de fora os testes (29, 33, 37 e 40), a 20 e a 21 (sem comando descendente, os pulsos no nervo não
 fazem os motoneurônios dispararem) e as variações delas (22 e 23), as variações próximas da 14
 (30 e 31) e a de 100 s (43).
 
@@ -455,6 +472,12 @@ Os neurônios que guardam sinais (a seção *Additional configuration* das telas
 de interneurônios: "Index of MNs that will have signals stored") também ficam no `settings`, na
 chave `storedNeurons` ("núcleo:tipo" → os dois índices). Sem escolha, valem os do original: o
 primeiro e o do meio de cada tipo de motoneurônio, e o primeiro de cada tipo de interneurônio.
+
+O *Std* dos tratos descendentes (tela *Descending Commands*) também fica no `settings`, na chave
+`tractStd` ("DT:tipo" → valor). No processo gama ele é a ordem, que deve ser inteira; no
+gaussiano, o desvio-padrão do intervalo. O DAO original gravava na coluna `STD` outro campo
+(`order`, que nada lê), e o Std se perdia ao gravar, deixando os tratos gama mudos depois de
+t = 0. As tabelas continuam iguais às do DAO; sem `tractStd`, vale o do DAO (0).
 
 **Ainda de fora:** a escolha de articulação (os cenários convertidos só têm dados do tornozelo),
 as caixas de músculo de *Biomechanical Elements* (o Action original não as salvava; use *Neural
@@ -602,11 +625,11 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
    usuários de teste, os perfis, a exclusão de conta e os links de compartilhamento (o arquivo
    exportado faz esse papel); a sessão passou de 2 h para 12 h sem uso; e entraram o limite de
    simulações por endereço de origem e o teto da fila.
-8. **Ordem do processo gama dos tratos.** O editor ainda perde o *Std* dos tratos descendentes
-   ao gravar, como o `ConfigurationDAO` original (ver "Tratos com processo gama" em
-   [Cenários públicos](#cenários-públicos)). Gravá-lo, no `settings` ou numa coluna própria,
-   permitiria cenários com tratos gama de verdade.
-9. **Mais configurações do banco antigo.** As que têm tratos gama (25 a 28, 32, 34 a 36, 38, 39,
-   41 e 44) podem ser publicadas com Poisson, como o 24 e o 42, ou com a ordem do item 8. As
-   *Position Task* (25 a 28) pedem também o tornozelo em tarefa de posição, que o banco não
-   gravava.
+8. ~~Ordem do processo gama dos tratos.~~ Feito: o editor grava o *Std* dos tratos no
+   `settings` (`tractStd`), e um trato gama com ordem dispara; ver
+   [Editor de cenários](#editor-de-cenários).
+9. ~~Mais configurações do banco antigo.~~ Feito: as que tinham tratos gama (25 a 28, 32, 34 a
+   36, 38, 39, 41 e 44) foram publicadas com Poisson, e as *Position Task* com o tornozelo em
+   tarefa de posição; ver [Cenários públicos](#cenários-públicos).
+10. **Ordens do processo gama dos trabalhos originais.** Se as ordens usadas nas publicações
+    forem recuperadas, os cenários com tratos gama podem voltar a ser gama, com o `tractStd`.

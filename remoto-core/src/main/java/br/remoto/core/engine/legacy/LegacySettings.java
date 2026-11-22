@@ -34,6 +34,15 @@ public final class LegacySettings {
      */
     public static final String STORED_NEURONS = "storedNeurons";
 
+    /**
+     * O Std dos tratos descendentes (tela Descending Commands): no processo gama, a ordem, que deve
+     * ser inteira; no gaussiano, o desvio-padrão do intervalo (ms). O {@code ConfigurationDAO}
+     * original gravava na coluna STD outro campo ({@code order}, que nada lê) e o Std se perdia,
+     * deixando os tratos gama mudos depois de t = 0. Aqui fica no settings: "DT:tipo" → valor;
+     * sem valor, vale o do DAO (0).
+     */
+    public static final String TRACT_STD = "tractStd";
+
     private LegacySettings() {
     }
 
@@ -57,6 +66,14 @@ public final class LegacySettings {
                 value = raw.toString();
             }
             invoke(pd.getWriteMethod(), conf, value);
+        }
+        if (settings.get(TRACT_STD) instanceof Map<?, ?> std) {
+            for (Object o : conf.getNeuronTypes()) {
+                if (o instanceof NeuronVO neu && ReMoto.TR.equals(neu.getCategory())
+                        && std.get(neu.getCdNucleus() + ":" + neu.getType()) != null) {
+                    neu.setStd(((Number) number(std.get(neu.getCdNucleus() + ":" + neu.getType()))).doubleValue());
+                }
+            }
         }
         if (settings.get(STORED_NEURONS) instanceof Map<?, ?> stored) {
             for (Object o : conf.getNeuronTypes()) {
@@ -91,6 +108,15 @@ public final class LegacySettings {
         }
         if (!stored.isEmpty()) {
             settings.put(STORED_NEURONS, stored);
+        }
+        Map<String, Object> std = new LinkedHashMap<>();
+        for (Object o : conf.getNeuronTypes()) {
+            if (o instanceof NeuronVO neu && ReMoto.TR.equals(neu.getCategory()) && neu.getStd() != 0) {
+                std.put(neu.getCdNucleus() + ":" + neu.getType(), neu.getStd());
+            }
+        }
+        if (!std.isEmpty()) {
+            settings.put(TRACT_STD, std);
         }
         return settings;
     }

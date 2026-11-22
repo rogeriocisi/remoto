@@ -66,12 +66,21 @@ class LegacyEngineTest {
      * Configurações publicadas com os tratos gama como Poisson: a ordem do processo gama não foi
      * gravada no banco, e o trato só disparava em t = 0 (ver docs/nova-versao.md).
      */
-    private static final Set<Integer> GAMMA_AS_POISSON = Set.of(24, 42);
+    private static final Set<Integer> GAMMA_AS_POISSON = Set.of(24, 25, 26, 27, 28, 32, 34, 35, 36, 38, 39, 41, 42, 44);
+
+    /**
+     * Configurações publicadas com um settings que o banco não tinha: as "Position Task", com o
+     * tornozelo em tarefa de posição (o DAO original não gravava o modelo de articulação).
+     */
+    private static final Map<Integer, Map<String, Object>> SETTINGS_ADDED = Map.of(
+            25, Map.of("cdJointModel", "position"), 26, Map.of("cdJointModel", "position"),
+            27, Map.of("cdJointModel", "position"), 28, Map.of("cdJointModel", "position"));
 
     /**
      * O export lê o arquivo do banco sem o HSQLDB; os cenários públicos "remoto-&lt;id&gt;-..." foram
-     * exportados por ele. Depois, só a descrição pode ter sido escrita à mão e, nos
-     * {@link #GAMMA_AS_POISSON}, os tratos gama passaram a Poisson.
+     * exportados por ele. Depois, só a descrição pode ter sido escrita à mão; nos
+     * {@link #GAMMA_AS_POISSON}, os tratos gama passaram a Poisson; e nos {@link #SETTINGS_ADDED}
+     * entrou um settings.
      */
     @ParameterizedTest
     @MethodSource("publishedConfigurations")
@@ -83,6 +92,11 @@ class LegacyEngineTest {
         exported.remove("description");
         if (GAMMA_AS_POISSON.contains(id)) {
             assertThat(gammaTractsAsPoisson(exported)).isNotEmpty();
+        }
+        if (SETTINGS_ADDED.containsKey(id)) {
+            Map<?, ?> legacy = (Map<?, ?>) published.get("legacy");
+            assertThat(legacy.get("settings")).isEqualTo(SETTINGS_ADDED.get(id));
+            legacy.remove("settings");
         }
 
         assertThat(exported).usingRecursiveComparison().isEqualTo(published);

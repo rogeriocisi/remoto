@@ -195,6 +195,59 @@ class LegacyEditorTest {
         assertThat(names).contains("sinais-SOL-S-5", "sinais-SOL-S-400").doesNotContain("sinais-SOL-S-1");
     }
 
+    /**
+     * O Std dos tratos (a ordem do processo gama) não ia para as tabelas no DAO original e se
+     * perdia ao gravar; agora fica no settings, volta ao reabrir e faz o trato gama disparar.
+     */
+    @Test
+    void stdDoTratoGamaFicaGravadoEFazOTratoDisparar() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView input = editor.view("input", Map.of());
+        List<String> headers = input.sections().get(0).headers();
+        int distributionColumn = headers.indexOf("Distribution");
+        int column = headers.indexOf("Std");
+        String distribution = row(input, 0, "Direct corticomotor (CM_ext)").cells().get(distributionColumn).name();
+        String std = row(input, 0, "Direct corticomotor (CM_ext)").cells().get(column).name();
+
+        // o formulário inteiro, como o navegador manda (checkbox ausente = desmarcado), com os dois campos mudados
+        Map<String, String> form = new HashMap<>();
+        for (ScreenView.Section section : input.sections()) {
+            for (ScreenView.Row r : section.rows()) {
+                for (ScreenView.Cell c : r.cells()) {
+                    if (c.kind() != Field.Kind.BOOLEAN || "true".equals(c.value())) {
+                        form.put(c.name(), c.value());
+                    }
+                }
+            }
+        }
+        form.put(distribution, "Gm");
+        form.put(std, "4");
+        assertThat(editor.apply("input", Map.of(), form)).isEmpty();
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(((Map<?, ?>) saved.settings().get("tractStd")).get("DT:CM_ext")).isEqualTo(4.0);
+        assertThat(column(saved, "NEURON_TYPE", "STD")).containsOnly(0.0);
+        ScreenView reopened = LegacyEditor.open(saved, 5000, 0.05).view("input", Map.of());
+        assertThat(row(reopened, 0, "Direct corticomotor (CM_ext)").cells().get(column).value()).isEqualTo("4");
+
+        br.remoto.core.scenario.Scenario scenario = new br.remoto.core.scenario.Scenario(null, "gama", "", 1, 3,
+                40, 0.05, br.remoto.core.scenario.Scenario.ENGINE_LEGACY,
+                br.remoto.core.engine.legacy.LegacyJson.toMap(saved));
+        Map<String, Integer> spikes = new HashMap<>();
+        new br.remoto.core.engine.legacy.LegacyEngine(1).run(scenario, new br.remoto.core.engine.RunContext() {
+            @Override public void progress(double fraction) { }
+            @Override public boolean isCancelled() { return false; }
+            @Override public br.remoto.core.engine.ResultSink results() {
+                return new br.remoto.core.engine.ResultSink() {
+                    @Override public void series(String name, String unit, double[] t, double[] v) { }
+                    @Override public void spikes(String name, int[] u, double[] t) { spikes.put(name, t.length); }
+                };
+            }
+        });
+        // 100 axônios com intervalo médio de 3 ms em 40 ms: muito mais que o disparo de cada um em t = 0
+        assertThat(spikes.get("disparos-DT-CM_ext")).isGreaterThan(500);
+    }
+
     @Test
     void cenarioComOutroModeloDeArticulacaoRoda() {
         LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
