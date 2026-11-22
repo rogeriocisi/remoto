@@ -9,6 +9,7 @@ import br.remoto.web.editor.ScreenView;
 import br.remoto.storage.StaleWriteException;
 import br.remoto.storage.Versioned;
 import br.remoto.storage.scenario.ScenarioRepository;
+import br.remoto.storage.run.RunManifest;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
 import br.remoto.web.sim.QuotaExceededException;
@@ -111,27 +112,12 @@ class EditorController {
     String run(Caller caller, @PathVariable String id, RedirectAttributes redirect) {
         Scenario scenario = find(caller, id).value();
         try {
-            simulations.submit(caller.id(), caller.origin(), scenario);
-            return "redirect:/";
+            RunManifest m = simulations.submit(caller.id(), caller.origin(), scenario);
+            return "redirect:/?run=" + m.runId();
         } catch (QuotaExceededException | InvalidScenarioException | IllegalArgumentException e) {
             redirect.addAttribute("erro", e.getMessage());
             return "redirect:/editor/" + id;
         }
-    }
-
-    /** Cenário de outro usuário ou inexistente: 404, como na API. */
-    @org.springframework.web.bind.annotation.ExceptionHandler(NoSuchElementException.class)
-    org.springframework.http.ResponseEntity<String> notFound(NoSuchElementException e) {
-        return org.springframework.http.ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND)
-                .contentType(org.springframework.http.MediaType.TEXT_PLAIN)
-                .body(e.getMessage());
-    }
-
-    @org.springframework.web.bind.annotation.ExceptionHandler(IllegalArgumentException.class)
-    org.springframework.http.ResponseEntity<String> badRequest(IllegalArgumentException e) {
-        return org.springframework.http.ResponseEntity.badRequest()
-                .contentType(org.springframework.http.MediaType.TEXT_PLAIN)
-                .body(e.getMessage());
     }
 
     private void fill(Model model, Versioned<Scenario> current, String screen, Map<String, String> selection,

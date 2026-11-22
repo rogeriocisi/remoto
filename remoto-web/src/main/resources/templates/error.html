@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="|Erro ${status} – ReMoto|">Erro – ReMoto</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topo">
+  <div class="marca">
+    <a th:href="@{/}" class="marca-link"><strong>ReMoto</strong></a>
+    <span class="sub">simulador de núcleos motores da medula espinhal</span>
+  </div>
+</header>
+
+<main class="pagina-erro">
+  <section class="cartao" th:switch="${status}">
+    <p class="codigo-erro" th:text="|Erro ${status}|">Erro 500</p>
+
+    <th:block th:case="404">
+      <h1>Não encontrado</h1>
+      <p>O endereço não existe, ou o cenário ou a simulação não está mais nesta sessão. Sem login,
+        cada sessão do navegador tem a sua área, apagada depois de um tempo sem uso.</p>
+    </th:block>
+    <th:block th:case="403">
+      <h1>A página ficou desatualizada</h1>
+      <p>O token de segurança da página não vale mais (por exemplo, porque a sessão expirou).
+        Volte à página inicial e tente de novo.</p>
+    </th:block>
+    <th:block th:case="400">
+      <h1>Pedido inválido</h1>
+      <p>Os dados enviados não puderam ser usados.</p>
+    </th:block>
+    <th:block th:case="413">
+      <h1>Arquivo grande demais</h1>
+      <p>O arquivo enviado passa do tamanho máximo aceito pelo servidor.</p>
+    </th:block>
+    <th:block th:case="*">
+      <h1>Algo deu errado</h1>
+      <p>O servidor não conseguiu concluir o pedido. Tente de novo; se o erro continuar, recarregue
+        a página inicial. Os seus cenários e simulações continuam na sessão.</p>
+    </th:block>
+
+    <p th:if="${message != null and !#strings.isEmpty(message) and status != 500}" class="detalhe-erro"
+       th:text="${message}">detalhe</p>
+
+    <div class="acoes">
+      <a th:href="@{/}" class="botao">Voltar à página inicial</a>
+      <button type="button" class="secundario" onclick="history.back()">Voltar</button>
+    </div>
+    <p class="notas" th:if="${path}" th:text="|Endereço: ${path}|">Endereço</p>
+  </section>
+</main>
+</body>
+</html>

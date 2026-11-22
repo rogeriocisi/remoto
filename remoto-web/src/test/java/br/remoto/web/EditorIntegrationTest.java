@@ -87,10 +87,29 @@ class EditorIntegrationTest {
     }
 
     @Test
+    void enderecoInexistenteMostraAPaginaDeErroEAApiDevolveJson() throws Exception {
+        mvc.perform(get("/nao-existe").session(session("ana")))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Não encontrado")));
+        mvc.perform(get("/api/nao-existe").session(session("ana")))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentTypeCompatibleWith("application/problem+json"));
+    }
+
+    @Test
     void outroUsuarioNaoAbreOEditor() throws Exception {
         String id = copyAs("ana");
 
-        mvc.perform(get("/editor/" + id).session(session("bruno"))).andExpect(status().isNotFound());
+        mvc.perform(get("/editor/" + id).session(session("bruno")))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Não encontrado")))
+                .andExpect(content().string(containsString("Voltar à página inicial")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("Whitelabel"))));
+        // pedido do htmx: só a mensagem, que a página mostra num aviso
+        mvc.perform(get("/editor/" + id).session(session("bruno")).header("HX-Request", "true"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("cenário não encontrado")))
+                .andExpect(content().string(org.hamcrest.Matchers.not(containsString("<html"))));
     }
 
     @Test

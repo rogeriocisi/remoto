@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -34,7 +35,8 @@ import java.util.NoSuchElementException;
 @Controller
 class PageController {
 
-    record RunRow(String runId, String scenarioName, RunStatus status, Integer percent, String created, boolean active) {
+    record RunRow(String runId, String scenarioName, RunStatus status, String statusLabel, Integer percent,
+                  String created, String elapsed, boolean active) {
     }
 
     private static final DateTimeFormatter CREATED = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss").withZone(ZoneId.systemDefault());
@@ -75,6 +77,7 @@ class PageController {
     @PostMapping("/ui/scenarios/copy")
     String copy(Caller caller, @RequestParam String publicScenarioId, Model model) {
         catalog.find(publicScenarioId).ifPresent(s -> scenarios.create(caller.id(), s));
+        model.addAttribute("aba", "meus"); // mostra a cópia
         return scenarios(caller, model);
     }
 
@@ -96,12 +99,14 @@ class PageController {
         ScenarioFiles.Imported imported = files.importFiles(caller.id(), uploads);
         model.addAttribute("imported", imported.created().size());
         model.addAttribute("importErrors", imported.errors());
+        model.addAttribute("aba", "meus");
         return scenarios(caller, model);
     }
 
     @PostMapping("/ui/scenarios/{id}/delete")
     String deleteScenario(Caller caller, @PathVariable String id, Model model) {
         scenarios.delete(caller.id(), id);
+        model.addAttribute("aba", "meus");
         return scenarios(caller, model);
     }
 
@@ -116,14 +121,37 @@ class PageController {
     String submit(Caller caller,
                   @RequestParam(required = false) String publicScenarioId,
                   @RequestParam(required = false) String scenarioId,
-                  Model model) {
+                  Model model, jakarta.servlet.http.HttpServletResponse response) {
         try {
-            simulations.submit(caller.id(), caller.origin(), sources.resolve(caller,
+            RunManifest m = simulations.submit(caller.id(), caller.origin(), sources.resolve(caller,
                     new ScenarioSources.RunRequest(null, scenarioId, publicScenarioId)));
+            // a página abre a simulação nova na área de resultados
+            response.setHeader("HX-Trigger", "{\"abrir-execucao\": \"" + m.runId() + "\"}");
         } catch (QuotaExceededException | InvalidScenarioException | NoSuchElementException | IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
         }
         return runs(caller, model);
+    }
+
+    /**
+     * Importa uma simulação exportada (.zip). Devolve só a mensagem; o evento "execucoes" faz a
+     * lista, que se atualiza a cada poucos segundos, se atualizar na hora.
+     */
+    @PostMapping(path = "/ui/runs/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    String importRun(Caller caller, @RequestParam(name = "file", required = false) MultipartFile file, Model model,
+                     jakarta.servlet.http.HttpServletResponse response) {
+        if (file == null || file.isEmpty()) {
+            model.addAttribute("importError", "nenhum arquivo enviado");
+        } else {
+            try (var in = file.getInputStream()) {
+                RunManifest m = runs.importZip(caller.id(), in);
+                model.addAttribute("importedRun", m.scenarioName());
+                response.setHeader("HX-Trigger", "execucoes");
+            } catch (IllegalArgumentException | java.io.IOException e) {
+                model.addAttribute("importError", file.getOriginalFilename() + ": " + e.getMessage());
+            }
+        }
+        return "fragments :: runImport";
     }
 
     @PostMapping("/ui/runs/{id}/delete")
@@ -136,7 +164,33 @@ class PageController {
 
     private RunRow row(RunManifest m) {
         Integer percent = simulations.liveProgress(m.runId()).map(f -> (int) Math.round(f * 100)).orElse(null);
-        return new RunRow(m.runId(), m.scenarioName(), m.status(), percent, CREATED.format(m.createdAt()),
-                simulations.isActive(m.runId()));
+        return new RunRow(m.runId(), m.scenarioName(), m.status(), label(m.status()), percent,
+                CREATED.format(m.createdAt()), elapsed(m), simulations.isActive(m.runId()));
+    }
+
+    static String label(RunStatus status) {
+        return switch (status) {
+            case QUEUED -> "na fila";
+            case RUNNING -> "rodando";
+            case DONE -> "concluída";
+            case FAILED -> "falhou";
+            case CANCELED -> "cancelada";
+        };
+    }
+
+    /** Do início ao fim da simulação (ou até agora, se ainda roda); "—" se não chegou a começar. */
+    static String elapsed(RunManifest m) {
+        if (m.startedAt() == null) {
+            return "—";
+        }
+        Instant end = m.finishedAt() != null ? m.finishedAt() : Instant.now();
+        long s = Math.max(0, Duration.between(m.startedAt(), end).toSeconds());
+        if (s < 60) {
+            return s + " s";
+        }
+        if (s < 3600) {
+            return String.format("%d min %02d s", s / 60, s % 60);
+        }
+        return String.format("%d h %02d min", s / 3600, (s % 3600) / 60);
     }
 }

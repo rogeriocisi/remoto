@@ -138,6 +138,23 @@ class ApiIntegrationTest {
                 .andExpect(status().is4xxClientError());
         byte[] zip = download(get("/api/runs/" + runId + "/export.zip").session(session));
         assertThat(zipEntries(zip)).contains("manifest.json", "config.json", "results/forca-SOL.csv");
+
+        // a simulação exportada volta em outra sessão, com id novo e os mesmos resultados
+        String imported = mvc.perform(multipart("/api/runs/import")
+                        .file(new MockMultipartFile("file", "simulacao.zip", "application/zip", zip))
+                        .session(session("bruno")).with(csrf()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value("DONE"))
+                .andReturn().getResponse().getContentAsString();
+        String importedId = JsonPath.read(imported, "$.runId");
+        assertThat(importedId).isNotEqualTo(runId);
+        String original = mvc.perform(get("/api/runs/" + runId + "/results/forca-SOL.csv").session(session))
+                .andReturn().getResponse().getContentAsString();
+        mvc.perform(get("/api/runs/" + importedId + "/results/forca-SOL.csv").session(session("bruno")))
+                .andExpect(status().isOk())
+                .andExpect(content().string(original));
+        mvc.perform(get("/api/runs/" + importedId + "/menu").session(session("bruno")))
+                .andExpect(jsonPath("$.complete").value(true));
         mvc.perform(get("/api/runs/" + runId + "/menu").session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.complete").value(true))
@@ -191,6 +208,18 @@ class ApiIntegrationTest {
                         .session(session("bruno")).with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.created", hasSize(2)));
+    }
+
+    @Test
+    void importacaoDeSimulacaoRecusaZipQueNaoEhSimulacao() throws Exception {
+        createScenarioAs("ana");
+        byte[] scenarios = download(get("/api/scenarios/export").session(session("ana")));
+        mvc.perform(multipart("/api/runs/import")
+                        .file(new MockMultipartFile("file", "cenarios.zip", "application/zip", scenarios))
+                        .session(session("ana")).with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail", containsString("manifest.json")));
+        mvc.perform(get("/api/runs").session(session("ana"))).andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test

@@ -3,6 +3,7 @@ package br.remoto.storage.run;
 import br.remoto.core.scenario.Scenario;
 import br.remoto.storage.UserId;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
@@ -39,4 +40,13 @@ public interface RunRepository {
      * compressão gzip de cada arquivo). Não escreve nada se a execução não existe.
      */
     void exportZip(UserId owner, String runId, OutputStream out);
+
+    /**
+     * Traz de volta uma execução exportada por {@link #exportZip}: confere o manifesto, a
+     * configuração (pelo hash gravado no manifesto) e os nomes dos resultados, e a grava na área
+     * de {@code owner} com um id novo.
+     *
+     * @throws IllegalArgumentException se o arquivo não é uma execução exportada válida
+     */
+    RunManifest importZip(UserId owner, InputStream zip);
 }

@@ -181,6 +181,25 @@ data/
 - Limite real: **uma instância do servidor**. Para várias máquinas seria preciso fila
   compartilhada e armazenamento comum (S3/MinIO) — ver a proposta.
 
+## Página principal
+
+A página tem duas colunas, cada uma com a própria rolagem, para que os resultados fiquem sempre
+à vista:
+
+- **À esquerda**, *Minhas simulações* (cenário, status, criação e tempo de execução, do início ao
+  fim) e, abaixo, os *Cenários*, em duas abas (*Públicos* e *Meus cenários*), com busca por
+  nome, id ou descrição. Cada cenário mostra o id e as duas primeiras linhas da descrição (um
+  clique mostra o resto) e os botões Rodar, Editar, Copiar, Exportar e, nos seus, Apagar.
+- **À direita**, os resultados da simulação aberta. **Rodar** abre a simulação nova ali, com o
+  progresso ao vivo; o "Rodar este cenário" do editor volta para a página com ela aberta. Um
+  clique numa linha de *Minhas simulações* (ou Enter, pelo teclado) abre outra.
+
+Cada simulação terminada tem **Exportar** (o .zip com o manifesto, a configuração e os resultados
+em CSV), e o **Importar…** de *Minhas simulações* traz esse .zip de volta, com um id novo: o
+manifesto e a configuração são conferidos (pelo hash gravado no manifesto), os nomes dos
+resultados são validados, e o .zip pode ter até 5.000 arquivos e 2 GB descompactados. Em telas
+estreitas, as duas colunas ficam uma embaixo da outra.
+
 ## API REST
 
 | Método | Caminho | Descrição |
@@ -203,6 +222,7 @@ data/
 | PUT | `/api/runs/{id}/pinned` | fixa (`true`) para escapar da retenção |
 | GET | `/api/runs/{id}/config` | configuração exata usada |
 | GET | `/api/runs/{id}/export.zip` | a execução inteira: manifesto, configuração e resultados em CSV |
+| POST | `/api/runs/import` | importa um .zip exportado (`file`, multipart) como execução nova da sessão |
 | GET | `/api/runs/{id}/results/{nome}.csv` | resultado em CSV |
 | GET | `/api/runs/{id}/results/{nome}.png` | figura em PNG |
 | GET | `/api/runs/{id}/menu` | menus da tela de resultados para a execução (motor original) |
@@ -459,7 +479,7 @@ data da gravação, e a tabela `NOTHING` (que o DAO só escreve e ninguém lê) 
 | Biomechanical Elements | Biomechanical Elements (modelos de articulação e de músculo) |
 | Biomechanical Parameters | Joint, Muscle Units, Musculotendon, Electromyogram, Miscellaneous |
 | Stimulation | Nerve Stimulation, Injected Current |
-| Run | Simulation Start |
+| Simulation | Duration and Time Step (no site antigo, *Run → Simulation Start*; aqui a tela só guarda a duração e o passo, e quem roda é o botão "Rodar este cenário") |
 
 **Campos que o DAO original não gravava.** Algumas telas antigas editavam propriedades da
 `Configuration` que o `ConfigurationDAO` não salvava (valiam só durante a sessão): modelos de

@@ -11,7 +11,7 @@
   <script th:src="@{/js/results.js}" defer></script>
   <script th:src="@{/js/app.js}" defer></script>
 </head>
-<body>
+<body class="app">
 <header class="topo">
   <div class="marca">
     <strong>ReMoto</strong>
@@ -28,26 +28,62 @@
       + /*[[${sessionHours}]]*/ 12 + " h sem uso; exporte os cenários (e baixe as simulações) para guardá-los.");
 </script>
 
-<main class="grade">
-  <section class="cartao">
-    <h2>Cenários</h2>
-    <div id="cenarios" hx-get="/ui/scenarios" hx-trigger="load">Carregando…</div>
-  </section>
-  <section class="cartao">
-    <h2>Minhas simulações</h2>
-    <div id="execucoes" hx-get="/ui/runs" hx-trigger="load, every 4s">Carregando…</div>
+<main class="area">
+  <!-- barra lateral: simulações em cima, cenários embaixo; rola sozinha -->
+  <aside class="lateral">
+    <section class="cartao bloco-simulacoes">
+      <div class="titulo-bloco">
+        <h2>Minhas simulações</h2>
+        <form hx-post="/ui/runs/import" hx-target="#importacao-simulacao" hx-encoding="multipart/form-data"
+              hx-trigger="change from:find input" class="inline">
+          <label class="botao secundario pequeno"
+                 title="Traz de volta uma simulação exportada antes (.zip), para ver os resultados de novo">
+            Importar…
+            <input type="file" name="file" accept=".zip,application/zip" hidden>
+          </label>
+        </form>
+      </div>
+      <div id="importacao-simulacao" class="mensagem"></div>
+      <div id="execucoes" hx-get="/ui/runs" hx-trigger="load, every 4s, execucoes from:body">Carregando…</div>
+    </section>
+
+    <section class="cartao bloco-cenarios">
+      <h2>Cenários</h2>
+      <div id="cenarios" hx-get="/ui/scenarios" hx-trigger="load">Carregando…</div>
+    </section>
+  </aside>
+
+  <!-- área de trabalho: os resultados da simulação aberta -->
+  <section class="trabalho">
+    <div id="boas-vindas" class="cartao vazio-grande">
+      <h2>Nenhuma simulação aberta</h2>
+      <ol>
+        <li>Escolha um cenário à esquerda e clique em <strong>Rodar</strong>: a simulação abre aqui e o
+          progresso aparece ao vivo.</li>
+        <li>Para mudar parâmetros, clique em <strong>Editar</strong>: o editor abre numa cópia sua do
+          cenário.</li>
+        <li>Para rever uma simulação, clique na linha dela em <strong>Minhas simulações</strong>.</li>
+      </ol>
+      <p class="notas">Não há login: cenários e simulações ficam nesta sessão do navegador. Use
+        <strong>Exportar</strong> para guardá-los e <strong>Importar…</strong> para trazê-los de volta.</p>
+    </div>
+
+    <section id="detalhe" class="cartao" hidden>
+      <div class="cabecalho-detalhe">
+        <div>
+          <h2 data-campo="nome">Simulação</h2>
+          <code class="id-execucao" data-campo="id"></code>
+        </div>
+        <div class="progresso">
+          <span data-campo="status" class="status"></span>
+          <progress max="100" value="0"></progress>
+        </div>
+      </div>
+      <div data-campo="links" class="links"></div>
+      <div data-campo="resultados" class="resultados" hidden></div>
+      <div data-campo="graficos"></div>
+    </section>
   </section>
 </main>
-
-<section id="detalhe" class="cartao" hidden>
-  <h2>Execução <code data-campo="id"></code></h2>
-  <p class="progresso">
-    <span data-campo="status"></span>
-    <progress max="100" value="0"></progress>
-  </p>
-  <div data-campo="links" class="links"></div>
-  <div data-campo="resultados" class="resultados" hidden></div>
-  <div data-campo="graficos"></div>
-</section>
 </body>
 </html>

@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
@@ -131,6 +133,15 @@ class RunController {
         Path dir = resultsDir(caller, id, name);
         ResultFiles.Columns reduced = ResultFiles.read(dir, name, Math.max(100, Math.min(max, 50_000)));
         return new Preview(reduced.header(), reduced.totalPoints(), reduced.x(), reduced.y());
+    }
+
+    /** Traz de volta uma execução exportada (.zip), com um id novo, para ver os resultados de novo. */
+    @PostMapping(path = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<RunManifest> importZip(Caller caller, @RequestParam("file") MultipartFile file) throws IOException {
+        try (var in = file.getInputStream()) {
+            RunManifest m = runs.importZip(caller.id(), in);
+            return ResponseEntity.created(URI.create("/api/runs/" + m.runId())).body(m);
+        }
     }
 
     /** A execução inteira num .zip: manifesto, configuração e todos os resultados em CSV. */

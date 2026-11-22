@@ -83,7 +83,7 @@ public final class LegacyScreens {
                 group("Biomechanical Parameters", "joint", "Joint", "motorunit", "Muscle Units",
                         "musculotendon", "Musculotendon", "emg", "Electromyogram", "miscellaneous", "Miscellaneous"),
                 group("Stimulation", "stimulation", "Nerve Stimulation", "injectedCurrent", "Injected Current"),
-                group("Run", "start", "Simulation Start"));
+                group("Simulation", "start", "Duration and Time Step"));
     }
 
     private static MenuGroup group(String title, String... idsAndTitles) {
@@ -100,9 +100,12 @@ public final class LegacyScreens {
 
     // ------------------------------------------------------------------ Run
 
-    /** start.jsp / StartAction. */
+    /**
+     * start.jsp / StartAction ("Run → Simulation Start" no site antigo). Aqui a tela só guarda a
+     * duração e o passo; quem roda é o botão "Rodar este cenário".
+     */
     private static LegacyScreen simulation() {
-        return new LegacyScreen("start", "Simulation Start", List.of(),
+        return new LegacyScreen("start", "Duration and Time Step", List.of(),
                 List.of(new Part(null, Layout.LIST,
                         (conf, sel) -> List.of(new SimulationSettings(conf)),
                         Object::toString,

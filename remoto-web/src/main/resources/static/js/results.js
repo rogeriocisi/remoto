@@ -239,7 +239,12 @@
   }
 
   async function fetchView(params) {
-    const r = await fetch(`/api/runs/${state.runId}/view?${params}`);
+    let r;
+    try {
+      r = await fetch(`/api/runs/${state.runId}/view?${params}`);
+    } catch (e) {
+      return { error: 'sem conexão com o servidor; tente de novo' };
+    }
     if (!r.ok) {
       const problem = await r.json().catch(() => ({}));
       return { error: problem.detail || `erro ${r.status}` };
