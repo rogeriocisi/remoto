@@ -2,7 +2,7 @@ package br.remoto.cli;
 
 import br.remoto.core.engine.Engines;
 import br.remoto.core.engine.placeholder.PlaceholderPoolEngine;
-import br.remoto.legacy.LegacyEngine;
+import br.remoto.core.engine.legacy.LegacyEngine;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 

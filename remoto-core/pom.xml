@@ -12,7 +12,10 @@
 
   <artifactId>remoto-core</artifactId>
   <name>ReMoto :: core</name>
-  <description>Modelos e motor de simulação em Java puro (sem web, sem armazenamento)</description>
+  <description>
+    Modelos e motores de simulação em Java puro (sem web, sem armazenamento, sem dependências):
+    o motor provisório e o motor original do ReMoto, com os modelos portados.
+  </description>
 
   <dependencies>
     <dependency>
@@ -25,5 +28,26 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- os testes do motor original leem e gravam cenários em JSON, como o site -->
+    <dependency>
+      <groupId>tools.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- os testes do motor original leem o banco legado em legacy-db/ -->
+          <systemPropertyVariables>
+            <remoto.legacy.db>${project.basedir}/../legacy-db/remoto</remoto.legacy.db>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

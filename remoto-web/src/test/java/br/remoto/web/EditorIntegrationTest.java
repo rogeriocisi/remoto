@@ -1,8 +1,8 @@
 package br.remoto.web;
 
 import br.remoto.core.scenario.Scenario;
-import br.remoto.legacy.LegacyConfig;
-import br.remoto.legacy.LegacyJson;
+import br.remoto.core.engine.legacy.LegacyConfig;
+import br.remoto.core.engine.legacy.LegacyJson;
 import br.remoto.storage.JsonCodec;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;

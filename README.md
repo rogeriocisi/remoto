@@ -23,11 +23,10 @@ This repository contains the new version of ReMoto. Of the legacy version, only 
 ### Repository layout
 
 ```
-remoto-core/          scenario format, engine interfaces and the ported ReMoto models (plain Java)
+remoto-core/          scenario format, the ReMoto models and engines ("legacy" and demo), reader of the old database (plain Java)
 remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
-remoto-legacy/        "legacy" engine, scenario editor and converter of old configurations
-remoto-web/           multi-user web application (Spring Boot)
-remoto-cli/           command-line runner for scripts and clusters
+remoto-web/           multi-user web application (Spring Boot), including the scenario editor
+remoto-cli/           command-line runner for scripts and clusters, and export of old configurations
 scenarios/            public scenarios (JSON)
 deploy/            systemd service and configuration template
 docs/              documentation of the new version (in Portuguese)

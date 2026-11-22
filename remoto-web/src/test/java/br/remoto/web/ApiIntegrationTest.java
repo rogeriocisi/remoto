@@ -137,7 +137,7 @@ class ApiIntegrationTest {
         String body = mvc.perform(post("/api/runs").session(session).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{\"scenario\":" + scenario + "}"))
                 .andExpect(status().isAccepted())
-                .andExpect(jsonPath("$.engineVersion").value(br.remoto.legacy.LegacyEngine.VERSION))
+                .andExpect(jsonPath("$.engineVersion").value(br.remoto.core.engine.legacy.LegacyEngine.VERSION))
                 .andReturn().getResponse().getContentAsString();
         String runId = JsonPath.read(body, "$.runId");
 

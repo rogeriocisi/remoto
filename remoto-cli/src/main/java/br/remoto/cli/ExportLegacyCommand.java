@@ -1,7 +1,7 @@
 package br.remoto.cli;
 
 import br.remoto.core.scenario.Scenario;
-import br.remoto.legacy.LegacyDatabase;
+import br.remoto.core.engine.legacy.LegacyDatabase;
 import br.remoto.storage.JsonCodec;
 import br.remoto.storage.StorageFiles;
 import picocli.CommandLine.Command;

@@ -2,10 +2,10 @@ package br.remoto.web.ui;
 
 import br.remoto.core.scenario.Scenario;
 import br.remoto.core.scenario.ScenarioValidator;
-import br.remoto.legacy.LegacyJson;
-import br.remoto.legacy.editor.LegacyEditor;
-import br.remoto.legacy.editor.LegacyScreens;
-import br.remoto.legacy.editor.ScreenView;
+import br.remoto.core.engine.legacy.LegacyJson;
+import br.remoto.web.editor.LegacyEditor;
+import br.remoto.web.editor.LegacyScreens;
+import br.remoto.web.editor.ScreenView;
 import br.remoto.storage.StaleWriteException;
 import br.remoto.storage.Versioned;
 import br.remoto.storage.scenario.ScenarioRepository;

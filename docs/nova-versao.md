@@ -33,10 +33,9 @@ ferramenta para instalar e manter.
 ## Módulos
 
 ```
-remoto-core          cenário, interface dos motores, motor provisório e os modelos do ReMoto (Java puro)
+remoto-core          cenário, modelos do ReMoto, motores "legacy" e provisório, leitura do banco antigo (Java puro, sem dependências)
 remoto-storage       repositórios em arquivo: cenários, execuções, perfis, compartilhamentos
-remoto-legacy        motor "legacy", editor de cenários e conversão do banco antigo para JSON
-remoto-web           aplicação Spring Boot multiusuário (API REST + páginas)
+remoto-web           aplicação Spring Boot multiusuário (API REST + páginas), com o editor de cenários
 remoto-cli           execução sem servidor: remoto run / validate / export-legacy
 scenarios/           cenários públicos versionados no Git (o antigo usuário "guest")
 ```
@@ -283,7 +282,7 @@ antigo**:
     gráficos (`ResultDisplay`); agora o motor o faz ao final da simulação. A única diferença é
     o ruído, que vem de um gerador com a seed do cenário em vez de `Math.random()`.
 
-### Garantias (testes em `remoto-legacy`)
+### Garantias (testes em `br.remoto.core.engine.legacy`; os do editor, no `remoto-web`)
 
 | Teste | O que garante |
 |---|---|
@@ -354,7 +353,7 @@ Em "Meus cenários", o botão **Editar** abre o editor, montado a partir do edit
 rótulos e unidades. Cenários públicos são de todos e só leitura: o **Editar** de um cenário
 público cria uma cópia em "Meus cenários" e abre o editor nela (o **Copiar** só cria a cópia).
 
-**Como funciona (pacote `br.remoto.legacy.editor`):**
+**Como funciona (pacote `br.remoto.web.editor`, no `remoto-web`):**
 
 1. O cenário vira a `Configuration` original (`LegacyConfigurations.load`).
 2. Cada tela lista os mesmos objetos que o Action original colocava no formulário (`NeuronVO`,
@@ -486,6 +485,14 @@ sinal guardado (o Action original também não os salvava).
       telas e reabrindo) deram as mesmas tabelas nas 33 configurações; e o export sem HSQLDB deu
       arquivos idênticos nas 30. Os testes que comparavam com o DAO pelo HSQLDB viraram golden
       masters gerados por ele. Os diagramas UML do código original estão em `docs/uml-original/`.
+
+      Depois, o módulo `remoto-legacy`, que tinha ficado só como adaptação, foi dissolvido: o
+      motor (`LegacyEngine` e a conversão do cenário) e a leitura do banco antigo
+      (`LegacyDatabase`) foram para `br.remoto.core.engine.legacy`, ao lado do motor provisório,
+      e o editor para `br.remoto.web.editor`, no seu único usuário. A conversão do campo `legacy`
+      do cenário deixou de usar o Jackson, e o `remoto-core` segue sem dependências. Os nomes
+      gravados nos cenários (`"engine": "legacy"`, o formato `remoto-legacy-db/1` e a versão do
+      motor) não mudaram, e o resultado continua o mesmo, bit a bit.
 2. ~~Desempenho do motor original.~~ Feito: ver "Desempenho" em [Motor original](#motor-original-legacy).
    Próximo ganho: tirar da thread da simulação a força muscular, separando o que sorteia
    (fuso, distúrbios) do que não sorteia.

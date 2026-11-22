@@ -2,7 +2,7 @@ package br.remoto.web.config;
 
 import br.remoto.core.engine.Engines;
 import br.remoto.core.engine.placeholder.PlaceholderPoolEngine;
-import br.remoto.legacy.LegacyEngine;
+import br.remoto.core.engine.legacy.LegacyEngine;
 import br.remoto.storage.DataLayout;
 import br.remoto.storage.JsonCodec;
 import br.remoto.storage.UserLocks;

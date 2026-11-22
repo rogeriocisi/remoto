@@ -13,8 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * O leitor das tabelas do banco original. A equivalência com o HSQLDB de verdade, linha a linha e
- * na mesma ordem, é testada no remoto-legacy, onde o banco está disponível.
+ * O leitor das tabelas do banco original. A equivalência com o HSQLDB de verdade foi conferida
+ * enquanto ele era dependência; hoje os golden masters do motor original
+ * ({@code br.remoto.core.engine.legacy}) cobrem as 30 configurações do banco.
  */
 class LegacyTablesReaderTest {
 
