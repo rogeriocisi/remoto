@@ -111,7 +111,7 @@ class EditorController {
     String run(Caller caller, @PathVariable String id, RedirectAttributes redirect) {
         Scenario scenario = find(caller, id).value();
         try {
-            simulations.submit(caller.id(), scenario);
+            simulations.submit(caller.id(), caller.origin(), scenario);
             return "redirect:/";
         } catch (QuotaExceededException | InvalidScenarioException | IllegalArgumentException e) {
             redirect.addAttribute("erro", e.getMessage());

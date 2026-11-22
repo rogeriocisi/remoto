@@ -3,7 +3,6 @@ package br.remoto.web.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
-import java.util.List;
 
 /** Configurações {@code remoto.*} (application.yml ou variáveis de ambiente REMOTO_*). */
 @ConfigurationProperties("remoto")
@@ -11,13 +10,15 @@ public record RemotoProperties(
         @DefaultValue("./data") String dataDir,
         @DefaultValue("./scenarios") String publicScenariosDir,
         @DefaultValue Simulation simulation,
-        @DefaultValue Retention retention,
-        @DefaultValue Dev dev) {
+        @DefaultValue Retention retention) {
 
     /**
      * @param slots            simulações simultâneas no servidor; 0 = número de núcleos da CPU
-     * @param maxActivePerUser quantas um mesmo usuário pode ter rodando ao mesmo tempo
-     * @param maxQueuedPerUser quantas um mesmo usuário pode ter esperando na fila
+     * @param maxActivePerUser quantas uma mesma sessão pode ter rodando ao mesmo tempo
+     * @param maxQueuedPerUser quantas uma mesma sessão pode ter esperando na fila
+     * @param maxPerOrigin     quantas um mesmo endereço de origem pode ter rodando ou na fila,
+     *                         somando as sessões (sem login, abrir outra sessão é fácil); 0 = sem limite
+     * @param maxQueuedTotal   quantas o servidor aceita esperando na fila, somando todos; 0 = sem limite
      * @param threadsPerRun    threads do motor original em cada simulação; 0 = núcleos ÷ slots,
      *                         para que as simulações simultâneas não disputem a CPU
      */
@@ -25,6 +26,8 @@ public record RemotoProperties(
             @DefaultValue("0") int slots,
             @DefaultValue("2") int maxActivePerUser,
             @DefaultValue("20") int maxQueuedPerUser,
+            @DefaultValue("20") int maxPerOrigin,
+            @DefaultValue("200") int maxQueuedTotal,
             @DefaultValue("0") int threadsPerRun) {
 
         public int effectiveSlots() {
@@ -41,18 +44,9 @@ public record RemotoProperties(
 
     /**
      * @param runDays    execuções terminadas (e não fixadas) são apagadas depois deste prazo
-     * @param guestHours áreas de convidado abandonadas são apagadas depois deste prazo
+     * @param sessionHours áreas de sessão abandonadas (que o fim da sessão não apagou, por
+     *                     exemplo num reinício do servidor) são apagadas depois deste prazo
      */
-    public record Retention(@DefaultValue("30") int runDays, @DefaultValue("24") int guestHours) {
-    }
-
-    /** Usuários locais, só para desenvolvimento (perfil "dev"). */
-    public record Dev(List<DevUser> users) {
-        public Dev {
-            users = users == null ? List.of() : List.copyOf(users);
-        }
-    }
-
-    public record DevUser(String username, String password) {
+    public record Retention(@DefaultValue("30") int runDays, @DefaultValue("24") int sessionHours) {
     }
 }

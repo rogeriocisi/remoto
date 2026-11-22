@@ -1,7 +1,6 @@
 package br.remoto.web.api;
 
 import br.remoto.storage.StaleWriteException;
-import br.remoto.web.security.LoginRequiredException;
 import br.remoto.web.sim.InvalidScenarioException;
 import br.remoto.web.sim.QuotaExceededException;
 import org.springframework.http.HttpStatus;
@@ -35,11 +34,6 @@ class ApiExceptionHandler {
     @ExceptionHandler(QuotaExceededException.class)
     ProblemDetail quota(QuotaExceededException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, e.getMessage());
-    }
-
-    @ExceptionHandler(LoginRequiredException.class)
-    ProblemDetail login(LoginRequiredException e) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

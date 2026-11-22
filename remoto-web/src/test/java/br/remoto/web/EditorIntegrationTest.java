@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -23,7 +24,6 @@ import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -56,12 +56,12 @@ class EditorIntegrationTest {
         String id = copyAs("ana");
         String etag = etag("ana", id);
 
-        mvc.perform(get("/editor/" + id).param("screen", "network").with(user("ana")))
+        mvc.perform(get("/editor/" + id).param("screen", "network").session(session("ana")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Neural Elements")))
                 .andExpect(content().string(containsString("SOL — S (motoneurons)")));
 
-        mvc.perform(post("/editor/" + id).with(user("ana")).with(csrf())
+        mvc.perform(post("/editor/" + id).session(session("ana")).with(csrf())
                         .param("screen", "network").param("etag", etag)
                         .param("p0.i0.active", "true").param("p0.i0.quantity", "100"))
                 .andExpect(status().is3xxRedirection())
@@ -74,11 +74,11 @@ class EditorIntegrationTest {
     void edicaoComEtagAntigoNaoSobrescreve() throws Exception {
         String id = copyAs("ana");
         String etag = etag("ana", id);
-        mvc.perform(post("/editor/" + id).with(user("ana")).with(csrf())
+        mvc.perform(post("/editor/" + id).session(session("ana")).with(csrf())
                         .param("screen", "general").param("etag", etag).param("name", "primeira").param("seed", "1"))
                 .andExpect(status().is3xxRedirection());
 
-        mvc.perform(post("/editor/" + id).with(user("ana")).with(csrf())
+        mvc.perform(post("/editor/" + id).session(session("ana")).with(csrf())
                         .param("screen", "general").param("etag", etag).param("name", "segunda").param("seed", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("alterado em outra aba")));
@@ -90,13 +90,13 @@ class EditorIntegrationTest {
     void outroUsuarioNaoAbreOEditor() throws Exception {
         String id = copyAs("ana");
 
-        mvc.perform(get("/editor/" + id).with(user("bruno"))).andExpect(status().isNotFound());
+        mvc.perform(get("/editor/" + id).session(session("bruno"))).andExpect(status().isNotFound());
     }
 
     @Test
     void numeroInvalidoMostraOErroSemGravar() throws Exception {
         String id = copyAs("ana");
-        mvc.perform(post("/editor/" + id).with(user("ana")).with(csrf())
+        mvc.perform(post("/editor/" + id).session(session("ana")).with(csrf())
                         .param("screen", "motoneuron").param("sel.pool", "SOL").param("etag", etag("ana", id))
                         .param("p0.i0.threshold1", "abc"))
                 .andExpect(status().isOk())
@@ -108,7 +108,7 @@ class EditorIntegrationTest {
         String id = copyAs("ana");
 
         mvc.perform(get("/editor/" + id).param("screen", "conductance").param("pool", "SOL").param("type", "FR")
-                        .with(user("ana")))
+                        .session(session("ana")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("gNaM-FR")));
     }
@@ -116,25 +116,25 @@ class EditorIntegrationTest {
     @Test
     void editarUmCenarioPublicoAbreOEditorNumaCopia() throws Exception {
         // o Editar dos públicos é um formulário comum, que leva o token CSRF
-        mvc.perform(get("/ui/scenarios").with(user("bruno")))
+        mvc.perform(get("/ui/scenarios").session(session("bruno")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("action=\"/ui/scenarios/edit-copy\"")))
                 .andExpect(content().string(containsString("name=\"_csrf\"")));
 
-        MvcResult r = mvc.perform(post("/ui/scenarios/edit-copy").with(user("bruno")).with(csrf())
+        MvcResult r = mvc.perform(post("/ui/scenarios/edit-copy").session(session("bruno")).with(csrf())
                         .param("publicScenarioId", "remoto-17-default-soleus-contraction"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/editor/*"))
                 .andReturn();
         String id = r.getResponse().getRedirectedUrl().substring("/editor/".length());
 
-        mvc.perform(get("/editor/" + id).with(user("bruno")))
+        mvc.perform(get("/editor/" + id).session(session("bruno")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Default - Soleus contraction")));
         assertThat(scenario("bruno", id).name()).isEqualTo("Default - Soleus contraction");
 
         // cenário público inexistente volta para a página inicial, sem criar nada
-        mvc.perform(post("/ui/scenarios/edit-copy").with(user("bruno")).with(csrf())
+        mvc.perform(post("/ui/scenarios/edit-copy").session(session("bruno")).with(csrf())
                         .param("publicScenarioId", "nao-existe"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
@@ -142,19 +142,19 @@ class EditorIntegrationTest {
 
     private String copyAs(String username) throws Exception {
         MvcResult r = mvc.perform(post("/api/scenarios/public/remoto-17-default-soleus-contraction/copy")
-                        .with(user(username)).with(csrf()))
+                        .session(session(username)).with(csrf()))
                 .andExpect(status().isCreated()).andReturn();
         return JsonPath.read(r.getResponse().getContentAsString(), "$.id");
     }
 
     private String etag(String username, String id) throws Exception {
-        String header = mvc.perform(get("/api/scenarios/" + id).with(user(username)))
+        String header = mvc.perform(get("/api/scenarios/" + id).session(session(username)))
                 .andReturn().getResponse().getHeader(HttpHeaders.ETAG);
         return header == null ? null : header.replace("\"", "");
     }
 
     private Scenario scenario(String username, String id) throws Exception {
-        byte[] body = mvc.perform(get("/api/scenarios/" + id).with(user(username)))
+        byte[] body = mvc.perform(get("/api/scenarios/" + id).session(session(username)))
                 .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8).getBytes(StandardCharsets.UTF_8);
         return json.fromBytes(body, Scenario.class);
     }
@@ -166,5 +166,12 @@ class EditorIntegrationTest {
         int q = t.columns().indexOf("QUANTITY");
         return t.rows().stream().filter(r -> nucleus.equals(r.get(n)) && type.equals(r.get(ty)))
                 .map(r -> ((Number) r.get(q)).intValue()).findFirst().orElseThrow();
+    }
+
+    /** Uma sessão do navegador por nome, como se cada pessoa usasse o seu (não há login). */
+    private final java.util.Map<String, MockHttpSession> sessions = new java.util.HashMap<>();
+
+    private MockHttpSession session(String who) {
+        return sessions.computeIfAbsent(who, k -> new MockHttpSession());
     }
 }

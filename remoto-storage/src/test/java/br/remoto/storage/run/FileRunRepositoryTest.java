@@ -25,7 +25,7 @@ class FileRunRepositoryTest {
 
     private FileRunRepository runs;
     private final UserId ana = user("ana");
-    private final UserId convidado = UserId.newGuest();
+    private final UserId outraSessao = UserId.newSession();
 
     @BeforeEach
     void setUp() {
@@ -59,16 +59,16 @@ class FileRunRepositoryTest {
     }
 
     @Test
-    void encontraExecucoesInterrompidasDeTodosOsUsuarios() {
+    void encontraExecucoesInterrompidasDeTodasAsSessoes() {
         RunManifest daAna = runs.create(ana, scenario("a"), "motor-1");
-        RunManifest doConvidado = runs.create(convidado, scenario("b"), "motor-1");
-        runs.save(convidado, doConvidado.running(Instant.now()));
+        RunManifest daOutra = runs.create(outraSessao, scenario("b"), "motor-1");
+        runs.save(outraSessao, daOutra.running(Instant.now()));
         RunManifest terminada = runs.create(ana, scenario("c"), "motor-1");
         runs.save(ana, terminada.running(Instant.now()).finished(RunStatus.DONE, Instant.now(), null));
 
         assertThat(runs.findAllByStatus(EnumSet.of(RunStatus.QUEUED, RunStatus.RUNNING)))
                 .extracting(RunManifest::runId)
-                .containsExactlyInAnyOrder(daAna.runId(), doConvidado.runId());
+                .containsExactlyInAnyOrder(daAna.runId(), daOutra.runId());
     }
 
     @Test

@@ -18,18 +18,14 @@
     <span class="sub">simulador de núcleos motores da medula espinhal</span>
   </div>
   <div class="conta">
-    <span th:text="${caller.displayName}">Convidado</span>
-    <a th:if="${caller.guest}" th:href="@{/login}" class="botao">Entrar</a>
-    <form th:unless="${caller.guest}" th:action="@{/logout}" method="post" class="inline">
-      <button type="submit" class="secundario">Sair</button>
-    </form>
+    <a th:href="@{/api/me/export}" class="botao secundario" download
+       title="Baixa num .zip tudo o que está nesta sessão: cenários e simulações">Baixar sessão</a>
   </div>
 </header>
 
 <script th:inline="javascript">
-  if (/*[[${caller.guest}]]*/ false) {
-    console.info("ReMoto: você está como convidado; seus cenários e simulações somem quando a sessão expirar. Entre para guardá-los.");
-  }
+  console.info("ReMoto: não há login. Seus cenários e simulações ficam nesta sessão do navegador e são apagados depois de "
+      + /*[[${sessionHours}]]*/ 12 + " h sem uso; exporte os cenários (e baixe as simulações) para guardá-los.");
 </script>
 
 <main class="grade">

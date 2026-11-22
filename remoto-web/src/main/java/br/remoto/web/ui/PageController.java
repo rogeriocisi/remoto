@@ -5,18 +5,23 @@ import br.remoto.storage.run.RunRepository;
 import br.remoto.storage.run.RunStatus;
 import br.remoto.storage.scenario.PublicScenarioCatalog;
 import br.remoto.storage.scenario.ScenarioRepository;
+import br.remoto.web.api.ScenarioFiles;
 import br.remoto.web.api.ScenarioSources;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
 import br.remoto.web.sim.QuotaExceededException;
 import br.remoto.web.sim.SimulationService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,9 +44,14 @@ class PageController {
     private final RunRepository runs;
     private final SimulationService simulations;
     private final ScenarioSources sources;
+    private final ScenarioFiles files;
+    private final long sessionHours;
 
     PageController(PublicScenarioCatalog catalog, ScenarioRepository scenarios, RunRepository runs,
-                   SimulationService simulations, ScenarioSources sources) {
+                   SimulationService simulations, ScenarioSources sources, ScenarioFiles files,
+                   @Value("${server.servlet.session.timeout:12h}") Duration sessionTimeout) {
+        this.files = files;
+        this.sessionHours = sessionTimeout.toHours();
         this.catalog = catalog;
         this.scenarios = scenarios;
         this.runs = runs;
@@ -51,7 +61,7 @@ class PageController {
 
     @GetMapping("/")
     String index(Caller caller, Model model) {
-        model.addAttribute("caller", caller);
+        model.addAttribute("sessionHours", sessionHours);
         return "index";
     }
 
@@ -79,6 +89,16 @@ class PageController {
                 .orElse("redirect:/");
     }
 
+    /** Importa arquivos .json e .zip para "Meus cenários" e mostra o que entrou e o que não. */
+    @PostMapping(path = "/ui/scenarios/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    String importFiles(Caller caller, @RequestParam(name = "files", required = false) List<MultipartFile> uploads,
+                       Model model) {
+        ScenarioFiles.Imported imported = files.importFiles(caller.id(), uploads);
+        model.addAttribute("imported", imported.created().size());
+        model.addAttribute("importErrors", imported.errors());
+        return scenarios(caller, model);
+    }
+
     @PostMapping("/ui/scenarios/{id}/delete")
     String deleteScenario(Caller caller, @PathVariable String id, Model model) {
         scenarios.delete(caller.id(), id);
@@ -98,8 +118,8 @@ class PageController {
                   @RequestParam(required = false) String scenarioId,
                   Model model) {
         try {
-            simulations.submit(caller.id(), sources.resolve(caller,
-                    new ScenarioSources.RunRequest(null, scenarioId, publicScenarioId, null)));
+            simulations.submit(caller.id(), caller.origin(), sources.resolve(caller,
+                    new ScenarioSources.RunRequest(null, scenarioId, publicScenarioId)));
         } catch (QuotaExceededException | InvalidScenarioException | NoSuchElementException | IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
         }

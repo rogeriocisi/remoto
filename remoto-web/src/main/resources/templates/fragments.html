@@ -28,13 +28,32 @@
           <input type="hidden" name="publicScenarioId" th:value="${s.id}">
           <button type="submit" class="secundario">Copiar</button>
         </form>
+        <a th:href="@{/api/scenarios/public/{id}/export(id=${s.id})}" class="botao secundario" download
+           title="Baixa o cenário em JSON, para guardar, importar depois ou rodar na CLI">Exportar</a>
       </div>
     </li>
   </ul>
 
   <h3>Meus cenários</h3>
+  <div class="importar">
+    <form hx-post="/ui/scenarios/import" hx-target="#cenarios" hx-encoding="multipart/form-data"
+          hx-trigger="change from:find input">
+      <label class="botao secundario"
+             title="Envia cenários exportados antes (.json, ou vários num .zip) para Meus cenários">
+        Importar…
+        <input type="file" name="files" accept=".json,.zip,application/json,application/zip" multiple hidden>
+      </label>
+    </form>
+    <a th:unless="${#lists.isEmpty(mine)}" th:href="@{/api/scenarios/export}" class="botao secundario" download
+       title="Baixa todos os seus cenários num .zip, um JSON cada">Exportar todos</a>
+  </div>
+  <p th:if="${imported != null and imported > 0}" class="ok"
+     th:text="${imported == 1} ? '1 cenário importado.' : |${imported} cenários importados.|">importados</p>
+  <ul th:if="${importErrors != null and !#lists.isEmpty(importErrors)}" class="erro">
+    <li th:each="e : ${importErrors}" th:text="${e}">erro</li>
+  </ul>
   <p th:if="${#lists.isEmpty(mine)}" class="vazio">
-    Nenhum ainda. Copie um cenário público para poder editá-lo.
+    Nenhum ainda. Copie um cenário público para editá-lo, ou importe um que você exportou antes.
   </p>
   <ul class="lista">
     <li th:each="s : ${mine}">
@@ -43,7 +62,6 @@
         <span th:if="${s.engineOrDefault() == 'legacy'}" class="selo"
               title="Roda os modelos publicados do ReMoto">Experimento</span>
         <small th:text="|${#numbers.formatDecimal(s.durationMs, 1, 'POINT', 0, 'COMMA')} ms simulados|">1000 ms</small>
-        <a th:href="@{/api/scenarios/{id}(id=${s.id})}" class="discreto">JSON</a>
       </div>
       <div class="acoes">
         <a th:href="@{/editor/{id}(id=${s.id})}" class="botao secundario">Editar</a>
@@ -51,6 +69,8 @@
           <input type="hidden" name="scenarioId" th:value="${s.id}">
           <button type="submit">Rodar</button>
         </form>
+        <a th:href="@{/api/scenarios/{id}/export(id=${s.id})}" class="botao secundario" download
+           title="Baixa o cenário em JSON, para guardar, importar depois ou rodar na CLI">Exportar</a>
         <form th:hx-post="@{/ui/scenarios/{id}/delete(id=${s.id})}" hx-target="#cenarios"
               hx-confirm="Apagar este cenário?">
           <button type="submit" class="secundario">Apagar</button>

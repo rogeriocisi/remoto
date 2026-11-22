@@ -12,6 +12,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -21,12 +22,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -34,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/** Fluxos multiusuário de ponta a ponta, com o armazenamento em arquivos num diretório temporário. */
+/** Fluxos de ponta a ponta, uma sessão do navegador por pessoa (não há login), com o armazenamento em arquivos num diretório temporário. */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
@@ -59,7 +63,7 @@ class ApiIntegrationTest {
     MockMvc mvc;
 
     @Test
-    void convidadoVeOsCenariosPublicos() throws Exception {
+    void qualquerSessaoVeOsCenariosPublicos() throws Exception {
         mvc.perform(get("/api/scenarios/public"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].id", hasItem("remoto-17-default-soleus-contraction")));
@@ -69,14 +73,14 @@ class ApiIntegrationTest {
     void cenarioDeUmUsuarioNaoApareceParaOutro() throws Exception {
         String id = createScenarioAs("ana");
 
-        mvc.perform(get("/api/scenarios/" + id).with(user("ana"))).andExpect(status().isOk());
-        mvc.perform(get("/api/scenarios/" + id).with(user("bruno"))).andExpect(status().isNotFound());
-        mvc.perform(get("/api/scenarios").with(user("bruno"))).andExpect(jsonPath("$", hasSize(0)));
+        mvc.perform(get("/api/scenarios/" + id).session(session("ana"))).andExpect(status().isOk());
+        mvc.perform(get("/api/scenarios/" + id).session(session("bruno"))).andExpect(status().isNotFound());
+        mvc.perform(get("/api/scenarios").session(session("bruno"))).andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
     void edicaoComEtagDesatualizadoEhRecusada() throws Exception {
-        var created = mvc.perform(post("/api/scenarios").with(user("ana")).with(csrf())
+        var created = mvc.perform(post("/api/scenarios").session(session("ana")).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content(SCENARIO))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists(HttpHeaders.ETAG))
@@ -84,17 +88,17 @@ class ApiIntegrationTest {
         String id = JsonPath.read(created.getContentAsString(), "$.id");
         String etag = created.getHeader(HttpHeaders.ETAG);
 
-        mvc.perform(put("/api/scenarios/" + id).with(user("ana")).with(csrf()).header(HttpHeaders.IF_MATCH, etag)
+        mvc.perform(put("/api/scenarios/" + id).session(session("ana")).with(csrf()).header(HttpHeaders.IF_MATCH, etag)
                         .contentType(MediaType.APPLICATION_JSON).content(json("editado", BASE.durationMs(), BASE.engine())))
                 .andExpect(status().isOk());
-        mvc.perform(put("/api/scenarios/" + id).with(user("ana")).with(csrf()).header(HttpHeaders.IF_MATCH, etag)
+        mvc.perform(put("/api/scenarios/" + id).session(session("ana")).with(csrf()).header(HttpHeaders.IF_MATCH, etag)
                         .contentType(MediaType.APPLICATION_JSON).content(SCENARIO))
                 .andExpect(status().isPreconditionFailed());
     }
 
     @Test
     void cenarioInvalidoDevolveAsMensagens() throws Exception {
-        mvc.perform(post("/api/scenarios").with(user("ana")).with(csrf())
+        mvc.perform(post("/api/scenarios").session(session("ana")).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content(json("rápido", -1, BASE.engine())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erros", hasItem("durationMs: deve ser maior que zero")));
@@ -102,12 +106,12 @@ class ApiIntegrationTest {
 
     @Test
     void gravacaoSemTokenCsrfEhRecusada() throws Exception {
-        mvc.perform(post("/api/scenarios").with(user("ana")).contentType(MediaType.APPLICATION_JSON).content(SCENARIO))
+        mvc.perform(post("/api/scenarios").session(session("ana")).contentType(MediaType.APPLICATION_JSON).content(SCENARIO))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void convidadoRodaSimulacaoEBaixaResultadosSoNaPropriaSessao() throws Exception {
+    void sessaoRodaSimulacaoEBaixaResultadosSoParaSi() throws Exception {
         MockHttpSession session = new MockHttpSession();
         String body = mvc.perform(post("/api/runs").session(session).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content("{\"scenario\":" + SCENARIO + "}"))
@@ -132,6 +136,8 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.x", hasSize(100)));
         mvc.perform(get("/api/runs/" + runId + "/results/..%2F..%2Fmanifest.csv").session(session))
                 .andExpect(status().is4xxClientError());
+        byte[] zip = download(get("/api/runs/" + runId + "/export.zip").session(session));
+        assertThat(zipEntries(zip)).contains("manifest.json", "config.json", "results/forca-SOL.csv");
         mvc.perform(get("/api/runs/" + runId + "/menu").session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.complete").value(true))
@@ -142,9 +148,9 @@ class ApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.kind").value("pontos"));
 
-        // outro convidado (outra sessão) e um usuário autenticado não enxergam a execução
+        // outras sessões não enxergam a execução
         mvc.perform(get("/api/runs/" + runId).session(new MockHttpSession())).andExpect(status().isNotFound());
-        mvc.perform(get("/api/runs/" + runId).with(user("ana"))).andExpect(status().isNotFound());
+        mvc.perform(get("/api/runs/" + runId).session(session("ana"))).andExpect(status().isNotFound());
     }
 
     @Test
@@ -155,9 +161,71 @@ class ApiIntegrationTest {
     }
 
     @Test
-    void convidadoNaoPodeExportarNemCompartilhar() throws Exception {
-        mvc.perform(get("/api/me/export")).andExpect(status().isUnauthorized());
-        mvc.perform(get("/api/me")).andExpect(jsonPath("$.guest").value(true));
+    void cenarioExportadoPorUmaSessaoEhImportadoPorOutra() throws Exception {
+        String id = createScenarioAs("ana");
+        var exported = mvc.perform(get("/api/scenarios/" + id + "/export").session(session("ana")))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, containsString("rapido.json")))
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andReturn().getResponse().getContentAsByteArray();
+
+        mvc.perform(multipart("/api/scenarios/import").file(new MockMultipartFile("files", "rapido.json",
+                                MediaType.APPLICATION_JSON_VALUE, exported))
+                        .session(session("bruno")).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.created", hasSize(1)))
+                .andExpect(jsonPath("$.created[0].name").value("rápido"))
+                .andExpect(jsonPath("$.errors", hasSize(0)));
+        mvc.perform(get("/api/scenarios").session(session("bruno"))).andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    void exportaTodosNumZipEImportaOZipDeVolta() throws Exception {
+        createScenarioAs("ana");
+        createScenarioAs("ana");
+        byte[] zip = download(get("/api/scenarios/export").session(session("ana")));
+        assertThat(zipEntries(zip)).containsExactly("rapido.json", "rapido-2.json");
+
+        mvc.perform(multipart("/api/scenarios/import").file(new MockMultipartFile("files", "meus.zip",
+                                "application/zip", zip))
+                        .session(session("bruno")).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.created", hasSize(2)));
+    }
+
+    @Test
+    void importacaoRecusaArquivoQueNaoEhCenario() throws Exception {
+        mvc.perform(multipart("/api/scenarios/import")
+                        .file(new MockMultipartFile("files", "notas.json", MediaType.APPLICATION_JSON_VALUE,
+                                "{\"nada\": 1}".getBytes(StandardCharsets.UTF_8)))
+                        .file(new MockMultipartFile("files", "foto.json", MediaType.APPLICATION_JSON_VALUE,
+                                new byte[] {1, 2, 3}))
+                        .session(session("ana")).with(csrf()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erros", hasSize(2)))
+                .andExpect(jsonPath("$.erros[0]", startsWith("notas.json: ")))
+                .andExpect(jsonPath("$.erros[1]", startsWith("foto.json: ")));
+        mvc.perform(get("/api/scenarios").session(session("ana"))).andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void semLoginASessaoBaixaEApagaSuaArea() throws Exception {
+        createScenarioAs("ana");
+        byte[] zip = download(get("/api/me/export").session(session("ana")));
+        assertThat(zipEntries(zip)).anyMatch(e -> e.startsWith("scenarios/"));
+
+        mvc.perform(delete("/api/me").session(session("ana")).with(csrf())).andExpect(status().isNoContent());
+        assertThat(session("ana").isInvalid()).isTrue();
+    }
+
+    private static java.util.List<String> zipEntries(byte[] zip) throws Exception {
+        java.util.List<String> names = new java.util.ArrayList<>();
+        try (var in = new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(zip))) {
+            for (java.util.zip.ZipEntry e; (e = in.getNextEntry()) != null; ) {
+                names.add(e.getName());
+            }
+        }
+        return names;
     }
 
     private static String json(String name, double durationMs, String engine) {
@@ -167,7 +235,7 @@ class ApiIntegrationTest {
     }
 
     private String createScenarioAs(String username) throws Exception {
-        String body = mvc.perform(post("/api/scenarios").with(user(username)).with(csrf())
+        String body = mvc.perform(post("/api/scenarios").session(session(username)).with(csrf())
                         .contentType(MediaType.APPLICATION_JSON).content(SCENARIO))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
@@ -185,5 +253,20 @@ class ApiIntegrationTest {
             Thread.sleep(50);
         }
         return status;
+    }
+
+    /** Uma sessão do navegador por nome, como se cada pessoa usasse o seu (não há login). */
+    private final java.util.Map<String, MockHttpSession> sessions = new java.util.HashMap<>();
+
+    private MockHttpSession session(String who) {
+        return sessions.computeIfAbsent(who, k -> new MockHttpSession());
+    }
+
+    /** Baixa um arquivo em fluxo (StreamingResponseBody), que no MockMvc termina num despacho assíncrono. */
+    private byte[] download(org.springframework.test.web.servlet.RequestBuilder request) throws Exception {
+        var started = mvc.perform(request).andReturn();
+        var result = started.getRequest().isAsyncStarted() ? mvc.perform(asyncDispatch(started)).andReturn() : started;
+        assertThat(result.getResponse().getStatus()).isEqualTo(200);
+        return result.getResponse().getContentAsByteArray();
     }
 }

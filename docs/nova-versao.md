@@ -1,11 +1,11 @@
-# ReMoto — nova versão (Java 25, sem banco de dados, multiusuário)
+# ReMoto — nova versão (Java 25, sem banco de dados, sem login)
 
 Nova versão do ReMoto, resultado da modernização do site original (Struts 1 + Tomcat 7). Os
 modelos numéricos foram portados para o `remoto-core`, com saídas idênticas bit a bit às do código
 original; do legado fica só o banco original em `legacy-db/`, lido sem o HSQLDB. O site JSP e o
 código original continuam no histórico e no repositório pai.
 
-> **Estado:** a infraestrutura (multiusuário, fila, armazenamento, API, interface, CLI, CI)
+> **Estado:** a infraestrutura (sessões sem login, fila, armazenamento, API, interface, CLI, CI)
 > funciona e tem testes. Os **modelos originais do ReMoto rodam na nova plataforma** (motor
 > `legacy`, ver [Motor original](#motor-original-legacy)), portados para o `remoto-core`, sem
 > banco de dados em nenhuma etapa, com resultados reprodutíveis e conferidos contra o código e o
@@ -18,11 +18,11 @@ código original continuam no histórico e no repositório pai.
 | Linguagem | Java 25 LTS (records, enums, `RandomGenerator`) |
 | Build | Maven multimódulo + Maven Wrapper (`./mvnw`) |
 | Web | Spring Boot 4.1 (Spring MVC, Spring Security 7, Actuator) |
-| Login | OIDC/OAuth2 (ORCID, GitHub; outros provedores por configuração) — sem senhas locais |
+| Login | nenhum: cada sessão do navegador tem sua área; os cenários entram e saem como arquivos (.json, .zip) |
 | Interface | Thymeleaf + htmx 2 + uPlot (gráficos interativos) |
 | Figuras | JFreeChart 1.5 (PNG para artigos) |
 | Persistência | Arquivos: JSON (cenários, manifestos) e CSV.gz (resultados) — **sem banco** |
-| Execução | Fila justa por usuário + pool de threads de plataforma (CPU-bound) |
+| Execução | Fila justa por sessão, limite por endereço de origem + pool de threads de plataforma (CPU-bound) |
 | Progresso | Server-Sent Events |
 | Entrega | um JAR executável (servidor web embutido) rodando como serviço systemd; CI no GitHub Actions |
 
@@ -34,8 +34,8 @@ ferramenta para instalar e manter.
 
 ```
 remoto-core          cenário, modelos do ReMoto, motor "legacy", leitura do banco antigo (Java puro, sem dependências)
-remoto-storage       repositórios em arquivo: cenários, execuções, perfis, compartilhamentos
-remoto-web           aplicação Spring Boot multiusuário (API REST + páginas), com o editor de cenários
+remoto-storage       repositórios em arquivo: cenários, execuções e a área de cada sessão
+remoto-web           aplicação Spring Boot sem login (API REST + páginas), com o editor de cenários
 remoto-cli           execução sem servidor: remoto run / validate / export-legacy
 scenarios/           cenários públicos versionados no Git (o antigo usuário "guest")
 ```
@@ -64,7 +64,7 @@ Os comandos equivalentes, sem os scripts:
 # testes de todos os módulos
 ./mvnw verify
 
-# servidor em modo desenvolvimento (usuários de teste em application-dev.yml)
+# servidor em modo desenvolvimento (templates relidos a cada requisição)
 ./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 # → http://localhost:8080
 
@@ -77,16 +77,6 @@ No Windows, use `mvnw.cmd` no lugar de `./mvnw`. No PowerShell, mantenha as aspa
 `"-Dspring-boot.run.profiles=dev"`: sem elas, o PowerShell quebra o argumento nos pontos. Se o
 Java padrão da máquina for anterior ao 25, aponte o `JAVA_HOME` para o JDK 25 antes
 (`$env:JAVA_HOME = "C:\Program Files\Java\jdk-25.0.2"`, ajustando o caminho).
-
-### Produção (OIDC)
-
-1. Registre o ReMoto em cada provedor (ORCID, GitHub...) com o redirect
-   `https://<host>/login/oauth2/code/<provedor>`.
-2. Preencha `ORCID_CLIENT_ID`, `ORCID_CLIENT_SECRET`, `GITHUB_CLIENT_ID` e `GITHUB_CLIENT_SECRET`
-   em `/etc/remoto/remoto.env` (ver abaixo), ou remova de `application-prod.yml` os provedores
-   que não usar.
-3. Sem o perfil `dev`, o app só sobe com pelo menos um provedor OIDC configurado — de propósito,
-   para que os usuários de teste nunca cheguem à produção.
 
 ## Instalação no servidor (Linux, sem Docker)
 
@@ -105,7 +95,7 @@ sudo useradd --system --home-dir /var/lib/remoto --shell /usr/sbin/nologin remot
 sudo install -d -o remoto -g remoto -m 750 /var/lib/remoto
 sudo install -D -m 644 remoto-web/target/remoto-web-3.0.0-SNAPSHOT.jar /opt/remoto/remoto-web.jar
 sudo mkdir -p /opt/remoto/scenarios && sudo cp scenarios/*.json /opt/remoto/scenarios/
-sudo install -D -m 600 deploy/remoto.env.example /etc/remoto/remoto.env   # editar: OIDC etc.
+sudo install -D -m 600 deploy/remoto.env.example /etc/remoto/remoto.env   # editar: porta, pastas, limites
 
 # 4. Serviço
 sudo cp deploy/remoto.service /etc/systemd/system/
@@ -120,22 +110,33 @@ curl -s http://localhost:8080/actuator/health
 
 - **Atualizar:** substitua `/opt/remoto/remoto-web.jar` e rode `sudo systemctl restart remoto`.
   Execuções em andamento são canceladas e as que estavam na fila ficam marcadas como interrompidas.
-- **Backup:** tudo o que importa está em `/var/lib/remoto` (rsync, restic ou o backup do LEB).
+- **Backup:** não há o que guardar: as áreas de sessão são temporárias, e os cenários públicos
+  estão no Git. Quem usa o site guarda o próprio trabalho exportando.
 - **HTTPS:** coloque nginx ou Apache na frente (porta 443 → 8080) e descomente
-  `SERVER_FORWARD_HEADERS_STRATEGY=native` no `remoto.env`.
+  `SERVER_FORWARD_HEADERS_STRATEGY=native` no `remoto.env`. Sem isso, o limite por endereço de
+  origem vê todo mundo com o endereço do proxy.
 - **Novos cenários públicos:** copie o JSON para `/opt/remoto/scenarios/`; não precisa reiniciar.
 - **Windows:** o mesmo `java -jar` pode virar serviço com o WinSW, usando as variáveis do
   `remoto.env.example`.
 
-## Multiusuário sem banco
+## Sem login e sem banco
 
-### Identidade
+### Sessões
 
-| Quem | `UserId` | Onde ficam os dados |
-|---|---|---|
-| Usuário OIDC | `u-` + hash(emissor \| sub) | `data/users/<id>/` |
-| Usuário local (dev) | `u-` + hash("local" \| username) | `data/users/<id>/` |
-| Convidado | `g-` + id aleatório guardado na sessão | `data/tmp/guest/<id>/` (apagado quando a sessão termina) |
+Não há contas nem login. Cada sessão do navegador ganha uma área própria, com um `UserId`
+aleatório (`g-` + 32 dígitos hexadecimais) guardado na sessão; tudo o que a pessoa faz (cópias
+de cenários, edições, simulações) fica nessa área. A sessão dura **12 h sem uso**
+(`server.servlet.session.timeout`); quando termina, as simulações dela são canceladas e a área é
+apagada. Uma tarefa diária apaga também as áreas abandonadas há mais de 24 h, como as que um
+reinício do servidor deixou para trás (`remoto.retention.session-hours`).
+
+Para guardar o trabalho, a pessoa **exporta**: cada cenário em JSON (o mesmo arquivo que a CLI
+roda), todos os cenários num .zip, uma simulação inteira num .zip (configuração, manifesto e
+todos os resultados em CSV) ou a sessão inteira num .zip. Na próxima visita, ela **importa** os
+.json, ou o .zip com eles, para "Meus cenários". A importação confere cada cenário como o editor
+e a fila conferem (formato, duração, passos, motor e a configuração do modelo), recusa arquivos
+de mais de 5 MB e importa até 100 cenários de uma vez; os recusados aparecem com o nome do
+arquivo e o motivo. O site não guarda nenhum dado pessoal.
 
 O `UserId` nunca vem de texto digitado, então é sempre seguro como nome de pasta. Ids de
 cenários e execuções são ULIDs validados (`Ids.requireSafe`) contra path traversal.
@@ -144,15 +145,12 @@ cenários e execuções são ULIDs validados (`Ids.requireSafe`) contra path tra
 
 ```
 data/
-├── users/<userId>/
-│   ├── profile.json
-│   ├── scenarios/<ulid>.json
-│   └── runs/<ulid>/
-│       ├── manifest.json      status, seed, versão do motor, hash da configuração, datas
-│       ├── config.json        cópia congelada da configuração usada
-│       └── results/*.csv.gz   séries temporais e disparos
-├── tmp/guest/<userId>/...     mesma estrutura, temporária
-└── shares/<sha256>.json       cenários compartilhados (imutáveis; o link é o hash do conteúdo)
+└── sessions/<userId>/
+    ├── scenarios/<ulid>.json
+    └── runs/<ulid>/
+        ├── manifest.json      status, seed, versão do motor, hash da configuração, datas
+        ├── config.json        cópia congelada da configuração usada
+        └── results/*.csv.gz   séries temporais e disparos
 ```
 
 ### O que substitui as garantias do banco
@@ -160,21 +158,26 @@ data/
 | Garantia | Como |
 |---|---|
 | Atomicidade | grava em arquivo temporário e renomeia (`StorageFiles.writeAtomically`) |
-| Concorrência entre usuários | uma trava por usuário (`UserLocks`); usuários diferentes gravam em paralelo |
+| Concorrência entre sessões | uma trava por área (`UserLocks`); áreas diferentes gravam em paralelo |
 | Edição em duas abas | ETag = SHA-256 do arquivo; `PUT` com `If-Match` desatualizado → `412` |
-| Isolamento | todo acesso passa pelo `UserId` do `Caller`; outro usuário recebe `404` |
+| Isolamento | todo acesso passa pelo `UserId` do `Caller`; outra sessão recebe `404` |
 | Recuperação após queda | ao subir, execuções `QUEUED`/`RUNNING` viram `FAILED` ("interrompida") |
-| Exportar/apagar conta (LGPD) | `.zip` da pasta do usuário / apagar a pasta |
-| Limpeza | tarefa diária apaga execuções antigas não fixadas e áreas de convidado abandonadas |
+| Levar os dados | `.zip` da área da sessão (`/api/me/export`), ou cada cenário e simulação |
+| Limpeza | fim da sessão; tarefa diária para áreas abandonadas e execuções antigas não fixadas |
 
-### Vários usuários simulando ao mesmo tempo
+### Várias sessões simulando ao mesmo tempo
 
 - Até `remoto.simulation.slots` simulações em paralelo (padrão: núcleos da CPU); cada uma ocupa
   uma thread porque o trabalho é de CPU. Com menos slots que núcleos, cada simulação do motor
   original usa `threads-per-run` threads (padrão: núcleos ÷ slots); o resultado não muda.
-- **Fila justa** (`FairQueue`): uma fila por usuário, despachada em rodízio. Uma varredura de 50
-  execuções de um usuário não bloqueia a simulação única de outro.
-- Cotas por usuário: `max-active-per-user` (padrão 2) e `max-queued-per-user` (padrão 20 → `429`).
+- **Fila justa** (`FairQueue`): uma fila por sessão, despachada em rodízio. Uma varredura de 50
+  execuções de uma sessão não bloqueia a simulação única de outra.
+- Cotas por sessão: `max-active-per-user` (padrão 2) e `max-queued-per-user` (padrão 20 → `429`).
+- Sem login, abrir outra sessão é fácil, então há também `max-per-origin` (padrão 20), que soma
+  as simulações rodando ou na fila de todas as sessões do mesmo endereço, e `max-queued-total`
+  (padrão 200), o teto da fila do servidor; os dois respondem `429` e aceitam 0 para desligar.
+  Uma sala com todos atrás do mesmo endereço (NAT) divide o limite por origem: aumente-o se for
+  o caso.
 - Limite real: **uma instância do servidor**. Para várias máquinas seria preciso fila
   compartilhada e armazenamento comum (S3/MinIO) — ver a proposta.
 
@@ -182,22 +185,24 @@ data/
 
 | Método | Caminho | Descrição |
 |---|---|---|
-| GET | `/api/me` | quem sou eu (convidado ou usuário) |
-| GET | `/api/me/export` | baixa todos os meus dados (.zip) — exige login |
-| DELETE | `/api/me` | apaga minha conta e todos os dados — exige login |
+| GET | `/api/me` | a área da sessão (id e espaço ocupado) |
+| GET | `/api/me/export` | a área inteira da sessão (.zip) |
+| DELETE | `/api/me` | apaga a área e encerra a sessão |
 | GET | `/api/scenarios/public` | cenários públicos |
-| POST | `/api/scenarios/public/{id}/copy` | copia um cenário público para mim |
+| POST | `/api/scenarios/public/{id}/copy` | copia um cenário público para a sessão |
+| GET | `/api/scenarios/public/{id}/export` | baixa um cenário público (.json) |
 | GET / POST | `/api/scenarios` | meus cenários / criar |
 | GET / PUT / DELETE | `/api/scenarios/{id}` | ler (com `ETag`) / substituir (`If-Match`) / apagar |
-| POST | `/api/scenarios/{id}/share` | gera link imutável — exige login |
-| GET | `/api/shares/{hash}` | cenário compartilhado |
-| POST | `/api/shares/{hash}/fork` | copia um compartilhado para mim |
-| POST | `/api/runs` | executa: `{"scenario": {...}}` ou `{"scenarioId"}`, `{"publicScenarioId"}`, `{"shareHash"}` |
+| GET | `/api/scenarios/{id}/export` | baixa o cenário (.json, sem o id) |
+| GET | `/api/scenarios/export` | baixa todos os cenários da sessão (.zip, um .json cada) |
+| POST | `/api/scenarios/import` | importa arquivos `files` (.json ou .zip), multipart; devolve os criados e os recusados |
+| POST | `/api/runs` | executa: `{"scenario": {...}}` ou `{"scenarioId"}`, `{"publicScenarioId"}` |
 | GET | `/api/runs`, `/api/runs/{id}` | minhas execuções / detalhe com nomes dos resultados |
 | GET | `/api/runs/{id}/events` | progresso ao vivo (SSE, evento `progresso`) |
 | DELETE | `/api/runs/{id}` | cancela (se ativa) ou apaga |
 | PUT | `/api/runs/{id}/pinned` | fixa (`true`) para escapar da retenção |
 | GET | `/api/runs/{id}/config` | configuração exata usada |
+| GET | `/api/runs/{id}/export.zip` | a execução inteira: manifesto, configuração e resultados em CSV |
 | GET | `/api/runs/{id}/results/{nome}.csv` | resultado em CSV |
 | GET | `/api/runs/{id}/results/{nome}.png` | figura em PNG |
 | GET | `/api/runs/{id}/menu` | menus da tela de resultados para a execução (motor original) |
@@ -588,3 +593,20 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
 4. ~~Licença do projeto.~~ Feito: MIT, em `LICENSE`.
 5. ~~Tela de resultados com tudo o que a do site antigo tinha.~~ Feito: ver
    [Tela de resultados](#tela-de-resultados).
+6. ~~Um motor só e mais cenários de experimentos.~~ Feito: o motor provisório saiu, e
+   `scenarios/` ganhou quatro experimentos do banco antigo (14, 16, 18 e 19) e o
+   `modelo-completo`; o 24 e o 42 passaram a ter os tratos em Poisson. Ver
+   [Cenários públicos](#cenários-públicos).
+7. ~~Sem login, com exportação e importação de cenários.~~ Feito: ver
+   [Sem login e sem banco](#sem-login-e-sem-banco). Saíram o login OIDC (ORCID, GitHub), os
+   usuários de teste, os perfis, a exclusão de conta e os links de compartilhamento (o arquivo
+   exportado faz esse papel); a sessão passou de 2 h para 12 h sem uso; e entraram o limite de
+   simulações por endereço de origem e o teto da fila.
+8. **Ordem do processo gama dos tratos.** O editor ainda perde o *Std* dos tratos descendentes
+   ao gravar, como o `ConfigurationDAO` original (ver "Tratos com processo gama" em
+   [Cenários públicos](#cenários-públicos)). Gravá-lo, no `settings` ou numa coluna própria,
+   permitiria cenários com tratos gama de verdade.
+9. **Mais configurações do banco antigo.** As que têm tratos gama (25 a 28, 32, 34 a 36, 38, 39,
+   41 e 44) podem ser publicadas com Poisson, como o 24 e o 42, ou com a ordem do item 8. As
+   *Position Task* (25 a 28) pedem também o tornozelo em tarefa de posição, que o banco não
+   gravava.

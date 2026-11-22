@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.net.URI;
@@ -54,7 +55,7 @@ class RunController {
 
     @PostMapping
     ResponseEntity<RunManifest> submit(Caller caller, @RequestBody ScenarioSources.RunRequest request) {
-        RunManifest manifest = simulations.submit(caller.id(), sources.resolve(caller, request));
+        RunManifest manifest = simulations.submit(caller.id(), caller.origin(), sources.resolve(caller, request));
         return ResponseEntity.accepted().location(URI.create("/api/runs/" + manifest.runId())).body(manifest);
     }
 
@@ -130,6 +131,16 @@ class RunController {
         Path dir = resultsDir(caller, id, name);
         ResultFiles.Columns reduced = ResultFiles.read(dir, name, Math.max(100, Math.min(max, 50_000)));
         return new Preview(reduced.header(), reduced.totalPoints(), reduced.x(), reduced.y());
+    }
+
+    /** A execução inteira num .zip: manifesto, configuração e todos os resultados em CSV. */
+    @GetMapping(path = "/{id}/export.zip", produces = "application/zip")
+    ResponseEntity<StreamingResponseBody> exportZip(Caller caller, @PathVariable String id) {
+        RunManifest m = find(caller, id);
+        StreamingResponseBody body = out -> runs.exportZip(caller.id(), m.runId(), out);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, ScenarioController.attachment("remoto-" + m.runId() + ".zip"))
+                .body(body);
     }
 
     private RunManifest find(Caller caller, String id) {

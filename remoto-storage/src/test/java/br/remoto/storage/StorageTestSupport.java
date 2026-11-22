@@ -15,6 +15,6 @@ public final class StorageTestSupport {
     }
 
     public static UserId user(String subject) {
-        return UserId.registered("https://issuer.test", subject);
+        return new UserId("g-" + Hashing.sha256Hex(subject).substring(0, 32));
     }
 }

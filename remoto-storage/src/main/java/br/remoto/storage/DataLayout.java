@@ -7,13 +7,12 @@ import java.nio.file.Path;
  *
  * <pre>
  * &lt;data&gt;/
- *   users/&lt;userId&gt;/profile.json
- *   users/&lt;userId&gt;/scenarios/&lt;id&gt;.json
- *   users/&lt;userId&gt;/runs/&lt;runId&gt;/{manifest.json, config.json, results/*.csv.gz}
- *   tmp/guest/&lt;userId&gt;/...          (mesma estrutura, apagada ao fim da sessão)
- *   shares/&lt;sha256&gt;.json             (cenários compartilhados, imutáveis)
+ *   sessions/&lt;userId&gt;/scenarios/&lt;id&gt;.json
+ *   sessions/&lt;userId&gt;/runs/&lt;runId&gt;/{manifest.json, config.json, results/*.csv.gz}
  * &lt;cenários públicos&gt;/&lt;id&gt;.json      (versionados no Git, só leitura)
  * </pre>
+ *
+ * Não há contas: cada sessão do navegador tem uma área, apagada quando a sessão termina.
  */
 public final class DataLayout {
 
@@ -33,24 +32,12 @@ public final class DataLayout {
         return publicScenarios;
     }
 
-    public Path usersDir() {
-        return root.resolve("users");
-    }
-
-    public Path guestsDir() {
-        return root.resolve("tmp").resolve("guest");
-    }
-
-    public Path sharesDir() {
-        return root.resolve("shares");
+    public Path sessionsDir() {
+        return root.resolve("sessions");
     }
 
     public Path userDir(UserId user) {
-        return (user.isGuest() ? guestsDir() : usersDir()).resolve(user.value());
-    }
-
-    public Path profileFile(UserId user) {
-        return userDir(user).resolve("profile.json");
+        return sessionsDir().resolve(user.value());
     }
 
     public Path scenariosDir(UserId user) {

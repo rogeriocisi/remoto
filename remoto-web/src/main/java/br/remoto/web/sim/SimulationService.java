@@ -36,7 +36,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <ul>
  *   <li>Até {@code slots} simulações em paralelo no servidor (padrão: núcleos da CPU), cada uma
  *       numa thread de plataforma, porque o trabalho é de CPU.</li>
- *   <li>Fila justa por usuário ({@link FairQueue}) com limite de ativas e de enfileiradas.</li>
+ *   <li>Fila justa por sessão ({@link FairQueue}) com limite de ativas e de enfileiradas.</li>
+ *   <li>Sem login, abrir outra sessão é fácil: há também um limite por endereço de origem,
+ *       somando as sessões, e um teto para a fila inteira.</li>
  *   <li>Estado durável no manifest.json de cada execução; ao reiniciar, execuções que estavam
  *       na fila ou rodando são marcadas como interrompidas.</li>
  * </ul>
@@ -52,6 +54,8 @@ public class SimulationService implements DisposableBean {
     private final int slots;
     private final int maxActivePerUser;
     private final int maxQueuedPerUser;
+    private final int maxPerOrigin;
+    private final int maxQueuedTotal;
     private final ExecutorService workers;
 
     private final Object lock = new Object();
@@ -60,7 +64,7 @@ public class SimulationService implements DisposableBean {
     private final Map<String, Job> jobs = new ConcurrentHashMap<>();
     private int running;
 
-    record Job(UserId owner, String runId, Scenario scenario, SimulationEngine engine, AtomicBoolean cancelled) {
+    record Job(UserId owner, String origin, String runId, Scenario scenario, SimulationEngine engine, AtomicBoolean cancelled) {
     }
 
     public SimulationService(RunRepository runs, Engines engines, ProgressHub progressHub,
@@ -71,13 +75,19 @@ public class SimulationService implements DisposableBean {
         this.slots = props.simulation().effectiveSlots();
         this.maxActivePerUser = Math.max(1, props.simulation().maxActivePerUser());
         this.maxQueuedPerUser = Math.max(1, props.simulation().maxQueuedPerUser());
+        this.maxPerOrigin = props.simulation().maxPerOrigin();
+        this.maxQueuedTotal = props.simulation().maxQueuedTotal();
         this.workers = Executors.newFixedThreadPool(slots, Thread.ofPlatform().name("simulacao-", 0).factory());
         recoverInterruptedRuns();
-        log.info("Fila de simulações: {} em paralelo; por usuário, até {} ativas e {} na fila",
-                slots, maxActivePerUser, maxQueuedPerUser);
+        log.info("Fila de simulações: {} em paralelo; por sessão, até {} ativas e {} na fila; "
+                + "por origem, até {} (0 = sem limite); no total, até {} na fila (0 = sem limite)",
+                slots, maxActivePerUser, maxQueuedPerUser, maxPerOrigin, maxQueuedTotal);
     }
 
-    public RunManifest submit(UserId owner, Scenario scenario) {
+    /**
+     * @param origin endereço de quem pediu, para o limite por origem; null não conta
+     */
+    public RunManifest submit(UserId owner, String origin, Scenario scenario) {
         List<String> errors = ScenarioValidator.validate(scenario);
         if (!errors.isEmpty()) {
             throw new InvalidScenarioException(errors);
@@ -88,8 +98,16 @@ public class SimulationService implements DisposableBean {
                 throw new QuotaExceededException("Limite de " + maxQueuedPerUser
                         + " simulações aguardando na fila. Espere algumas terminarem.");
             }
+            if (maxPerOrigin > 0 && origin != null
+                    && jobs.values().stream().filter(j -> origin.equals(j.origin())).count() >= maxPerOrigin) {
+                throw new QuotaExceededException("Limite de " + maxPerOrigin
+                        + " simulações rodando ou na fila a partir do mesmo endereço. Espere algumas terminarem.");
+            }
+            if (maxQueuedTotal > 0 && jobs.size() - running >= maxQueuedTotal) {
+                throw new QuotaExceededException("A fila do servidor está cheia. Tente de novo mais tarde.");
+            }
             RunManifest manifest = runs.create(owner, scenario, engine.version());
-            Job job = new Job(owner, manifest.runId(), scenario, engine, new AtomicBoolean());
+            Job job = new Job(owner, origin, manifest.runId(), scenario, engine, new AtomicBoolean());
             jobs.put(job.runId(), job);
             queue.offer(owner, job);
             progressHub.publish(job.runId(), RunStatus.QUEUED, 0);

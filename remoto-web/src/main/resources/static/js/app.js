@@ -50,7 +50,10 @@
     const run = await (await fetch(`/api/runs/${runId}`)).json();
     const links = field('links');
     const graphs = field('graficos');
-    links.replaceChildren(link(`/api/runs/${runId}/config`, 'configuração (JSON)'));
+    const zip = link(`/api/runs/${runId}/export.zip`, 'tudo (ZIP)');
+    zip.download = '';
+    zip.title = 'Configuração e todos os resultados em CSV, num .zip';
+    links.replaceChildren(link(`/api/runs/${runId}/config`, 'configuração (JSON)'), ' ', zip);
 
     // motor original: a tela de resultados no modelo do site antigo; os arquivos ficam num bloco recolhível
     if (window.ReMotoResults && await window.ReMotoResults.show(runId, field('resultados'))) {

@@ -19,7 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
 
-/** Limpeza diária: execuções antigas não fixadas e áreas de convidado abandonadas. */
+/** Limpeza diária: execuções antigas não fixadas e áreas de sessão abandonadas. */
 @Component
 class RetentionJob {
 
@@ -46,15 +46,15 @@ class RetentionJob {
             }
         }
 
-        Instant guestLimit = Instant.now().minus(Duration.ofHours(props.retention().guestHours()));
-        int guestsRemoved = 0;
-        for (Path dir : StorageFiles.subdirectories(layout.guestsDir())) {
-            if (lastModified(dir).isBefore(guestLimit)) {
+        Instant areaLimit = Instant.now().minus(Duration.ofHours(props.retention().sessionHours()));
+        int areasRemoved = 0;
+        for (Path dir : StorageFiles.subdirectories(layout.sessionsDir())) {
+            if (lastModified(dir).isBefore(areaLimit)) {
                 StorageFiles.deleteRecursively(dir);
-                guestsRemoved++;
+                areasRemoved++;
             }
         }
-        log.info("Retenção: {} execuções antigas e {} áreas de convidado removidas", runsRemoved, guestsRemoved);
+        log.info("Retenção: {} execuções antigas e {} áreas de sessão abandonadas removidas", runsRemoved, areasRemoved);
     }
 
     private static Instant lastModified(Path dir) {

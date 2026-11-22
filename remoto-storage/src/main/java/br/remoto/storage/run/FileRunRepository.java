@@ -10,6 +10,8 @@ import br.remoto.storage.UserId;
 import br.remoto.storage.UserLocks;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /** Um diretório por execução: {@code runs/<runId>/{manifest.json, config.json, results/}}. */
 public final class FileRunRepository implements RunRepository {
@@ -113,8 +118,7 @@ public final class FileRunRepository implements RunRepository {
 
     @Override
     public List<RunManifest> findAllByStatus(Set<RunStatus> statuses) {
-        return Stream.of(layout.usersDir(), layout.guestsDir())
-                .flatMap(base -> StorageFiles.subdirectories(base).stream())
+        return StorageFiles.subdirectories(layout.sessionsDir()).stream()
                 .flatMap(userDir -> StorageFiles.subdirectories(userDir.resolve("runs")).stream())
                 .map(this::readManifest)
                 .flatMap(Optional::stream)
@@ -140,5 +144,36 @@ public final class FileRunRepository implements RunRepository {
     private Optional<RunManifest> readManifest(Path runDir) {
         Path file = runDir.resolve(MANIFEST);
         return Files.isRegularFile(file) ? Optional.of(json.read(file, RunManifest.class)) : Optional.empty();
+    }
+
+    @Override
+    public void exportZip(UserId owner, String runId, OutputStream out) {
+        if (!Ids.isSafe(runId)) {
+            return;
+        }
+        Path dir = layout.runDir(owner, runId);
+        if (!Files.isRegularFile(dir.resolve(MANIFEST))) {
+            return;
+        }
+        try (ZipOutputStream zip = new ZipOutputStream(out)) {
+            for (String name : List.of(MANIFEST, CONFIG)) {
+                Path file = dir.resolve(name);
+                if (Files.isRegularFile(file)) {
+                    zip.putNextEntry(new ZipEntry(name));
+                    Files.copy(file, zip);
+                    zip.closeEntry();
+                }
+            }
+            for (Path file : StorageFiles.filesEndingWith(dir.resolve(RESULTS), RESULT_SUFFIX)) {
+                String name = file.getFileName().toString();
+                zip.putNextEntry(new ZipEntry(RESULTS + "/" + name.substring(0, name.length() - ".gz".length())));
+                try (InputStream in = new GZIPInputStream(Files.newInputStream(file))) {
+                    in.transferTo(zip);
+                }
+                zip.closeEntry();
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

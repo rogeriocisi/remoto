@@ -17,7 +17,7 @@ This repository contains the new version of ReMoto. Of the legacy version, only 
 | Location | [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto); here only `legacy-db/` (the original database, as a text file) | `remoto-*/` Maven modules, `scenarios/` |
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
 | Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine) |
-| Users | Local accounts stored in HSQLDB | Login with ORCID or GitHub (OIDC), plus guest access |
+| Users | Local accounts stored in HSQLDB | No login: each browser session has its own area; scenarios are exported and imported as files |
 | Status | Unmaintained; depends on software without security updates | Maintained and tested; the original models give bit-for-bit identical results, checked against the original code and database |
 
 ### Repository layout
@@ -25,7 +25,7 @@ This repository contains the new version of ReMoto. Of the legacy version, only 
 ```
 remoto-core/          scenario format, the ReMoto models and engine ("legacy"), reader of the old database (plain Java)
 remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
-remoto-web/           multi-user web application (Spring Boot), including the scenario editor
+remoto-web/           web application (Spring Boot, no login), including the scenario editor
 remoto-cli/           command-line runner for scripts and clusters, and export of old configurations
 scenarios/            public scenarios (JSON)
 deploy/            systemd service and configuration template
@@ -40,14 +40,13 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 
 ### Features
 
-- **Multi-user without a database:** each user's scenarios, runs and results are kept in their own folder. Guests get a temporary area that is deleted when the session ends.
-- **Fair simulation queue:** several users can run simulations at the same time; a large batch from one user does not block the others.
+- **No login, no database:** each browser session gets its own area for scenarios, runs and results, deleted after 12 hours without use. To keep your work, export scenarios as JSON (one file each, or all in a ZIP) and import them on your next visit; runs can be downloaded as a ZIP with every result in CSV. No personal data is stored.
+- **Fair simulation queue:** several people can run simulations at the same time; a large batch from one session does not block the others, and limits per address and for the whole queue keep one visitor from taking over the server.
 - **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Four more experiments from the old database (isometric contraction, recruitment, H-reflex with reciprocal inhibition, Ia stimulation during a contraction) and a scenario with every model element turned on are also public. Tests check that each converted scenario gives exactly the same results as the original database configuration. Results include muscle force, motoneuron spikes, joint torque and EMG (raw, and filtered with noise as on the old results page).
 - **Scenario editor modeled on the original site:** copy a public scenario and edit it through the same menu, screens, fields and limits as the old editor: structure (descending commands, neural elements), neural parameters (synapses, kinetics, synaptic dynamics, conductances, motoneurons, interneurons, sensory fibers), proprioceptors (muscle spindle, GTO), biomechanics (joint and muscle models, musculotendon, muscle units, EMG, miscellaneous), stimulation (nerve, injected current) and run settings. Changes are saved exactly as the original `ConfigurationDAO` saved them, now without a database; settings the old DAO did not store (model choices, spindle gains, joint angles) are kept with the scenario.
 - **Results screen modeled on the original site:** the same menus and graphics as the old results page: muscle, tendon, spindle, GTO and joint signals, spike rasters, instantaneous firing rate, interspike intervals and histograms for motoneurons, afferents, tracts and interneurons, membrane potentials, conductances and injected current of the stored neurons, neuron and motor-unit properties, EMG with the old filters and options, statistics and FFT, multiple subplots, and CSV/PNG downloads.
 - **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
-- Live progress, interactive charts, CSV and PNG downloads, a REST API and immutable share links.
-- Users can export or delete all of their data.
+- Live progress, interactive charts, CSV and PNG downloads and a REST API.
 
 ### Requirements
 
@@ -77,7 +76,7 @@ Without the scripts, the equivalent command is below. Keep the quotes, because P
 ./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
-Then open http://localhost:8080. You can use the site as a guest. The `dev` profile also enables test accounts, defined in `remoto-web/src/main/resources/application-dev.yml`; use them only for local development.
+Then open http://localhost:8080. There is no login.
 
 ### Command line
 
@@ -92,7 +91,7 @@ java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db leg
 
 ### Deployment
 
-The web application is a single executable JAR with an embedded web server, installed as a systemd service on Linux. Login uses OIDC providers (ORCID, GitHub), so ReMoto stores no passwords. The service file and the configuration template are in [deploy/](deploy/); the step-by-step guide is in the "Instalação no servidor" section of [docs/nova-versao.md](docs/nova-versao.md).
+The web application is a single executable JAR with an embedded web server, installed as a systemd service on Linux. There are no accounts to manage: no login, passwords or identity providers. The service file and the configuration template are in [deploy/](deploy/); the step-by-step guide is in the "Instalação no servidor" section of [docs/nova-versao.md](docs/nova-versao.md).
 
 ### Roadmap
 

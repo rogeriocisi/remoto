@@ -4,12 +4,6 @@ import br.remoto.storage.UserId;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -17,18 +11,16 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 /**
- * Converte a autenticação do Spring Security em {@link Caller}.
+ * Dá a cada sessão do navegador uma área própria, com um id aleatório guardado na sessão. Não há
+ * login: a área vale enquanto a sessão durar, e o usuário guarda o que quiser exportando.
  *
- * <ul>
- *   <li>OIDC/OAuth2 (ORCID, GitHub...): id = hash(emissor | sub). Nenhuma senha passa pelo ReMoto.</li>
- *   <li>Usuário local (perfil dev): id = hash("local" | username).</li>
- *   <li>Sem login: convidado com id aleatório guardado na sessão.</li>
- * </ul>
+ * <p>A origem é o endereço remoto da requisição. Atrás de um proxy reverso, ative
+ * {@code server.forward-headers-strategy: native} para que seja o do navegador, e não o do proxy.
  */
 @Component
 public class CallerResolver implements HandlerMethodArgumentResolver {
 
-    public static final String GUEST_ATTRIBUTE = "remoto.guestId";
+    public static final String AREA_ATTRIBUTE = "remoto.areaId";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -38,43 +30,18 @@ public class CallerResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        return resolve(SecurityContextHolder.getContext().getAuthentication(), request);
+        return resolve(webRequest.getNativeRequest(HttpServletRequest.class));
     }
 
-    public static Caller resolve(Authentication auth, HttpServletRequest request) {
-        if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
-            return guest(request.getSession(true));
-        }
-        if (auth instanceof OAuth2AuthenticationToken token) {
-            OAuth2User principal = token.getPrincipal();
-            String issuer = principal instanceof OidcUser oidc && oidc.getIssuer() != null
-                    ? oidc.getIssuer().toString()
-                    : token.getAuthorizedClientRegistrationId();
-            String name = firstNonBlank(principal.<String>getAttribute("name"),
-                    principal.<String>getAttribute("login"), principal.getName());
-            return new Caller(UserId.registered(issuer, principal.getName()), name, false, issuer);
-        }
-        return new Caller(UserId.registered("local", auth.getName()), auth.getName(), false, "local");
-    }
-
-    private static Caller guest(HttpSession session) {
+    public static Caller resolve(HttpServletRequest request) {
+        HttpSession session = request.getSession(true);
         UserId id;
-        if (session.getAttribute(GUEST_ATTRIBUTE) instanceof String stored) {
+        if (session.getAttribute(AREA_ATTRIBUTE) instanceof String stored) {
             id = new UserId(stored);
         } else {
-            id = UserId.newGuest();
-            session.setAttribute(GUEST_ATTRIBUTE, id.value());
+            id = UserId.newSession();
+            session.setAttribute(AREA_ATTRIBUTE, id.value());
         }
-        return new Caller(id, "Convidado", true, null);
-    }
-
-    private static String firstNonBlank(String... values) {
-        for (String v : values) {
-            if (v != null && !v.isBlank()) {
-                return v;
-            }
-        }
-        return "usuário";
+        return new Caller(id, request.getRemoteAddr());
     }
 }

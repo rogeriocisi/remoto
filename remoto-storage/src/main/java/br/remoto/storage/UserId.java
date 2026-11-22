@@ -4,14 +4,14 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
- * Identificador de usuário usado como nome de diretório.
+ * Identificador da área de uma sessão do navegador, usado como nome de diretório.
  *
- * <p>Nunca vem de algo que o usuário digita: é um hash do emissor + sujeito do provedor de
- * identidade (OIDC), ou um id aleatório de convidado. Por isso é sempre seguro em caminhos.
+ * <p>Não há contas: cada sessão ganha um id aleatório, que nunca vem de algo que o usuário
+ * digita. Por isso é sempre seguro em caminhos.
  */
 public record UserId(String value) {
 
-    private static final Pattern VALID = Pattern.compile("^[ug]-[0-9a-f]{32}$");
+    private static final Pattern VALID = Pattern.compile("^g-[0-9a-f]{32}$");
 
     public UserId {
         if (value == null || !VALID.matcher(value).matches()) {
@@ -19,18 +19,9 @@ public record UserId(String value) {
         }
     }
 
-    /** Usuário autenticado: hash de {@code issuer|subject}. */
-    public static UserId registered(String issuer, String subject) {
-        return new UserId("u-" + Hashing.sha256Hex(issuer + "|" + subject).substring(0, 32));
-    }
-
-    /** Convidado novo, com área temporária própria. */
-    public static UserId newGuest() {
+    /** Área nova, para uma sessão que acabou de começar. */
+    public static UserId newSession() {
         return new UserId("g-" + UUID.randomUUID().toString().replace("-", ""));
-    }
-
-    public boolean isGuest() {
-        return value.startsWith("g-");
     }
 
     @Override

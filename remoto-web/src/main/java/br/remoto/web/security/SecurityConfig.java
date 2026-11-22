@@ -1,62 +1,29 @@
 package br.remoto.web.security;
 
-import br.remoto.web.config.RemotoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.List;
-
 /**
- * Autenticação sem banco de dados.
- *
- * <ul>
- *   <li><b>Produção</b> (qualquer perfil exceto "dev"): login via OIDC/OAuth2, configurado em
- *       application-prod.yml. O ReMoto não guarda senhas.</li>
- *   <li><b>Desenvolvimento</b> (perfil "dev"): formulário com usuários de teste do
- *       application-dev.yml.</li>
- * </ul>
- *
- * Convidados podem usar o site; o que exige conta é verificado nos controllers
- * ({@link Caller#requireLogin()}).
+ * Sem login e sem contas: cada sessão do navegador tem sua área ({@link CallerResolver}). O Spring
+ * Security fica para a proteção contra CSRF e os cabeçalhos de segurança.
  */
 @Configuration(proxyBeanMethods = false)
 class SecurityConfig {
 
-    private static void common(HttpSecurity http) throws Exception {
+    @Bean
+    SecurityFilterChain security(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .csrf(csrf -> csrf.spa())
-                .logout(logout -> logout.logoutSuccessUrl("/"));
-    }
-
-    @Bean
-    @Profile("dev")
-    SecurityFilterChain devSecurity(HttpSecurity http) throws Exception {
-        common(http);
-        http.formLogin(form -> form.defaultSuccessUrl("/", true));
+                .csrf(csrf -> csrf.spa());
         return http.build();
     }
 
+    /** Nenhum usuário: impede o Spring Boot de criar o usuário padrão com senha gerada. */
     @Bean
-    @Profile("dev")
-    UserDetailsService devUsers(RemotoProperties props) {
-        List<UserDetails> users = props.dev().users().stream()
-                .map(u -> User.withUsername(u.username()).password(u.password()).roles("USER").build())
-                .toList();
-        return new InMemoryUserDetailsManager(users);
-    }
-
-    @Bean
-    @Profile("!dev")
-    SecurityFilterChain oidcSecurity(HttpSecurity http) throws Exception {
-        common(http);
-        http.oauth2Login(oauth -> oauth.defaultSuccessUrl("/", true));
-        return http.build();
+    UserDetailsService noUsers() {
+        return new InMemoryUserDetailsManager();
     }
 }

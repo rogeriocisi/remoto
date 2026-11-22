@@ -5,14 +5,13 @@ import br.remoto.core.engine.legacy.LegacyEngine;
 import br.remoto.storage.DataLayout;
 import br.remoto.storage.JsonCodec;
 import br.remoto.storage.UserLocks;
-import br.remoto.storage.account.FileProfileRepository;
-import br.remoto.storage.account.ProfileRepository;
+import br.remoto.storage.area.AreaRepository;
+import br.remoto.storage.area.FileAreaRepository;
 import br.remoto.storage.run.FileRunRepository;
 import br.remoto.storage.run.RunRepository;
 import br.remoto.storage.scenario.FileScenarioRepository;
 import br.remoto.storage.scenario.PublicScenarioCatalog;
 import br.remoto.storage.scenario.ScenarioRepository;
-import br.remoto.storage.scenario.ShareRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -56,13 +55,8 @@ class StorageConfig {
     }
 
     @Bean
-    ProfileRepository profileRepository(DataLayout layout, JsonCodec json, UserLocks locks) {
-        return new FileProfileRepository(layout, json, locks);
-    }
-
-    @Bean
-    ShareRepository shareRepository(DataLayout layout, JsonCodec json) {
-        return new ShareRepository(layout, json);
+    AreaRepository areaRepository(DataLayout layout, UserLocks locks) {
+        return new FileAreaRepository(layout, locks);
     }
 
     @Bean

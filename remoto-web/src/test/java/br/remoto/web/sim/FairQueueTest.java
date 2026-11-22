@@ -13,9 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FairQueueTest {
 
-    private final UserId a = UserId.registered("t", "a");
-    private final UserId b = UserId.registered("t", "b");
-    private final UserId c = UserId.registered("t", "c");
+    private final UserId a = new UserId("g-" + "a".repeat(32));
+    private final UserId b = new UserId("g-" + "b".repeat(32));
+    private final UserId c = new UserId("g-" + "c".repeat(32));
 
     @Test
     void loteGrandeDeUmUsuarioNaoBloqueiaOsOutros() {

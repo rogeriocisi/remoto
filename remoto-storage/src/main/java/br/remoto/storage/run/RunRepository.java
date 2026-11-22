@@ -3,6 +3,7 @@ package br.remoto.storage.run;
 import br.remoto.core.scenario.Scenario;
 import br.remoto.storage.UserId;
 
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +29,14 @@ public interface RunRepository {
 
     List<String> resultNames(UserId owner, String runId);
 
-    /** Varre todos os usuários e convidados (recuperação após reinício, retenção). */
+    /** Varre todas as sessões (recuperação após reinício, retenção). */
     List<RunManifest> findAllByStatus(Set<RunStatus> statuses);
 
     boolean delete(UserId owner, String runId);
+
+    /**
+     * A execução inteira num .zip: o manifesto, a configuração e os resultados em CSV (sem a
+     * compressão gzip de cada arquivo). Não escreve nada se a execução não existe.
+     */
+    void exportZip(UserId owner, String runId, OutputStream out);
 }

@@ -30,10 +30,10 @@ class IdsTest {
 
     @Test
     void userIdNaoAceitaValoresArbitrarios() {
-        assertThat(UserId.registered("iss", "sub").isGuest()).isFalse();
-        assertThat(UserId.newGuest().isGuest()).isTrue();
-        assertThat(UserId.registered("iss", "sub")).isEqualTo(UserId.registered("iss", "sub"));
-        assertThat(UserId.registered("iss", "sub")).isNotEqualTo(UserId.registered("outro", "sub"));
+        assertThat(UserId.newSession()).isNotEqualTo(UserId.newSession());
+        assertThat(new UserId(UserId.newSession().value())).isNotNull();
+        assertThatThrownBy(() -> new UserId("u-0123456789abcdef0123456789abcdef"))
+                .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new UserId("../admin")).isInstanceOf(IllegalArgumentException.class);
     }
 }
