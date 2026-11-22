@@ -416,9 +416,16 @@ sinal guardado (o Action original também não os salvava).
       é sorteado em todo reset, o reset anota no trem um disparo inicial que não chega às
       sinapses e a integral da taxa do processo gama não volta a zero. A forma `custom` deixou de
       gravar no sinal a amplitude que usa (12,35 e depois 13,75); o valor calculado é o mesmo.
-      Saíram o `isActive(t)` do sinal e o `setSignal` do trato, que ninguém chamava. Faltam
-      aferentes, unidades motoras, músculo SOCDS, EMG (soma dos MUAPs), o tornozelo isométrico
-      e, já sobre o `Modulation`, a corrente injetada e a estimulação do nervo.
+      Saíram o `isActive(t)` do sinal e o `setSignal` do trato, que ninguém chamava. A corrente
+      injetada (`br.remoto.core.model.stimulus.InjectedCurrent`, a amplitude fixa mais o sinal) e
+      a estimulação do nervo (`stimulus.NerveStimulation`: pulsos de 1 ms com o período modulado
+      pelo sinal, que soma à frequência, e o trem pareado) também. `Current` e `Nerve` ficaram
+      como casca; do `Nerve` saíram os campos e métodos de teste que nada usava. O sinal do nervo
+      é montado com o início, o fim, a amplitude e a frequência do próprio estímulo, e o trem
+      pareado usa sempre a frequência do nervo (a do pareado não é copiada da configuração): as
+      duas coisas são do original e ficaram. Nenhum dos três cenários públicos liga nervo ou
+      corrente; a equivalência foi conferida com variantes do 17 que os ligam. Faltam aferentes,
+      unidades motoras, músculo SOCDS, EMG (soma dos MUAPs) e o tornozelo isométrico.
    3. Aferentes e proprioceptores: fibras Ia, Ib e II, fuso (Mileusnic, Prochazka), OTG (Crago).
    4. O resto: músculos Raikova, Hill e *DistributionMoments*, pêndulo e tarefa de posição,
       estimulação do nervo e corrente injetada.

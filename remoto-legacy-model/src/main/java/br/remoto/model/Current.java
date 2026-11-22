@@ -2,7 +2,14 @@ package br.remoto.model;
 
 import java.io.Serializable;
 
+import br.remoto.core.model.signal.Modulation;
+import br.remoto.core.model.stimulus.InjectedCurrent;
 
+
+/**
+ * An injected current of the configuration, as edited and stored by the original model. Its
+ * value comes from br.remoto.core.model.stimulus.InjectedCurrent.
+ */
 public class Current implements Serializable  
 {
 	private static final long serialVersionUID = 1L;
@@ -29,6 +36,9 @@ public class Current implements Serializable
     private double delay;
     private double modFreq;
     private double modFactor;
+
+    // Rebuilt when the amplitude or the signal changes
+    private transient InjectedCurrent injected;
 	
 	
 	public Current()
@@ -61,14 +71,23 @@ public class Current implements Serializable
 		if( !active )
 			return 0;
 		
-		double i = imax;
-		
-		if( signal != null )
+		return injected().value(t);
+	}
+
+
+	/** This current in br.remoto.core.model.stimulus, with the signal as it is now. */
+	public InjectedCurrent injected()
+	{
+		Modulation m = signal == null ? null : signal.modulation();
+		InjectedCurrent c = injected;
+
+		if( c == null || c.signal() != m )
 		{
-			i += signal.value(t);
+			c = new InjectedCurrent(imax, m);
+			injected = c;
 		}
 
-		return i;
+		return c;
 	}
 
 
@@ -89,6 +108,7 @@ public class Current implements Serializable
 
 	public void setImax(double amp) {
 		this.imax = amp;
+		this.injected = null;
 	}
 
 
@@ -149,6 +169,7 @@ public class Current implements Serializable
 
 	public void setSignal(ModulatingSignal signal) {
 		this.signal = signal;
+		this.injected = null;
 	}
 
 

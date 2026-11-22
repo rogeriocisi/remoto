@@ -1,42 +1,22 @@
 package br.remoto.model;
 
 
+import br.remoto.core.model.stimulus.NerveStimulation;
 import br.remoto.model.vo.NerveVO;
 
 
+/**
+ * A stimulated nerve of a simulation: the properties of the configuration and the intensity of
+ * the stimulus at each step, from br.remoto.core.model.stimulus.NerveStimulation. Motoneurons and
+ * afferent fibers of the nerve read the intensity to fire their axons.
+ */
 public class Nerve extends NerveVO
 {
 	private static final long serialVersionUID = 1L;
 
-	protected double intensity;
-
-	
-	
-	//testing
-	protected double period;
-	protected double start = 0;
-	protected double start_aux = 0;
-	protected double next_start = 0;
-	protected double finish = 1;
-	protected int cont = 0;
-	
-	public double getPeriod() {
-		return period;
-	}
+	private final NerveStimulation stimulation;
 
 
-	public void setPeriod(double period) {
-		this.period = period;
-	}
-	
-	
-	
-	
-	public Nerve()
-	{
-	}
-	
-	
 	public Nerve(NerveVO vo, double step)
 	{
 		this.cdNerve = vo.getCdNerve();
@@ -48,95 +28,35 @@ public class Nerve extends NerveVO
 		this.active = vo.isActive();
 		this.index = vo.getIndex();
 		this.stimulusSpinalEntry = vo.getStimulusSpinalEntry();
-		this.stimulusEndPlate = vo.getStimulusEndPlate(); 
+		this.stimulusEndPlate = vo.getStimulusEndPlate();
 		this.setPaired( vo.isPaired() );
 		this.setDelayPaired( vo.getDelayPaired() );
 		this.setAmpPaired( vo.getAmpPaired() );
-		
+
 		this.signal = vo.getSignal();
 		this.cdSignal = vo.getCdSignal();
 		this.modulating_amp = vo.getModulating_amp();
 		this.modulating_freq = vo.getModulating_freq();
 		this.width = vo.getWidth();
 		this.delay = vo.getDelay();
-		
-		this.start = tini;
-		this.start_aux = tini;
-		finish = start + ReMoto.pulseWidth;
-		
-		
-		if( freq < 1000/ReMoto.T_MAX )
-			freq = 0;
-		else if( freq > 1000/step )
-			freq = 1000/step;
 
-		if( freqPaired < 1000/ReMoto.T_MAX )
-			freqPaired = freq;
+		// The frequency of the paired train is not copied from the configuration: it is always
+		// the frequency of the nerve
+		this.stimulation = new NerveStimulation(tini, tfin, amp, freq, signal.modulation(),
+				paired, delayPaired, ampPaired, freqPaired, step);
+
+		this.freq = stimulation.freq();
+		this.freqPaired = stimulation.freqPaired();
 	}
-	
-	
+
+
 	public void atualize(double t)
 	{
-		intensity = 0;
-
-		if( t < tini || t > tfin )
-			return;
-		
-		period = 1000.0/(freq + signal.value(t));
-		
-		if(Math.abs(t - start) >= period){
-			start_aux = start;
-			start = start_aux + period;
-		}
-		
-		if(Math.abs(t - start) <= ReMoto.pulseWidth)
-			intensity = amp;
-		
-		/*
-		if( t >= start && t < finish){
-			intensity = amp;
-			cont = 0;
-		}
-		else{
-			if(cont == 1) start_aux = start - ReMoto.pulseWidth;
-			//if(cont == 1) start_aux = start;
-			start = start_aux + period;
-			finish = start + ReMoto.pulseWidth;
-		}
-		*/
-				
-		cont++;
-		
-		if( paired == true )
-			atualizePaired(t);
-	}
-	
-	
-	public void atualizePaired(double t)
-	{
-		double tIniPaired = tini + delayPaired;
-		
-		if( t < tIniPaired || t > tfin )
-			return;
-		
-		double period = 1000.0/freqPaired;
-		int cycle = (int)( (t - tIniPaired) / period );
-		double start = tIniPaired + cycle * period;
-		double finish = start + ReMoto.pulseWidth;
-		
-		if( t > start && t < finish + ReMoto.T_TOLERANCE )
-			intensity += ampPaired;
+		stimulation.step(t);
 	}
 
 
 	public double getIntensity() {
-		return intensity;
+		return stimulation.intensity();
 	}
-
-
-	public void setIntensity(double intensity) {
-		this.intensity = intensity;
-	}
-
-	
 }
