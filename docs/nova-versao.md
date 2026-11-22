@@ -424,12 +424,37 @@ sinal guardado (o Action original também não os salvava).
       é montado com o início, o fim, a amplitude e a frequência do próprio estímulo, e o trem
       pareado usa sempre a frequência do nervo (a do pareado não é copiada da configuração): as
       duas coisas são do original e ficaram. Nenhum dos três cenários públicos liga nervo ou
-      corrente; a equivalência foi conferida com variantes do 17 que os ligam. Faltam aferentes,
-      unidades motoras, músculo SOCDS, EMG (soma dos MUAPs) e o tornozelo isométrico.
-   3. Aferentes e proprioceptores: fibras Ia, Ib e II, fuso (Mileusnic, Prochazka), OTG (Crago).
-   4. O resto: músculos Raikova, Hill e *DistributionMoments*, pêndulo e tarefa de posição,
-      estimulação do nervo e corrente injetada.
-   5. O motor roda só sobre o `remoto-core`, o editor passa a gravar os parâmetros tipados (o
+      corrente; a equivalência foi conferida com variantes do 17 que os ligam.
+   3. ~~Aferentes, unidades motoras, músculos, proprioceptores e articulação.~~ Feito, com a
+      mesma conferência e mais oito variantes do 17 que trocam os modelos pelo campo `settings`
+      do cenário (Hill, Raikova, *DistributionMoments*, pêndulo, tarefa de posição, fuso de
+      Prochazka, distribuição linear e pré-definida das unidades). Os modelos são fixados pelo
+      `ConfigurationDAO` (SOCDS, tornozelo isométrico, fuso de Mileusnic, OTG de Crago), mas o
+      editor os troca pelo `settings`; com SOCDS e tornozelo isométrico o fuso nem é integrado.
+      - `br.remoto.core.model.neuron.AfferentFiber`: as fibras Ia, II e Ib (estímulo do nervo,
+        disparo pelo receptor num processo gama, condução). O reset sorteia os limiares dos três
+        tipos, e a fibra II passa a sortear com a ordem da Ia depois do primeiro disparo, como no
+        original.
+      - `muscle.MotorUnit` (parâmetros do abalo, o estado que os músculos avançam, o MUAP de
+        Hermite-Rodriguez do EMG e a posição na secção), `CriticallyDampedMuscle` (SOCDS),
+        `HillMuscle` e `Tendon`, `RaikovaMuscle` e `DistributionMomentsMuscle` (que nunca calculou
+        força: fica em 0). O Hill calcula os quatro estágios do Runge-Kutta e avança por Euler, e
+        cria a cada passo um gerador derivado que não usa; os dois ficaram, porque mudam a força e
+        a sequência de aleatoriedade.
+      - `receptor.MileusnicSpindle` (fibras bag1, bag2 e chain, com os corpos copiados do
+        original por script; os ganhos da chain nunca são atribuídos e ficam em 0),
+        `ProchazkaSpindle` e `CragoTendonOrgan`.
+      - `joint.IsometricAnkle`, `InvertedPendulumAnkle`, `PositionTaskAnkle` e
+        `MusculotendonGeometry` (os polinômios de comprimento e braço de momento, copiados por
+        script). No tornozelo isométrico o joelho chega em radianos e é comparado com 0 e 90, de
+        modo que MG e LG só têm coeficientes com o joelho estendido; no pêndulo e na tarefa de
+        posição ele fica em graus. Os dois últimos calculam os torques dos estágios do
+        Runge-Kutta com o ângulo do início do passo e sorteiam o distúrbio em cada estágio.
+
+      Saíram, sem uso: o `Vestibular`, o simulador de fuso dos servlets antigos
+      (`br.remoto.servlet`, `br.remoto.spindle_simulator`) e a dependência `javax.servlet`. As
+      classes do original que restam nesses pacotes guardam só a amostragem dos sinais.
+   4. O motor roda só sobre o `remoto-core`, o editor passa a gravar os parâmetros tipados (o
       que elimina o HSQLDB de vez) e o `remoto-legacy-model` deixa de existir.
 2. ~~Desempenho do motor original.~~ Feito: ver "Desempenho" em [Motor original](#motor-original-legacy).
    Próximo ganho: tirar da thread da simulação a força muscular, separando o que sorteia
