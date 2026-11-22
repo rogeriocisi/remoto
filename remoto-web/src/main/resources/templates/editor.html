@@ -11,7 +11,7 @@
   <div class="marca">
     <a th:href="@{/}" class="discreto">← ReMoto</a>
     <strong th:text="${scenario.name}">cenário</strong>
-    <span th:if="${legacy}" class="selo">modelos originais</span>
+    <span th:if="${legacy}" class="selo" title="Roda os modelos publicados do ReMoto">Experimento</span>
   </div>
   <form th:action="@{/editor/{id}/run(id=${scenario.id})}" method="post" class="inline">
     <button type="submit">Rodar este cenário</button>
@@ -48,11 +48,7 @@
         <label>Name <input type="text" name="name" th:value="${scenario.name}" maxlength="60" required></label>
         <label>Description <textarea name="description" rows="5" th:text="${scenario.description}"></textarea></label>
         <label>Seed <input type="text" name="seed" th:value="${scenario.seed}" inputmode="numeric"></label>
-        <th:block th:unless="${legacy}">
-          <label>Duração [ms] <input type="text" name="durationMs" th:value="${scenario.durationMs}"></label>
-          <label>Passo [ms] <input type="text" name="stepMs" th:value="${scenario.stepMs}"></label>
-        </th:block>
-        <p th:if="${legacy}" class="vazio">
+        <p class="vazio">
           Duração e passo ficam em <em>Run → Simulation Start</em>; os demais parâmetros, nas telas do menu.
         </p>
         <button type="submit">Salvar</button>

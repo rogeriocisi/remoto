@@ -8,7 +8,8 @@
     <li th:each="s : ${publicScenarios}">
       <div>
         <strong th:text="${s.name}">nome</strong>
-        <span th:if="${s.engine == 'legacy'}" class="selo">modelos originais</span>
+        <span th:if="${s.engineOrDefault() == 'legacy'}" class="selo"
+              title="Roda os modelos publicados do ReMoto">Experimento</span>
         <small th:text="|${#numbers.formatDecimal(s.durationMs, 1, 'POINT', 0, 'COMMA')} ms simulados|">1000 ms simulados</small>
         <small th:text="${s.description}">descrição</small>
       </div>
@@ -39,7 +40,8 @@
     <li th:each="s : ${mine}">
       <div>
         <strong th:text="${s.name}">nome</strong>
-        <span th:if="${s.engine == 'legacy'}" class="selo">modelos originais</span>
+        <span th:if="${s.engineOrDefault() == 'legacy'}" class="selo"
+              title="Roda os modelos publicados do ReMoto">Experimento</span>
         <small th:text="|${#numbers.formatDecimal(s.durationMs, 1, 'POINT', 0, 'COMMA')} ms simulados|">1000 ms</small>
         <a th:href="@{/api/scenarios/{id}(id=${s.id})}" class="discreto">JSON</a>
       </div>

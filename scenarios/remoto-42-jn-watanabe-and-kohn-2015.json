@@ -6,7 +6,6 @@
   "seed" : 42,
   "durationMs" : 15000.0,
   "stepMs" : 0.05,
-  "nuclei" : [ ],
   "engine" : "legacy",
   "legacy" : {
     "format" : "remoto-legacy-db/1",

@@ -109,7 +109,7 @@ public final class LegacyDatabase implements AutoCloseable {
                 ? "Configuração " + idConfiguration + " do ReMoto original."
                 : info.description();
         return new Scenario(null, info.name(), description, Scenario.CURRENT_SCHEMA_VERSION, idConfiguration,
-                info.durationMs(), info.stepMs(), List.of(), Scenario.ENGINE_LEGACY,
+                info.durationMs(), info.stepMs(), Scenario.ENGINE_LEGACY,
                 LegacyJson.toMap(export(idConfiguration)));
     }
 

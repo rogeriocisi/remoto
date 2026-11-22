@@ -84,7 +84,7 @@ class EditorController {
                 LegacyEditor.Saved saved = editor.save();
                 updated = new Scenario(scenario.id(), scenario.name(), scenario.description(),
                         scenario.schemaVersion(), scenario.seed(), saved.durationMs(), saved.stepMs(),
-                        scenario.nuclei(), scenario.engine(), LegacyJson.toMap(saved.config()));
+                        scenario.engine(), LegacyJson.toMap(saved.config()));
             }
         }
         if (updated != null) {
@@ -164,27 +164,8 @@ class EditorController {
         } catch (NumberFormatException e) {
             errors.add("Seed: número inteiro inválido");
         }
-        double duration = s.durationMs();
-        double step = s.stepMs();
-        if (!Scenario.ENGINE_LEGACY.equals(s.engineOrDefault())) {
-            duration = number(form, "durationMs", s.durationMs(), "Duração", errors);
-            step = number(form, "stepMs", s.stepMs(), "Passo", errors);
-        }
-        return new Scenario(s.id(), name, description, s.schemaVersion(), seed, duration, step,
-                s.nuclei(), s.engine(), s.legacy());
-    }
-
-    private static double number(Map<String, String> form, String key, double fallback, String label, List<String> errors) {
-        String raw = form.get(key);
-        if (raw == null) {
-            return fallback;
-        }
-        try {
-            return Double.parseDouble(raw.trim().replace(',', '.'));
-        } catch (NumberFormatException e) {
-            errors.add(label + ": número inválido");
-            return fallback;
-        }
+        return new Scenario(s.id(), name, description, s.schemaVersion(), seed, s.durationMs(), s.stepMs(),
+                s.engine(), s.legacy());
     }
 
     private Versioned<Scenario> find(Caller caller, String id) {
@@ -193,7 +174,7 @@ class EditorController {
 
     private static void requireLegacy(Scenario scenario) {
         if (!Scenario.ENGINE_LEGACY.equals(scenario.engineOrDefault())) {
-            throw new IllegalArgumentException("este cenário não usa os modelos originais");
+            throw new IllegalArgumentException("motor desconhecido: " + scenario.engine());
         }
     }
 

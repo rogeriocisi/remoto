@@ -16,14 +16,14 @@ This repository contains the new version of ReMoto. Of the legacy version, only 
 |---|---|---|
 | Location | [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto); here only `legacy-db/` (the original database, as a text file) | `remoto-*/` Maven modules, `scenarios/` |
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
-| Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine), plus a small demo engine |
+| Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine) |
 | Users | Local accounts stored in HSQLDB | Login with ORCID or GitHub (OIDC), plus guest access |
 | Status | Unmaintained; depends on software without security updates | Maintained and tested; the original models give bit-for-bit identical results, checked against the original code and database |
 
 ### Repository layout
 
 ```
-remoto-core/          scenario format, the ReMoto models and engines ("legacy" and demo), reader of the old database (plain Java)
+remoto-core/          scenario format, the ReMoto models and engine ("legacy"), reader of the old database (plain Java)
 remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
 remoto-web/           multi-user web application (Spring Boot), including the scenario editor
 remoto-cli/           command-line runner for scripts and clusters, and export of old configurations
@@ -42,7 +42,7 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 
 - **Multi-user without a database:** each user's scenarios, runs and results are kept in their own folder. Guests get a temporary area that is deleted when the session ends.
 - **Fair simulation queue:** several users can run simulations at the same time; a large batch from one user does not block the others.
-- **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Tests check that each converted scenario gives exactly the same results as the original database configuration. Results include muscle force, motoneuron spikes, joint torque and EMG (raw, and filtered with noise as on the old results page).
+- **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Four more experiments from the old database (isometric contraction, recruitment, H-reflex with reciprocal inhibition, Ia stimulation during a contraction) and a scenario with every model element turned on are also public. Tests check that each converted scenario gives exactly the same results as the original database configuration. Results include muscle force, motoneuron spikes, joint torque and EMG (raw, and filtered with noise as on the old results page).
 - **Scenario editor modeled on the original site:** copy a public scenario and edit it through the same menu, screens, fields and limits as the old editor: structure (descending commands, neural elements), neural parameters (synapses, kinetics, synaptic dynamics, conductances, motoneurons, interneurons, sensory fibers), proprioceptors (muscle spindle, GTO), biomechanics (joint and muscle models, musculotendon, muscle units, EMG, miscellaneous), stimulation (nerve, injected current) and run settings. Changes are saved exactly as the original `ConfigurationDAO` saved them, now without a database; settings the old DAO did not store (model choices, spindle gains, joint angles) are kept with the scenario.
 - **Results screen modeled on the original site:** the same menus and graphics as the old results page: muscle, tendon, spindle, GTO and joint signals, spike rasters, instantaneous firing rate, interspike intervals and histograms for motoneurons, afferents, tracts and interneurons, membrane potentials, conductances and injected current of the stored neurons, neuron and motor-unit properties, EMG with the old filters and options, statistics and FFT, multiple subplots, and CSV/PNG downloads.
 - **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
@@ -83,7 +83,6 @@ Then open http://localhost:8080. You can use the site as a guest. The `dev` prof
 
 ```bash
 ./mvnw -pl remoto-cli -am package -DskipTests
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/exemplo-sol-mg.json -o results/example
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 --threads 4 -o results/soleus
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar validate scenarios/*.json
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list

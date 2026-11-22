@@ -13,7 +13,7 @@ import java.util.Optional;
 
 /**
  * Cenários públicos (o antigo usuário "guest"): arquivos JSON versionados no Git, só leitura.
- * O id é o nome do arquivo, por exemplo {@code scenarios/exemplo-sol-mg.json}.
+ * O id é o nome do arquivo, por exemplo {@code scenarios/remoto-17-default-soleus-contraction.json}.
  */
 public final class PublicScenarioCatalog {
 

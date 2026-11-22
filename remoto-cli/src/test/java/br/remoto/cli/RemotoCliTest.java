@@ -16,16 +16,17 @@ class RemotoCliTest {
 
     @Test
     void rodaUmCenarioPublicoEGravaResultados() {
-        Path scenario = Path.of("..", "scenarios", "exemplo-ta-recrutamento.json");
+        Path scenario = Path.of("..", "scenarios", "remoto-17-default-soleus-contraction.json");
         Path out = tmp.resolve("saida");
 
-        int exit = new CommandLine(new RemotoCli()).execute("run", scenario.toString(), "-o", out.toString());
+        int exit = new CommandLine(new RemotoCli()).execute("run", scenario.toString(), "-o", out.toString(),
+                "--duration-ms", "40");
 
         assertThat(exit).isZero();
         assertThat(out.resolve("manifest.json")).exists();
         assertThat(out.resolve("config.json")).exists();
-        assertThat(out.resolve("results").resolve("forca-TA.csv.gz")).exists();
-        assertThat(out.resolve("results").resolve("disparos-TA.csv.gz")).exists();
+        assertThat(out.resolve("results").resolve("forca-SOL.csv.gz")).exists();
+        assertThat(out.resolve("results").resolve("disparos-SOL.csv.gz")).exists();
     }
 
     @Test
@@ -43,7 +44,7 @@ class RemotoCliTest {
     @Test
     void cenarioInvalidoRetornaCodigoDeErro() throws Exception {
         Path bad = tmp.resolve("ruim.json");
-        Files.writeString(bad, "{\"name\":\"\",\"schemaVersion\":1,\"durationMs\":-1,\"stepMs\":0.05,\"nuclei\":[]}");
+        Files.writeString(bad, "{\"name\":\"\",\"schemaVersion\":1,\"durationMs\":-1,\"stepMs\":0.05}");
 
         assertThat(new CommandLine(new RemotoCli()).execute("validate", bad.toString())).isEqualTo(2);
     }

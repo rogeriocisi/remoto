@@ -62,7 +62,8 @@ class FileScenarioRepositoryTest {
     @Test
     void gravacaoComEtagDesatualizadoEhRecusada() {
         Versioned<Scenario> v1 = repo.create(ana, scenario("v1"));
-        Scenario renamed = new Scenario(v1.value().id(), "v2", "", 1, 42, 100, 0.05, v1.value().nuclei());
+        Scenario renamed = new Scenario(v1.value().id(), "v2", "", 1, 42, 100, 0.05,
+                v1.value().engine(), v1.value().legacy());
 
         Versioned<Scenario> v2 = repo.update(ana, renamed, v1.etag());
 

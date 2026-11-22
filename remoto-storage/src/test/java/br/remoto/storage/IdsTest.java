@@ -21,7 +21,7 @@ class IdsTest {
     @Test
     void rejeitaIdsQueEscapamDoDiretorio() {
         assertThat(Ids.isSafe("01JAZ0000000000000000000")).isTrue();
-        assertThat(Ids.isSafe("exemplo-sol-mg")).isTrue();
+        assertThat(Ids.isSafe("remoto-17-default-soleus-contraction")).isTrue();
         for (String evil : new String[]{"../x", "a/b", "a\\b", "..", ".hidden", "", "a.json"}) {
             assertThat(Ids.isSafe(evil)).as(evil).isFalse();
         }

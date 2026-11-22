@@ -177,7 +177,7 @@ class LegacyEditorTest {
         assertThat(reopened.sections().get(2).rows().get(0).cells().get(column).value()).isEqualTo("5");
 
         br.remoto.core.scenario.Scenario scenario = new br.remoto.core.scenario.Scenario(null, "guardados", "", 1, 3,
-                2, 0.05, List.of(), br.remoto.core.scenario.Scenario.ENGINE_LEGACY,
+                2, 0.05, br.remoto.core.scenario.Scenario.ENGINE_LEGACY,
                 br.remoto.core.engine.legacy.LegacyJson.toMap(saved));
         List<String> names = new java.util.ArrayList<>();
         new br.remoto.core.engine.legacy.LegacyEngine(1).run(scenario, new br.remoto.core.engine.RunContext() {
@@ -202,7 +202,7 @@ class LegacyEditorTest {
         editor.apply("biomechanicalElements", Map.of(), Map.of(cellOf(bio, "Joint model", 0), "pendulum"));
         LegacyConfig saved = editor.save().config();
         br.remoto.core.scenario.Scenario scenario = new br.remoto.core.scenario.Scenario(null, "pendulum", "", 1, 3,
-                10, 0.05, List.of(), br.remoto.core.scenario.Scenario.ENGINE_LEGACY, br.remoto.core.engine.legacy.LegacyJson.toMap(saved));
+                10, 0.05, br.remoto.core.scenario.Scenario.ENGINE_LEGACY, br.remoto.core.engine.legacy.LegacyJson.toMap(saved));
         Map<String, Integer> sizes = new HashMap<>();
 
         new br.remoto.core.engine.legacy.LegacyEngine().run(scenario, new br.remoto.core.engine.RunContext() {

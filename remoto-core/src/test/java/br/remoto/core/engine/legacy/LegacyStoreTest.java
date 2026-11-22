@@ -51,7 +51,7 @@ class LegacyStoreTest {
         LegacyConfig stored = LegacyConfigurations.store(LegacyConfigurations.load(original), original);
         Scenario base = db.exportScenario(id).withDuration(40);
         Scenario roundTrip = new Scenario(null, base.name(), base.description(), base.schemaVersion(), base.seed(),
-                base.durationMs(), base.stepMs(), List.of(), Scenario.ENGINE_LEGACY, LegacyJson.toMap(stored));
+                base.durationMs(), base.stepMs(), Scenario.ENGINE_LEGACY, LegacyJson.toMap(stored));
 
         Recorder a = new Recorder();
         new LegacyEngine().run(base, a);

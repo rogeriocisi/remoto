@@ -14,7 +14,7 @@
   <name>ReMoto :: core</name>
   <description>
     Modelos e motores de simulação em Java puro (sem web, sem armazenamento, sem dependências):
-    o motor provisório e o motor original do ReMoto, com os modelos portados.
+    o motor do ReMoto, com os modelos portados, e a leitura do banco original.
   </description>
 
   <dependencies>

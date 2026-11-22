@@ -1,7 +1,6 @@
 package br.remoto.web.config;
 
 import br.remoto.core.engine.Engines;
-import br.remoto.core.engine.placeholder.PlaceholderPoolEngine;
 import br.remoto.core.engine.legacy.LegacyEngine;
 import br.remoto.storage.DataLayout;
 import br.remoto.storage.JsonCodec;
@@ -71,13 +70,9 @@ class StorageConfig {
         return new PublicScenarioCatalog(layout, json);
     }
 
-    /**
-     * Motores disponíveis: os modelos originais do ReMoto ("legacy") e o motor provisório
-     * ("placeholder"), escolhidos pelo campo engine de cada cenário.
-     */
+    /** Motores disponíveis, escolhidos pelo campo engine de cada cenário: os modelos do ReMoto ("legacy"). */
     @Bean
     Engines engines(RemotoProperties props) {
-        return new Engines(java.util.List.of(
-                new LegacyEngine(props.simulation().effectiveThreadsPerRun()), new PlaceholderPoolEngine()));
+        return new Engines(java.util.List.of(new LegacyEngine(props.simulation().effectiveThreadsPerRun())));
     }
 }

@@ -67,6 +67,11 @@ public final class ResultMenu {
     private ResultMenu() {
     }
 
+    /** Sem menus: execuções de outros motores ficam com os gráficos simples. */
+    public static Menu none() {
+        return new Menu(List.of(), List.of(), Map.of(), Map.of(), List.of(), List.of(), List.of(), true);
+    }
+
     public static Menu build(ResultCatalog catalog, Path resultsDir) {
         Set<String> names = new LinkedHashSet<>();
         catalog.entries().forEach(e -> names.add(e.name()));

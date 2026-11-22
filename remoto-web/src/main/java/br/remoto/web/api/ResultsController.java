@@ -1,5 +1,6 @@
 package br.remoto.web.api;
 
+import br.remoto.core.scenario.Scenario;
 import br.remoto.storage.run.RunManifest;
 import br.remoto.storage.run.RunRepository;
 import br.remoto.web.results.ResultCatalog;
@@ -34,10 +35,16 @@ class ResultsController {
         this.runs = runs;
     }
 
+    /**
+     * A tela de resultados é a do motor original. Execuções antigas do motor provisório (já
+     * removido) gravaram saídas com os mesmos nomes, mas ficam com os gráficos simples.
+     */
     @GetMapping("/menu")
     ResultMenu.Menu menu(Caller caller, @PathVariable String id) {
         Path dir = runs.resultsDir(caller.id(), find(caller, id).runId());
-        return ResultMenu.build(catalog(caller, id, dir), dir);
+        boolean original = runs.config(caller.id(), id)
+                .map(s -> Scenario.ENGINE_LEGACY.equals(s.engineOrDefault())).orElse(false);
+        return original ? ResultMenu.build(catalog(caller, id, dir), dir) : ResultMenu.none();
     }
 
     @GetMapping("/view")

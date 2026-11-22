@@ -10,12 +10,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,20 +60,34 @@ class LegacyEngineTest {
         assertThat(text).doesNotContain("\"USER\"").doesNotContain("PASSWORD").doesNotContain("EMAIL");
     }
 
-    /** O export lê o arquivo do banco sem o HSQLDB; os cenários públicos foram exportados por ele. */
+    /**
+     * O export lê o arquivo do banco sem o HSQLDB; os cenários públicos "remoto-&lt;id&gt;-..." foram
+     * exportados por ele. Só a descrição pode ter sido escrita depois, à mão.
+     */
     @ParameterizedTest
-    @ValueSource(ints = {17, 24, 42})
-    void exportDoBancoReproduzOsCenariosPublicos(int id) throws Exception {
-        Path file;
-        try (var files = Files.list(Path.of(System.getProperty("remoto.legacy.db")).getParent().getParent()
-                .resolve("scenarios"))) {
-            file = files.filter(p -> p.getFileName().toString().startsWith("remoto-" + id + "-")).findFirst()
-                    .orElseThrow();
-        }
-        Object published = MAPPER.readValue(Files.readAllBytes(file), Object.class);
-        Object exported = MAPPER.readValue(json.toBytes(db.exportScenario(id)), Object.class);
+    @MethodSource("publishedConfigurations")
+    void exportDoBancoReproduzOsCenariosPublicos(String fileName) throws Exception {
+        int id = Integer.parseInt(fileName.split("-")[1]);
+        Map<?, ?> published = MAPPER.readValue(Files.readAllBytes(scenariosDir().resolve(fileName)), Map.class);
+        Map<?, ?> exported = MAPPER.readValue(json.toBytes(db.exportScenario(id)), Map.class);
+        published.remove("description");
+        exported.remove("description");
 
-        assertThat(exported).isEqualTo(published);
+        assertThat(exported).usingRecursiveComparison().isEqualTo(published);
+    }
+
+    static Stream<String> publishedConfigurations() throws IOException {
+        try (var files = Files.list(scenariosDir())) {
+            return files.map(p -> p.getFileName().toString())
+                    .filter(n -> n.matches("remoto-\\d+-.*\\.json"))
+                    .sorted()
+                    .toList()
+                    .stream();
+        }
+    }
+
+    private static Path scenariosDir() {
+        return Path.of(System.getProperty("remoto.legacy.db")).getParent().getParent().resolve("scenarios");
     }
 
     @Test
@@ -146,6 +163,26 @@ class LegacyEngineTest {
         assertThat(java.util.Arrays.stream(raw).skip(1).mapToDouble(l -> Double.parseDouble(l.split(",")[1])))
                 .as("há disparos nos 40 ms, então o EMG bruto não pode ser todo zero")
                 .anyMatch(v -> v != 0);
+    }
+
+    /** O "Modelo completo" de scenarios/ liga todos os elementos: cada um aparece nas saídas. */
+    @Test
+    void modeloCompletoLigaTodosOsElementos() throws Exception {
+        Scenario scenario = json.fromBytes(Files.readAllBytes(scenariosDir().resolve("modelo-completo.json")),
+                Scenario.class);
+        assertThat(ScenarioValidator.validate(scenario)).isEmpty();
+
+        Recorder r = run(scenario.withDuration(SHORT_RUN_MS));
+
+        for (String m : new String[] {"SOL", "MG", "LG", "TA"}) {
+            assertThat(r.outputs).containsKeys("forca-" + m, "musculo-forca-paralela-" + m, "fuso-ia-" + m,
+                    "fuso-ii-" + m, "otg-ib-" + m, "tabela-aferentes-" + m);
+        }
+        assertThat(r.outputs).containsKeys("articulacao-angulo", "articulacao-centro-massa",
+                "tabela-interneuronios-IN_ext", "tabela-interneuronios-IN_flex");
+        for (String tract : new String[] {"CM_ext", "CM_flex", "RBE_ext", "RBE_flex", "RBI_ext", "RBI_flex"}) {
+            assertThat(r.outputs).containsKey("trato-isi-medio-" + tract);
+        }
     }
 
     private Recorder run(Scenario scenario) {
