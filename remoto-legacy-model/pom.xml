@@ -33,12 +33,6 @@
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
     </dependency>
-    <!-- algumas classes do modelo ainda referenciam br.remoto.servlet.SpindleSimulation -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
-    </dependency>
   </dependencies>
 
   <build>

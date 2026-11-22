@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import br.remoto.model.Configuration;
 import br.remoto.model.ReMoto;
-import br.remoto.model.Musculotendon.Tendon.Innerveted.Lumped.Models.Lumped_Crago;
+import br.remoto.core.model.receptor.CragoTendonOrgan;
 import br.remoto.model.Neuron.Miscellaneous;
 import br.remoto.model.Neuron.Motoneuron;
 import br.remoto.model.Neuron.Neuron;
@@ -21,7 +21,7 @@ public class GolgiTendonOrgan {
 	
 	protected ArrayList IbFiringRateStore = new ArrayList();
 	
-	protected Lumped_Crago lumpedGTO;
+	protected CragoTendonOrgan lumpedGTO;
 	
 	private double IbFiringRate;
 	private double afferentNumber = 0;
@@ -34,8 +34,6 @@ public class GolgiTendonOrgan {
 		
 		samplerIbFiringRate = new Sample(conf.getDecimationFrequency(), 1000 / conf.getStep());
 		
-		if(gto_model.equals(ReMoto.lumpedGtoModelCrago))
-			this.lumpedGTO = new Lumped_Crago(cdNucleus, conf);
 		
 		
 		for(int x = ReMoto.indDT + 1; x < neurons.length; x++)
@@ -65,20 +63,21 @@ public class GolgiTendonOrgan {
 				}
 			}
 		}
+
+		// The rate of the tendon organ is shared by the Ib fibers counted above
+		if(gto_model.equals(ReMoto.lumpedGtoModelCrago))
+			this.lumpedGTO = new CragoTendonOrgan(conf.getStep(), afferentNumber);
 		
 	}
 	 
-	public double calculateIbFiringRate(double force, double t){
-		
-		return lumpedGTO.calculateIbFiringRate(force, t);
-		
-	}
+
 	
 	public void atualize(double t, double force){
 		
 		//System.out.println("Number of Ib AFs: " + afferentNumber);
 		
-		IbFiringRate = calculateIbFiringRate(force, t) / afferentNumber;
+		lumpedGTO.step(force);
+		IbFiringRate = lumpedGTO.ibFiringRate();
 		
 		//IbFiringRateStore.add( new Signal( ReMoto.IbFiringRate, IbFiringRate, t) );
 		samplerIbFiringRate.sample(IbFiringRateStore, "", t, IbFiringRate);
