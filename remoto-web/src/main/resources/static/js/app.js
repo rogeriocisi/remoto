@@ -52,6 +52,17 @@
     const graphs = field('graficos');
     links.replaceChildren(link(`/api/runs/${runId}/config`, 'configuração (JSON)'));
 
+    // motor original: a tela de resultados no modelo do site antigo; os arquivos ficam num bloco recolhível
+    if (window.ReMotoResults && await window.ReMotoResults.show(runId, field('resultados'))) {
+      const files = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = `arquivos (${run.results.length} resultados em CSV)`;
+      files.append(summary);
+      for (const name of run.results) files.append(link(`/api/runs/${runId}/results/${name}.csv`, `${name}.csv`));
+      links.append(files);
+      return;
+    }
+
     for (const name of run.results) {
       links.append(link(`/api/runs/${runId}/results/${name}.csv`, `${name}.csv`),
                    link(`/api/runs/${runId}/results/${name}.png`, `${name}.png`));
@@ -97,6 +108,7 @@
   }
 
   function clearCharts() {
+    if (window.ReMotoResults) window.ReMotoResults.clear();
     charts.forEach((c) => c.destroy());
     charts = [];
     field('graficos').replaceChildren();

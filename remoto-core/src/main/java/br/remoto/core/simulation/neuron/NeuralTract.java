@@ -20,9 +20,18 @@ public class NeuralTract extends Neuron
 
 	private final TractSpikeGenerator generator;
 
+	// The first tract of each type keeps the mean interval it used at each step (ISI mean value
+	// of the results screen): with a random modulation, it cannot be recomputed afterwards
+	private final boolean recordsMean;
+	private double[] meanTimes = new double[0];
+	private double[] meanValues = new double[0];
+	private int meanCount;
+
 	public NeuralTract(NeuronVO neu, int index, Miscellaneous misc, boolean createSignal)
 	{
 		super(neu, index, misc);
+
+		this.recordsMean = index == 0 && br.remoto.core.simulation.ReMoto.TR.equals( neu.getCategory() );
 
 		if( createSignal == true )
 		{
@@ -60,6 +69,12 @@ public class NeuralTract extends Neuron
 					{
 						terminalSpikeTrain.remove(0);
 					}
+
+					public void mean(double t, double mean)
+					{
+						if( recordsMean )
+							recordMean(t, mean);
+					}
 				});
 
 		reset();
@@ -69,7 +84,37 @@ public class NeuralTract extends Neuron
 	{
 		super.reset();
 
+		meanCount = 0;
+
 		generator.reset();
+	}
+
+	private void recordMean(double t, double mean)
+	{
+		if( meanCount == meanTimes.length )
+		{
+			int size = Math.max(1024, meanCount * 2);
+			meanTimes = java.util.Arrays.copyOf(meanTimes, size);
+			meanValues = java.util.Arrays.copyOf(meanValues, size);
+		}
+		meanTimes[meanCount] = t;
+		meanValues[meanCount] = mean;
+		meanCount++;
+	}
+
+	/** Whether this tract kept the mean interval it used (the first tract of each type). */
+	public boolean isRecordingMean() {
+		return recordsMean;
+	}
+
+	/** Instants (ms) at which the generator evaluated the mean interval. */
+	public double[] getMeanTimes() {
+		return java.util.Arrays.copyOf(meanTimes, meanCount);
+	}
+
+	/** The mean interval (ms) used at each of those instants. */
+	public double[] getMeanValues() {
+		return java.util.Arrays.copyOf(meanValues, meanCount);
 	}
 
 	public void atualize(double t)

@@ -2,6 +2,7 @@ package br.remoto.core.engine.legacy;
 
 import br.remoto.core.model.random.Rng;
 
+import br.remoto.core.engine.ResultSink;
 import br.remoto.core.engine.RunContext;
 import br.remoto.core.engine.SimulationCancelledException;
 import br.remoto.core.engine.SimulationEngine;
@@ -110,7 +111,37 @@ public final class LegacyEngine implements SimulationEngine {
         if (context.isCancelled()) {
             throw new SimulationCancelledException();
         }
-        LegacyOutputs.write(sim, conf, seed, context.results());
+        NamedSink sink = new NamedSink(context.results());
+        LegacyOutputs.write(sim, conf, seed, sink);
+        LegacyResults.write(sim, conf, sink, sink.names);
         context.progress(1.0);
+    }
+
+    /** Repassa os resultados e anota os nomes gravados, para o catálogo. */
+    private static final class NamedSink implements ResultSink {
+        private final ResultSink target;
+        private final java.util.Set<String> names = new java.util.LinkedHashSet<>();
+
+        NamedSink(ResultSink target) {
+            this.target = target;
+        }
+
+        @Override
+        public void series(String name, String unit, double[] timeMs, double[] values) {
+            names.add(name);
+            target.series(name, unit, timeMs, values);
+        }
+
+        @Override
+        public void spikes(String name, int[] units, double[] timeMs) {
+            names.add(name);
+            target.spikes(name, units, timeMs);
+        }
+
+        @Override
+        public void table(String name, java.util.List<Column> columns) {
+            names.add(name);
+            target.table(name, columns);
+        }
     }
 }

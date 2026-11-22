@@ -8,7 +8,9 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 /** Leitura dos resultados gravados por {@link CsvGzResultSink}. */
@@ -57,6 +59,86 @@ public final class ResultFiles {
             return new Columns(header, xs, ys, n);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    /** Uma tabela inteira, como texto: o cabeçalho e as células de cada linha. */
+    public static Table readTable(Path resultsDir, String name) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(openCsv(resultsDir, name), StandardCharsets.UTF_8))) {
+            String header = reader.readLine();
+            List<String> columns = header == null ? List.of() : cells(header);
+            List<List<String>> rows = new ArrayList<>();
+            for (String line; (line = reader.readLine()) != null; ) {
+                if (!line.isEmpty()) {
+                    rows.add(cells(line));
+                }
+            }
+            return new Table(columns, rows);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /** As células de uma linha de CSV, com aspas como na RFC 4180. */
+    static List<String> cells(String line) {
+        List<String> cells = new ArrayList<>();
+        StringBuilder cell = new StringBuilder();
+        boolean quoted = false;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (quoted) {
+                if (c == '"' && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    cell.append('"');
+                    i++;
+                } else if (c == '"') {
+                    quoted = false;
+                } else {
+                    cell.append(c);
+                }
+            } else if (c == '"') {
+                quoted = true;
+            } else if (c == ',') {
+                cells.add(cell.toString());
+                cell.setLength(0);
+            } else {
+                cell.append(c);
+            }
+        }
+        cells.add(cell.toString());
+        return cells;
+    }
+
+    /** Tabela lida de um resultado: {@code rows[i][j]} é a célula da coluna {@code columns[j]}. */
+    public record Table(List<String> columns, List<List<String>> rows) {
+
+        public int column(String name) {
+            return columns.indexOf(name);
+        }
+
+        /** Os valores numéricos de uma coluna; células vazias viram NaN. */
+        public double[] numbers(String name) {
+            int c = column(name);
+            if (c < 0) {
+                throw new IllegalArgumentException("coluna ausente: " + name);
+            }
+            double[] v = new double[rows.size()];
+            for (int i = 0; i < v.length; i++) {
+                String cell = c < rows.get(i).size() ? rows.get(i).get(c) : "";
+                v[i] = cell.isEmpty() ? Double.NaN : Double.parseDouble(cell);
+            }
+            return v;
+        }
+
+        public String[] texts(String name) {
+            int c = column(name);
+            if (c < 0) {
+                throw new IllegalArgumentException("coluna ausente: " + name);
+            }
+            String[] v = new String[rows.size()];
+            for (int i = 0; i < v.length; i++) {
+                v[i] = c < rows.get(i).size() ? rows.get(i).get(c) : "";
+            }
+            return v;
         }
     }
 

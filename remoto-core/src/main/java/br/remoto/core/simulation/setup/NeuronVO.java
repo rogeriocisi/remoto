@@ -164,6 +164,12 @@ public class NeuronVO extends NeuronProperties implements Comparable
 		return name;
 	}
 
+	/** The indexes as set by the user; -1 is the default (the first and the middle neuron of the type). */
+	public int[] storedIndexes()
+	{
+		return new int[] { indexStoreVm1, indexStoreVm2 };
+	}
+
 	public int getIndexStoreVm1()
 	{
 		if( indexStoreVm1 < 1 )

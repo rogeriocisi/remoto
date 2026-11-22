@@ -43,7 +43,7 @@ public class Interneuron extends SpinalNeuron
 
 	protected void injectionChanged()
 	{
-		membrane.setInjection( current == null ? null : current::getCurrent );
+		membrane.setInjection( injection() );
 	}
 
 	public void atualize(double t)

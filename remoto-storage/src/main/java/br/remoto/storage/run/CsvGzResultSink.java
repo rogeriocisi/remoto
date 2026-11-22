@@ -11,6 +11,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
 
@@ -51,6 +52,43 @@ public final class CsvGzResultSink implements ResultSink {
                 w.append(Double.toString(timeMs[i])).append(',').append(Integer.toString(units[i])).append('\n');
             }
         });
+    }
+
+    @Override
+    public void table(String name, List<Column> columns) {
+        if (columns.isEmpty()) {
+            throw new IllegalArgumentException("tabela sem colunas: " + name);
+        }
+        int size = columns.get(0).size();
+        StringBuilder header = new StringBuilder();
+        for (Column c : columns) {
+            if (c.size() != size) {
+                throw new IllegalArgumentException("colunas com tamanhos diferentes em " + name);
+            }
+            if (c.name().indexOf(',') >= 0 || c.name().indexOf('\n') >= 0) {
+                throw new IllegalArgumentException("nome de coluna inválido: " + c.name());
+            }
+            header.append(header.isEmpty() ? "" : ",").append(c.name());
+        }
+        write(name, header.toString(), w -> {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < columns.size(); j++) {
+                    if (j > 0) {
+                        w.append(',');
+                    }
+                    w.append(csv(columns.get(j).cell(i)));
+                }
+                w.append('\n');
+            }
+        });
+    }
+
+    /** Texto com vírgula, aspas ou quebra de linha vai entre aspas (RFC 4180). */
+    private static String csv(String cell) {
+        if (cell.indexOf(',') < 0 && cell.indexOf('"') < 0 && cell.indexOf('\n') < 0) {
+            return cell;
+        }
+        return '"' + cell.replace("\"", "\"\"") + '"';
     }
 
     private void write(String name, String header, Rows rows) {

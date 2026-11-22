@@ -8,6 +8,7 @@
   <link rel="stylesheet" th:href="@{/css/app.css}">
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js" defer></script>
+  <script th:src="@{/js/results.js}" defer></script>
   <script th:src="@{/js/app.js}" defer></script>
 </head>
 <body>
@@ -26,7 +27,7 @@
 </header>
 
 <script th:inline="javascript">
-  console.info("ReMoto: versão em desenvolvimento. Os cenários marcados como \"modelos originais\" rodam o código numérico do ReMoto publicado; os cenários \"Exemplo\" usam um motor provisório, só para demonstração.");
+  console.info("ReMoto: Os cenários marcados como \"modelos originais\" rodam o código numérico do ReMoto publicado; os cenários \"Exemplo\" usam um motor provisório, só para demonstração.");
   if (/*[[${caller.guest}]]*/ false) {
     console.info("ReMoto: você está como convidado; seus cenários e simulações somem quando a sessão expirar. Entre para guardá-los.");
   }
@@ -50,6 +51,7 @@
     <progress max="100" value="0"></progress>
   </p>
   <div data-campo="links" class="links"></div>
+  <div data-campo="resultados" class="resultados" hidden></div>
   <div data-campo="graficos"></div>
 </section>
 </body>

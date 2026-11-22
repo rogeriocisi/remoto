@@ -119,6 +119,11 @@ public final class AfferentFiber {
         indexSpike = 0;
     }
 
+    /** Os disparos no ponto de estímulo do axônio (ms), na ordem em que ocorreram. */
+    public double[] axonSpikeTimes() {
+        return Arrays.copyOf(axonSpikes, axonSpikeCount);
+    }
+
     /** Reserva espaço para {@code size} disparos no axônio. */
     public void ensureCapacity(int size) {
         if (axonSpikes.length < size) {

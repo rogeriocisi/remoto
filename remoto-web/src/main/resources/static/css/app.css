@@ -166,3 +166,24 @@ button.secundario { background: transparent; color: var(--primaria); }
 .notas { color: var(--suave); font-size: .9rem; }
 .ok { color: var(--ok); font-weight: 600; }
 .botao.secundario { background: transparent; color: var(--primaria); }
+
+/* tela de resultados do motor original */
+.resultados { margin: 8px 0 12px; }
+.form-resultados { display: flex; flex-direction: column; gap: 8px; }
+.linha-resultado { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end; }
+.campo-resultado { display: inline-flex; flex-direction: column; gap: 2px; font-size: .9rem; }
+.campo-resultado > span { color: var(--suave); }
+.campo-resultado input[type="checkbox"] { align-self: flex-start; }
+.opcoes-resultado {
+  display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end;
+  border: 1px solid var(--borda); border-radius: 6px; padding: 6px 10px; margin: 0;
+}
+.opcoes-resultado legend { color: var(--suave); font-size: .85rem; }
+.acoes-resultado { flex-wrap: wrap; }
+.aviso-resultado { color: var(--suave); font-size: .9rem; min-height: 1.2em; margin: 6px 0; }
+.subgraficos { display: flex; flex-direction: column; gap: 12px; }
+.estatisticas { margin: 4px 0 0; padding-left: 18px; font-size: .9rem; }
+.tabela-resultados td, .tabela-resultados th { white-space: nowrap; font-size: .85rem; }
+.links details { margin-top: 6px; }
+.links details a { display: inline-block; margin-right: 10px; }
+

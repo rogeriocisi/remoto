@@ -67,6 +67,9 @@ public abstract class SpinalNeuron extends Neuron
 		// Store signals as marked
 		if( storedSignals == true )
 		{
+			injectionStepTime = t;
+			injectionRecorded = false;
+
 			SpinalMembrane m = membrane();
 
 			signalStore.add( new Signal(ReMoto.Vd, getVd(), t) );
@@ -81,6 +84,39 @@ public abstract class SpinalNeuron extends Neuron
 			if( m.somaExcit() != null ) signalStore.add( new Signal(ReMoto.gExcSoma, m.somaExcit().lastValue(), t) );
 			if( m.somaInhib() != null ) signalStore.add( new Signal(ReMoto.gInibSoma, m.somaInhib().lastValue(), t) );
 		}
+	}
+
+	// The injected current the membrane used in each step, kept for neurons that store their
+	// signals: with a random modulation it cannot be recomputed after the simulation
+	private transient double injectionStepTime = Double.NaN;
+	private transient boolean injectionRecorded;
+
+	/**
+	 * The injection the membrane calls. For a neuron that stores its signals, the value of the
+	 * first call of each step (the first Runge-Kutta stage, at the step time) also goes to the
+	 * signal store; the current is evaluated exactly as many times as without the record.
+	 */
+	protected java.util.function.DoubleUnaryOperator injection()
+	{
+		if( current == null )
+			return null;
+
+		Current c = current;
+
+		if( !storedSignals )
+			return c::getCurrent;
+
+		return time -> {
+			double value = c.getCurrent(time);
+
+			if( !injectionRecorded && time == injectionStepTime )
+			{
+				injectionRecorded = true;
+				signalStore.add( new Signal(ReMoto.inj, value, time) );
+			}
+
+			return value;
+		};
 	}
 
 	// Only motoneurons have a dendritic compartment

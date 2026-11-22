@@ -54,6 +54,9 @@ final class EditEverything {
                     for (ScreenView.Section section : view.sections()) {
                         for (ScreenView.Row row : section.rows()) {
                             for (ScreenView.Cell cell : row.cells()) {
+                                if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")) {
+                                    continue; // campo novo, que o DAO original não gravava: a referência é anterior a ele
+                                }
                                 k++;
                                 form.put(cell.name(), changed(cell, k));
                             }

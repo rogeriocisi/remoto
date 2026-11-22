@@ -290,15 +290,22 @@ public final class LegacyScreens {
                         Field.number("Soma length", "µm", "lsoma1", "lsoma2"),
                         Field.number("Dendrite diameter", "µm", "ddend1", "ddend2"),
                         Field.number("Dendrite length", "µm", "ldend1", "ldend2")));
+        Part stored = new Part("Additional configuration", Layout.MATRIX,
+                (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.MN),
+                item -> ((NeuronVO) item).getType(),
+                List.of(Field.integer("Index of MNs that will have signals stored (1)", null, "indexStoreVm1"),
+                        Field.integer("Index of MNs that will have signals stored (2)", null, "indexStoreVm2")));
         return new LegacyScreen("motoneuron", "Parameters of the alpha motoneurons",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
-                List.of(electrotonic, geometry),
+                List.of(electrotonic, geometry, stored),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setListNeuronTypes(items.get(0));
                     conf.setMerge(true);
                 },
-                List.of("Columns \"from\"/\"to\": values for the first and the last motoneuron of each type."));
+                List.of("Columns \"from\"/\"to\": values for the first and the last motoneuron of each type.",
+                        "Signals stored (membrane potentials, conductances, injected current) appear in the results;"
+                                + " by default, the first and the middle motoneuron of each type."));
     }
 
     /** interneuron.jsp / NeuronAction (task=IN). */
@@ -310,9 +317,13 @@ public final class LegacyScreens {
                         Field.number("Membrane specific capacitance", "μF/cm²", "cm"),
                         Field.number("Specific resistance", "Ωcm²", "rmSoma1"),
                         Field.number("Total area", "μm²", "totalArea")));
+        Part stored = new Part("Additional configuration", Layout.MATRIX,
+                (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.IN),
+                item -> ((NeuronVO) item).getType(),
+                List.of(Field.integer("Index of INs that will have signals stored", null, "indexStoreVm1")));
         return new LegacyScreen("interneuron", "Parameters of the interneurons",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, false, true)), ReMoto.IN_ext)),
-                List.of(part),
+                List.of(part, stored),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setListNeuronTypes(items.get(0));

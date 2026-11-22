@@ -70,6 +70,12 @@ public class SensoryFiber extends Neuron
 		}
 	}
 
+	/** Spikes at the stimulus point of the axon (ms): stimulus-evoked and receptor-driven. */
+	public double[] getAxonSpikeTimes()
+	{
+		return fiber.axonSpikeTimes();
+	}
+
 	public void setLatency(double axonVelocity, double stimulusSpinalDistance, double stimulusEndPlateDistance)
 	{
 		fiber.setLatency(axonVelocity, stimulusSpinalDistance, stimulusEndPlateDistance);

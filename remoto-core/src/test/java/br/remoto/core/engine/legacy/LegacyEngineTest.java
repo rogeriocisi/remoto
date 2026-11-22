@@ -95,14 +95,19 @@ class LegacyEngineTest {
         String key = id + "." + scenario.seed() + "." + (int) SHORT_RUN_MS;
 
         Recorder r = run(scenario);
-        String emgHash = r.sha256(name -> name.startsWith("emg-"));
+        String emgHash = r.sha256(Recorder::basicEmg);
 
         assertThat(r.outputs).containsKey("torque");
         // força, disparos e torque: as mesmas referências de antes do EMG existir
-        assertThat(r.sha256(name -> !name.startsWith("emg-"))).as("golden master %s%n%s", key, r.summary())
+        assertThat(r.sha256(name -> Recorder.basic(name) && !Recorder.basicEmg(name)))
+                .as("golden master %s%n%s", key, r.summary())
                 .isEqualTo(golden().getProperty(key));
         assertThat(emgHash).as("golden master %s.emg (valor atual: %s)", key, emgHash)
                 .isEqualTo(golden().getProperty(key + ".emg"));
+        // todas as saídas, as da tela de resultados incluídas (sinais guardados, tabelas, catálogo)
+        String complete = r.sha256();
+        assertThat(complete).as("golden master %s.completo (valor atual: %s)", key, complete)
+                .isEqualTo(golden().getProperty(key + ".completo"));
     }
 
     /**
@@ -118,7 +123,8 @@ class LegacyEngineTest {
 
         Recorder r = run(scenario);
 
-        assertThat(r.sha256()).as("golden master %s%n%s", key, r.summary()).isEqualTo(golden().getProperty(key));
+        assertThat(r.sha256(Recorder::basic)).as("golden master %s%n%s", key, r.summary())
+                .isEqualTo(golden().getProperty(key));
     }
 
     static IntStream databaseConfigurations() {

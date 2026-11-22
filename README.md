@@ -44,6 +44,7 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 - **Fair simulation queue:** several users can run simulations at the same time; a large batch from one user does not block the others.
 - **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Tests check that each converted scenario gives exactly the same results as the original database configuration. Results include muscle force, motoneuron spikes, joint torque and EMG (raw, and filtered with noise as on the old results page).
 - **Scenario editor modeled on the original site:** copy a public scenario and edit it through the same menu, screens, fields and limits as the old editor: structure (descending commands, neural elements), neural parameters (synapses, kinetics, synaptic dynamics, conductances, motoneurons, interneurons, sensory fibers), proprioceptors (muscle spindle, GTO), biomechanics (joint and muscle models, musculotendon, muscle units, EMG, miscellaneous), stimulation (nerve, injected current) and run settings. Changes are saved exactly as the original `ConfigurationDAO` saved them, now without a database; settings the old DAO did not store (model choices, spindle gains, joint angles) are kept with the scenario.
+- **Results screen modeled on the original site:** the same menus and graphics as the old results page: muscle, tendon, spindle, GTO and joint signals, spike rasters, instantaneous firing rate, interspike intervals and histograms for motoneurons, afferents, tracts and interneurons, membrane potentials, conductances and injected current of the stored neurons, neuron and motor-unit properties, EMG with the old filters and options, statistics and FFT, multiple subplots, and CSV/PNG downloads.
 - **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
 - Live progress, interactive charts, CSV and PNG downloads, a REST API and immutable share links.
 - Users can export or delete all of their data.
@@ -101,7 +102,8 @@ The web application is a single executable JAR with an embedded web server, inst
 3. ~~Scenario editor with all the screens of the original site.~~ Done.
 4. ~~Export EMG from the original models.~~ Done.
 5. ~~Port the models to `remoto-core`, checked against the reference outputs, and drop the original model code and HSQLDB.~~ Done.
-6. Parameter sweeps, a Python client and NWB export.
+6. ~~Results screen with everything the old one had.~~ Done.
+7. Parameter sweeps, a Python client and NWB export.
 
 ## Legacy version
 

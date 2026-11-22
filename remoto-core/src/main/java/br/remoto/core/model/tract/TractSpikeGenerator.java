@@ -74,6 +74,10 @@ public final class TractSpikeGenerator {
 
         /** Desfaz a primeira anotação do trem. */
         void unrecordFirst();
+
+        /** O intervalo médio (ms) que o gerador usou em {@code t}, já com a modulação do sinal. */
+        default void mean(double t, double mean) {
+        }
     }
 
     private final Distribution distribution;
@@ -149,6 +153,7 @@ public final class TractSpikeGenerator {
 
     private void poisson(double t) {
         double instantMean = meanValue(t);
+        output.mean(t, instantMean);
         double lambda = 1000 / instantMean;
 
         if (canFire(t)) {
@@ -165,6 +170,7 @@ public final class TractSpikeGenerator {
 
     private void gamma(double t) {
         double instantMean = meanValue(t);
+        output.mean(t, instantMean);
         double lambda = 1000 / instantMean;
 
         if (canFire(t)) {
@@ -201,6 +207,7 @@ public final class TractSpikeGenerator {
     // sorteia o próximo intervalo gaussiano e anota o próximo disparo
     private void addSpike(double t) {
         double instantMean = meanValue(t);
+        output.mean(t, instantMean);
 
         if (distribution == Distribution.GAUSSIAN) {
             tTerminalSpike += Draws.gaussian(instantMean, std);

@@ -48,6 +48,36 @@ class Recorder implements RunContext, ResultSink {
         outputs.put(name, sb.toString());
     }
 
+    @Override
+    public void table(String name, java.util.List<Column> columns) {
+        StringBuilder sb = new StringBuilder();
+        for (int j = 0; j < columns.size(); j++) {
+            sb.append(j == 0 ? "" : ",").append(columns.get(j).name());
+        }
+        sb.append('\n');
+        int size = columns.isEmpty() ? 0 : columns.get(0).size();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < columns.size(); j++) {
+                sb.append(j == 0 ? "" : ",").append(columns.get(j).cell(i));
+            }
+            sb.append('\n');
+        }
+        outputs.put(name, sb.toString());
+    }
+
+    /**
+     * As saídas básicas, as que o motor tinha antes das saídas da tela de resultados: força,
+     * disparos dos motoneurônios no terminal, torque e EMG. Os golden masters antigos cobrem só elas.
+     */
+    static boolean basic(String name) {
+        return name.equals("torque") || name.matches("(forca|disparos|emg|emg-bruto)-(SOL|MG|LG|TA)");
+    }
+
+    /** As saídas básicas de EMG ({@code emg-} e {@code emg-bruto-} de cada músculo). */
+    static boolean basicEmg(String name) {
+        return name.matches("(emg|emg-bruto)-(SOL|MG|LG|TA)");
+    }
+
     /** SHA-256 de todas as saídas, em ordem de nome. */
     String sha256() throws Exception {
         return sha256(name -> true);

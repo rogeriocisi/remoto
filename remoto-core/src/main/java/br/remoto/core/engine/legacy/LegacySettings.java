@@ -1,6 +1,8 @@
 package br.remoto.core.engine.legacy;
 
+import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.setup.NeuronVO;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -24,6 +26,13 @@ public final class LegacySettings {
             "muDistribution", "recruitmentOrderFES", "jointAngle", "kneeAngle",
             "gammaDynamic", "gammaStatic", "primaryBag1Gain", "primaryBag2AndChainGain",
             "secondaryBag2AndChainGain");
+
+    /**
+     * Os neurônios que guardam sinais, escolhidos nas telas de motoneurônios e interneurônios
+     * ("Index of MNs that will have signals stored"): "núcleo:tipo" → os dois índices; -1 é o padrão
+     * (o primeiro e o do meio do tipo).
+     */
+    public static final String STORED_NEURONS = "storedNeurons";
 
     private LegacySettings() {
     }
@@ -49,6 +58,18 @@ public final class LegacySettings {
             }
             invoke(pd.getWriteMethod(), conf, value);
         }
+        if (settings.get(STORED_NEURONS) instanceof Map<?, ?> stored) {
+            for (Object o : conf.getNeuronTypes()) {
+                if (o instanceof NeuronVO neu && stored.get(neu.getCdNucleus() + ":" + neu.getType()) instanceof List<?> idx) {
+                    if (!idx.isEmpty()) {
+                        neu.setIndexStoreVm1(((Number) number(idx.get(0))).intValue());
+                    }
+                    if (idx.size() > 1) {
+                        neu.setIndexStoreVm2(((Number) number(idx.get(1))).intValue());
+                    }
+                }
+            }
+        }
     }
 
     static Map<String, Object> capture(Configuration conf) {
@@ -58,6 +79,18 @@ public final class LegacySettings {
             if (value != null) {
                 settings.put(property, value);
             }
+        }
+        Map<String, Object> stored = new LinkedHashMap<>();
+        for (Object o : conf.getNeuronTypes()) {
+            if (o instanceof NeuronVO neu && (ReMoto.MN.equals(neu.getCategory()) || ReMoto.IN.equals(neu.getCategory()))) {
+                int[] idx = neu.storedIndexes();
+                if (idx[0] != -1 || idx[1] != -1) {
+                    stored.put(neu.getCdNucleus() + ":" + neu.getType(), List.of(idx[0], idx[1]));
+                }
+            }
+        }
+        if (!stored.isEmpty()) {
+            settings.put(STORED_NEURONS, stored);
         }
         return settings;
     }

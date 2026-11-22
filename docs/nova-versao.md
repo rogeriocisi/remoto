@@ -200,6 +200,9 @@ data/
 | GET | `/api/runs/{id}/config` | configuração exata usada |
 | GET | `/api/runs/{id}/results/{nome}.csv` | resultado em CSV |
 | GET | `/api/runs/{id}/results/{nome}.png` | figura em PNG |
+| GET | `/api/runs/{id}/menu` | menus da tela de resultados para a execução (motor original) |
+| GET | `/api/runs/{id}/view?type=&element=&nucleus=&neuron=&graphic=&spec=...` | um gráfico ou tabela da tela de resultados, em JSON |
+| GET | `/api/runs/{id}/view.csv?...` | o mesmo, em CSV (a opção "file" do site antigo) |
 
 Requisições que alteram dados exigem o token CSRF (cookie `XSRF-TOKEN` → cabeçalho
 `X-XSRF-TOKEN`). Erros seguem RFC 9457 (`application/problem+json`).
@@ -282,6 +285,20 @@ antigo**:
     gráficos (`ResultDisplay`); agora o motor o faz ao final da simulação. A única diferença é
     o ruído, que vem de um gerador com a seed do cenário em vez de `Math.random()`.
 
+  Além dessas, o motor grava os dados da [tela de resultados](#tela-de-resultados): as séries do
+  músculo (comprimento, velocidade, aceleração, ativações, forças dos elementos, ângulo de
+  penação, força normalizada), do tendão, do musculotendão, do fuso (Ia, II) e do OTG (Ib) e da
+  articulação (ângulo, velocidade, centros de massa e de pressão, torques, distúrbio); os disparos
+  de cada grupo (motoneurônios no soma e no terminal, aferentes no terminal e no ponto de
+  estímulo, interneurônios e tratos por tipo); o ISI médio que cada tipo de trato usou; tabelas
+  com as propriedades de cada motoneurônio, interneurônio, aferente e unidade motora; os sinais
+  dos neurônios guardados (Vs, Vd, condutâncias e a corrente injetada, numa tabela por neurônio);
+  o EMG bruto sem atenuação e o de cada unidade guardada; o resumo dos disparos (a página
+  "summary" do site antigo); e o `catalogo`, que descreve cada saída. Tudo isso já é calculado
+  pela simulação: nada é sorteado e as saídas básicas não mudam. O ISI médio dos tratos e a
+  corrente injetada são gravados durante a simulação, com o valor que o modelo usou, porque os
+  sinais aleatório e gama sorteiam a cada avaliação e não podem ser recalculados depois.
+
 ### Garantias (testes em `br.remoto.core.engine.legacy`; os do editor, no `remoto-web`)
 
 | Teste | O que garante |
@@ -289,7 +306,7 @@ antigo**:
 | Banco original × referência | As 30 configurações do banco original (40 ms, seed = ID) batem com hashes gerados quando a configuração ainda era montada pelo `ConfigurationDAO` original lendo do HSQLDB (antes, um teste comparava os dois caminhos campo a campo) |
 | Export sem HSQLDB | O export lê o `remoto.script` direto e reproduz os três cenários públicos de `scenarios/`, que foram exportados pelo HSQLDB |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
-| Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro) |
+| Golden master | As saídas dos três cenários públicos (40 ms) batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro; todas as saídas, as da tela de resultados incluídas, num terceiro) |
 | Editor × DAO original | Editar todas as telas de uma vez e gravar dá as mesmas tabelas que o `saveConfiguration` original gravava num HSQLDB, nos três cenários públicos (`LegacyEditorTest`); gravar sem editar preserva as tabelas e a simulação (`LegacyStoreTest`) |
 | Sinapse × solução analítica | Uma sinapse acionada como no Runge-Kutta segue a solução fechada de Lytton (1996): sobe durante o pulso e decai depois (`SynapseGroupTest`, no `remoto-core`) |
 | 1 thread × 4 threads | Os três cenários públicos dão saídas idênticas com qualquer número de threads, e uma thread de trabalho não consegue sortear (`ParallelUpdateTest`) |
@@ -390,10 +407,43 @@ FES, ângulos do tornozelo e do joelho, frequências gama e ganhos do fuso. Na n
 ficam no campo `legacy.settings` do cenário (`LegacySettings`) e são aplicadas depois do
 carregamento pelo DAO; cenários exportados do banco não têm `settings` e usam os padrões do DAO.
 
+Os neurônios que guardam sinais (a seção *Additional configuration* das telas de motoneurônios e
+de interneurônios: "Index of MNs that will have signals stored") também ficam no `settings`, na
+chave `storedNeurons` ("núcleo:tipo" → os dois índices). Sem escolha, valem os do original: o
+primeiro e o do meio de cada tipo de motoneurônio, e o primeiro de cada tipo de interneurônio.
+
 **Ainda de fora:** a escolha de articulação (os cenários convertidos só têm dados do tornozelo),
 as caixas de músculo de *Biomechanical Elements* (o Action original não as salvava; use *Neural
-Elements*), e o nível de neuromodulação, o CV do limiar de Ca⁺⁺ e os índices de neurônios com
-sinal guardado (o Action original também não os salvava).
+Elements*), e o nível de neuromodulação e o CV do limiar de Ca⁺⁺ (o Action original também não
+os salvava).
+
+## Tela de resultados
+
+Ao abrir uma execução do motor original, a página mostra a tela de resultados do site antigo
+(`results.jsp` + `ResultsAction` + `ResultDisplay`), com os mesmos menus, nomes e eixos:
+
+| Menu | Opções |
+|---|---|
+| Type | *Biomechanical Elements*, *Neural Elements*, *Properties*, *Summary* e os layouts prontos (*Spikes MNs*, *Spikes Ias*, *Forces*, *Lengths*, *General*, *generalForSoleus*/*MG*/*LG*/*TA*) |
+| Biomechanical | os 37 gráficos de lá: músculo, tendão, musculotendão, unidades motoras (pico do abalo, tempo de contração, meia relaxação, MUAP, posição na secção), EMG, articulação e as curvas de uma grandeza contra outra |
+| Neural | motoneurônios (18 gráficos: raster no soma ou no terminal, frequência instantânea, ISI, histograma, potenciais do soma e do dendrito, condutâncias, corrente injetada, propriedades, Vs × dVs/dt, taxa de estímulo), aferentes, tratos e interneurônios; para todos, um tipo ou um neurônio guardado |
+| EMG | filtro (1ª/2ª ou 3ª/3ª ordem, ou nenhum), cortes, ruído, atenuação, amostragem, e o EMG de uma unidade guardada |
+| Analysis | estatísticas (pontos, média, variância, desvio-padrão, CV, mínimo, máximo, com as linhas da média ± DP) e FFT (pontos, sinal periódico, eixos) |
+| Advanced Graphic Settings | até 8 subgráficos, sobreposição (*Hold On*), limites dos eixos, título, rótulos, legenda, cor, altura e fonte |
+
+Cada gráfico baixa em CSV (como a opção "file" de lá) e em PNG. Os cálculos ficam no servidor
+(`br.remoto.web.results`): o `ResultMenu` monta os menus a partir do `catalogo` da execução, e o
+`ResultViews` faz o que o `processGraphic` fazia a partir dos dados gravados. O EMG com as opções
+padrão é o `emg-<músculo>` do motor; com outras, é refeito a partir do EMG bruto, com o ruído do
+mesmo gerador. Execuções anteriores a esta tela só têm força, disparos, torque e EMG.
+
+Onde o código antigo tinha erros evidentes, vale o que a tela anunciava: o histograma de tratos,
+aferentes e interneurônios e a frequência dos tratos não achavam os neurônios; a condutância "gInhi" não
+existia (é "gInib"); os nomes dos tratos (*ExcINs*, *InhINs*) apontavam para os ruídos; a taxa de
+estímulo × força emparelhava listas fora de ordem; e o "Vs x Vdot" mostrava a corrente injetada
+de cada estágio do Runge-Kutta, um resto de depuração — aqui é o plano de fase do soma, Vs contra
+dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois compartimentos (lá, só em
+"All MNs").
 
 ## Próximos passos
 
@@ -498,3 +548,5 @@ sinal guardado (o Action original também não os salvava).
    (fuso, distúrbios) do que não sorteia.
 3. Varreduras de parâmetros, cliente Python, export NWB.
 4. ~~Licença do projeto.~~ Feito: MIT, em `LICENSE`.
+5. ~~Tela de resultados com tudo o que a do site antigo tinha.~~ Feito: ver
+   [Tela de resultados](#tela-de-resultados).

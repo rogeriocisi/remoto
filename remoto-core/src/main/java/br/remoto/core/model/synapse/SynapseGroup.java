@@ -161,6 +161,11 @@ public final class SynapseGroup {
         return gMaxTot * (sumOn + sumOff);
     }
 
+    /** A soma das condutâncias máximas das sinapses do grupo (µS). */
+    public double gMaxTotal() {
+        return gMaxTot;
+    }
+
     public int spikesReceived() {
         return spikesReceived;
     }

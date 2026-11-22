@@ -84,7 +84,7 @@ public class Motoneuron extends SpinalNeuron
 		boolean soma = ReMoto.somaCompartment.equals( current.getCompartment() );
 		boolean dendrite = ReMoto.dendriteCompartment.equals( current.getCompartment() );
 
-		membrane.setInjection(soma ? current::getCurrent : null, dendrite ? current::getCurrent : null);
+		membrane.setInjection(soma ? injection() : null, dendrite ? injection() : null);
 	}
 
 	public void atualize(double t)

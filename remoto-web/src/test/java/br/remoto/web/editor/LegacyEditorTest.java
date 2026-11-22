@@ -153,6 +153,48 @@ class LegacyEditorTest {
         assertThat(column(saved, "HILL_TYPE_MUSCULOTENDON_PARAMETERS", "MAXIMUM_MUSCLE_FORCE")).contains(4321.0);
     }
 
+    /**
+     * Os neurônios que guardam sinais (seção "Additional configuration" das telas de motoneurônios e
+     * interneurônios) ficam no settings e decidem quais neurônios aparecem com Vm nos resultados.
+     */
+    @Test
+    void neuroniosGuardadosEscolhidosNoEditorChegamAosResultados() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView mn = editor.view("motoneuron", Map.of("pool", "SOL"));
+        ScreenView.Section stored = mn.sections().get(2);
+        assertThat(stored.title()).isEqualTo("Additional configuration");
+        assertThat(stored.headers()).contains("S");
+        int column = stored.headers().indexOf("S");
+        String first = stored.rows().get(0).cells().get(column).name();
+        assertThat(stored.rows().get(0).cells().get(column).value()).isEqualTo("1");
+
+        assertThat(editor.apply("motoneuron", Map.of("pool", "SOL"), Map.of(first, "5"))).isEmpty();
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(saved.settings()).containsKey("storedNeurons");
+        assertThat(((Map<?, ?>) saved.settings().get("storedNeurons")).get("SOL:S")).isEqualTo(List.of(5, -1));
+        ScreenView reopened = LegacyEditor.open(saved, 5000, 0.05).view("motoneuron", Map.of("pool", "SOL"));
+        assertThat(reopened.sections().get(2).rows().get(0).cells().get(column).value()).isEqualTo("5");
+
+        br.remoto.core.scenario.Scenario scenario = new br.remoto.core.scenario.Scenario(null, "guardados", "", 1, 3,
+                2, 0.05, List.of(), br.remoto.core.scenario.Scenario.ENGINE_LEGACY,
+                br.remoto.core.engine.legacy.LegacyJson.toMap(saved));
+        List<String> names = new java.util.ArrayList<>();
+        new br.remoto.core.engine.legacy.LegacyEngine(1).run(scenario, new br.remoto.core.engine.RunContext() {
+            @Override public void progress(double fraction) { }
+            @Override public boolean isCancelled() { return false; }
+            @Override public br.remoto.core.engine.ResultSink results() {
+                return new br.remoto.core.engine.ResultSink() {
+                    @Override public void series(String name, String unit, double[] t, double[] v) { names.add(name); }
+                    @Override public void spikes(String name, int[] u, double[] t) { names.add(name); }
+                    @Override public void table(String name, List<Column> columns) { names.add(name); }
+                };
+            }
+        });
+        // o 5º S guarda no lugar do 1º; o do meio (400) continua
+        assertThat(names).contains("sinais-SOL-S-5", "sinais-SOL-S-400").doesNotContain("sinais-SOL-S-1");
+    }
+
     @Test
     void cenarioComOutroModeloDeArticulacaoRoda() {
         LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
