@@ -12,13 +12,13 @@ ReMoto was developed over more than a decade at the Biomedical Engineering Labor
 
 This repository contains the new version of ReMoto. Of the legacy version, only the parts the new one still uses are kept; the rest (the Struts/JSP site, applets and classes outside the build) was removed and remains in the Git history and in the parent repository, [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto).
 
-| | Legacy version | New version (in development) |
+| | Legacy version | New version |
 |---|---|---|
 | Location | [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto); here only `legacy-db/` (the original database, as a text file) | `remoto-*/` Maven modules, `scenarios/` |
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
 | Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine), plus a small demo engine |
 | Users | Local accounts stored in HSQLDB | Login with ORCID or GitHub (OIDC), plus guest access |
-| Status | Unmaintained; depends on software without security updates | Working and tested; muscle force, motoneuron spikes, joint torque and EMG are available |
+| Status | Unmaintained; depends on software without security updates | Maintained and tested; the original models give bit-for-bit identical results, checked against the original code and database |
 
 ### Repository layout
 
