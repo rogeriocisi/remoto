@@ -26,6 +26,8 @@
   </a>
   <nav class="conta">
     <a th:href="@{/publicacoes}" class="botao secundario pequeno" th:text="#{nav.publications}">Publicações</a>
+    <a th:href="#{nav.site.url}" class="botao secundario pequeno" target="_blank" rel="noopener" th:text="#{nav.site}">Sobre o projeto</a>
+    <a th:href="#{nav.repository.url}" class="botao secundario pequeno" target="_blank" rel="noopener" th:text="#{nav.repository}">GitHub</a>
     <th:block th:replace="~{fragments :: idioma}"></th:block>
   </nav>
 </header>
