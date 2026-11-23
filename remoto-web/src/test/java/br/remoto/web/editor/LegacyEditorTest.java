@@ -2,6 +2,7 @@ package br.remoto.web.editor;
 
 import br.remoto.core.engine.legacy.LegacyConfig;
 import br.remoto.core.engine.legacy.LegacyDatabase;
+import br.remoto.core.simulation.ReMoto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -246,6 +247,90 @@ class LegacyEditorTest {
         });
         // 100 axônios com intervalo médio de 3 ms em 40 ms: muito mais que o disparo de cada um em t = 0
         assertThat(spikes.get("disparos-DT-CM_ext")).isGreaterThan(500);
+    }
+
+    /**
+     * Os sinais no tempo (ângulo imposto ao tornozelo e fusimotor), que o site antigo não tinha:
+     * editados nas telas Joint e Muscle Spindle, ficam no settings e voltam ao reabrir; os que
+     * ficam em "none" não são gravados.
+     */
+    @Test
+    void sinaisNoTempoFicamGravadosEVoltamAoReabrir() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView bio = editor.view("biomechanicalElements", Map.of());
+        assertThat(editor.apply("biomechanicalElements", Map.of(),
+                Map.of(cellOf(bio, "Joint model", 0), ReMoto.imposedAngle))).isEmpty();
+
+        ScreenView joint = editor.view("joint", Map.of());
+        Map<String, String> form = fullForm(joint);
+        form.put(signalCell(joint, "Ankle angle [deg]", "Modulation"), "ramp");
+        form.put(signalCell(joint, "Ankle angle [deg]", "Start"), "100");
+        form.put(signalCell(joint, "Ankle angle [deg]", "Stop"), "1000");
+        form.put(signalCell(joint, "Ankle angle [deg]", "Peak"), "10");
+        form.put(signalCell(joint, "Ankle angle [deg]", "Width"), "50");
+        assertThat(editor.apply("joint", Map.of(), form)).isEmpty();
+
+        ScreenView spindle = editor.view("muscleSpindle", Map.of());
+        form = fullForm(spindle);
+        form.put(signalCell(spindle, "Gamma static [spikes/s]", "Modulation"), "constant");
+        form.put(signalCell(spindle, "Gamma static [spikes/s]", "Start"), "200");
+        form.put(signalCell(spindle, "Gamma static [spikes/s]", "Stop"), "800");
+        form.put(signalCell(spindle, "Gamma static [spikes/s]", "Peak"), "40");
+        assertThat(editor.apply("muscleSpindle", Map.of(), form)).isEmpty();
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(saved.settings()).containsEntry("cdJointModel", ReMoto.imposedAngle)
+                .containsKeys("jointAngleSignal", "gammaStaticSignal").doesNotContainKey("gammaDynamicSignal");
+        Map<?, ?> angle = (Map<?, ?>) saved.settings().get("jointAngleSignal");
+        assertThat(angle.get("shape")).isEqualTo("ramp");
+        assertThat(angle.get("amp")).isEqualTo(10.0);
+        assertThat(angle.get("width")).isEqualTo(50.0);
+        assertThat(((Map<?, ?>) saved.settings().get("gammaStaticSignal")).get("tini")).isEqualTo(200.0);
+
+        LegacyEditor reopened = LegacyEditor.open(saved, 5000, 0.05);
+        ScreenView joint2 = reopened.view("joint", Map.of());
+        assertThat(signalValue(joint2, "Ankle angle [deg]", "Modulation")).isEqualTo("ramp");
+        assertThat(signalValue(joint2, "Ankle angle [deg]", "Peak")).isEqualTo("10");
+        ScreenView spindle2 = reopened.view("muscleSpindle", Map.of());
+        assertThat(signalValue(spindle2, "Gamma static [spikes/s]", "Modulation")).isEqualTo("constant");
+        assertThat(signalValue(spindle2, "Gamma dynamic [spikes/s]", "Modulation")).isEqualTo("none");
+        assertThat(value(reopened.view("biomechanicalElements", Map.of()), "Joint model")).isEqualTo(ReMoto.imposedAngle);
+    }
+
+    /** O formulário inteiro, como o navegador manda (checkbox ausente = desmarcado). */
+    private static Map<String, String> fullForm(ScreenView view) {
+        Map<String, String> form = new HashMap<>();
+        for (ScreenView.Section section : view.sections()) {
+            for (ScreenView.Row r : section.rows()) {
+                for (ScreenView.Cell c : r.cells()) {
+                    if (c.kind() != Field.Kind.BOOLEAN || "true".equals(c.value())) {
+                        form.put(c.name(), c.value());
+                    }
+                }
+            }
+        }
+        return form;
+    }
+
+    /** A célula de um sinal (a segunda parte das telas Joint e Muscle Spindle). */
+    private static ScreenView.Cell signal(ScreenView view, String rowLabel, String header) {
+        List<String> headers = view.sections().get(1).headers();
+        int column = -1;
+        for (int i = 0; i < headers.size() && column < 0; i++) {
+            if (headers.get(i).equals(header) || headers.get(i).startsWith(header + " [")) { // "Start [ms]"
+                column = i;
+            }
+        }
+        assertThat(column).as(header + " em " + headers).isNotNegative();
+        return row(view, 1, rowLabel).cells().get(column);
+    }
+
+    private static String signalCell(ScreenView view, String rowLabel, String header) {
+        return signal(view, rowLabel, header).name();
+    }
+
+    private static String signalValue(ScreenView view, String rowLabel, String header) {
+        return signal(view, rowLabel, header).value();
     }
 
     @Test

@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 /**
  * Garante que o motor original, rodando na nova plataforma, é (1) fiel ao banco antigo,
@@ -228,6 +229,40 @@ class LegacyEngineTest {
         for (String tract : new String[] {"CM_ext", "CM_flex", "RBE_ext", "RBE_flex", "RBI_ext", "RBI_flex"}) {
             assertThat(r.outputs).containsKey("trato-isi-medio-" + tract);
         }
+    }
+
+    /**
+     * O "Reflexo de estiramento no tornozelo" de scenarios/ impõe um trapézio ao ângulo. Para caber
+     * nos 40 ms do teste, o trapézio começa em 10 ms, com rampas de 10 ms: o ângulo sobe os 5°, fica
+     * e volta, e os fusos do sóleo respondem.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void estiramentoDoTornozeloImpoeOTrapezioAoAngulo() throws Exception {
+        Scenario scenario = json.fromBytes(Files.readAllBytes(scenariosDir().resolve("estiramento-tornozelo.json")),
+                Scenario.class);
+        assertThat(ScenarioValidator.validate(scenario)).isEmpty();
+        LegacyConfig config = LegacyJson.toConfig(scenario.legacy());
+        assertThat(config.settings()).containsEntry("cdJointModel", "imposed");
+        Map<String, Object> signal = new java.util.LinkedHashMap<>((Map<String, Object>) config.settings().get("jointAngleSignal"));
+        assertThat(signal.get("shape")).isEqualTo("trapezoid");
+        assertThat(((Number) signal.get("amp")).doubleValue()).isEqualTo(5.0);
+
+        signal.put("tini", 10.0);
+        signal.put("tfin", 40.0);
+        signal.put("width", 10.0);
+        Map<String, Object> settings = new java.util.LinkedHashMap<>(config.settings());
+        settings.put("jointAngleSignal", signal);
+        LegacyConfig early = new LegacyConfig(config.format(), config.idConfiguration(), config.tables(), settings);
+        Recorder r = run(new Scenario(null, scenario.name(), "", scenario.schemaVersion(), scenario.seed(),
+                SHORT_RUN_MS, scenario.stepMs(), scenario.engine(), LegacyJson.toMap(early)));
+
+        double[] angle = r.outputs.get("articulacao-angulo").lines().skip(1)
+                .mapToDouble(l -> Double.parseDouble(l.split(",")[1])).toArray();
+        double initial = angle[0];
+        assertThat(java.util.Arrays.stream(angle).max().orElseThrow() - initial).isCloseTo(5, within(1e-6));
+        assertThat(angle[angle.length - 1]).isCloseTo(initial, within(1e-6));
+        assertThat(r.outputs).containsKeys("fuso-ia-SOL", "fuso-ia-MG", "fuso-ia-LG");
     }
 
     private Recorder run(Scenario scenario) {

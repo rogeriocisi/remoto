@@ -47,6 +47,12 @@ abstract class IntrafusalFiber {
         this.gamma_static = gamma_static;
     }
 
+    /** Muda os disparos fusimotores (Hz) a partir do próximo passo. */
+    void setFusimotor(double gammaDynamic, double gammaStatic) {
+        this.gamma_dynamic = gammaDynamic;
+        this.gamma_static = gammaStatic;
+    }
+
     public abstract double calculateFusimotorActivation(double t);
 
     public abstract double calculatePrimaryAfferentActivity(double t);

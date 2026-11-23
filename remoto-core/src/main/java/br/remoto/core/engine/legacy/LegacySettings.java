@@ -1,5 +1,6 @@
 package br.remoto.core.engine.legacy;
 
+import br.remoto.core.simulation.ModulatingSignal;
 import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.setup.Configuration;
 import br.remoto.core.simulation.setup.NeuronVO;
@@ -43,6 +44,17 @@ public final class LegacySettings {
      */
     public static final String TRACT_STD = "tractStd";
 
+    /**
+     * Sinais no tempo, que o site antigo não tinha: o ângulo imposto ao tornozelo (graus, somado ao
+     * inicial, no modelo de articulação "imposed") e os disparos fusimotores dinâmico e estático
+     * (Hz, somados aos constantes). Cada um é a forma e os parâmetros de um sinal modulante; só é
+     * gravado quando tem forma ("none" é o padrão: o comportamento do original).
+     */
+    public static final List<String> SIGNALS = List.of("jointAngleSignal", "gammaDynamicSignal", "gammaStaticSignal");
+
+    private static final List<String> SIGNAL_FIELDS =
+            List.of("tini", "tfin", "amp", "freq", "width", "delay", "modFreq", "modFactor");
+
     private LegacySettings() {
     }
 
@@ -66,6 +78,20 @@ public final class LegacySettings {
                 value = raw.toString();
             }
             invoke(pd.getWriteMethod(), conf, value);
+        }
+        for (String key : SIGNALS) {
+            if (settings.get(key) instanceof Map<?, ?> values) {
+                ModulatingSignal signal = signal(conf, key);
+                if (values.get("shape") != null) {
+                    signal.setCdSignal(values.get("shape").toString());
+                }
+                for (String field : SIGNAL_FIELDS) {
+                    if (values.get(field) != null) {
+                        invoke(signalDescriptor(field).getWriteMethod(), signal,
+                                ((Number) number(values.get(field))).doubleValue());
+                    }
+                }
+            }
         }
         if (settings.get(TRACT_STD) instanceof Map<?, ?> std) {
             for (Object o : conf.getNeuronTypes()) {
@@ -118,7 +144,40 @@ public final class LegacySettings {
         if (!std.isEmpty()) {
             settings.put(TRACT_STD, std);
         }
+        for (String key : SIGNALS) {
+            ModulatingSignal signal = signal(conf, key);
+            if (signal != null && signal.getCdSignal() != null && !ReMoto.none.equals(signal.getCdSignal())) {
+                Map<String, Object> values = new LinkedHashMap<>();
+                values.put("shape", signal.getCdSignal());
+                for (String field : SIGNAL_FIELDS) {
+                    values.put(field, invoke(signalDescriptor(field).getReadMethod(), signal));
+                }
+                settings.put(key, values);
+            }
+        }
         return settings;
+    }
+
+    private static ModulatingSignal signal(Configuration conf, String key) {
+        return switch (key) {
+            case "jointAngleSignal" -> conf.getJointAngleSignal();
+            case "gammaDynamicSignal" -> conf.getGammaDynamicSignal();
+            case "gammaStaticSignal" -> conf.getGammaStaticSignal();
+            default -> throw new IllegalArgumentException(key);
+        };
+    }
+
+    private static PropertyDescriptor signalDescriptor(String property) {
+        try {
+            for (PropertyDescriptor pd : Introspector.getBeanInfo(ModulatingSignal.class).getPropertyDescriptors()) {
+                if (pd.getName().equals(property) && pd.getReadMethod() != null && pd.getWriteMethod() != null) {
+                    return pd;
+                }
+            }
+        } catch (IntrospectionException e) {
+            throw new IllegalStateException(e);
+        }
+        throw new IllegalStateException("ModulatingSignal não tem a propriedade " + property);
     }
 
     private static Object number(Object raw) {

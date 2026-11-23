@@ -90,6 +90,12 @@ public class Configuration implements Serializable
 	private double jointVelocity;
 	private double gammaDynamic;
 	private double gammaStatic;
+
+	// Signals over time, not stored by the original DAO (here in the scenario settings):
+	// the imposed ankle angle (deg, added to jointAngle) and the fusimotor drives (Hz, added to gammaDynamic/gammaStatic)
+	private ModulatingSignal jointAngleSignal = new ModulatingSignal("jointAngle", null);
+	private ModulatingSignal gammaDynamicSignal = new ModulatingSignal("gammaDynamic", null);
+	private ModulatingSignal gammaStaticSignal = new ModulatingSignal("gammaStatic", null);
 	private double primaryBag1Gain;
 	private double primaryBag2AndChainGain;
 	private double secondaryBag2AndChainGain;
@@ -1475,6 +1481,30 @@ public class Configuration implements Serializable
 
 	public double getGammaStatic() {
 		return gammaStatic;
+	}
+
+	public ModulatingSignal getJointAngleSignal() {
+		return jointAngleSignal;
+	}
+
+	public void setJointAngleSignal(ModulatingSignal jointAngleSignal) {
+		this.jointAngleSignal = jointAngleSignal;
+	}
+
+	public ModulatingSignal getGammaDynamicSignal() {
+		return gammaDynamicSignal;
+	}
+
+	public void setGammaDynamicSignal(ModulatingSignal gammaDynamicSignal) {
+		this.gammaDynamicSignal = gammaDynamicSignal;
+	}
+
+	public ModulatingSignal getGammaStaticSignal() {
+		return gammaStaticSignal;
+	}
+
+	public void setGammaStaticSignal(ModulatingSignal gammaStaticSignal) {
+		this.gammaStaticSignal = gammaStaticSignal;
 	}
 
 	public void setGammaStatic(double gammaStatic) {

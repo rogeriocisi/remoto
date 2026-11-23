@@ -33,7 +33,7 @@ public class Joint
 	}
 
 	public void atualize(double t){
-		if(JointModel.equals("isometric"))
+		if(ReMoto.isometricAnkle(JointModel))
 			ankleModel.atualize(t);
 		else if(JointModel.equals("pendulum"))
 			ankleModel2.atualize(t);

@@ -385,7 +385,8 @@ public final class LegacyScreens {
 
     private static Field jointModel() {
         return Field.choice("Joint model", "cdJointModel",
-                "isometric", "Isometric", "pendulum", "Inverted Pendulum", "position", "Position Task");
+                "isometric", "Isometric", "pendulum", "Inverted Pendulum", "position", "Position Task",
+                ReMoto.imposedAngle, "Imposed angle (perturbation)");
     }
 
     private static Field muDistribution() {
@@ -603,6 +604,34 @@ public final class LegacyScreens {
 
     // ------------------------------------------------------------------ Proprioceptors
 
+    /**
+     * Sinais no tempo que o site antigo não tinha (o ângulo imposto, o fusimotor): uma linha por
+     * sinal, com os mesmos campos do comando descendente; ficam no settings do cenário.
+     */
+    private static Part signalPart(String title, java.util.function.Function<Configuration, List<Object>> signals) {
+        // as formas de sinal da tela Descending Commands (aqui, e não num campo estático, que as telas
+        // são registradas antes de os campos estáticos serem iniciados)
+        String[] shapes = {"none", "none", "constant", "constant", "ramp", "ramp", "random", "random",
+                "sine", "sine", "square", "square", "trapezoid", "trapezoid", "triangle", "triangle", "AM", "AM"};
+        return new Part(title, Layout.LIST,
+                (conf, sel) -> signals.apply(conf),
+                item -> switch (String.valueOf(((ModulatingSignal) item).getCdNeuronType())) {
+                    case "jointAngle" -> "Ankle angle [deg]";
+                    case "gammaDynamic" -> "Gamma dynamic [spikes/s]";
+                    case "gammaStatic" -> "Gamma static [spikes/s]";
+                    default -> "Signal";
+                },
+                List.of(Field.choice("Modulation", "cdSignal", shapes),
+                        Field.number("Start", "ms", "tini"),
+                        Field.number("Stop", "ms", "tfin"),
+                        Field.number("Peak", null, "amp"),
+                        Field.number("Frequency", "Hz", "freq"),
+                        Field.number("Delay", "ms", "delay"),
+                        Field.number("Width", null, "width"),
+                        Field.number("Modulating frequency", "Hz", "modFreq"),
+                        Field.number("Modulating factor", null, "modFactor")));
+    }
+
     /** muscleSpindle.jsp / MuscleSpindleAction. */
     private static LegacyScreen muscleSpindle() {
         Part part = confPart(null, List.of(
@@ -613,8 +642,14 @@ public final class LegacyScreens {
                 Field.number("Gain of bag1 fiber primary afferent activity", null, "primaryBag1Gain"),
                 Field.number("Gain of bag 2 and chain fibers primary afferent activity", null, "primaryBag2AndChainGain"),
                 Field.number("Gain of bag 2 and chain fibers secondary afferent activity", null, "secondaryBag2AndChainGain")));
-        return new LegacyScreen("muscleSpindle", "Muscle Spindle", List.of(), List.of(part),
-                (conf, sel, items) -> { }, List.of(SETTINGS_NOTE));
+        Part fusimotor = signalPart("Fusimotor drive over time (added to the values above)",
+                conf -> List.of(conf.getGammaDynamicSignal(), conf.getGammaStaticSignal()));
+        return new LegacyScreen("muscleSpindle", "Muscle Spindle", List.of(), List.of(part, fusimotor),
+                (conf, sel, items) -> { },
+                List.of(SETTINGS_NOTE,
+                        "Fusimotor drive over time: each signal is added to the constant rate above (a negative"
+                                + " total counts as 0); with \"none\", the rate stays constant. Only the Mileusnic"
+                                + " spindle uses it, and the spindle is only integrated with the Hill muscle model."));
     }
 
     /** golgiTendonOrgan.jsp: só a escolha do modelo (Crago). */
@@ -644,9 +679,16 @@ public final class LegacyScreens {
         Part part = confPart(null, List.of(
                 Field.number("Ankle initial angle", "deg", "jointAngle"),
                 Field.number("Knee angle", "deg", "kneeAngle")));
-        return new LegacyScreen("joint", "Joint Parameters", List.of(), List.of(part),
+        Part imposed = signalPart("Imposed ankle angle (added to the initial angle)",
+                conf -> List.of(conf.getJointAngleSignal()));
+        return new LegacyScreen("joint", "Joint Parameters", List.of(), List.of(part, imposed),
                 (conf, sel, items) -> { },
-                List.of("The joint model is chosen in Biomechanical Elements.", SETTINGS_NOTE));
+                List.of("The joint model is chosen in Biomechanical Elements.",
+                        "Imposed ankle angle: with the joint model \"Imposed angle (perturbation)\", the ankle"
+                                + " follows the initial angle plus this signal, in degrees (a ramp-and-hold stretch,"
+                                + " a sine, steps...), and the muscle lengths follow it. The spindles only respond"
+                                + " with the Hill muscle model, which computes the fascicle length.",
+                        SETTINGS_NOTE));
     }
 
     /** musculotendon.jsp / MusculotendonAction. */

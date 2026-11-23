@@ -731,3 +731,34 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
     idioma do navegador e com seletor em toda página; ver [Dois idiomas](#dois-idiomas).
 12. **Ordens do processo gama dos trabalhos originais.** Se as ordens usadas nas publicações
     forem recuperadas, os cenários com tratos gama podem voltar a ser gama, com o `tractStd`.
+13. **O que a versão em Fortran tem e esta não.** O [projectFR](https://github.com/rnwatanabe/projectFR)
+    (R. N. Watanabe, último commit em dezembro de 2019) é uma versão do ReMoto em Fortran. O
+    núcleo dos modelos coincide com o desta versão (músculo de Hill do *Virtual Muscle* com
+    fibras I e II, SOCDS com saturação, fuso de Mileusnic, OTG de Lin e Crago, EMG de
+    Hermite-Rodriguez com atenuação e alargamento, sinapses com dinâmica, tratos gama, colisão
+    antidrômica, interneurônios, pêndulo invertido); aqui há a mais o dendrito ativo com a PIC
+    (lá ele é passivo), os músculos de Raikova e de momentos, o fuso de Prochazka e a tarefa de
+    posição. O que falta aqui:
+    - [ ] **Ângulo do tornozelo imposto**: o ângulo segue uma trajetória dada (perturbação), e
+      o comprimento dos músculos e os fusos acompanham (o exemplo *ImpedanceAnkle* de lá).
+    - [ ] **Fusimotor variável no tempo**: os disparos γ dinâmico e estático como sinais, e
+      não constantes (o exemplo *PosturalControl* de lá os varia em rampa).
+    - [ ] **Estímulo do nervo com duração de pulso configurável** e limiar por carga com
+      vazamento (curva intensidade-duração), como opção; o padrão continua o do original
+      (pulso de 1 ms, limiar de corrente).
+    - [ ] **Ordem gama dos aferentes configurável** por tipo (Ia, Ib, II) e músculo; aqui é
+      fixa no código (25, 30 e 400).
+    - [ ] **Axônio com nós de Ranvier** para motoneurônios e aferentes: internós e nós com
+      sódio rápido e persistente, potássio rápido e lento, corrente h e bomba iônica; aqui o
+      axônio é um atraso de condução com limiar.
+    - [ ] **Motoneurônio integra-e-dispara** (sem canais iônicos), para simulações rápidas.
+    - [ ] **Conexões que enfraquecem com a distância** em qualquer via (peso
+      `dec / (dec + distância²)`); aqui só entre motoneurônios e células de Renshaw.
+    - [ ] **Protocolos em lote**: varrer um parâmetro em várias simulações, como a curva de
+      recrutamento do reflexo H e da onda M (intensidade do estímulo) e a variabilidade da
+      força (comando descendente); ver também o item 3.
+    - [ ] **Comando dos tratos como série de taxas qualquer**, além das formas prontas
+      (senoide, AM, rampa...).
+
+    O projectFR é GPL-3 e esta versão é MIT: os itens devem ser implementados a partir dos
+    artigos e das equações, sem copiar o código, ou com a licença combinada com o autor.

@@ -371,7 +371,7 @@ public class JointFactory
 			GolgiTendonOrgan[] gtos, Joint joint) {
 		createMusculotendons(conf, neurons, spindles, gtos, musculotendons);
 
-		if(JointModel.equals("isometric")){
+		if(ReMoto.isometricAnkle(JointModel)){
 			AnkleIsometricModel ankleIsometricModel = new AnkleIsometricModel(conf, musculotendons);
 			joint.setAnkleModel(ankleIsometricModel);
 

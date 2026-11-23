@@ -2,9 +2,14 @@ package br.remoto.core.model.joint;
 
 import br.remoto.core.model.random.Rng;
 
+import java.util.function.DoubleUnaryOperator;
+
 /**
  * Tornozelo isométrico: o ângulo fica fixo e o torque é a soma, em cada músculo, da força vezes o
  * braço de momento.
+ *
+ * <p>Com um sinal de ângulo, é o tornozelo de ângulo imposto: o ângulo inicial mais o sinal, em
+ * graus, a cada passo (uma perturbação); o comprimento dos músculos e os fusos acompanham.
  *
  * <p>Fiel ao ReMoto original: o construtor sorteia um número (resto de um distúrbio aleatório
  * desligado), e antes do primeiro passo o ângulo vale 0, de modo que os músculos veem o tornozelo
@@ -24,6 +29,7 @@ public final class IsometricAnkle {
 
     private final double fixedAngle;
     private final double kneeAngle;
+    private final DoubleUnaryOperator angleSignal;
 
     private double angle = 0;
     private double torque = 0;
@@ -33,15 +39,29 @@ public final class IsometricAnkle {
      * @param kneeAngle ângulo do joelho (graus)
      */
     public IsometricAnkle(double jointAngle, double kneeAngle) {
+        this(jointAngle, kneeAngle, null);
+    }
+
+    /**
+     * @param angleSignal o ângulo imposto somado ao inicial, em graus, em função do tempo (ms);
+     *     {@code null} para o tornozelo isométrico
+     */
+    public IsometricAnkle(double jointAngle, double kneeAngle, DoubleUnaryOperator angleSignal) {
         Rng.random();
 
         this.fixedAngle = jointAngle * (Math.PI / 180);
         this.kneeAngle = kneeAngle * (Math.PI / 180);
+        this.angleSignal = angleSignal;
     }
 
-    /** Avança um passo: o ângulo fixo e o torque dos músculos (os nulos não contam). */
+    /** Avança um passo do tornozelo isométrico (sem tempo: o ângulo não muda). */
     public void step(Actuator[] actuators) {
-        angle = fixedAngle;
+        step(0, actuators);
+    }
+
+    /** Avança um passo em {@code t} (ms): o ângulo e o torque dos músculos (os nulos não contam). */
+    public void step(double t, Actuator[] actuators) {
+        angle = angleSignal == null ? fixedAngle : fixedAngle + angleSignal.applyAsDouble(t) * (Math.PI / 180);
 
         double resultantTorque = 0;
         for (Actuator a : actuators) {

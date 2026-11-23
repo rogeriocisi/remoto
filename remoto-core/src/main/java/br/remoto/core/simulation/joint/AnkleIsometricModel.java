@@ -1,6 +1,8 @@
 package br.remoto.core.simulation.joint;
 
 import br.remoto.core.model.joint.IsometricAnkle;
+import br.remoto.core.simulation.ModulatingSignal;
+import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.setup.Configuration;
 import br.remoto.core.simulation.joint.AnkleSuperClass;
 import br.remoto.core.simulation.musculotendon.MusculotendonSuperClass;
@@ -23,7 +25,10 @@ public class AnkleIsometricModel extends AnkleSuperClass
 		samplerJointAngleStore = new Sample(conf.getDecimationFrequency(), 1000 / conf.getStep());
 		samplerJointTorqueStore = new Sample(conf.getDecimationFrequency(), 1000 / conf.getStep());
 
-		this.ankle = new IsometricAnkle(conf.getJointAngle(), conf.getKneeAngle());
+		ModulatingSignal angleSignal = conf.getJointAngleSignal();
+		this.ankle = ReMoto.imposedAngle.equals(conf.getCdJointModel()) && angleSignal != null
+				? new IsometricAnkle(conf.getJointAngle(), conf.getKneeAngle(), angleSignal::value)
+				: new IsometricAnkle(conf.getJointAngle(), conf.getKneeAngle());
 
 		this.actuators = new IsometricAnkle.Actuator[musculotendons.length];
 		for(int i = 0; i < musculotendons.length; i++){
@@ -43,7 +48,7 @@ public class AnkleIsometricModel extends AnkleSuperClass
 		samplerJointAngleStore.sample(jointAngleStore, "", t, angle*(180/Math.PI));
 		samplerJointTorqueStore.sample(jointTorqueStore, "", t, torque);
 
-		ankle.step(actuators);
+		ankle.step(t, actuators);
 
 		angle = ankle.angle();
 		torque = ankle.torque();

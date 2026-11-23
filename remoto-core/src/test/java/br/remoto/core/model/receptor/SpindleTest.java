@@ -59,4 +59,38 @@ class SpindleTest {
         }
         assertThat(spindle.iaFiringRate()).isCloseTo(0, within(0.0));
     }
+    /**
+     * O fusimotor mudado no meio da simulação: com os mesmos valores, nada muda; o dinâmico maior
+     * aumenta a Ia durante um estiramento em rampa; o estático maior aumenta a II no comprimento fixo.
+     */
+    @Test
+    void mileusnicComFusimotorMudadoNoTempo() {
+        MileusnicSpindle base = new MileusnicSpindle("SOL", 0.05, 30, 30, 7000, 7000, 7000);
+        MileusnicSpindle same = new MileusnicSpindle("SOL", 0.05, 30, 30, 7000, 7000, 7000);
+        MileusnicSpindle dynamic = new MileusnicSpindle("SOL", 0.05, 30, 30, 7000, 7000, 7000);
+        MileusnicSpindle statik = new MileusnicSpindle("SOL", 0.05, 30, 30, 7000, 7000, 7000);
+        double iaBase = 0, iaDynamic = 0;
+        for (int i = 0; i < 20_000; i++) { // 1 s: 500 ms parado, 500 ms em rampa (0,2 por segundo)
+            double t = i * 0.05;
+            if (i == 2_000) {
+                same.setFusimotor(30, 30);
+                dynamic.setFusimotor(100, 30);
+                statik.setFusimotor(30, 100);
+            }
+            double velocity = t < 500 ? 0 : 0.2 / 1000;
+            double length = 0.95 + (t < 500 ? 0 : (t - 500) * velocity);
+            for (MileusnicSpindle s : new MileusnicSpindle[] {base, same, dynamic, statik}) {
+                s.step(t, length, velocity, 0);
+            }
+            assertThat(same.iaFiringRate()).isEqualTo(base.iaFiringRate());
+            if (t >= 600) {
+                iaBase += base.iaFiringRate();
+                iaDynamic += dynamic.iaFiringRate();
+            }
+            if (i == 9_999) { // 500 ms, ainda parado
+                assertThat(statik.iiFiringRate()).isGreaterThan(base.iiFiringRate());
+            }
+        }
+        assertThat(iaDynamic).isGreaterThan(iaBase);
+    }
 }

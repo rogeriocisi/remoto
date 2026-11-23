@@ -281,6 +281,14 @@ public class ReMoto
 	public static final String inj = "inj"; // injected current
 	public static final String MMV = "MMV"; // modulated mean value
 	public static final String none = "none";
+
+	/** Joint model: the isometric ankle following an imposed angle (the initial angle plus a signal). */
+	public static final String imposedAngle = "imposed";
+
+	/** The isometric ankle and its variant with an imposed angle share the same objects. */
+	public static boolean isometricAnkle(String jointModel) {
+		return "isometric".equals(jointModel) || imposedAngle.equals(jointModel);
+	}
 	public static final String constant = "constant";
 	public static final String sine = "sine";
 	public static final String square = "square";

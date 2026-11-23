@@ -80,7 +80,7 @@ public class MusculotendonSuperClass
 	}
 
 	public void atualize(double t){
-		if(JointModel.equals("isometric")){
+		if(ReMoto.isometricAnkle(JointModel)){
 			calculateLength(cdMuscle, associatedJoint.getAngle()*(180/Math.PI), associatedJoint.getKneeAngle());
 			if (t == 0)	extrafusalMuscle.setInitialLengthNorm();
 			calculateMomentArmAnkle(cdMuscle, associatedJoint.getAngle()*(180/Math.PI),  associatedJoint.getKneeAngle());

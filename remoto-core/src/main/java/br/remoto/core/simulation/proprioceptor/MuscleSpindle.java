@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import br.remoto.core.model.receptor.MileusnicSpindle;
 import br.remoto.core.model.receptor.ProchazkaSpindle;
 import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.ModulatingSignal;
 import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.neuron.Neuron;
 import br.remoto.core.simulation.neuron.SensoryFiber;
@@ -32,6 +33,10 @@ public class MuscleSpindle {
 	protected ArrayList IIFiringRateStore = new ArrayList();
 
 	private MileusnicSpindle mileusnic;
+
+	// Fusimotor drive over time (added to the constant rates); null when the scenario does not modulate it
+	private final ModulatingSignal gammaDynamicSignal;
+	private final ModulatingSignal gammaStaticSignal;
 	private ProchazkaSpindle prochazka;
 
 	public MuscleSpindle(String cdNucleus, Neuron neurons[][], Configuration conf, double gamma_dynamic, double gamma_static, String spindle_model) {
@@ -43,6 +48,8 @@ public class MuscleSpindle {
 
 		this.gammaDynamicMNFiringRate = gamma_dynamic;
 		this.gammaStaticMNFiringRate = gamma_static;
+		this.gammaDynamicSignal = active(conf.getGammaDynamicSignal());
+		this.gammaStaticSignal = active(conf.getGammaStaticSignal());
 
 		if(spindle_model.equals(ReMoto.spindleModelProchazka)){
 			this.prochazka = new ProchazkaSpindle();
@@ -84,6 +91,10 @@ public class MuscleSpindle {
 			IIFiringRate = prochazka.iiFiringRate();
 		}
 		else if( mileusnic != null ){
+			if( gammaDynamicSignal != null || gammaStaticSignal != null ){
+				mileusnic.setFusimotor(fusimotor(gammaDynamicMNFiringRate, gammaDynamicSignal, t),
+						fusimotor(gammaStaticMNFiringRate, gammaStaticSignal, t));
+			}
 			mileusnic.step(t, fascicleLength, velocity, acceleration);
 			IaFiringRate = mileusnic.iaFiringRate();
 			IIFiringRate = mileusnic.iiFiringRate();
@@ -91,6 +102,15 @@ public class MuscleSpindle {
 
 		samplerIaFiringRateStore.sample(IaFiringRateStore, "", t, IaFiringRate);
 		samplerIIFiringRateStore.sample(IIFiringRateStore, "", t, IIFiringRate);
+	}
+
+	/** The constant rate plus the signal, never negative (Hz). */
+	private static double fusimotor(double rate, ModulatingSignal signal, double t) {
+		return signal == null ? rate : Math.max(0, rate + signal.value(t));
+	}
+
+	private static ModulatingSignal active(ModulatingSignal signal) {
+		return signal == null || signal.getCdSignal() == null || ReMoto.none.equals(signal.getCdSignal()) ? null : signal;
 	}
 
 	public String getCdNucleus() {

@@ -40,6 +40,16 @@ public final class MileusnicSpindle {
     }
 
     /**
+     * Muda os disparos fusimotores dinâmico e estático (Hz) a partir do próximo passo: o fusimotor
+     * deixa de ser constante quando o cenário o modula no tempo.
+     */
+    public void setFusimotor(double gammaDynamic, double gammaStatic) {
+        bag1.setFusimotor(gammaDynamic, gammaStatic);
+        bag2.setFusimotor(gammaDynamic, gammaStatic);
+        chain.setFusimotor(gammaDynamic, gammaStatic);
+    }
+
+    /**
      * Avança o fuso um passo.
      *
      * @param t instante (ms)

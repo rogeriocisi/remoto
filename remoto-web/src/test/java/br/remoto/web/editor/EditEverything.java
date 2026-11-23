@@ -57,6 +57,10 @@ final class EditEverything {
                                 if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")) {
                                     continue; // campo novo, que o DAO original não gravava: a referência é anterior a ele
                                 }
+                                if ((item.id().equals("joint") || item.id().equals("muscleSpindle"))
+                                        && cell.name().startsWith("p1.")) {
+                                    continue; // sinais no tempo (ângulo imposto, fusimotor): também posteriores à referência
+                                }
                                 if (cell.name().endsWith(".std")) {
                                     // o Std dos tratos existia na referência, mas o DAO original o perdia ao
                                     // gravar; hoje fica no settings. Conta na numeração e fica como estava.
@@ -86,8 +90,12 @@ final class EditEverything {
                 boolean b = "true".equals(v);
                 yield (k % 5 == 0) ? (b ? null : "true") : (b ? "true" : null);
             }
-            case CHOICE -> cell.options().isEmpty() || k % 4 != 0 ? v
-                    : cell.options().get(k % cell.options().size()).value();
+            case CHOICE -> {
+                // a opção "imposed" do modelo de articulação é posterior à referência
+                List<Field.Option> options = cell.options().stream()
+                        .filter(o -> !br.remoto.core.simulation.ReMoto.imposedAngle.equals(o.value())).toList();
+                yield options.isEmpty() || k % 4 != 0 ? v : options.get(k % options.size()).value();
+            }
             default -> v == null ? "" : v + (k % 2 == 0 ? " (editado)" : "");
         };
     }
