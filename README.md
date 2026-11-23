@@ -2,6 +2,8 @@
 
 # ReMoto
 
+**Website:** <https://rogeriocisi.github.io/remoto/>
+
 ReMoto is a neuronal simulation system for studying the spinal cord networks responsible for muscle control. These networks are driven by descending commands, afferent feedback and electrical nerve stimulation. The simulator can be used to investigate phenomena at several levels of organization, from the neuronal membrane to whole-muscle behavior such as force generation. This is possible because each element (neurons, synapses, muscle fibers) has its own mathematical model, usually involving voltage- or neurotransmitter-dependent ionic channels.
 
 ReMoto is useful for interpreting results of neurophysiological experiments in humans, proposing and testing hypotheses about neuronal dynamics and network processing, validating experimental protocols, and teaching neurophysiology.
@@ -31,7 +33,7 @@ remoto-web/           web application (Spring Boot, no login), including the sce
 remoto-cli/           command-line runner for scripts and clusters, and export of old configurations
 scenarios/            public scenarios (JSON)
 deploy/            systemd service and configuration template
-docs/              documentation of the new version (in Portuguese)
+docs/              project website (index.html, served by GitHub Pages) and documentation of the new version (in Portuguese)
 legacy-db/         original HSQLDB database (text script), read by export-legacy without HSQLDB
 ref.bib            BibTeX references
 ```
