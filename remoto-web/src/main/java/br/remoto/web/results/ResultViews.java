@@ -5,6 +5,7 @@ import br.remoto.core.model.emg.BandPassFilter;
 import br.remoto.core.model.emg.ThirdOrderBandPass;
 import br.remoto.storage.run.ResultFiles;
 
+import br.remoto.web.i18n.Messages;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,7 +130,7 @@ public final class ResultViews {
 
     private View neural(Options o) {
         Graphics.Graphic g = Graphics.neural(o.element(), o.graphic())
-                .orElseThrow(() -> new NoSuchElementException("gráfico desconhecido: " + o.graphic()));
+                .orElseThrow(() -> new NoSuchElementException(Messages.msg("results.unknownGraphic", o.graphic())));
         String who = neuronLabel(o);
         return switch (g.code()) {
             case "spikeTimes" -> spikeTimes(o, g, who);
@@ -259,7 +260,7 @@ public final class ResultViews {
         String[] id = storedId(o);
         if (id == null) {
             return empty(o, g.title() + " - " + who, g, "linha",
-                    "Este gráfico é de um neurônio guardado: escolha um no menu de neurônios.");
+                    Messages.msg("results.storedNeuron"));
         }
         String name = "sinais-" + o.nucleus() + "-" + id[0] + "-" + id[1];
         ResultFiles.Table t = table(name);
@@ -276,13 +277,13 @@ public final class ResultViews {
                 String gName = o.spec().isEmpty() ? "gNa" : o.spec();
                 String column = gName + "[nS]";
                 if (t.column(column) < 0) {
-                    return empty(o, g.title() + " - " + gName, g, "linha", "Este neurônio não tem a condutância " + gName + ".");
+                    return empty(o, g.title() + " - " + gName, g, "linha", Messages.msg("results.noConductance", gName));
                 }
                 return finish(o, g.title() + " - " + gName, g, "linha", List.of(new Series(who, time, t.numbers(column))));
             }
             case "injectedCurrent" -> {
                 if (t.column("inj[nA]") < 0) {
-                    return empty(o, title, g, "linha", "Não há corrente injetada neste neurônio.");
+                    return empty(o, title, g, "linha", Messages.msg("results.noInjectedCurrent"));
                 }
                 return finish(o, title, g, "linha", List.of(new Series(who, time, t.numbers("inj[nA]"))));
             }
@@ -349,7 +350,7 @@ public final class ResultViews {
 
     private View biomechanical(Options o) {
         Graphics.Graphic g = Graphics.biomechanical(o.graphic())
-                .orElseThrow(() -> new NoSuchElementException("gráfico desconhecido: " + o.graphic()));
+                .orElseThrow(() -> new NoSuchElementException(Messages.msg("results.unknownGraphic", o.graphic())));
         String m = o.nucleus();
         String who = muscleLabel(o);
         return switch (g.code()) {
@@ -465,7 +466,7 @@ public final class ResultViews {
                 ? (o.emgAttenuation() ? "emg-bruto-" : "emg-bruto-sem-atenuacao-") + m
                 : (o.emgAttenuation() ? "emg-bruto-um-" : "emg-bruto-um-sem-atenuacao-") + m + "-" + id[1];
         if (!catalog.has(rawName)) {
-            return empty(o, title, g, "linha", "Esta execução não guardou o EMG pedido (" + rawName + ").");
+            return empty(o, title, g, "linha", Messages.msg("results.noEmg", rawName));
         }
         ResultFiles.Columns raw = column(rawName);
         double[] t = raw.x();
@@ -534,7 +535,7 @@ public final class ResultViews {
     private View tableView(String name, String title, Options o) {
         if (!catalog.has(name)) {
             return new View(title, "", "", "tabela", List.of(), null, new Table(List.of(), List.of()), 0,
-                    "Esta execução não tem a tabela " + name + ".");
+                    Messages.msg("results.noTable", name));
         }
         ResultFiles.Table t = table(name);
         List<List<String>> rows = t.rows();
@@ -560,7 +561,7 @@ public final class ResultViews {
             if (name.equals("disparos-" + o.nucleus()) && catalog.has("tabela-motoneuronios-" + o.nucleus())) {
                 return null;
             }
-            throw new NoSuchElementException("esta execução não tem " + name);
+            throw new NoSuchElementException(Messages.msg("results.missing", name));
         }
         return name;
     }
@@ -679,7 +680,7 @@ public final class ResultViews {
 
     private View line(Options o, Graphics.Graphic g, String who, String name) {
         if (!catalog.has(name)) {
-            return empty(o, g.title() + " - " + who, g, "linha", "Esta execução não tem " + name + ".");
+            return empty(o, g.title() + " - " + who, g, "linha", Messages.msg("results.noResult", name));
         }
         ResultFiles.Columns c = column(name);
         return finish(o, g.title() + " - " + who, g, "linha", List.of(new Series(who, c.x(), c.y())));
@@ -687,7 +688,7 @@ public final class ResultViews {
 
     private ResultFiles.Columns column(String name) {
         if (!catalog.has(name)) {
-            throw new NoSuchElementException("esta execução não tem " + name);
+            throw new NoSuchElementException(Messages.msg("results.missing", name));
         }
         return ResultFiles.read(dir, name, Integer.MAX_VALUE);
     }
@@ -702,7 +703,7 @@ public final class ResultViews {
 
     private ResultFiles.Table table(String name) {
         if (!catalog.has(name)) {
-            throw new NoSuchElementException("esta execução não tem " + name);
+            throw new NoSuchElementException(Messages.msg("results.missing", name));
         }
         return tables.computeIfAbsent(name, n -> ResultFiles.readTable(dir, n));
     }
@@ -747,7 +748,7 @@ public final class ResultViews {
         }
         if (total == 0) {
             return new View(title, g.xLabel(), g.yLabel(), kind, clipped, null, null, 0,
-                    "Nenhum ponto para mostrar (sem dados nesta execução ou fora dos limites dos eixos).");
+                    Messages.msg("results.empty"));
         }
         Series main = clipped.get(0);
         if ("fft".equals(o.analysis())) {
@@ -770,8 +771,7 @@ public final class ResultViews {
             shown.add(new Series("Mean + SD", new double[] {x0, x1},
                     new double[] {stats.mean() + stats.std(), stats.mean() + stats.std()}));
         }
-        String message = total > o.maxPoints() ? "Prévia: " + o.maxPoints() + " de " + total
-                + " pontos por série; o CSV tem todos." : null;
+        String message = total > o.maxPoints() ? Messages.msg("results.preview", o.maxPoints(), total) : null;
         return new View(title, g.xLabel(), g.yLabel(), kind, shown, stats, null, total, message);
     }
 

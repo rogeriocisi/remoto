@@ -5,6 +5,9 @@
 (() => {
   'use strict';
 
+  // textos no idioma da página (/js/i18n.js)
+  const T = (key, ...args) => (window.T ? window.T(key, ...args) : key);
+
   const COLORS = { red: '#d62728', blue: '#1f5f99', green: '#2ca02c', yellow: '#bcbd22', black: '#222222', cyan: '#17becf' };
   const PALETTE = ['#1f5f99', '#d62728', '#2ca02c', '#9467bd', '#ff7f0e', '#17becf', '#8c564b', '#e377c2'];
   const NUMBERS = ['fcLow', 'fcHigh', 'emgDecimation', 'fftPoints', 'xmin', 'xmax', 'ymin', 'ymax',
@@ -55,7 +58,7 @@
     root.append(el('h3', { text: 'Results' }));
     if (!menu.complete) {
       root.append(el('p', { class: 'vazio',
-        text: 'Esta execução é anterior à tela de resultados completa: só há força, disparos, torque e EMG. Rode de novo para ter todos os gráficos.' }));
+        text: T('oldRun') }));
     }
     const form = el('form', { class: 'form-resultados', onsubmit: (e) => { e.preventDefault(); plot(); } });
     state.form = form;
@@ -243,7 +246,7 @@
     try {
       r = await fetch(`/api/runs/${state.runId}/view?${params}`);
     } catch (e) {
-      return { error: 'sem conexão com o servidor; tente de novo' };
+      return { error: T('sseOffline') };
     }
     if (!r.ok) {
       const problem = await r.json().catch(() => ({}));

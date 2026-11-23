@@ -1,5 +1,6 @@
 package br.remoto.web.editor;
 
+import br.remoto.web.i18n.Messages;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -117,7 +118,7 @@ public record Field(String label, String unit, Kind kind, List<Option> options, 
             return text;
         }
         if (text.isEmpty()) {
-            throw new IllegalArgumentException("valor obrigatório");
+            throw new IllegalArgumentException(Messages.msg("field.required"));
         }
         String normalized = text.replace(',', '.');
         try {
@@ -135,7 +136,7 @@ public record Field(String label, String unit, Kind kind, List<Option> options, 
                 return d;
             }
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("número inválido: " + text);
+            throw new IllegalArgumentException(Messages.msg("field.invalidNumber", text));
         }
         throw new IllegalStateException("tipo não suportado: " + type);
     }

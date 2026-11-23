@@ -10,6 +10,7 @@ import br.remoto.storage.StaleWriteException;
 import br.remoto.storage.Versioned;
 import br.remoto.storage.scenario.ScenarioRepository;
 import br.remoto.storage.run.RunManifest;
+import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
 import br.remoto.web.sim.QuotaExceededException;
@@ -98,8 +99,7 @@ class EditorController {
         try {
             scenarios.update(caller.id(), updated, etag);
         } catch (StaleWriteException e) {
-            fill(model, find(caller, id), screen, selection, List.of(
-                    "O cenário foi alterado em outra aba ou dispositivo. Os valores abaixo são os atuais; refaça a edição."));
+            fill(model, find(caller, id), screen, selection, List.of(Messages.msg("editor.conflict")));
             return "editor";
         }
         redirect.addAttribute("screen", screen);
@@ -148,14 +148,15 @@ class EditorController {
         try {
             seed = Long.parseLong(form.getOrDefault("seed", Long.toString(s.seed())).trim());
         } catch (NumberFormatException e) {
-            errors.add("Seed: número inteiro inválido");
+            errors.add(Messages.msg("editor.seed.invalid"));
         }
         return new Scenario(s.id(), name, description, s.schemaVersion(), seed, s.durationMs(), s.stepMs(),
                 s.engine(), s.legacy());
     }
 
     private Versioned<Scenario> find(Caller caller, String id) {
-        return scenarios.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException("cenário não encontrado"));
+        return scenarios.find(caller.id(), id)
+                .orElseThrow(() -> new NoSuchElementException(Messages.msg("scenario.notFound")));
     }
 
     private static void requireLegacy(Scenario scenario) {

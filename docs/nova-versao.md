@@ -20,6 +20,7 @@ código original continuam no histórico e no repositório pai.
 | Web | Spring Boot 4.1 (Spring MVC, Spring Security 7, Actuator) |
 | Login | nenhum: cada navegador tem sua área (cookie de 30 dias); os cenários entram e saem como arquivos (.json, .zip) |
 | Interface | Thymeleaf + htmx 2 + uPlot (gráficos interativos) |
+| Idiomas | inglês e português, pelo idioma do navegador, com seletor em toda página |
 | Figuras | JFreeChart 1.5 (PNG para artigos) |
 | Persistência | Arquivos: JSON (cenários, manifestos) e CSV.gz (resultados) — **sem banco** |
 | Execução | Fila justa por área, limite por endereço de origem + pool de threads de plataforma (CPU-bound) |
@@ -191,6 +192,67 @@ data/
   o caso.
 - Limite real: **uma instância do servidor**. Para várias máquinas seria preciso fila
   compartilhada e armazenamento comum (S3/MinIO) — ver a proposta.
+
+## Dois idiomas
+
+O site sai **em inglês ou em português**, e a pessoa pode trocar a qualquer momento.
+
+### Qual idioma
+
+Por ordem (`RemotoLocaleResolver`):
+
+1. a escolha da pessoa, no cookie `remoto-lang` (HttpOnly, SameSite=Lax, Secure sob HTTPS), que
+   dura um ano;
+2. o `Accept-Language` do navegador, que traz o idioma da região de onde se acessa: qualquer
+   variante de português (pt, pt-BR, pt-PT) abre em português;
+3. inglês, para os demais idiomas e para o navegador que não diz nada.
+
+É o idioma do navegador, não o país do endereço: não há base de geolocalização no projeto, e o
+cabeçalho acerta mais (quem está fora do Brasil com o navegador em português continua lendo em
+português). O seletor fica no canto superior direito de toda página e é um link comum
+(`?lang=pt`, `?lang=en`) que mantém os outros parâmetros, de modo que trocar de idioma no editor
+não tira ninguém da tela em que estava. Como a escolha vira cookie, a página também funciona com
+JavaScript desligado.
+
+### Onde ficam os textos
+
+| Onde | O quê |
+|---|---|
+| `messages.properties` | inglês, o pacote padrão (vale para qualquer idioma que não seja português) |
+| `messages_pt.properties` | português |
+| `/js/i18n.js` | as chaves `js.*`, montadas pelo `I18nScriptController` para o idioma do pedido; o navegador usa `window.T("chave", ...)` |
+| `br.remoto.web.i18n.Messages` | `Messages.msg("chave", ...)` no servidor, inclusive nos objetos que não são beans (campos do editor, vistas dos resultados) |
+
+`MessagesTest` falha se uma chave existir num arquivo e faltar no outro, ou se algum texto estiver
+vazio: um texto novo sem tradução apareceria na página como a chave crua.
+
+O formato da data das simulações (dia/mês ou mês/dia) e o separador decimal das durações
+("5,0 s simulados" / "5.0 s simulated") também seguem o idioma.
+
+### O que fica em inglês nos dois idiomas
+
+- As **telas do editor** e os **menus da tela de resultados**: são os rótulos, as unidades e os
+  nomes do site antigo (`LegacyScreens`, `ResultMenu`), que os artigos citam. Traduzi-los
+  desencontraria a interface da literatura.
+- Os **nomes e as descrições dos cenários**, que vêm do banco antigo e dos arquivos de
+  `scenarios/`, e os nomes dos resultados (`forca-SOL`, `disparos-SOL`).
+- Os **dados bibliográficos** da página de publicações (títulos, autores, veículos).
+
+### A versão
+
+O cabeçalho mostra a versão como o site antigo mostrava ("Current Version: 2.1"): o número vem do
+`pom` pelo filtro de recursos do Maven (`remoto.version: @project.version@`) e a página mostra
+maior.menor — "Versão 3.0" ou "Version 3.0".
+
+### O site do projeto (GitHub Pages)
+
+A apresentação em `docs/` é estática, então são dois arquivos: `docs/index.html` (inglês) e
+`docs/pt/index.html` (português), com o CSS num só lugar (`docs/assets/site.css`), `canonical` e
+`hreflang` apontando um para o outro. Um script pequeno manda a primeira visita para a versão do
+idioma do navegador; quem clica no seletor fixa a escolha (`localStorage`), que o redirecionamento
+nunca desfaz. Sem JavaScript não há redirecionamento, e o seletor continua funcionando. O
+`scripts/pages-figure.mjs` regenera a figura de abertura nas duas páginas, com os rótulos de cada
+idioma.
 
 ## Página principal
 
@@ -665,5 +727,7 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
 10. ~~Dados que sobrevivem a reinícios.~~ Feito: a área deixou de depender da sessão (que ficava
     só na memória do servidor e, ao parar, apagava as áreas) e passou a ser identificada por um
     cookie de 30 dias; ver [Áreas e o cookie](#áreas-e-o-cookie).
-11. **Ordens do processo gama dos trabalhos originais.** Se as ordens usadas nas publicações
+11. ~~Site em dois idiomas.~~ Feito: inglês e português na aplicação e na apresentação, pelo
+    idioma do navegador e com seletor em toda página; ver [Dois idiomas](#dois-idiomas).
+12. **Ordens do processo gama dos trabalhos originais.** Se as ordens usadas nas publicações
     forem recuperadas, os cenários com tratos gama podem voltar a ser gama, com o `tractStd`.

@@ -5,6 +5,11 @@ spring:
     problemdetails:
       enabled: true
 
+  messages:
+    basename: messages        # messages.properties (inglês, padrão) e messages_pt.properties
+    # sem isto, um pedido em inglês cairia no idioma do servidor (pt_BR numa máquina brasileira)
+    fallback-to-system-locale: false
+
   servlet:
     multipart:
       max-file-size: 500MB      # importação de cenários (.json/.zip) e de simulações (.zip)
@@ -18,6 +23,7 @@ server:
   # forward-headers-strategy: native
 
 remoto:
+  version: '@project.version@'        # preenchido pelo Maven; o cabeçalho mostra maior.menor
   data-dir: ./data                    # REMOTO_DATA_DIR
   public-scenarios-dir: ./scenarios   # REMOTO_PUBLIC_SCENARIOS_DIR
   simulation:

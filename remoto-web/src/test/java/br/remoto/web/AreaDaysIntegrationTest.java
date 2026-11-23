@@ -44,7 +44,8 @@ class AreaDaysIntegrationTest {
 
     @Test
     void cookieEPaginaSeguemOPrazoDaArea() throws Exception {
-        mvc.perform(get("/"))
+        // em português, para conferir a frase da página (o idioma vem do navegador)
+        mvc.perform(get("/").header("Accept-Language", "pt-BR"))
                 .andExpect(status().isOk())
                 .andExpect(cookie().maxAge("remoto-area", (int) Duration.ofDays(7).toSeconds()))
                 .andExpect(content().string(containsString("depois de 7 dias sem uso")));

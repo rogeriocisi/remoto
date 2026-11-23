@@ -13,6 +13,7 @@ import br.remoto.storage.run.RunManifest;
 import br.remoto.storage.run.RunRepository;
 import br.remoto.storage.run.RunStatus;
 import br.remoto.web.config.RemotoProperties;
+import br.remoto.web.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -95,16 +96,14 @@ public class SimulationService implements DisposableBean {
         SimulationEngine engine = engines.forScenario(scenario);
         synchronized (lock) {
             if (queue.queued(owner) >= maxQueuedPerUser) {
-                throw new QuotaExceededException("Limite de " + maxQueuedPerUser
-                        + " simulações aguardando na fila. Espere algumas terminarem.");
+                throw new QuotaExceededException(Messages.msg("quota.queuedPerUser", maxQueuedPerUser));
             }
             if (maxPerOrigin > 0 && origin != null
                     && jobs.values().stream().filter(j -> origin.equals(j.origin())).count() >= maxPerOrigin) {
-                throw new QuotaExceededException("Limite de " + maxPerOrigin
-                        + " simulações rodando ou na fila a partir do mesmo endereço. Espere algumas terminarem.");
+                throw new QuotaExceededException(Messages.msg("quota.perOrigin", maxPerOrigin));
             }
             if (maxQueuedTotal > 0 && jobs.size() - running >= maxQueuedTotal) {
-                throw new QuotaExceededException("A fila do servidor está cheia. Tente de novo mais tarde.");
+                throw new QuotaExceededException(Messages.msg("quota.queueFull"));
             }
             RunManifest manifest = runs.create(owner, scenario, engine.version());
             Job job = new Job(owner, origin, manifest.runId(), scenario, engine, new AtomicBoolean());

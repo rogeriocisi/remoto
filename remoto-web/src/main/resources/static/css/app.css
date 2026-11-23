@@ -75,6 +75,7 @@ a { color: var(--primaria); }
 .marca-link { display: inline-flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; }
 .marca strong { font-size: 1.25rem; letter-spacing: -.01em; }
 .marca .sub { color: var(--suave); font-size: .9rem; }
+.marca .versao { color: var(--suave); font-size: .8rem; border: 1px solid var(--borda); border-radius: 999px; padding: 0 7px; }
 .conta { display: flex; gap: 8px; align-items: center; }
 
 /* ---- layout da página principal: barra lateral + área de trabalho, cada uma rolando sozinha ---- */
@@ -139,6 +140,8 @@ button:focus-visible, .botao:focus-visible, .linha-execucao:focus-visible, .aba:
 button.secundario, .botao.secundario { background: transparent; color: var(--primaria); }
 button.secundario:hover, .botao.secundario:hover { background: var(--primaria-clara); filter: none; }
 .pequeno { padding: 2px 9px; font-size: .85rem; }
+/* seletor de idioma: só "PT" ou "EN", centrado e sempre da mesma largura */
+.idioma { min-width: 2.9em; justify-content: center; letter-spacing: .03em; }
 .perigo.secundario { color: var(--erro); border-color: var(--borda); }
 .perigo.secundario:hover { background: var(--erro-clara); }
 .icone { padding: 3px; width: 28px; height: 28px; justify-content: center; border-color: var(--borda); }
@@ -278,6 +281,8 @@ label.botao { cursor: pointer; }
 .publicacoes li > span, .titulo-publicacao { display: block; }
 .titulo-publicacao { font-weight: 600; color: var(--primaria); text-decoration: none; }
 .titulo-publicacao:hover { text-decoration: underline; }
+/* trabalho sem DOI: o título não é link, então não vai na cor de link */
+span.titulo-publicacao { color: var(--texto); }
 .autores { color: var(--texto); }
 .revista { color: var(--suave); font-size: .9rem; }
 .resumo { color: var(--suave); font-size: .9rem; margin-top: 2px; }

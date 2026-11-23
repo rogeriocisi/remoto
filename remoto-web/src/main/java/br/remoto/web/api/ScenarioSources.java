@@ -4,6 +4,7 @@ import br.remoto.core.scenario.Scenario;
 import br.remoto.storage.Versioned;
 import br.remoto.storage.scenario.PublicScenarioCatalog;
 import br.remoto.storage.scenario.ScenarioRepository;
+import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import org.springframework.stereotype.Component;
 
@@ -30,11 +31,11 @@ public class ScenarioSources {
         }
         if (request.scenarioId() != null) {
             return scenarios.find(caller.id(), request.scenarioId()).map(Versioned::value)
-                    .orElseThrow(() -> new NoSuchElementException("cenário não encontrado"));
+                    .orElseThrow(() -> new NoSuchElementException(Messages.msg("scenario.notFound")));
         }
         if (request.publicScenarioId() != null) {
             return catalog.find(request.publicScenarioId())
-                    .orElseThrow(() -> new NoSuchElementException("cenário público não encontrado"));
+                    .orElseThrow(() -> new NoSuchElementException(Messages.msg("scenario.public.notFound")));
         }
         throw new IllegalArgumentException("informe scenario, scenarioId ou publicScenarioId");
     }

@@ -7,6 +7,7 @@ import br.remoto.core.scenario.ScenarioValidator;
 import br.remoto.storage.JsonCodec;
 import br.remoto.storage.UserId;
 import br.remoto.storage.scenario.ScenarioRepository;
+import br.remoto.web.i18n.Messages;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -106,11 +107,11 @@ public class ScenarioFiles {
                     importOne(owner, name, readLimited(in), count, created, errors);
                 }
             } catch (IOException | IllegalStateException e) {
-                errors.add(name + ": não foi possível ler (" + e.getMessage() + ")");
+                errors.add(Messages.msg("import.unreadable", name, e.getMessage()));
             }
         }
         if (created.isEmpty() && errors.isEmpty()) {
-            errors.add("nenhum arquivo enviado");
+            errors.add(Messages.msg("import.noFile"));
         }
         return new Imported(List.copyOf(created), List.copyOf(errors));
     }
@@ -134,7 +135,7 @@ public class ScenarioFiles {
                            List<Scenario> created, List<String> errors) {
         if (++count[0] > MAX_SCENARIOS) {
             if (count[0] == MAX_SCENARIOS + 1) {
-                errors.add("no máximo " + MAX_SCENARIOS + " cenários por importação; os demais foram ignorados");
+                errors.add(Messages.msg("import.tooMany", MAX_SCENARIOS));
             }
             return;
         }
@@ -142,7 +143,7 @@ public class ScenarioFiles {
         try {
             scenario = json.fromBytes(content, Scenario.class);
         } catch (RuntimeException e) {
-            errors.add(name + ": não é um cenário do ReMoto em JSON");
+            errors.add(Messages.msg("import.notScenario", name));
             return;
         }
         List<String> problems = new ArrayList<>(ScenarioValidator.validate(scenario));

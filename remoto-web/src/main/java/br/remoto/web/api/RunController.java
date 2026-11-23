@@ -5,6 +5,7 @@ import br.remoto.storage.run.ResultFiles;
 import br.remoto.storage.run.RunManifest;
 import br.remoto.storage.run.RunRepository;
 import br.remoto.storage.run.RunStatus;
+import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.ProgressHub;
 import br.remoto.web.sim.SimulationService;
@@ -82,7 +83,7 @@ class RunController {
 
     @GetMapping("/{id}/config")
     Scenario config(Caller caller, @PathVariable String id) {
-        return runs.config(caller.id(), id).orElseThrow(() -> new NoSuchElementException("execução não encontrada"));
+        return runs.config(caller.id(), id).orElseThrow(() -> new NoSuchElementException(Messages.msg("run.notFound")));
     }
 
     /** Ativa: cancela (202). Terminada: apaga (204). */
@@ -155,14 +156,14 @@ class RunController {
     }
 
     private RunManifest find(Caller caller, String id) {
-        return runs.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException("execução não encontrada"));
+        return runs.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException(Messages.msg("run.notFound")));
     }
 
     /** Só aceita nomes que existem de fato na execução do próprio usuário. */
     private Path resultsDir(Caller caller, String id, String name) {
         find(caller, id);
         if (!runs.resultNames(caller.id(), id).contains(name)) {
-            throw new NoSuchElementException("resultado não encontrado");
+            throw new NoSuchElementException(Messages.msg("result.notFound"));
         }
         return runs.resultsDir(caller.id(), id);
     }

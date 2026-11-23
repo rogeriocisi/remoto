@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${lang == 'pt'} ? 'pt-BR' : 'en'" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title th:text="|Erro ${status} – ReMoto|">Erro – ReMoto</title>
+  <title th:text="#{error.title(${status})}">Erro – ReMoto</title>
   <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
   <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
   <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
@@ -15,45 +15,46 @@
   <div class="marca">
     <a th:href="@{/}" class="marca-link"><img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="30" height="30">
       <strong>ReMoto</strong></a>
-    <span class="sub">simulador de núcleos motores da medula espinhal</span>
+    <span class="sub" th:text="#{app.tagline}">simulador de núcleos motores da medula espinhal</span>
   </div>
+  <nav class="conta">
+    <th:block th:replace="~{fragments :: idioma}"></th:block>
+  </nav>
 </header>
 
 <main class="pagina-erro">
   <section class="cartao" th:switch="${status}">
-    <p class="codigo-erro" th:text="|Erro ${status}|">Erro 500</p>
+    <p class="codigo-erro" th:text="#{error.code(${status})}">Erro 500</p>
 
     <th:block th:case="404">
-      <h1>Não encontrado</h1>
-      <p>O endereço não existe, ou o cenário ou a simulação não está mais na sua área. Sem login,
-        cada navegador tem a sua área, apagada depois de um tempo sem uso.</p>
+      <h1 th:text="#{error.404.heading}">Não encontrado</h1>
+      <p th:text="#{error.404.body}">O endereço não existe.</p>
     </th:block>
     <th:block th:case="403">
-      <h1>A página ficou desatualizada</h1>
-      <p>O token de segurança da página não vale mais. Volte à página inicial e tente de novo.</p>
+      <h1 th:text="#{error.403.heading}">A página ficou desatualizada</h1>
+      <p th:text="#{error.403.body}">O token de segurança da página não vale mais.</p>
     </th:block>
     <th:block th:case="400">
-      <h1>Pedido inválido</h1>
-      <p>Os dados enviados não puderam ser usados.</p>
+      <h1 th:text="#{error.400.heading}">Pedido inválido</h1>
+      <p th:text="#{error.400.body}">Os dados enviados não puderam ser usados.</p>
     </th:block>
     <th:block th:case="413">
-      <h1>Arquivo grande demais</h1>
-      <p>O arquivo enviado passa do tamanho máximo aceito pelo servidor.</p>
+      <h1 th:text="#{error.413.heading}">Arquivo grande demais</h1>
+      <p th:text="#{error.413.body}">O arquivo enviado passa do tamanho máximo.</p>
     </th:block>
     <th:block th:case="*">
-      <h1>Algo deu errado</h1>
-      <p>O servidor não conseguiu concluir o pedido. Tente de novo; se o erro continuar, recarregue
-        a página inicial. Os seus cenários e simulações continuam guardados.</p>
+      <h1 th:text="#{error.other.heading}">Algo deu errado</h1>
+      <p th:text="#{error.other.body}">O servidor não conseguiu concluir o pedido.</p>
     </th:block>
 
     <p th:if="${message != null and !#strings.isEmpty(message) and status != 500}" class="detalhe-erro"
        th:text="${message}">detalhe</p>
 
     <div class="acoes">
-      <a th:href="@{/}" class="botao">Voltar à página inicial</a>
-      <button type="button" class="secundario" onclick="history.back()">Voltar</button>
+      <a th:href="@{/}" class="botao" th:text="#{error.home}">Voltar à página inicial</a>
+      <button type="button" class="secundario" onclick="history.back()" th:text="#{error.back}">Voltar</button>
     </div>
-    <p class="notas" th:if="${path}" th:text="|Endereço: ${path}|">Endereço</p>
+    <p class="notas" th:if="${path}" th:text="#{error.path(${path})}">Endereço</p>
   </section>
 </main>
 </body>

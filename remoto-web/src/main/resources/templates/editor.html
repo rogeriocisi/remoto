@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${lang == 'pt'} ? 'pt-BR' : 'en'" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title th:text="|Editar: ${scenario.name} – ReMoto|">Editar – ReMoto</title>
+  <title th:text="#{editor.title(${scenario.name})}">Editar – ReMoto</title>
   <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
   <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
   <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
@@ -13,17 +13,20 @@
 <body>
 <header class="topo">
   <div class="marca">
-    <a th:href="@{/}" class="marca-link discreto" title="Voltar à página inicial">
+    <a th:href="@{/}" class="marca-link discreto" th:title="#{editor.back.title}">
       <img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="26" height="26">← ReMoto</a>
     <strong th:text="${scenario.name}">cenário</strong>
   </div>
-  <form th:action="@{/editor/{id}/run(id=${scenario.id})}" method="post" class="inline">
-    <button type="submit">Rodar este cenário</button>
-  </form>
+  <div class="conta">
+    <form th:action="@{/editor/{id}/run(id=${scenario.id})}" method="post" class="inline">
+      <button type="submit" th:text="#{editor.run}">Rodar este cenário</button>
+    </form>
+    <th:block th:replace="~{fragments :: idioma}"></th:block>
+  </div>
 </header>
 
 <div class="editor">
-  <nav class="menu-editor cartao" aria-label="Telas do editor">
+  <nav class="menu-editor cartao" th:aria-label="#{editor.menu.aria}">
     <a th:href="@{/editor/{id}(id=${scenario.id},screen='general')}"
        th:classappend="${screen == 'general'} ? 'atual'">Scenario</a>
     <th:block th:each="g : ${menu}">
@@ -31,13 +34,14 @@
       <th:block th:each="item : ${g.items}">
         <a th:if="${item.available}" th:href="@{/editor/{id}(id=${scenario.id},screen=${item.id})}"
            th:classappend="${screen == item.id} ? 'atual'" th:text="${item.title}">Tela</a>
-        <span th:unless="${item.available}" class="indisponivel" th:text="|${item.title} (em breve)|">Tela</span>
+        <span th:unless="${item.available}" class="indisponivel"
+              th:text="#{editor.soon(${item.title})}">Tela</span>
       </th:block>
     </th:block>
   </nav>
 
   <main class="cartao conteudo-editor">
-    <p th:if="${saved}" class="ok">Salvo.</p>
+    <p th:if="${saved}" class="ok" th:text="#{editor.saved}">Salvo.</p>
     <p th:if="${param.erro}" class="erro" th:text="${param.erro}">erro</p>
     <ul th:if="${!#lists.isEmpty(errors)}" class="erro">
       <li th:each="e : ${errors}" th:text="${e}">erro</li>
@@ -49,17 +53,20 @@
       <form th:action="@{/editor/{id}(id=${scenario.id})}" method="post" class="form-geral">
         <input type="hidden" name="screen" value="general">
         <input type="hidden" name="etag" th:value="${etag}">
-        <label>Name <input type="text" name="name" th:value="${scenario.name}" maxlength="60" required></label>
-        <label>Description <textarea name="description" rows="5" th:text="${scenario.description}"></textarea></label>
-        <label>Seed <input type="text" name="seed" th:value="${scenario.seed}" inputmode="numeric"></label>
-        <p class="vazio">
-          Duração e passo ficam em <em>Simulation → Duration and Time Step</em>; os demais parâmetros, nas telas do menu.
+        <label><th:block th:text="#{editor.scenario.name}">Name</th:block>
+          <input type="text" name="name" th:value="${scenario.name}" maxlength="60" required></label>
+        <label><th:block th:text="#{editor.scenario.description}">Description</th:block>
+          <textarea name="description" rows="5" th:text="${scenario.description}"></textarea></label>
+        <label><th:block th:text="#{editor.scenario.seed}">Seed</th:block>
+          <input type="text" name="seed" th:value="${scenario.seed}" inputmode="numeric"></label>
+        <p class="vazio" th:utext="#{editor.general.note}">
+          Duração e passo ficam em Simulation → Duration and Time Step.
         </p>
-        <button type="submit">Salvar</button>
+        <button type="submit" th:text="#{editor.save}">Salvar</button>
       </form>
     </th:block>
 
-    <!-- Telas do site antigo -->
+    <!-- Telas do site antigo (rótulos em inglês nos dois idiomas: são os do site original) -->
     <th:block th:if="${view != null}">
       <h2 th:text="${view.title}">Tela</h2>
 
@@ -73,7 +80,7 @@
                     th:selected="${o.value == s.selected}">opção</option>
           </select>
         </label>
-        <noscript><button type="submit">Trocar</button></noscript>
+        <noscript><button type="submit" th:text="#{editor.selector.change}">Trocar</button></noscript>
       </form>
 
       <form th:action="@{/editor/{id}(id=${scenario.id})}" method="post">
@@ -83,7 +90,8 @@
 
         <section th:each="sec : ${view.sections}" class="secao-editor">
           <h3 th:if="${sec.title != null}" th:text="${sec.title}">Seção</h3>
-          <p th:if="${#lists.isEmpty(sec.rows)}" class="vazio">Nada para editar nesta seleção.</p>
+          <p th:if="${#lists.isEmpty(sec.rows)}" class="vazio" th:text="#{editor.section.empty}">
+            Nada para editar nesta seleção.</p>
           <div class="tabela-rolavel" th:unless="${#lists.isEmpty(sec.rows)}">
             <!-- MATRIX: parâmetros nas linhas, tipos nas colunas (from/to) -->
             <table th:if="${sec.layout.name() == 'MATRIX'}" class="tabela tabela-editor">
@@ -129,7 +137,7 @@
         <ul th:if="${!#lists.isEmpty(view.notes)}" class="notas">
           <li th:each="n : ${view.notes}" th:text="${n}">nota</li>
         </ul>
-        <button type="submit">Salvar</button>
+        <button type="submit" th:text="#{editor.save}">Salvar</button>
       </form>
     </th:block>
   </main>

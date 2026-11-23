@@ -1,905 +1,1007 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ReMoto: a simulator of spinal cord motor nuclei, nerves and muscles</title>
-  <meta name="description" content="ReMoto is an open-source simulator of the spinal cord networks that control human muscles: motoneuron pools, interneurons, afferents, muscles and proprioceptors of the ankle, from membrane conductances to joint torque.">
+  <meta name="description"
+    content="ReMoto is an open-source simulator of the spinal cord networks that control human muscles: motoneuron pools, interneurons, afferents, muscles and proprioceptors of the ankle, from membrane conductances to joint torque.">
   <meta name="theme-color" content="#1f5f99">
   <meta property="og:title" content="ReMoto: spinal motor circuits, simulated spike by spike">
-  <meta property="og:description" content="Open-source simulator of the spinal cord networks that control human muscles. Reproducible runs, in a browser or on the command line.">
+  <meta property="og:description"
+    content="Open-source simulator of the spinal cord networks that control human muscles. Reproducible runs, in a browser or on the command line.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rogeriocisi.github.io/remoto/">
+  <meta property="og:locale" content="en">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <link rel="canonical" href="https://rogeriocisi.github.io/remoto/">
+  <link rel="alternate" hreflang="en" href="https://rogeriocisi.github.io/remoto/">
+  <link rel="alternate" hreflang="pt-BR" href="https://rogeriocisi.github.io/remoto/pt/">
+  <link rel="alternate" hreflang="x-default" href="https://rogeriocisi.github.io/remoto/">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="assets/remoto-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
-  <style>
-    :root {
-      color-scheme: light;
-      --paper: #f6f3ea;
-      --paper-2: #eee9dc;
-      --sheet: #fcfaf5;
-      --ink: #17212b;
-      --ink-2: #3b4652;
-      --ink-3: #5d6874;
-      --rule: #d5cfbe;
-      --grid: #e7e2d4;
-      --blue: #1f5f99;
-      --blue-deep: #153f67;
-      --amber: #ffd166;
-      --red: #ad3a2c;
-      --slate: #1a242e;
-      --display: "Sitka Display", "Sitka Heading", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", Georgia, serif;
-      --text: "Sitka Text", "Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, Cambria, Georgia, serif;
-      --mono: ui-monospace, "Cascadia Mono", "SF Mono", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
-      --rail: 8.5rem;
-      --wide: 71rem;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; -webkit-text-size-adjust: 100%; }
-    body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--ink);
-      font: 1.0625rem/1.65 var(--text);
-      text-rendering: optimizeLegibility;
-    }
-    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: .18em; }
-    a:hover { color: var(--blue-deep); text-decoration-thickness: 2px; }
-    :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 2px; }
-    code, kbd, pre, .mono { font-family: var(--mono); }
-    code { font-size: .86em; background: var(--paper-2); padding: .08em .32em; border-radius: 3px; }
-    p { margin: 0 0 1em; }
-    em { font-style: italic; }
-
-    .skip { position: absolute; left: -999px; top: 0; background: var(--ink); color: var(--paper); padding: .5rem .9rem; z-index: 50; }
-    .skip:focus { left: .5rem; top: .5rem; }
-
-    /* ---- top bar ---- */
-    .top {
-      position: sticky; top: 0; z-index: 20;
-      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-      padding: .6rem clamp(1rem, 4vw, 2.5rem);
-      background: color-mix(in srgb, var(--paper) 88%, transparent);
-      backdrop-filter: blur(8px);
-      border-bottom: 1px solid var(--rule);
-    }
-    .brand { display: inline-flex; align-items: center; gap: .55rem; color: var(--ink); text-decoration: none; font: 700 1.2rem/1 var(--display); letter-spacing: -.01em; }
-    .brand span i { font-style: normal; color: var(--blue); }
-    .top nav { display: flex; gap: clamp(.7rem, 2vw, 1.6rem); align-items: center; overflow-x: auto; scrollbar-width: none; }
-    .top nav a {
-      font: 500 .72rem/1 var(--mono); letter-spacing: .09em; text-transform: uppercase;
-      color: var(--ink-2); text-decoration: none; white-space: nowrap; padding: .45rem 0;
-      border-bottom: 2px solid transparent;
-    }
-    .top nav a:hover { color: var(--ink); border-bottom-color: var(--amber); }
-    .top nav a.gh { color: var(--paper); background: var(--ink); padding: .5rem .75rem; border-radius: 2px; border: 0; }
-    .top nav a.gh:hover { background: var(--blue-deep); }
-    @media (max-width: 700px) { .top nav a:not(.gh):not(.keep) { display: none; } }
-
-    /* ---- hero ---- */
-    .hero {
-      position: relative;
-      padding: clamp(2.5rem, 7vw, 5.5rem) clamp(1rem, 4vw, 2.5rem) clamp(2rem, 5vw, 3.5rem);
-      overflow: hidden;
-    }
-    .hero::before {
-      content: ""; position: absolute; inset: 0; z-index: -1;
-      background-image:
-        linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-      background-size: 24px 24px;
-      mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 78%);
-      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 78%);
-    }
-    .hero-in { max-width: var(--wide); margin: 0 auto; }
-    .eyebrow {
-      display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
-      font: 500 .74rem/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3);
-      margin: 0 0 1.4rem;
-    }
-    .eyebrow svg { flex: none; }
-    .eyebrow .trace { stroke-dasharray: 190; stroke-dashoffset: 190; animation: draw 1.4s .2s cubic-bezier(.6,.1,.2,1) forwards; }
-    h1 {
-      font: 600 clamp(2.5rem, 6.4vw, 5.1rem)/1.02 var(--display);
-      letter-spacing: -.022em;
-      margin: 0 0 1.5rem;
-      max-width: 15ch;
-      text-wrap: balance;
-    }
-    h1 .hl { background: linear-gradient(transparent 66%, var(--amber) 66%, var(--amber) 93%, transparent 93%); padding: 0 .06em; }
-    .lede { font-size: clamp(1.1rem, 1.7vw, 1.32rem); line-height: 1.55; color: var(--ink-2); max-width: 44rem; margin: 0 0 2rem; }
-    .cta { display: flex; flex-wrap: wrap; gap: .8rem; margin-bottom: 2.6rem; }
-    .btn {
-      display: inline-flex; align-items: center; gap: .55rem;
-      font: 600 .8rem/1 var(--mono); letter-spacing: .07em; text-transform: uppercase; text-decoration: none;
-      padding: .95rem 1.25rem; border-radius: 2px; border: 1.5px solid var(--ink);
-      color: var(--ink); background: transparent;
-      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
-    }
-    .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--amber); color: var(--ink); }
-    .btn.primary { background: var(--ink); color: var(--paper); }
-    .btn.primary:hover { background: var(--blue-deep); border-color: var(--blue-deep); color: #fff; }
-    .rise { opacity: 0; transform: translateY(14px); animation: rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
-    .rise.d1 { animation-delay: .08s; } .rise.d2 { animation-delay: .18s; } .rise.d3 { animation-delay: .28s; } .rise.d4 { animation-delay: .4s; }
-
-    /* ---- recording strip (hero figure) ---- */
-    .strip {
-      background: var(--sheet);
-      border: 1px solid var(--rule);
-      border-radius: 4px;
-      box-shadow: 0 1px 0 #fff inset, 0 18px 40px -28px rgba(23, 33, 43, .45);
-      padding: 1rem clamp(.6rem, 2vw, 1.4rem) .9rem;
-    }
-    .strip-head {
-      display: flex; flex-wrap: wrap; gap: .3rem 1.2rem; justify-content: space-between; align-items: baseline;
-      font: 500 .72rem/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3);
-      padding-bottom: .7rem; margin-bottom: .4rem; border-bottom: 1px solid var(--rule);
-    }
-    .strip-head b { color: var(--ink); font-weight: 600; }
-    .scroll-x { overflow-x: auto; }
-    .scroll-x > svg { display: block; width: 100%; min-width: 720px; height: auto; }
-    .reveal { clip-path: inset(0 100% 0 0); animation: reveal 2.6s .55s cubic-bezier(.45,.05,.3,1) forwards; }
-    .readout {
-      display: flex; flex-wrap: wrap; gap: .2rem 1.6rem; min-height: 1.6rem;
-      font: 500 .78rem/1.6 var(--mono); color: var(--ink-3); padding-top: .5rem; border-top: 1px solid var(--rule); margin-top: .3rem;
-    }
-    .readout b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-    figure { margin: 0; }
-    figcaption { font-size: .93rem; line-height: 1.55; color: var(--ink-2); margin-top: .9rem; max-width: 62rem; }
-    figcaption b { font: 600 .74rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); margin-right: .4rem; }
-    details.data { margin-top: .7rem; font-size: .9rem; }
-    details.data summary { cursor: pointer; font: 500 .74rem/1.6 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--blue); }
-
-    /* chart ink */
-    .ch-grid { stroke: var(--grid); stroke-width: 1; }
-    .ch-axis { stroke: var(--rule); stroke-width: 1; }
-    .ch-tick { font: 500 10.5px var(--mono); fill: var(--ink-3); font-variant-numeric: tabular-nums; }
-    .ch-title { font: 600 10.5px var(--mono); letter-spacing: .09em; fill: var(--ink-2); text-transform: uppercase; }
-    .ch-unit { font: 500 10.5px var(--mono); fill: var(--ink-3); }
-    .ch-line { fill: none; stroke: var(--blue); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-    .ch-wash { fill: var(--blue); opacity: .1; }
-    .ch-env { fill: var(--blue); stroke: var(--blue); stroke-width: .6; stroke-linejoin: round; }
-    .xh { stroke: var(--ink); stroke-width: 1; pointer-events: none; }
-
-    /* ---- sections ---- */
-    main { padding: 0 clamp(1rem, 4vw, 2.5rem); }
-    .sec {
-      max-width: var(--wide); margin: 0 auto;
-      display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); column-gap: 1.5rem;
-      padding: clamp(3rem, 7vw, 5.5rem) 0 0;
-    }
-    .sec-no {
-      position: sticky; top: 5rem; align-self: start;
-      font: 500 .74rem/1.5 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
-      border-top: 2px solid var(--ink); padding-top: .55rem;
-    }
-    .sec-no b { display: block; font: 600 2.1rem/1 var(--display); letter-spacing: 0; color: var(--ink); margin-bottom: .35rem; }
-    .sec-body { min-width: 0; border-top: 1px solid var(--rule); padding-top: .4rem; }
-    h2 { font: 600 clamp(1.8rem, 3.4vw, 2.6rem)/1.1 var(--display); letter-spacing: -.015em; margin: 0 0 1.1rem; text-wrap: balance; max-width: 24ch; }
-    h3 { font: 600 1.18rem/1.3 var(--display); margin: 2.2rem 0 .6rem; }
-    .prose { max-width: 43rem; }
-    .lead { font-size: 1.16rem; line-height: 1.55; color: var(--ink-2); }
-    @media (max-width: 860px) {
-      .sec { grid-template-columns: 1fr; }
-      .sec-no { position: static; display: flex; align-items: baseline; gap: .7rem; margin-bottom: .8rem; }
-      .sec-no b { display: inline; font-size: 1.5rem; margin: 0; }
-      .sec-body { border-top: 0; padding-top: 0; }
-    }
-
-    /* definition sheet */
-    .sheet { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 0 2.5rem; margin: 1.8rem 0 0; }
-    .sheet div { display: grid; grid-template-columns: 7.2rem 1fr; gap: .9rem; padding: .85rem 0; border-top: 1px solid var(--rule); break-inside: avoid; }
-    .sheet dt { font: 600 .72rem/1.5 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); padding-top: .2rem; }
-    .sheet dd { margin: 0; font-size: .97rem; line-height: 1.55; color: var(--ink-2); }
-
-    .diagram { margin: 2rem 0 0; background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px; padding: clamp(.6rem, 2vw, 1.2rem); }
-    .diagram svg { display: block; width: 100%; min-width: 660px; height: auto; }
-    .dg-region { fill: var(--paper-2); stroke: var(--rule); }
-    .dg-nerve { fill: var(--amber); opacity: .38; }
-    .dg-node { fill: #fff; stroke: var(--ink); stroke-width: 1.4; }
-    .dg-t { font: 600 16.5px var(--display); fill: var(--ink); }
-    .dg-s { font: 400 13px var(--text); fill: var(--ink-2); }
-    .dg-i { font: italic 400 13px var(--text); fill: var(--ink-3); }
-    .dg-cap { font: 600 10.5px var(--mono); letter-spacing: .12em; fill: var(--ink-3); }
-    .dg-exc { fill: none; stroke: var(--blue); stroke-width: 1.9; }
-    .dg-inh { fill: none; stroke: var(--red); stroke-width: 1.9; }
-    .dg-ink { fill: none; stroke: var(--ink); stroke-width: 1.6; }
-
-    /* numbered feature list */
-    .feat { list-style: none; counter-reset: f; margin: 2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 0 2.5rem; }
-    .feat li { counter-increment: f; position: relative; padding: 1.1rem 0 1.1rem 3.1rem; border-top: 1px solid var(--rule); }
-    .feat li::before { content: counter(f, decimal-leading-zero); position: absolute; left: 0; top: 1.25rem; font: 500 .8rem/1 var(--mono); color: var(--blue); letter-spacing: .05em; }
-    .feat h3 { margin: 0 0 .3rem; font-size: 1.12rem; }
-    .feat p { margin: 0; font-size: .97rem; line-height: 1.55; color: var(--ink-2); }
-
-    /* tables: ruled, like a printed paper */
-    .tbl-wrap { overflow-x: auto; margin: 1.6rem 0 0; }
-    table { border-collapse: collapse; width: 100%; font-size: .95rem; line-height: 1.45; }
-    caption { caption-side: top; text-align: left; font-size: .93rem; color: var(--ink-2); padding-bottom: .6rem; }
-    caption b { font: 600 .74rem/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink); margin-right: .4rem; }
-    thead th { font: 600 .7rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; text-align: left; color: var(--ink-2); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--ink); padding: .6rem .9rem .6rem 0; white-space: nowrap; }
-    tbody td, tbody th { text-align: left; font-weight: 400; vertical-align: top; padding: .6rem .9rem .6rem 0; border-bottom: 1px solid var(--rule); }
-    tbody tr:last-child td, tbody tr:last-child th { border-bottom: 2px solid var(--ink); }
-    tbody th { font-weight: 600; white-space: nowrap; }
-    td.num, th.num { text-align: right; font-family: var(--mono); font-size: .88em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-    thead th.num { font-size: .7rem; }
-    td:last-child, th:last-child { padding-right: 0; }
-    td.file { padding-left: 1.2rem; }
-    td.file { font-family: var(--mono); font-size: .8em; white-space: nowrap; }
-    td.file a { text-decoration: none; }
-    td.file a:hover { text-decoration: underline; }
-    @media (max-width: 700px) {
-      .tbl-wrap table { min-width: 36rem; }
-      tbody th { white-space: normal; }
-    }
-
-    /* checks */
-    .checks { list-style: none; margin: 1.8rem 0 0; padding: 0; max-width: 50rem; }
-    .checks li { display: grid; grid-template-columns: 1.9rem 1fr; gap: .2rem; padding: .8rem 0; border-top: 1px solid var(--rule); font-size: .98rem; line-height: 1.55; color: var(--ink-2); }
-    .checks li:last-child { border-bottom: 1px solid var(--rule); }
-    .checks li::before { content: "="; font: 700 1.05rem/1.5 var(--mono); color: var(--blue); }
-    .checks b { color: var(--ink); font-weight: 600; }
-
-    .note { margin: 2.2rem 0 0; max-width: 50rem; border-left: 3px solid var(--amber); background: var(--sheet); padding: 1.1rem 1.3rem 1rem; border-radius: 0 4px 4px 0; }
-    .note h3 { margin: 0 0 .5rem; font-size: 1.08rem; }
-    .note ul { margin: 0; padding-left: 1.1rem; font-size: .96rem; line-height: 1.55; color: var(--ink-2); }
-    .note li + li { margin-top: .5rem; }
-
-    /* terminal */
-    pre.term {
-      margin: 1.2rem 0 0; padding: 1.1rem 1.25rem; overflow-x: auto;
-      background: var(--slate); color: #e9e4d6; border-radius: 4px;
-      font: 400 .84rem/1.75 var(--mono); tab-size: 2;
-      box-shadow: 0 18px 40px -28px rgba(23, 33, 43, .6);
-    }
-    pre.term .p { color: var(--amber); user-select: none; }
-    pre.term .c { color: #8fa0b1; }
-    .cols { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 50rem; }
-    .cols > div { min-width: 0; }
-    .fine { font-size: .93rem; color: var(--ink-3); line-height: 1.55; }
-
-    /* references */
-    .refs { list-style: none; counter-reset: r; margin: 1.6rem 0 0; padding: 0; max-width: 52rem; }
-    .refs li { counter-increment: r; position: relative; padding: .9rem 0 .9rem 3rem; border-top: 1px solid var(--rule); line-height: 1.5; }
-    .refs li::before { content: "[" counter(r) "]"; position: absolute; left: 0; top: 1rem; font: 500 .8rem/1.5 var(--mono); color: var(--ink-3); }
-    .refs a.t { font-weight: 600; color: var(--ink); text-decoration-color: var(--rule); }
-    .refs a.t:hover { color: var(--blue-deep); text-decoration-color: var(--blue); }
-    .refs span { display: block; font-size: .93rem; color: var(--ink-2); }
-    .links { list-style: none; padding: 0; margin: 1.6rem 0 0; display: flex; flex-wrap: wrap; gap: .7rem; }
-
-    footer {
-      margin-top: clamp(4rem, 9vw, 7rem);
-      background: var(--slate); color: #cfd6dd;
-      padding: 2.8rem clamp(1rem, 4vw, 2.5rem) 2.4rem;
-      font-size: .93rem; line-height: 1.6;
-    }
-    footer .in { max-width: var(--wide); margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.6rem 3rem; }
-    footer h2 { font: 600 .72rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--amber); margin: 0 0 .6rem; max-width: none; }
-    footer a { color: #fff; }
-    footer p { margin: 0 0 .5rem; }
-    footer .brand { color: #fff; margin-bottom: .8rem; }
-    footer .brand span i { color: #8fc0ee; }
-
-    @keyframes rise { to { opacity: 1; transform: none; } }
-    @keyframes draw { to { stroke-dashoffset: 0; } }
-    @keyframes reveal { to { clip-path: inset(0 0 0 0); } }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      .rise, .reveal, .eyebrow .trace { animation: none; opacity: 1; transform: none; clip-path: none; stroke-dashoffset: 0; }
-      .btn { transition: none; }
-    }
-    @media print {
-      .top, .cta { display: none; }
-      .rise, .reveal { animation: none; opacity: 1; transform: none; clip-path: none; }
-      body { background: #fff; }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'en', OTHER = 'pt/';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
 </head>
+
 <body id="top">
-<a class="skip" href="#model">Skip to content</a>
+  <a class="skip" href="#model">Skip to content</a>
 
-<header class="top">
-  <a class="brand" href="#top" aria-label="ReMoto, top of page">
-    <img src="assets/remoto-icon.svg" width="28" height="28" alt="">
-    <span><i>Re</i>Moto</span>
-  </a>
-  <nav aria-label="Sections">
-    <a href="#model">Model</a>
-    <a href="#version">Version 3</a>
-    <a href="#validation">Validation</a>
-    <a href="#run" class="keep">Run it</a>
-    <a href="#scenarios">Scenarios</a>
-    <a href="#publications">Publications</a>
-    <a class="gh" href="https://github.com/rogeriocisi/remoto">GitHub</a>
-  </nav>
-</header>
+  <header class="top">
+    <a class="brand" href="#top" aria-label="ReMoto, top of page">
+      <img src="assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#model">Model</a>
+      <a href="#version">Version 3</a>
+      <a href="#validation">Validation</a>
+      <a href="#run" class="keep">Run it</a>
+      <a href="#scenarios">Scenarios</a>
+      <a href="#publications">Publications</a>
+      <span class="lang" role="group" aria-label="Language">
+        <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i
+          aria-hidden="true">&middot;</i><a class="keep" href="pt/" hreflang="pt-BR" data-lang="pt" lang="pt-BR">PT</a>
+      </span>
+      <a class="gh" href="https://github.com/rogeriocisi/remoto">GitHub</a>
+    </nav>
+  </header>
 
-<div class="hero">
-  <div class="hero-in">
-    <p class="eyebrow rise">
-      <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
-        <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span>Spinal cord &middot; motoneuron pools &middot; muscle</span>
-      <span>Version 3, 2026</span>
-    </p>
-    <h1 class="rise d1">Spinal motor circuits, simulated <span class="hl">spike by spike</span>.</h1>
-    <p class="lede rise d2">ReMoto is an open-source simulator of the spinal cord networks that control human muscles:
-      motoneuron pools, interneurons, sensory afferents, muscles and proprioceptors of the ankle, modeled from
-      membrane conductances up to joint torque. It runs in a browser or on the command line, and every run can be
-      repeated exactly.</p>
-    <p class="cta rise d3">
-      <a class="btn primary" href="https://github.com/rogeriocisi/remoto">Get the code</a>
-      <a class="btn" href="#run">Run it locally</a>
-      <a class="btn" href="#publications">Publications</a>
-    </p>
-
-    <figure class="strip rise d4" id="rec">
-<!-- recording:begin (generated by scripts/pages-figure.mjs; do not edit by hand) -->
-      <div class="strip-head"><span><b>Recording</b> &middot; Default - Soleus contraction</span><span>seed 17 &middot; engine remoto-legacy-2b5-rng1-syn1</span></div>
-      <div class="scroll-x">
-        <svg viewBox="0 0 1000 614" role="img" tabindex="0" aria-labelledby="rec-title rec-desc">
-          <title id="rec-title">Simulated recording of the scenario Default - Soleus contraction</title>
-          <desc id="rec-desc">Four stacked panels over 5 seconds: the soma potential of one motoneuron, the spikes of the motoneuron pool, the surface EMG and the muscle force, which rises in the first second and settles near 309 newtons. The values are in the table below the figure.</desc>
-          <text class="ch-title" x="64" y="21">SOMA POTENTIAL OF ONE MOTONEURON (S 1)</text>
-          <text class="ch-unit" x="984" y="21" text-anchor="end">mV above rest</text>
-          <line class="ch-axis" x1="64" x2="64" y1="30" y2="96"/>
-          <line class="ch-grid" x1="248" x2="248" y1="30" y2="96"/>
-          <line class="ch-grid" x1="432" x2="432" y1="30" y2="96"/>
-          <line class="ch-grid" x1="616" x2="616" y1="30" y2="96"/>
-          <line class="ch-grid" x1="800" x2="800" y1="30" y2="96"/>
-          <line class="ch-grid" x1="984" x2="984" y1="30" y2="96"/>
-          <line class="ch-grid" x1="64" x2="984" y1="91.9" y2="91.9"/>
-          <text class="ch-tick" x="56" y="95.4" text-anchor="end">0</text>
-          <line class="ch-grid" x1="64" x2="984" y1="64.4" y2="64.4"/>
-          <text class="ch-tick" x="56" y="67.9" text-anchor="end">40</text>
-          <line class="ch-grid" x1="64" x2="984" y1="36.9" y2="36.9"/>
-          <text class="ch-tick" x="56" y="40.4" text-anchor="end">80</text>
-          <text class="ch-title" x="64" y="123">SPIKES OF THE MOTONEURON POOL</text>
-          <text class="ch-unit" x="984" y="123" text-anchor="end">motoneuron #</text>
-          <line class="ch-axis" x1="64" x2="64" y1="132" y2="322"/>
-          <line class="ch-grid" x1="248" x2="248" y1="132" y2="322"/>
-          <line class="ch-grid" x1="432" x2="432" y1="132" y2="322"/>
-          <line class="ch-grid" x1="616" x2="616" y1="132" y2="322"/>
-          <line class="ch-grid" x1="800" x2="800" y1="132" y2="322"/>
-          <line class="ch-grid" x1="984" x2="984" y1="132" y2="322"/>
-          <line class="ch-grid" x1="64" x2="984" y1="322" y2="322"/>
-          <text class="ch-tick" x="56" y="325.5" text-anchor="end">1</text>
-          <line class="ch-grid" x1="64" x2="984" y1="258.7" y2="258.7"/>
-          <text class="ch-tick" x="56" y="262.2" text-anchor="end">200</text>
-          <line class="ch-grid" x1="64" x2="984" y1="195.3" y2="195.3"/>
-          <text class="ch-tick" x="56" y="198.8" text-anchor="end">400</text>
-          <line class="ch-grid" x1="64" x2="984" y1="132" y2="132"/>
-          <text class="ch-tick" x="56" y="135.5" text-anchor="end">600</text>
-          <text class="ch-title" x="64" y="349">SURFACE EMG (WITH NOISE, 50&#8211;1000 HZ)</text>
-          <text class="ch-unit" x="984" y="349" text-anchor="end">mV</text>
-          <line class="ch-axis" x1="64" x2="64" y1="358" y2="434"/>
-          <line class="ch-grid" x1="248" x2="248" y1="358" y2="434"/>
-          <line class="ch-grid" x1="432" x2="432" y1="358" y2="434"/>
-          <line class="ch-grid" x1="616" x2="616" y1="358" y2="434"/>
-          <line class="ch-grid" x1="800" x2="800" y1="358" y2="434"/>
-          <line class="ch-grid" x1="984" x2="984" y1="358" y2="434"/>
-          <line class="ch-grid" x1="64" x2="984" y1="415" y2="415"/>
-          <text class="ch-tick" x="56" y="418.5" text-anchor="end">&#8722;0.1</text>
-          <line class="ch-grid" x1="64" x2="984" y1="396" y2="396"/>
-          <text class="ch-tick" x="56" y="399.5" text-anchor="end">0</text>
-          <line class="ch-grid" x1="64" x2="984" y1="377" y2="377"/>
-          <text class="ch-tick" x="56" y="380.5" text-anchor="end">0.1</text>
-          <text class="ch-title" x="64" y="461">MUSCLE FORCE</text>
-          <text class="ch-unit" x="984" y="461" text-anchor="end">N</text>
-          <line class="ch-axis" x1="64" x2="64" y1="470" y2="574"/>
-          <line class="ch-grid" x1="248" x2="248" y1="470" y2="574"/>
-          <line class="ch-grid" x1="432" x2="432" y1="470" y2="574"/>
-          <line class="ch-grid" x1="616" x2="616" y1="470" y2="574"/>
-          <line class="ch-grid" x1="800" x2="800" y1="470" y2="574"/>
-          <line class="ch-grid" x1="984" x2="984" y1="470" y2="574"/>
-          <line class="ch-grid" x1="64" x2="984" y1="574" y2="574"/>
-          <text class="ch-tick" x="56" y="577.5" text-anchor="end">0</text>
-          <line class="ch-grid" x1="64" x2="984" y1="544.3" y2="544.3"/>
-          <text class="ch-tick" x="56" y="547.8" text-anchor="end">100</text>
-          <line class="ch-grid" x1="64" x2="984" y1="514.6" y2="514.6"/>
-          <text class="ch-tick" x="56" y="518.1" text-anchor="end">200</text>
-          <line class="ch-grid" x1="64" x2="984" y1="484.9" y2="484.9"/>
-          <text class="ch-tick" x="56" y="488.4" text-anchor="end">300</text>
-          <line class="ch-axis" x1="64" x2="984" y1="574" y2="574"/>
-          <text class="ch-tick" x="64" y="590" text-anchor="middle">0</text>
-          <text class="ch-tick" x="248" y="590" text-anchor="middle">1</text>
-          <text class="ch-tick" x="432" y="590" text-anchor="middle">2</text>
-          <text class="ch-tick" x="616" y="590" text-anchor="middle">3</text>
-          <text class="ch-tick" x="800" y="590" text-anchor="middle">4</text>
-          <text class="ch-tick" x="984" y="590" text-anchor="middle">5</text>
-          <text class="ch-unit" x="984" y="607" text-anchor="end">time (s)</text>
-          <g class="reveal">
-          <path class="ch-env" d="M65 85.1L67 33.9L69 90.6L71 87.8L73 86.4L75 84.9L77 84L79 36.1L81 90.9L83 89L85 86.1L87 85L89 83.6L91 36.5L93 90.4L95 87.8L97 85.5L99 84.1L101 83.7L103 36.2L105 89.1L107 88.2L109 86.5L111 84L113 83.9L115 36L117 90.8L119 89.3L121 86.8L123 85.5L125 84.1L127 36.3L129 90.8L131 87.1L133 85.3L135 84.2L137 83.8L139 83.8L141 35.6L143 91.1L145 89.1L147 87.1L149 84.4L151 84.3L153 83.6L155 35.8L157 89.9L159 87.9L161 85.9L163 84.4L165 36.6L167 90.7L169 88.6L171 86.7L173 84.9L175 84.4L177 36.3L179 90.1L181 88.3L183 86.6L185 85.4L187 83.8L189 83.6L191 35.8L193 90.5L195 88.1L197 86.2L199 85.3L201 83.5L203 36.1L205 90.9L207 88.1L209 86.1L211 84.7L213 83.7L215 36.1L217 91.1L219 88.8L221 87.9L223 85.4L225 84.4L227 83.6L229 36L231 90.1L233 87.2L235 86.5L237 84.2L239 83.7L241 36.1L243 90.7L245 88.3L247 85.8L249 84.7L251 36.8L253 90.6L255 89.3L257 86.9L259 85.5L261 83.7L263 36.5L265 90.4L267 87.9L269 86.7L271 84.7L273 36.8L275 90.6L277 88.4L279 87.3L281 85.2L283 37.1L285 90.9L287 89.3L289 86.5L291 84.3L293 83.9L295 36.4L297 91.1L299 88.7L301 86.3L303 84.6L305 83.7L307 36.3L309 90.5L311 88.7L313 86.7L315 84L317 84.1L319 36.1L321 91.2L323 89.7L325 86.9L327 84.7L329 84.3L331 36.4L333 91L335 89L337 87.3L339 86.1L341 84.5L343 36L345 91.5L347 89.1L349 87.2L351 85.4L353 83.8L355 36.3L357 91.4L359 90L361 87L363 85.4L365 84.3L367 83.3L369 36.2L371 89.5L373 88.3L375 85.7L377 84.6L379 83.3L381 36.2L383 90L385 87.7L387 85.5L389 83.9L391 83.4L393 36.2L395 90.2L397 88L399 87L401 84.6L403 83.6L405 36L407 90.5L409 88.5L411 86.8L413 85.1L415 83.8L417 83.3L419 36L421 90L423 87.9L425 85.9L427 37.2L429 91.4L431 90L433 87.8L435 85.5L437 84.1L439 36.5L441 90.7L443 88.4L445 85.9L447 85.1L449 84.2L451 36.3L453 90.9L455 89.2L457 86.6L459 84.2L461 83.8L463 36.2L465 90.9L467 88.9L469 87.3L471 85.7L473 85.1L475 36.1L477 91.3L479 89.9L481 87.7L483 86.1L485 84.6L487 83.6L489 35.8L491 90.7L493 88.7L495 87L497 85L499 83.9L501 36.2L503 91L505 88.8L507 86.7L509 84.9L511 84.4L513 36.4L515 90.5L517 88.3L519 85.9L521 84.4L523 36.7L525 90.7L527 89L529 85.8L531 85.1L533 84.1L535 83.8L537 35.9L539 90.1L541 88.7L543 86.3L545 85.2L547 84.1L549 36.3L551 90.4L553 88.1L555 86.6L557 83.9L559 83.3L561 36.3L563 89.8L565 88.3L567 86.5L569 84.7L571 36.3L573 91.5L575 89.5L577 88.1L579 85.5L581 84.2L583 36.4L585 90.8L587 88.9L589 87.4L591 86L593 36.9L595 91.4L597 89.9L599 87.9L601 85.3L603 84.3L605 36.5L607 90.7L609 89.1L611 87L613 85.3L615 83.7L617 83.4L619 35.9L621 90.4L623 88.1L625 86.2L627 85.6L629 83.6L631 83.5L633 35.7L635 89.7L637 88L639 85.8L641 84.8L643 83.8L645 36.3L647 90.1L649 87.7L651 85.7L653 84.6L655 36.5L657 91.6L659 88.6L661 86.5L663 84.8L665 84.3L667 83.5L669 35.6L671 90.7L673 89L675 88.1L677 86.3L679 83.9L681 36.3L683 90.7L685 88.9L687 86.2L689 84.2L691 84.1L693 36.5L695 90.1L697 87.8L699 87.1L701 85.8L703 83.7L705 36.2L707 90.9L709 88.6L711 86.1L713 84.5L715 36.7L717 90.9L719 88L721 85.9L723 84.8L725 84.1L727 83.8L729 35.9L731 90.4L733 88.4L735 85.8L737 84.8L739 83.5L741 36.1L743 90.4L745 88.2L747 87L749 84.6L751 84L753 83.6L755 35.5L757 91L759 88.5L761 86.3L763 84.9L765 83.3L767 36.6L769 89.8L771 87.7L773 85.5L775 84.6L777 84.1L779 36L781 91L783 88.7L785 87.2L787 84.8L789 83.9L791 36.4L793 90.2L795 88.5L797 87L799 84.7L801 36.4L803 67L805 90.5L807 87.9L809 85.5L811 84.6L813 83.8L815 36L817 90.5L819 88.5L821 86.9L823 84.8L825 84.2L827 83.9L829 35.4L831 70.3L833 89.7L835 87.7L837 85.2L839 84.7L841 83.3L843 36L845 90.2L847 87.8L849 84.3L851 84.3L853 36.7L855 91L857 89.4L859 87.2L861 85.3L863 83.9L865 36.1L867 90.9L869 89.1L871 88L873 84.5L875 84L877 36.3L879 91.1L881 88.6L883 86.9L885 85.2L887 83.6L889 36.6L891 89.9L893 87.9L895 86.4L897 84.6L899 36.5L901 91.2L903 89.2L905 87.3L907 85.5L909 84.3L911 36.5L913 90.9L915 88.7L917 87.1L919 85.7L921 83.3L923 36.6L925 90.5L927 88.2L929 86.3L931 83.9L933 36.4L935 90.9L937 88.3L939 86.7L941 85.5L943 83.6L945 36.1L947 61.8L949 89.3L951 88L953 86.6L955 84.6L957 83.9L959 83.5L961 35.2L963 91L965 89.8L967 87.6L969 85.1L971 83.8L973 83.5L975 36L977 90.2L979 87.3L981 85.8L983 85.1L983 86.4L981 87.3L979 90.2L977 91.5L975 92.3L973 83.9L971 85.1L969 87.6L967 89.8L965 91L963 91.6L961 91L959 84.3L957 84.6L955 86.6L953 88L951 89.2L949 91.3L947 91.8L945 84.5L943 85.5L941 86.8L939 88.3L937 90.9L935 91.9L933 91.7L931 86.3L929 88.2L927 90.6L925 91.5L923 92.1L921 85.7L919 87.1L917 88.7L915 90.9L913 92.1L911 92.2L909 85.5L907 87.5L905 89.2L903 91.2L901 92L899 91.9L897 86.9L895 88.1L893 89.9L891 90.9L889 92L887 85.2L885 87.1L883 88.7L881 91.1L879 91.9L877 91.8L875 85L873 88L871 89.3L869 91L867 91.9L865 91.7L863 85.3L861 87.2L859 89.3L857 91.1L855 91.9L853 92L851 85L849 88L847 90.2L845 91.2L843 91.8L841 84.8L839 85.1L837 87.9L835 89.7L833 90.9L831 91.8L829 83.9L827 85L825 84.9L823 86.9L821 88.5L819 90.4L817 92.1L815 92.2L813 84.7L811 85.5L809 87.9L807 90.5L805 91.7L803 92.4L801 84.8L799 86.9L797 88.6L795 90.3L793 92L791 92.1L789 84.9L787 87.2L785 88.7L783 91L781 92L779 92.1L777 85L775 85.6L773 87.9L771 89.7L769 91.9L767 92.4L765 85.3L763 86.5L761 88.5L759 91L757 91.9L755 91.9L753 84.5L751 84.6L749 87.1L747 88.3L745 90.4L743 92L741 92L739 84.8L737 85.9L735 88.4L733 90.4L731 91.5L729 91.8L727 84.3L725 84.8L723 86.2L721 87.9L719 91L717 92L715 92L713 86.3L711 88.6L709 90.9L707 91.9L705 92L703 85.8L701 87.2L699 88L697 90.1L695 91.8L693 92L691 84.9L689 86.3L687 89L685 90.7L683 91.7L681 91.7L679 86.3L677 88.1L675 89L673 90.7L671 91.5L669 91.5L667 84.3L665 85.4L663 86.5L661 88.5L659 91.6L657 92.2L655 92.1L653 85.7L651 87.7L649 90.1L647 91.4L645 92.2L643 85.1L641 85.9L639 88L637 89.7L635 91.7L633 92.4L631 84.4L629 85.6L627 86.6L625 88.1L623 90.4L621 91.7L619 92.3L617 84.5L615 85.8L613 87L611 89.2L609 90.7L607 92.2L605 92.2L603 85.5L601 87.9L599 90L597 91.7L595 92L593 92L591 87.4L589 88.9L587 90.8L585 91.9L583 91.9L581 85.5L579 88.2L577 89.5L575 91.5L573 92L571 91.2L569 86.5L567 88.2L565 89.7L563 92.4L561 92.5L559 84.3L557 86.6L555 88.1L553 90.4L551 91.7L549 92.2L547 85.2L545 86.5L543 88.7L541 90.1L539 91.4L537 91.8L535 84.5L533 85.1L531 86L529 89L527 90.7L525 92.3L523 92.2L521 85.9L519 88.3L517 90.6L515 91.3L513 91.6L511 85L509 86.7L507 88.8L505 91L503 91.6L501 91.7L499 85L497 86.9L495 88.8L493 90.7L491 92.2L489 91.9L487 84.6L485 86.3L483 87.8L481 89.9L479 91.3L477 92.1L475 90.9L473 86L471 87.3L469 88.9L467 91L465 92.1L463 92.1L461 84.3L459 86.6L457 89.3L455 90.9L453 91.8L451 92L449 85.1L447 86.6L445 88.4L443 90.7L441 91.6L439 91.8L437 85.5L435 87.8L433 90L431 91.4L429 92L427 91.8L425 87.9L423 90L421 91.6L419 92.3L417 83.9L415 85.1L413 86.8L411 88.5L409 90.5L407 92L405 92.1L403 85.1L401 87L399 88L397 90.2L395 91.6L393 92L391 84.2L389 85.4L387 87.7L385 90L383 91.7L381 92.4L379 84.9L377 85.7L375 88.3L373 89.5L371 91.8L369 92.1L367 84.7L365 85.4L363 86.9L361 90L359 91.7L357 92.2L355 92L353 85.5L351 87.5L349 89.1L347 91.5L345 92.5L343 92.2L341 86.7L339 87.4L337 89L335 91L333 92.1L331 92.3L329 84.8L327 86.9L325 89.7L323 91.3L321 92.1L319 92L317 84.9L315 86.8L313 88.7L311 90.5L309 92.1L307 92.1L305 84.6L303 86.3L301 88.6L299 91L297 92.1L295 92L293 84.9L291 86.5L289 89.3L287 90.9L285 92.2L283 91.9L281 87.2L279 89.1L277 90.6L275 92.1L273 91.9L271 87L269 87.9L267 90.5L265 92.3L263 92.3L261 85.6L259 86.9L257 89.3L255 90.7L253 91.8L251 91.7L249 86L247 88.3L245 90.7L243 92.2L241 92.4L239 84.3L237 86.5L235 87.3L233 90.1L231 91.9L229 92L227 84.7L225 85.6L223 87.9L221 89L219 91.1L217 92.1L215 92.1L213 84.8L211 86.2L209 88.1L207 90.9L205 91.8L203 92L201 85.3L199 86.6L197 88.2L195 90.5L193 91.8L191 92.1L189 84.2L187 85.4L185 86.6L183 88.4L181 90.1L179 92.2L177 92.3L175 85.6L173 86.6L171 88.6L169 90.6L167 92.2L165 92.1L163 85.9L161 87.9L159 89.9L157 91.3L155 92.1L153 84.9L151 85L149 87.1L147 89.1L145 91.3L143 91.7L141 91.8L139 84.5L137 84.2L135 85.6L133 87.4L131 90.8L129 91.6L127 91.9L125 85.7L123 86.9L121 89.3L119 90.9L117 91.6L115 91.7L113 84.8L111 86.5L109 88.3L107 89.2L105 91.6L103 92L101 84.4L99 85.5L97 87.9L95 90.4L93 91.8L91 92.2L89 85.1L87 86.2L85 89L83 90.8L81 92.1L79 92.1L77 84.9L75 86.4L73 87.9L71 90.6L69 91.2L67 91.1L65 91.9Z"/>
-          <image href="assets/raster-soleus.png" x="64" y="132" width="920" height="190" preserveAspectRatio="none"/>
-          <path class="ch-env" d="M65 394.9L67 395.5L69 394.7L71 392.3L73 383.9L75 387.6L77 388.7L79 387.4L81 390.3L83 380.3L85 387.7L87 386L89 390.6L91 386.2L93 388.9L95 388.8L97 389.5L99 389.4L101 386.9L103 388.5L105 392.8L107 393.4L109 379.4L111 387.4L113 391.4L115 391.2L117 391.3L119 391.9L121 383.7L123 380.9L125 390.9L127 391.3L129 393.3L131 380.4L133 393.4L135 383.4L137 383.6L139 391.1L141 391.8L143 392.6L145 391.6L147 389.8L149 382.7L151 391.1L153 390.2L155 389.3L157 390.8L159 392.2L161 386.4L163 394L165 378.3L167 387.2L169 390.8L171 380.6L173 385.3L175 388.2L177 393L179 390.2L181 392.3L183 383.8L185 384.4L187 393.1L189 392.9L191 386.3L193 381.3L195 387.4L197 389.9L199 389.8L201 381.3L203 387.4L205 392.2L207 374.6L209 384.7L211 390L213 388.9L215 389.8L217 390.7L219 388.2L221 384.2L223 390.8L225 394.6L227 391.2L229 390.1L231 384.3L233 384.4L235 386.5L237 390.1L239 393.5L241 391.2L243 390.4L245 390.2L247 389.3L249 389.3L251 382.1L253 391.8L255 388.3L257 388.9L259 394.1L261 383.9L263 392.1L265 384.5L267 386.4L269 391.1L271 391.6L273 388.6L275 390.8L277 388.4L279 390.2L281 381.1L283 391.5L285 389.9L287 388.9L289 384.7L291 391.3L293 389.1L295 391.3L297 388.1L299 386.5L301 393.7L303 392.2L305 373.9L307 395.3L309 394.2L311 392.7L313 386L315 391.3L317 389.8L319 388.3L321 391.1L323 391.6L325 391.4L327 389.5L329 391.3L331 379.8L333 384.8L335 392.5L337 387.5L339 383.3L341 391.7L343 391.5L345 384.9L347 391.1L349 389.2L351 385.5L353 387.4L355 387.6L357 393L359 392.7L361 390.1L363 388L365 383.1L367 390.3L369 387.1L371 395.1L373 391.1L375 367.6L377 395.2L379 387.8L381 371.7L383 388.6L385 387.8L387 387.5L389 392.8L391 391.9L393 388.9L395 392.1L397 387.7L399 389.4L401 381.8L403 393.4L405 387.6L407 389.1L409 383.8L411 387.7L413 389.3L415 388.2L417 373.9L419 393.1L421 393.2L423 385.4L425 390.5L427 391.3L429 388.2L431 377.8L433 384.8L435 392.7L437 385.1L439 390.2L441 389.2L443 390.6L445 391L447 391L449 382.6L451 394.3L453 391.7L455 390.7L457 390.2L459 388.2L461 387.5L463 389.2L465 393.3L467 392.9L469 384.6L471 388.2L473 389.8L475 393L477 392.6L479 390.5L481 386.2L483 388.3L485 389.2L487 393.1L489 388.9L491 387.5L493 391.2L495 391.1L497 393.1L499 386.2L501 389.4L503 389.2L505 391.3L507 385L509 390.8L511 390L513 389.6L515 393.8L517 375.5L519 390.8L521 388.7L523 390.6L525 390.5L527 389.6L529 391.1L531 387.4L533 369L535 392.1L537 386.8L539 391.3L541 385.6L543 377.3L545 383.6L547 390.3L549 390.9L551 391.7L553 384.7L555 380.1L557 389.9L559 389.7L561 383.1L563 391.8L565 394.7L567 386.8L569 386.3L571 385.2L573 394.5L575 382.3L577 387L579 384.3L581 386.1L583 390.3L585 385L587 388.8L589 388.2L591 391.9L593 386.6L595 385L597 380.5L599 391.9L601 395.5L603 393.3L605 386.6L607 393.2L609 389.3L611 383.9L613 387.1L615 387.2L617 392.1L619 384.9L621 391.6L623 390.1L625 392.6L627 388.5L629 390.3L631 389L633 383L635 392.2L637 390.7L639 378.6L641 387.1L643 394.5L645 389.1L647 393.2L649 393.8L651 390.4L653 391.6L655 393.5L657 387.4L659 384.2L661 390.6L663 391.1L665 380.4L667 390.9L669 386.8L671 389.7L673 394.5L675 383.2L677 388.7L679 385.9L681 386.4L683 387.1L685 383.6L687 391.9L689 388.2L691 386.1L693 391.9L695 394.5L697 385L699 394.4L701 387.3L703 392.1L705 388.1L707 384L709 393.2L711 390.7L713 389.1L715 390.6L717 380.5L719 381.8L721 393.1L723 384.6L725 388.7L727 388.7L729 392.3L731 395L733 387.1L735 388.5L737 389.9L739 387.9L741 387.9L743 393.6L745 389.1L747 387L749 381L751 390.7L753 393.8L755 382.1L757 393.7L759 390.4L761 391.6L763 387.4L765 389.1L767 393.7L769 391.9L771 389.4L773 387.7L775 392.9L777 389.8L779 381.4L781 386.9L783 387.3L785 383L787 393.8L789 391.7L791 385.8L793 389.8L795 388.9L797 385.5L799 392.6L801 388.3L803 384.7L805 389.6L807 390.4L809 389.7L811 393.8L813 383.9L815 389.5L817 386.8L819 387.4L821 392.1L823 388.7L825 392.4L827 385.6L829 390.7L831 389L833 394.7L835 391.6L837 394.6L839 394.3L841 382.5L843 391.2L845 384.2L847 390.3L849 391.5L851 386.5L853 372.6L855 394.6L857 394.5L859 389.7L861 395.2L863 389.9L865 389.3L867 382.5L869 389L871 385.2L873 391.1L875 391.9L877 383.6L879 391.7L881 394.1L883 391.5L885 393.1L887 372.7L889 391.6L891 388.6L893 390.2L895 391.8L897 392.9L899 386.9L901 391.5L903 391.7L905 392L907 388L909 384.3L911 387.8L913 388.7L915 381.4L917 388.3L919 395.1L921 389.4L923 393.6L925 386.8L927 386.7L929 391.1L931 393.8L933 390.2L935 385.3L937 383.7L939 387.9L941 380.8L943 393.2L945 390.9L947 391L949 390L951 388.7L953 388L955 384.3L957 394L959 389.4L961 387L963 388.5L965 387.2L967 391.9L969 393.3L971 382L973 384.3L975 391.6L977 389.1L979 389.5L981 392.9L983 378.5L983 406.7L981 400.2L979 398.1L977 401.4L975 399.6L973 401.5L971 409L969 405.1L967 401.7L965 407.4L963 404.5L961 405.7L959 399.3L957 399.3L955 400.3L953 404.3L951 402.7L949 401.8L947 398.9L945 399.8L943 398.7L941 407.5L939 401.8L937 404.8L935 401.4L933 399.3L931 398.6L929 400.7L927 401.2L925 402.7L923 400.1L921 400.2L919 398.7L917 400.4L915 398.2L913 407.8L911 401.1L909 406.4L907 405.8L905 402.7L903 400L901 399L899 398.5L897 399.7L895 399.3L893 401.8L891 405L889 401.3L887 415.5L885 415.4L883 400.2L881 398.9L879 399.9L877 404L875 402.2L873 400.7L871 399.6L869 403.4L867 406.4L865 404.4L863 399.6L861 397.4L859 398.5L857 401.9L855 399.5L853 419.2L851 402.4L849 399.7L847 400.1L845 402.5L843 400.7L841 406L839 398L837 398.2L835 401.1L833 399.4L831 401.4L829 402.4L827 403L825 398.3L823 400.8L821 398.2L819 402.8L817 403.1L815 399.7L813 402.4L811 398.5L809 398.8L807 402.2L805 400.6L803 399.9L801 404.8L799 401.2L797 404.5L795 403.4L793 403.5L791 402.2L789 398.7L787 400.3L785 400.7L783 404.8L781 405.6L779 403.9L777 400.7L775 399.7L773 404.7L771 402.3L769 399.1L767 399L765 399.5L763 406.9L761 400.5L759 405.4L757 398.1L755 403.8L753 398.3L751 397.9L749 412.2L747 402.9L745 400.5L743 399.1L741 398.4L739 402.9L737 401.2L735 401.8L733 404L731 398.5L729 398.3L727 401L725 405.9L723 403.7L721 399.5L719 399.9L717 411.5L715 400.4L713 400.6L711 402L709 400.6L707 404.5L705 403.1L703 398.5L701 401.7L699 401.7L697 403.9L695 403.8L693 401.3L691 402.8L689 403L687 399.5L685 408.2L683 403.2L681 400.1L679 403.3L677 402.9L675 401.5L673 400L671 401.2L669 403.7L667 401.9L665 402.8L663 414.4L661 399.4L659 401.4L657 401.6L655 402.8L653 400.7L651 403L649 399.2L647 400.4L645 399.9L643 399.7L641 405.2L639 406.2L637 406.3L635 398.4L633 404.9L631 403L629 401.2L627 400.2L625 401.9L623 401.5L621 399.4L619 406.5L617 400.2L615 400.3L613 402.6L611 406.8L609 402.3L607 399.6L605 399.2L603 399.1L601 396.7L599 400.1L597 407.5L595 404.7L593 402.4L591 399.5L589 404.3L587 401.2L585 402.2L583 399.8L581 406.2L579 408.1L577 403.1L575 404L573 400.6L571 409L569 400.8L567 402.2L565 398.3L563 400.5L561 401.5L559 400.3L557 403.3L555 404.9L553 405.9L551 399.2L549 400.3L547 398.9L545 400L543 402.6L541 409.2L539 402L537 400.4L535 399.6L533 410.9L531 401.4L529 403.1L527 402.9L525 403.3L523 402.9L521 399.1L519 405.3L517 404.5L515 398L513 402.1L511 399L509 404.5L507 409L505 399.4L503 402.5L501 403.4L499 406.1L497 400.1L495 403.8L493 400.5L491 401.2L489 400.9L487 398.1L485 406L483 405.2L481 405.2L479 401.1L477 398.2L475 399.2L473 402.1L471 402.1L469 403.8L467 399.8L465 398.5L463 404.7L461 402.8L459 404.9L457 402.1L455 399L453 400.5L451 398.2L449 404.6L447 399.8L445 400.2L443 400.7L441 401.9L439 399L437 407.7L435 399.7L433 406.5L431 413.6L429 403.1L427 403.1L425 400.6L423 407L421 398.7L419 398.8L417 412.1L415 398.8L413 399.6L411 404L409 402.3L407 401.5L405 401.3L403 401L401 403L399 404.4L397 405.4L395 398.3L393 399.6L391 398.4L389 398.9L387 403.9L385 401.5L383 402.4L381 413.6L379 414.2L377 398.8L375 415.2L373 398.4L371 399.8L369 400.4L367 402.3L365 404.1L363 402.7L361 404.9L359 399.1L357 398.8L355 400.6L353 400.8L351 402.3L349 401L347 402.4L345 403.3L343 399.5L341 402.5L339 400.8L337 400.4L335 398.2L333 405.7L331 403.8L329 398.6L327 403L325 400.7L323 400L321 399.2L319 400.7L317 398.7L315 402.3L313 404.9L311 401.2L309 398L307 399.5L305 406.3L303 404.2L301 400.4L299 407L297 403.1L295 400.4L293 400.5L291 400.2L289 403.8L287 401L285 404.3L283 399.2L281 408.7L279 401.3L277 404.1L275 401.3L273 402.6L271 401.6L269 399L267 403.9L265 408L263 397.8L261 401L259 399.9L257 403.8L255 404L253 402L251 402.3L249 400.6L247 401.4L245 399.5L243 397.6L241 401.5L239 399.2L237 402.2L235 405.8L233 405.1L231 406L229 400.8L227 400.2L225 397.5L223 402.3L221 406.9L219 405.5L217 399.7L215 401.7L213 402.3L211 402.4L209 400.7L207 411L205 403.2L203 401.7L201 402.4L199 404.1L197 400.6L195 401.5L193 399.2L191 404.5L189 398.7L187 398.6L185 402.4L183 409.4L181 402.9L179 399.8L177 399.7L175 403.2L173 407.1L171 404.9L169 400.2L167 405L165 414.1L163 415.3L161 403.9L159 402.5L157 397.8L155 402.1L153 402.1L151 403L149 406.6L147 400.6L145 400.7L143 399.4L141 400.3L139 400.8L137 406.1L135 400L133 397.5L131 403.7L129 398.4L127 400.2L125 404.4L123 406.3L121 407.3L119 402.5L117 399.1L115 403.8L113 400.4L111 404.2L109 404.9L107 399.6L105 398.4L103 401L101 400.9L99 400.8L97 402.4L95 399.7L93 399.8L91 405.7L89 401.3L87 398.5L85 408L83 411.2L81 400L79 402.1L77 398.5L75 401L73 404.1L71 401.7L69 397.3L67 396.5L65 396.3Z"/>
-          <path class="ch-wash" d="M65 574L67 574L69 574L71 573.5L73 571.7L75 569.3L77 566.4L79 563.6L81 560.8L83 557.8L85 554.2L87 550.1L89 546L91 542.2L93 538.7L95 535.5L97 532.4L99 529.3L101 525.7L103 522.3L105 519.3L107 516.8L109 514.5L111 511.9L113 509.6L115 507.5L117 505.7L119 504.2L121 502.7L123 501.2L125 499.8L127 498.7L129 497.9L131 497.3L133 496.9L135 496.5L137 495.8L139 495L141 494.3L143 493.8L145 493.5L147 493.3L149 493.1L151 493L153 492.9L155 492.8L157 492.8L159 492.9L161 492.8L163 492.7L165 492.5L167 492.2L169 491.7L171 491L173 490.2L175 489.3L177 488.5L179 487.9L181 487.5L183 487.1L185 486.5L187 485.9L189 485.5L191 485.2L193 484.8L195 484.5L197 484.4L199 484.3L201 484L203 483.8L205 483.6L207 483.4L209 482.8L211 482.2L213 481.7L215 481.4L217 480.9L219 480.6L221 480.2L223 479.6L225 479.1L227 478.8L229 478.7L231 478.6L233 478.5L235 478.6L237 478.7L239 478.8L241 479L243 479.2L245 479.6L247 480L249 480.4L251 480.9L253 481.3L255 481.6L257 481.7L259 481.8L261 482L263 482.2L265 482.4L267 482.5L269 482.6L271 482.6L273 482.7L275 482.8L277 483L279 483.2L281 483.3L283 483.3L285 483.3L287 483.4L289 483.2L291 483.1L293 483.1L295 483.1L297 483.1L299 483.2L301 483.3L303 483.5L305 483.3L307 482.9L309 482.6L311 482.6L313 482.5L315 482.3L317 482.2L319 482L321 481.9L323 481.9L325 482L327 482.2L329 482.5L331 482.8L333 483L335 483.2L337 483.4L339 483.7L341 483.9L343 484.2L345 484.5L347 484.7L349 484.7L351 484.8L353 484.8L355 484.9L357 484.9L359 485L361 485.2L363 485.4L365 485.6L367 485.8L369 485.8L371 485.9L373 486L375 486.1L377 486.1L379 486.3L381 486.1L383 485.7L385 485.4L387 484.7L389 484.2L391 483.8L393 483.5L395 483.4L397 483.3L399 483.4L401 483.3L403 483.1L405 482.9L407 482.8L409 482.8L411 482.9L413 483L415 483.1L417 483.2L419 483.1L421 483.1L423 483.2L425 483.2L427 483.1L429 483.1L431 482.9L433 482.4L435 481.9L437 481.5L439 481.3L441 481.2L443 481.1L445 481.2L447 481.3L449 481.4L451 481.4L453 481.5L455 481.6L457 481.7L459 481.5L461 481.4L463 481.3L465 481.3L467 481.4L469 481.6L471 481.9L473 482.1L475 482.5L477 482.8L479 483.3L481 483.8L483 484.2L485 484.5L487 484.7L489 485L491 485.2L493 485.5L495 485.6L497 485.8L499 486L501 486.3L503 486.5L505 486.8L507 486.9L509 486.8L511 486.6L513 486.4L515 486.4L517 486.2L519 485.7L521 485.3L523 485L525 484.7L527 484.3L529 484L531 483.8L533 483.5L535 483.1L537 482.9L539 482.9L541 482.8L543 482.6L545 482.5L547 482.5L549 482.5L551 482.6L553 482.7L555 482.8L557 482.7L559 482.4L561 482.1L563 481.9L565 481.8L567 481.9L569 481.9L571 482L573 482L575 482.1L577 482L579 481.9L581 481.9L583 482L585 482.2L587 482.3L589 482.3L591 482.3L593 482.2L595 482.2L597 482L599 481.6L601 481.4L603 481.3L605 481.4L607 481.3L609 481.4L611 481.5L613 481.6L615 481.4L617 481.2L619 481L621 480.9L623 480.8L625 480.9L627 480.9L629 481.1L631 481.2L633 481.4L635 481.6L637 481.8L639 482L641 481.8L643 481.6L645 481.5L647 481.4L649 481.5L651 481.5L653 481.6L655 481.8L657 481.9L659 482L661 482.2L663 482.5L665 482.3L667 481.9L669 481.6L671 481.4L673 481.3L675 481.3L677 481.3L679 481.2L681 481.2L683 481.2L685 480.9L687 480.5L689 480.2L691 480L693 479.9L695 479.8L697 479.8L699 479.7L701 479.6L703 479.6L705 479.7L707 479.8L709 479.9L711 480.1L713 480.2L715 480.3L717 480.4L719 480.3L721 480.2L723 480.2L725 480.1L727 479.9L729 479.8L731 479.8L733 479.9L735 479.9L737 479.9L739 480L741 480.1L743 480.2L745 480.5L747 480.8L749 481.1L751 481.3L753 481.6L755 481.9L757 482.2L759 482.6L761 482.9L763 483.1L765 483.2L767 483.5L769 483.7L771 484L773 484.3L775 484.5L777 484.7L779 484.8L781 484.9L783 484.9L785 484.5L787 484.2L789 484.1L791 484L793 484L795 483.9L797 483.9L799 483.7L801 483.4L803 483.1L805 482.8L807 482.6L809 482.3L811 482.2L813 482.1L815 482L817 482L819 482L821 481.8L823 481.7L825 481.7L827 481.8L829 481.9L831 482.1L833 482.3L835 482.5L837 482.7L839 483L841 483.2L843 483L845 482.8L847 482.7L849 482.7L851 482.8L853 482.6L855 481.7L857 481.1L859 480.6L861 480.2L863 480L865 479.9L867 479.8L869 479.7L871 479.7L873 479.7L875 479.7L877 479.7L879 479.5L881 479.4L883 479.4L885 479.6L887 479.6L889 479.7L891 479.8L893 479.7L895 479.6L897 479.6L899 479.7L901 479.9L903 480.2L905 480.6L907 481L909 481.3L911 481.6L913 481.7L915 481.8L917 482L919 482.2L921 482.5L923 482.7L925 482.9L927 483.1L929 483.3L931 483.5L933 483.8L935 484.1L937 484.2L939 483.9L941 483.5L943 482.9L945 482.4L947 482.1L949 482L951 481.9L953 481.9L955 481.9L957 481.9L959 482L961 482.3L963 482.5L965 482.8L967 483.1L969 483.5L971 483.8L973 484L975 484.3L977 484.5L979 484.9L981 485.3L983 485.5L983 574L65 574Z"/>
-          <path class="ch-line" d="M65 574L67 574L69 574L71 573.5L73 571.7L75 569.3L77 566.4L79 563.6L81 560.8L83 557.8L85 554.2L87 550.1L89 546L91 542.2L93 538.7L95 535.5L97 532.4L99 529.3L101 525.7L103 522.3L105 519.3L107 516.8L109 514.5L111 511.9L113 509.6L115 507.5L117 505.7L119 504.2L121 502.7L123 501.2L125 499.8L127 498.7L129 497.9L131 497.3L133 496.9L135 496.5L137 495.8L139 495L141 494.3L143 493.8L145 493.5L147 493.3L149 493.1L151 493L153 492.9L155 492.8L157 492.8L159 492.9L161 492.8L163 492.7L165 492.5L167 492.2L169 491.7L171 491L173 490.2L175 489.3L177 488.5L179 487.9L181 487.5L183 487.1L185 486.5L187 485.9L189 485.5L191 485.2L193 484.8L195 484.5L197 484.4L199 484.3L201 484L203 483.8L205 483.6L207 483.4L209 482.8L211 482.2L213 481.7L215 481.4L217 480.9L219 480.6L221 480.2L223 479.6L225 479.1L227 478.8L229 478.7L231 478.6L233 478.5L235 478.6L237 478.7L239 478.8L241 479L243 479.2L245 479.6L247 480L249 480.4L251 480.9L253 481.3L255 481.6L257 481.7L259 481.8L261 482L263 482.2L265 482.4L267 482.5L269 482.6L271 482.6L273 482.7L275 482.8L277 483L279 483.2L281 483.3L283 483.3L285 483.3L287 483.4L289 483.2L291 483.1L293 483.1L295 483.1L297 483.1L299 483.2L301 483.3L303 483.5L305 483.3L307 482.9L309 482.6L311 482.6L313 482.5L315 482.3L317 482.2L319 482L321 481.9L323 481.9L325 482L327 482.2L329 482.5L331 482.8L333 483L335 483.2L337 483.4L339 483.7L341 483.9L343 484.2L345 484.5L347 484.7L349 484.7L351 484.8L353 484.8L355 484.9L357 484.9L359 485L361 485.2L363 485.4L365 485.6L367 485.8L369 485.8L371 485.9L373 486L375 486.1L377 486.1L379 486.3L381 486.1L383 485.7L385 485.4L387 484.7L389 484.2L391 483.8L393 483.5L395 483.4L397 483.3L399 483.4L401 483.3L403 483.1L405 482.9L407 482.8L409 482.8L411 482.9L413 483L415 483.1L417 483.2L419 483.1L421 483.1L423 483.2L425 483.2L427 483.1L429 483.1L431 482.9L433 482.4L435 481.9L437 481.5L439 481.3L441 481.2L443 481.1L445 481.2L447 481.3L449 481.4L451 481.4L453 481.5L455 481.6L457 481.7L459 481.5L461 481.4L463 481.3L465 481.3L467 481.4L469 481.6L471 481.9L473 482.1L475 482.5L477 482.8L479 483.3L481 483.8L483 484.2L485 484.5L487 484.7L489 485L491 485.2L493 485.5L495 485.6L497 485.8L499 486L501 486.3L503 486.5L505 486.8L507 486.9L509 486.8L511 486.6L513 486.4L515 486.4L517 486.2L519 485.7L521 485.3L523 485L525 484.7L527 484.3L529 484L531 483.8L533 483.5L535 483.1L537 482.9L539 482.9L541 482.8L543 482.6L545 482.5L547 482.5L549 482.5L551 482.6L553 482.7L555 482.8L557 482.7L559 482.4L561 482.1L563 481.9L565 481.8L567 481.9L569 481.9L571 482L573 482L575 482.1L577 482L579 481.9L581 481.9L583 482L585 482.2L587 482.3L589 482.3L591 482.3L593 482.2L595 482.2L597 482L599 481.6L601 481.4L603 481.3L605 481.4L607 481.3L609 481.4L611 481.5L613 481.6L615 481.4L617 481.2L619 481L621 480.9L623 480.8L625 480.9L627 480.9L629 481.1L631 481.2L633 481.4L635 481.6L637 481.8L639 482L641 481.8L643 481.6L645 481.5L647 481.4L649 481.5L651 481.5L653 481.6L655 481.8L657 481.9L659 482L661 482.2L663 482.5L665 482.3L667 481.9L669 481.6L671 481.4L673 481.3L675 481.3L677 481.3L679 481.2L681 481.2L683 481.2L685 480.9L687 480.5L689 480.2L691 480L693 479.9L695 479.8L697 479.8L699 479.7L701 479.6L703 479.6L705 479.7L707 479.8L709 479.9L711 480.1L713 480.2L715 480.3L717 480.4L719 480.3L721 480.2L723 480.2L725 480.1L727 479.9L729 479.8L731 479.8L733 479.9L735 479.9L737 479.9L739 480L741 480.1L743 480.2L745 480.5L747 480.8L749 481.1L751 481.3L753 481.6L755 481.9L757 482.2L759 482.6L761 482.9L763 483.1L765 483.2L767 483.5L769 483.7L771 484L773 484.3L775 484.5L777 484.7L779 484.8L781 484.9L783 484.9L785 484.5L787 484.2L789 484.1L791 484L793 484L795 483.9L797 483.9L799 483.7L801 483.4L803 483.1L805 482.8L807 482.6L809 482.3L811 482.2L813 482.1L815 482L817 482L819 482L821 481.8L823 481.7L825 481.7L827 481.8L829 481.9L831 482.1L833 482.3L835 482.5L837 482.7L839 483L841 483.2L843 483L845 482.8L847 482.7L849 482.7L851 482.8L853 482.6L855 481.7L857 481.1L859 480.6L861 480.2L863 480L865 479.9L867 479.8L869 479.7L871 479.7L873 479.7L875 479.7L877 479.7L879 479.5L881 479.4L883 479.4L885 479.6L887 479.6L889 479.7L891 479.8L893 479.7L895 479.6L897 479.6L899 479.7L901 479.9L903 480.2L905 480.6L907 481L909 481.3L911 481.6L913 481.7L915 481.8L917 482L919 482.2L921 482.5L923 482.7L925 482.9L927 483.1L929 483.3L931 483.5L933 483.8L935 484.1L937 484.2L939 483.9L941 483.5L943 482.9L945 482.4L947 482.1L949 482L951 481.9L953 481.9L955 481.9L957 481.9L959 482L961 482.3L963 482.5L965 482.8L967 483.1L969 483.5L971 483.8L973 484L975 484.3L977 484.5L979 484.9L981 485.3L983 485.5"/>
-          </g>
-          <line class="xh" x1="64" x2="64" y1="30" y2="574" style="display:none"/>
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow rise">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
         </svg>
+        <span>Spinal cord &middot; motoneuron pools &middot; muscle &middot; proprioceptors &middot; </span>
+        <span>Version 3, 2026</span>
+      </p>
+      <h1 class="rise d1">Spinal motor circuits, simulated <span class="hl">spike by spike</span>.</h1>
+      <p class="lede rise d2">ReMoto is an open-source simulator of the spinal cord networks that control human muscles:
+        motoneuron pools, interneurons, sensory afferents, muscles and proprioceptors of the ankle, modeled from
+        membrane conductances up to joint torque. It runs in a browser or on the command line, and every run can be
+        repeated exactly.</p>
+      <p class="cta rise d3">
+        <a class="btn primary" href="https://github.com/rogeriocisi/remoto">Get the code</a>
+        <a class="btn" href="#run">Run it locally</a>
+        <a class="btn" href="#publications">Publications</a>
+      </p>
+
+      <figure class="strip rise d4" id="rec">
+        <!-- recording:begin (generated by scripts/pages-figure.mjs; do not edit by hand) -->
+        <div class="strip-head"><span><b>Recording</b> &middot; Default - Soleus contraction</span><span>seed 17
+            &middot; engine remoto-legacy-2b5-rng1-syn1</span></div>
+        <div class="scroll-x">
+          <svg viewBox="0 0 1000 614" role="img" tabindex="0" aria-labelledby="rec-title rec-desc">
+            <title id="rec-title">Simulated recording of the scenario Default - Soleus contraction</title>
+            <desc id="rec-desc">Four stacked panels over 5 seconds: the soma potential of one motoneuron, the spikes of
+              the motoneuron pool, the surface EMG and the muscle force, which rises in the first second and settles
+              near 309 newtons. The values are in the table below the figure.</desc>
+            <text class="ch-title" x="64" y="21">SOMA POTENTIAL OF ONE MOTONEURON (S 1)</text>
+            <text class="ch-unit" x="984" y="21" text-anchor="end">mV above rest</text>
+            <line class="ch-axis" x1="64" x2="64" y1="30" y2="96" />
+            <line class="ch-grid" x1="248" x2="248" y1="30" y2="96" />
+            <line class="ch-grid" x1="432" x2="432" y1="30" y2="96" />
+            <line class="ch-grid" x1="616" x2="616" y1="30" y2="96" />
+            <line class="ch-grid" x1="800" x2="800" y1="30" y2="96" />
+            <line class="ch-grid" x1="984" x2="984" y1="30" y2="96" />
+            <line class="ch-grid" x1="64" x2="984" y1="91.9" y2="91.9" />
+            <text class="ch-tick" x="56" y="95.4" text-anchor="end">0</text>
+            <line class="ch-grid" x1="64" x2="984" y1="64.4" y2="64.4" />
+            <text class="ch-tick" x="56" y="67.9" text-anchor="end">40</text>
+            <line class="ch-grid" x1="64" x2="984" y1="36.9" y2="36.9" />
+            <text class="ch-tick" x="56" y="40.4" text-anchor="end">80</text>
+            <text class="ch-title" x="64" y="123">SPIKES OF THE MOTONEURON POOL</text>
+            <text class="ch-unit" x="984" y="123" text-anchor="end">motoneuron #</text>
+            <line class="ch-axis" x1="64" x2="64" y1="132" y2="322" />
+            <line class="ch-grid" x1="248" x2="248" y1="132" y2="322" />
+            <line class="ch-grid" x1="432" x2="432" y1="132" y2="322" />
+            <line class="ch-grid" x1="616" x2="616" y1="132" y2="322" />
+            <line class="ch-grid" x1="800" x2="800" y1="132" y2="322" />
+            <line class="ch-grid" x1="984" x2="984" y1="132" y2="322" />
+            <line class="ch-grid" x1="64" x2="984" y1="322" y2="322" />
+            <text class="ch-tick" x="56" y="325.5" text-anchor="end">1</text>
+            <line class="ch-grid" x1="64" x2="984" y1="258.7" y2="258.7" />
+            <text class="ch-tick" x="56" y="262.2" text-anchor="end">200</text>
+            <line class="ch-grid" x1="64" x2="984" y1="195.3" y2="195.3" />
+            <text class="ch-tick" x="56" y="198.8" text-anchor="end">400</text>
+            <line class="ch-grid" x1="64" x2="984" y1="132" y2="132" />
+            <text class="ch-tick" x="56" y="135.5" text-anchor="end">600</text>
+            <text class="ch-title" x="64" y="349">SURFACE EMG (WITH NOISE, 50&#8211;1000 HZ)</text>
+            <text class="ch-unit" x="984" y="349" text-anchor="end">mV</text>
+            <line class="ch-axis" x1="64" x2="64" y1="358" y2="434" />
+            <line class="ch-grid" x1="248" x2="248" y1="358" y2="434" />
+            <line class="ch-grid" x1="432" x2="432" y1="358" y2="434" />
+            <line class="ch-grid" x1="616" x2="616" y1="358" y2="434" />
+            <line class="ch-grid" x1="800" x2="800" y1="358" y2="434" />
+            <line class="ch-grid" x1="984" x2="984" y1="358" y2="434" />
+            <line class="ch-grid" x1="64" x2="984" y1="415" y2="415" />
+            <text class="ch-tick" x="56" y="418.5" text-anchor="end">&#8722;0.1</text>
+            <line class="ch-grid" x1="64" x2="984" y1="396" y2="396" />
+            <text class="ch-tick" x="56" y="399.5" text-anchor="end">0</text>
+            <line class="ch-grid" x1="64" x2="984" y1="377" y2="377" />
+            <text class="ch-tick" x="56" y="380.5" text-anchor="end">0.1</text>
+            <text class="ch-title" x="64" y="461">MUSCLE FORCE</text>
+            <text class="ch-unit" x="984" y="461" text-anchor="end">N</text>
+            <line class="ch-axis" x1="64" x2="64" y1="470" y2="574" />
+            <line class="ch-grid" x1="248" x2="248" y1="470" y2="574" />
+            <line class="ch-grid" x1="432" x2="432" y1="470" y2="574" />
+            <line class="ch-grid" x1="616" x2="616" y1="470" y2="574" />
+            <line class="ch-grid" x1="800" x2="800" y1="470" y2="574" />
+            <line class="ch-grid" x1="984" x2="984" y1="470" y2="574" />
+            <line class="ch-grid" x1="64" x2="984" y1="574" y2="574" />
+            <text class="ch-tick" x="56" y="577.5" text-anchor="end">0</text>
+            <line class="ch-grid" x1="64" x2="984" y1="544.3" y2="544.3" />
+            <text class="ch-tick" x="56" y="547.8" text-anchor="end">100</text>
+            <line class="ch-grid" x1="64" x2="984" y1="514.6" y2="514.6" />
+            <text class="ch-tick" x="56" y="518.1" text-anchor="end">200</text>
+            <line class="ch-grid" x1="64" x2="984" y1="484.9" y2="484.9" />
+            <text class="ch-tick" x="56" y="488.4" text-anchor="end">300</text>
+            <line class="ch-axis" x1="64" x2="984" y1="574" y2="574" />
+            <text class="ch-tick" x="64" y="590" text-anchor="middle">0</text>
+            <text class="ch-tick" x="248" y="590" text-anchor="middle">1</text>
+            <text class="ch-tick" x="432" y="590" text-anchor="middle">2</text>
+            <text class="ch-tick" x="616" y="590" text-anchor="middle">3</text>
+            <text class="ch-tick" x="800" y="590" text-anchor="middle">4</text>
+            <text class="ch-tick" x="984" y="590" text-anchor="middle">5</text>
+            <text class="ch-unit" x="984" y="607" text-anchor="end">time (s)</text>
+            <g class="reveal">
+              <path class="ch-env"
+                d="M65 85.1L67 33.9L69 90.6L71 87.8L73 86.4L75 84.9L77 84L79 36.1L81 90.9L83 89L85 86.1L87 85L89 83.6L91 36.5L93 90.4L95 87.8L97 85.5L99 84.1L101 83.7L103 36.2L105 89.1L107 88.2L109 86.5L111 84L113 83.9L115 36L117 90.8L119 89.3L121 86.8L123 85.5L125 84.1L127 36.3L129 90.8L131 87.1L133 85.3L135 84.2L137 83.8L139 83.8L141 35.6L143 91.1L145 89.1L147 87.1L149 84.4L151 84.3L153 83.6L155 35.8L157 89.9L159 87.9L161 85.9L163 84.4L165 36.6L167 90.7L169 88.6L171 86.7L173 84.9L175 84.4L177 36.3L179 90.1L181 88.3L183 86.6L185 85.4L187 83.8L189 83.6L191 35.8L193 90.5L195 88.1L197 86.2L199 85.3L201 83.5L203 36.1L205 90.9L207 88.1L209 86.1L211 84.7L213 83.7L215 36.1L217 91.1L219 88.8L221 87.9L223 85.4L225 84.4L227 83.6L229 36L231 90.1L233 87.2L235 86.5L237 84.2L239 83.7L241 36.1L243 90.7L245 88.3L247 85.8L249 84.7L251 36.8L253 90.6L255 89.3L257 86.9L259 85.5L261 83.7L263 36.5L265 90.4L267 87.9L269 86.7L271 84.7L273 36.8L275 90.6L277 88.4L279 87.3L281 85.2L283 37.1L285 90.9L287 89.3L289 86.5L291 84.3L293 83.9L295 36.4L297 91.1L299 88.7L301 86.3L303 84.6L305 83.7L307 36.3L309 90.5L311 88.7L313 86.7L315 84L317 84.1L319 36.1L321 91.2L323 89.7L325 86.9L327 84.7L329 84.3L331 36.4L333 91L335 89L337 87.3L339 86.1L341 84.5L343 36L345 91.5L347 89.1L349 87.2L351 85.4L353 83.8L355 36.3L357 91.4L359 90L361 87L363 85.4L365 84.3L367 83.3L369 36.2L371 89.5L373 88.3L375 85.7L377 84.6L379 83.3L381 36.2L383 90L385 87.7L387 85.5L389 83.9L391 83.4L393 36.2L395 90.2L397 88L399 87L401 84.6L403 83.6L405 36L407 90.5L409 88.5L411 86.8L413 85.1L415 83.8L417 83.3L419 36L421 90L423 87.9L425 85.9L427 37.2L429 91.4L431 90L433 87.8L435 85.5L437 84.1L439 36.5L441 90.7L443 88.4L445 85.9L447 85.1L449 84.2L451 36.3L453 90.9L455 89.2L457 86.6L459 84.2L461 83.8L463 36.2L465 90.9L467 88.9L469 87.3L471 85.7L473 85.1L475 36.1L477 91.3L479 89.9L481 87.7L483 86.1L485 84.6L487 83.6L489 35.8L491 90.7L493 88.7L495 87L497 85L499 83.9L501 36.2L503 91L505 88.8L507 86.7L509 84.9L511 84.4L513 36.4L515 90.5L517 88.3L519 85.9L521 84.4L523 36.7L525 90.7L527 89L529 85.8L531 85.1L533 84.1L535 83.8L537 35.9L539 90.1L541 88.7L543 86.3L545 85.2L547 84.1L549 36.3L551 90.4L553 88.1L555 86.6L557 83.9L559 83.3L561 36.3L563 89.8L565 88.3L567 86.5L569 84.7L571 36.3L573 91.5L575 89.5L577 88.1L579 85.5L581 84.2L583 36.4L585 90.8L587 88.9L589 87.4L591 86L593 36.9L595 91.4L597 89.9L599 87.9L601 85.3L603 84.3L605 36.5L607 90.7L609 89.1L611 87L613 85.3L615 83.7L617 83.4L619 35.9L621 90.4L623 88.1L625 86.2L627 85.6L629 83.6L631 83.5L633 35.7L635 89.7L637 88L639 85.8L641 84.8L643 83.8L645 36.3L647 90.1L649 87.7L651 85.7L653 84.6L655 36.5L657 91.6L659 88.6L661 86.5L663 84.8L665 84.3L667 83.5L669 35.6L671 90.7L673 89L675 88.1L677 86.3L679 83.9L681 36.3L683 90.7L685 88.9L687 86.2L689 84.2L691 84.1L693 36.5L695 90.1L697 87.8L699 87.1L701 85.8L703 83.7L705 36.2L707 90.9L709 88.6L711 86.1L713 84.5L715 36.7L717 90.9L719 88L721 85.9L723 84.8L725 84.1L727 83.8L729 35.9L731 90.4L733 88.4L735 85.8L737 84.8L739 83.5L741 36.1L743 90.4L745 88.2L747 87L749 84.6L751 84L753 83.6L755 35.5L757 91L759 88.5L761 86.3L763 84.9L765 83.3L767 36.6L769 89.8L771 87.7L773 85.5L775 84.6L777 84.1L779 36L781 91L783 88.7L785 87.2L787 84.8L789 83.9L791 36.4L793 90.2L795 88.5L797 87L799 84.7L801 36.4L803 67L805 90.5L807 87.9L809 85.5L811 84.6L813 83.8L815 36L817 90.5L819 88.5L821 86.9L823 84.8L825 84.2L827 83.9L829 35.4L831 70.3L833 89.7L835 87.7L837 85.2L839 84.7L841 83.3L843 36L845 90.2L847 87.8L849 84.3L851 84.3L853 36.7L855 91L857 89.4L859 87.2L861 85.3L863 83.9L865 36.1L867 90.9L869 89.1L871 88L873 84.5L875 84L877 36.3L879 91.1L881 88.6L883 86.9L885 85.2L887 83.6L889 36.6L891 89.9L893 87.9L895 86.4L897 84.6L899 36.5L901 91.2L903 89.2L905 87.3L907 85.5L909 84.3L911 36.5L913 90.9L915 88.7L917 87.1L919 85.7L921 83.3L923 36.6L925 90.5L927 88.2L929 86.3L931 83.9L933 36.4L935 90.9L937 88.3L939 86.7L941 85.5L943 83.6L945 36.1L947 61.8L949 89.3L951 88L953 86.6L955 84.6L957 83.9L959 83.5L961 35.2L963 91L965 89.8L967 87.6L969 85.1L971 83.8L973 83.5L975 36L977 90.2L979 87.3L981 85.8L983 85.1L983 86.4L981 87.3L979 90.2L977 91.5L975 92.3L973 83.9L971 85.1L969 87.6L967 89.8L965 91L963 91.6L961 91L959 84.3L957 84.6L955 86.6L953 88L951 89.2L949 91.3L947 91.8L945 84.5L943 85.5L941 86.8L939 88.3L937 90.9L935 91.9L933 91.7L931 86.3L929 88.2L927 90.6L925 91.5L923 92.1L921 85.7L919 87.1L917 88.7L915 90.9L913 92.1L911 92.2L909 85.5L907 87.5L905 89.2L903 91.2L901 92L899 91.9L897 86.9L895 88.1L893 89.9L891 90.9L889 92L887 85.2L885 87.1L883 88.7L881 91.1L879 91.9L877 91.8L875 85L873 88L871 89.3L869 91L867 91.9L865 91.7L863 85.3L861 87.2L859 89.3L857 91.1L855 91.9L853 92L851 85L849 88L847 90.2L845 91.2L843 91.8L841 84.8L839 85.1L837 87.9L835 89.7L833 90.9L831 91.8L829 83.9L827 85L825 84.9L823 86.9L821 88.5L819 90.4L817 92.1L815 92.2L813 84.7L811 85.5L809 87.9L807 90.5L805 91.7L803 92.4L801 84.8L799 86.9L797 88.6L795 90.3L793 92L791 92.1L789 84.9L787 87.2L785 88.7L783 91L781 92L779 92.1L777 85L775 85.6L773 87.9L771 89.7L769 91.9L767 92.4L765 85.3L763 86.5L761 88.5L759 91L757 91.9L755 91.9L753 84.5L751 84.6L749 87.1L747 88.3L745 90.4L743 92L741 92L739 84.8L737 85.9L735 88.4L733 90.4L731 91.5L729 91.8L727 84.3L725 84.8L723 86.2L721 87.9L719 91L717 92L715 92L713 86.3L711 88.6L709 90.9L707 91.9L705 92L703 85.8L701 87.2L699 88L697 90.1L695 91.8L693 92L691 84.9L689 86.3L687 89L685 90.7L683 91.7L681 91.7L679 86.3L677 88.1L675 89L673 90.7L671 91.5L669 91.5L667 84.3L665 85.4L663 86.5L661 88.5L659 91.6L657 92.2L655 92.1L653 85.7L651 87.7L649 90.1L647 91.4L645 92.2L643 85.1L641 85.9L639 88L637 89.7L635 91.7L633 92.4L631 84.4L629 85.6L627 86.6L625 88.1L623 90.4L621 91.7L619 92.3L617 84.5L615 85.8L613 87L611 89.2L609 90.7L607 92.2L605 92.2L603 85.5L601 87.9L599 90L597 91.7L595 92L593 92L591 87.4L589 88.9L587 90.8L585 91.9L583 91.9L581 85.5L579 88.2L577 89.5L575 91.5L573 92L571 91.2L569 86.5L567 88.2L565 89.7L563 92.4L561 92.5L559 84.3L557 86.6L555 88.1L553 90.4L551 91.7L549 92.2L547 85.2L545 86.5L543 88.7L541 90.1L539 91.4L537 91.8L535 84.5L533 85.1L531 86L529 89L527 90.7L525 92.3L523 92.2L521 85.9L519 88.3L517 90.6L515 91.3L513 91.6L511 85L509 86.7L507 88.8L505 91L503 91.6L501 91.7L499 85L497 86.9L495 88.8L493 90.7L491 92.2L489 91.9L487 84.6L485 86.3L483 87.8L481 89.9L479 91.3L477 92.1L475 90.9L473 86L471 87.3L469 88.9L467 91L465 92.1L463 92.1L461 84.3L459 86.6L457 89.3L455 90.9L453 91.8L451 92L449 85.1L447 86.6L445 88.4L443 90.7L441 91.6L439 91.8L437 85.5L435 87.8L433 90L431 91.4L429 92L427 91.8L425 87.9L423 90L421 91.6L419 92.3L417 83.9L415 85.1L413 86.8L411 88.5L409 90.5L407 92L405 92.1L403 85.1L401 87L399 88L397 90.2L395 91.6L393 92L391 84.2L389 85.4L387 87.7L385 90L383 91.7L381 92.4L379 84.9L377 85.7L375 88.3L373 89.5L371 91.8L369 92.1L367 84.7L365 85.4L363 86.9L361 90L359 91.7L357 92.2L355 92L353 85.5L351 87.5L349 89.1L347 91.5L345 92.5L343 92.2L341 86.7L339 87.4L337 89L335 91L333 92.1L331 92.3L329 84.8L327 86.9L325 89.7L323 91.3L321 92.1L319 92L317 84.9L315 86.8L313 88.7L311 90.5L309 92.1L307 92.1L305 84.6L303 86.3L301 88.6L299 91L297 92.1L295 92L293 84.9L291 86.5L289 89.3L287 90.9L285 92.2L283 91.9L281 87.2L279 89.1L277 90.6L275 92.1L273 91.9L271 87L269 87.9L267 90.5L265 92.3L263 92.3L261 85.6L259 86.9L257 89.3L255 90.7L253 91.8L251 91.7L249 86L247 88.3L245 90.7L243 92.2L241 92.4L239 84.3L237 86.5L235 87.3L233 90.1L231 91.9L229 92L227 84.7L225 85.6L223 87.9L221 89L219 91.1L217 92.1L215 92.1L213 84.8L211 86.2L209 88.1L207 90.9L205 91.8L203 92L201 85.3L199 86.6L197 88.2L195 90.5L193 91.8L191 92.1L189 84.2L187 85.4L185 86.6L183 88.4L181 90.1L179 92.2L177 92.3L175 85.6L173 86.6L171 88.6L169 90.6L167 92.2L165 92.1L163 85.9L161 87.9L159 89.9L157 91.3L155 92.1L153 84.9L151 85L149 87.1L147 89.1L145 91.3L143 91.7L141 91.8L139 84.5L137 84.2L135 85.6L133 87.4L131 90.8L129 91.6L127 91.9L125 85.7L123 86.9L121 89.3L119 90.9L117 91.6L115 91.7L113 84.8L111 86.5L109 88.3L107 89.2L105 91.6L103 92L101 84.4L99 85.5L97 87.9L95 90.4L93 91.8L91 92.2L89 85.1L87 86.2L85 89L83 90.8L81 92.1L79 92.1L77 84.9L75 86.4L73 87.9L71 90.6L69 91.2L67 91.1L65 91.9Z" />
+              <image href="assets/raster-soleus.png" x="64" y="132" width="920" height="190"
+                preserveAspectRatio="none" />
+              <path class="ch-env"
+                d="M65 394.9L67 395.5L69 394.7L71 392.3L73 383.9L75 387.6L77 388.7L79 387.4L81 390.3L83 380.3L85 387.7L87 386L89 390.6L91 386.2L93 388.9L95 388.8L97 389.5L99 389.4L101 386.9L103 388.5L105 392.8L107 393.4L109 379.4L111 387.4L113 391.4L115 391.2L117 391.3L119 391.9L121 383.7L123 380.9L125 390.9L127 391.3L129 393.3L131 380.4L133 393.4L135 383.4L137 383.6L139 391.1L141 391.8L143 392.6L145 391.6L147 389.8L149 382.7L151 391.1L153 390.2L155 389.3L157 390.8L159 392.2L161 386.4L163 394L165 378.3L167 387.2L169 390.8L171 380.6L173 385.3L175 388.2L177 393L179 390.2L181 392.3L183 383.8L185 384.4L187 393.1L189 392.9L191 386.3L193 381.3L195 387.4L197 389.9L199 389.8L201 381.3L203 387.4L205 392.2L207 374.6L209 384.7L211 390L213 388.9L215 389.8L217 390.7L219 388.2L221 384.2L223 390.8L225 394.6L227 391.2L229 390.1L231 384.3L233 384.4L235 386.5L237 390.1L239 393.5L241 391.2L243 390.4L245 390.2L247 389.3L249 389.3L251 382.1L253 391.8L255 388.3L257 388.9L259 394.1L261 383.9L263 392.1L265 384.5L267 386.4L269 391.1L271 391.6L273 388.6L275 390.8L277 388.4L279 390.2L281 381.1L283 391.5L285 389.9L287 388.9L289 384.7L291 391.3L293 389.1L295 391.3L297 388.1L299 386.5L301 393.7L303 392.2L305 373.9L307 395.3L309 394.2L311 392.7L313 386L315 391.3L317 389.8L319 388.3L321 391.1L323 391.6L325 391.4L327 389.5L329 391.3L331 379.8L333 384.8L335 392.5L337 387.5L339 383.3L341 391.7L343 391.5L345 384.9L347 391.1L349 389.2L351 385.5L353 387.4L355 387.6L357 393L359 392.7L361 390.1L363 388L365 383.1L367 390.3L369 387.1L371 395.1L373 391.1L375 367.6L377 395.2L379 387.8L381 371.7L383 388.6L385 387.8L387 387.5L389 392.8L391 391.9L393 388.9L395 392.1L397 387.7L399 389.4L401 381.8L403 393.4L405 387.6L407 389.1L409 383.8L411 387.7L413 389.3L415 388.2L417 373.9L419 393.1L421 393.2L423 385.4L425 390.5L427 391.3L429 388.2L431 377.8L433 384.8L435 392.7L437 385.1L439 390.2L441 389.2L443 390.6L445 391L447 391L449 382.6L451 394.3L453 391.7L455 390.7L457 390.2L459 388.2L461 387.5L463 389.2L465 393.3L467 392.9L469 384.6L471 388.2L473 389.8L475 393L477 392.6L479 390.5L481 386.2L483 388.3L485 389.2L487 393.1L489 388.9L491 387.5L493 391.2L495 391.1L497 393.1L499 386.2L501 389.4L503 389.2L505 391.3L507 385L509 390.8L511 390L513 389.6L515 393.8L517 375.5L519 390.8L521 388.7L523 390.6L525 390.5L527 389.6L529 391.1L531 387.4L533 369L535 392.1L537 386.8L539 391.3L541 385.6L543 377.3L545 383.6L547 390.3L549 390.9L551 391.7L553 384.7L555 380.1L557 389.9L559 389.7L561 383.1L563 391.8L565 394.7L567 386.8L569 386.3L571 385.2L573 394.5L575 382.3L577 387L579 384.3L581 386.1L583 390.3L585 385L587 388.8L589 388.2L591 391.9L593 386.6L595 385L597 380.5L599 391.9L601 395.5L603 393.3L605 386.6L607 393.2L609 389.3L611 383.9L613 387.1L615 387.2L617 392.1L619 384.9L621 391.6L623 390.1L625 392.6L627 388.5L629 390.3L631 389L633 383L635 392.2L637 390.7L639 378.6L641 387.1L643 394.5L645 389.1L647 393.2L649 393.8L651 390.4L653 391.6L655 393.5L657 387.4L659 384.2L661 390.6L663 391.1L665 380.4L667 390.9L669 386.8L671 389.7L673 394.5L675 383.2L677 388.7L679 385.9L681 386.4L683 387.1L685 383.6L687 391.9L689 388.2L691 386.1L693 391.9L695 394.5L697 385L699 394.4L701 387.3L703 392.1L705 388.1L707 384L709 393.2L711 390.7L713 389.1L715 390.6L717 380.5L719 381.8L721 393.1L723 384.6L725 388.7L727 388.7L729 392.3L731 395L733 387.1L735 388.5L737 389.9L739 387.9L741 387.9L743 393.6L745 389.1L747 387L749 381L751 390.7L753 393.8L755 382.1L757 393.7L759 390.4L761 391.6L763 387.4L765 389.1L767 393.7L769 391.9L771 389.4L773 387.7L775 392.9L777 389.8L779 381.4L781 386.9L783 387.3L785 383L787 393.8L789 391.7L791 385.8L793 389.8L795 388.9L797 385.5L799 392.6L801 388.3L803 384.7L805 389.6L807 390.4L809 389.7L811 393.8L813 383.9L815 389.5L817 386.8L819 387.4L821 392.1L823 388.7L825 392.4L827 385.6L829 390.7L831 389L833 394.7L835 391.6L837 394.6L839 394.3L841 382.5L843 391.2L845 384.2L847 390.3L849 391.5L851 386.5L853 372.6L855 394.6L857 394.5L859 389.7L861 395.2L863 389.9L865 389.3L867 382.5L869 389L871 385.2L873 391.1L875 391.9L877 383.6L879 391.7L881 394.1L883 391.5L885 393.1L887 372.7L889 391.6L891 388.6L893 390.2L895 391.8L897 392.9L899 386.9L901 391.5L903 391.7L905 392L907 388L909 384.3L911 387.8L913 388.7L915 381.4L917 388.3L919 395.1L921 389.4L923 393.6L925 386.8L927 386.7L929 391.1L931 393.8L933 390.2L935 385.3L937 383.7L939 387.9L941 380.8L943 393.2L945 390.9L947 391L949 390L951 388.7L953 388L955 384.3L957 394L959 389.4L961 387L963 388.5L965 387.2L967 391.9L969 393.3L971 382L973 384.3L975 391.6L977 389.1L979 389.5L981 392.9L983 378.5L983 406.7L981 400.2L979 398.1L977 401.4L975 399.6L973 401.5L971 409L969 405.1L967 401.7L965 407.4L963 404.5L961 405.7L959 399.3L957 399.3L955 400.3L953 404.3L951 402.7L949 401.8L947 398.9L945 399.8L943 398.7L941 407.5L939 401.8L937 404.8L935 401.4L933 399.3L931 398.6L929 400.7L927 401.2L925 402.7L923 400.1L921 400.2L919 398.7L917 400.4L915 398.2L913 407.8L911 401.1L909 406.4L907 405.8L905 402.7L903 400L901 399L899 398.5L897 399.7L895 399.3L893 401.8L891 405L889 401.3L887 415.5L885 415.4L883 400.2L881 398.9L879 399.9L877 404L875 402.2L873 400.7L871 399.6L869 403.4L867 406.4L865 404.4L863 399.6L861 397.4L859 398.5L857 401.9L855 399.5L853 419.2L851 402.4L849 399.7L847 400.1L845 402.5L843 400.7L841 406L839 398L837 398.2L835 401.1L833 399.4L831 401.4L829 402.4L827 403L825 398.3L823 400.8L821 398.2L819 402.8L817 403.1L815 399.7L813 402.4L811 398.5L809 398.8L807 402.2L805 400.6L803 399.9L801 404.8L799 401.2L797 404.5L795 403.4L793 403.5L791 402.2L789 398.7L787 400.3L785 400.7L783 404.8L781 405.6L779 403.9L777 400.7L775 399.7L773 404.7L771 402.3L769 399.1L767 399L765 399.5L763 406.9L761 400.5L759 405.4L757 398.1L755 403.8L753 398.3L751 397.9L749 412.2L747 402.9L745 400.5L743 399.1L741 398.4L739 402.9L737 401.2L735 401.8L733 404L731 398.5L729 398.3L727 401L725 405.9L723 403.7L721 399.5L719 399.9L717 411.5L715 400.4L713 400.6L711 402L709 400.6L707 404.5L705 403.1L703 398.5L701 401.7L699 401.7L697 403.9L695 403.8L693 401.3L691 402.8L689 403L687 399.5L685 408.2L683 403.2L681 400.1L679 403.3L677 402.9L675 401.5L673 400L671 401.2L669 403.7L667 401.9L665 402.8L663 414.4L661 399.4L659 401.4L657 401.6L655 402.8L653 400.7L651 403L649 399.2L647 400.4L645 399.9L643 399.7L641 405.2L639 406.2L637 406.3L635 398.4L633 404.9L631 403L629 401.2L627 400.2L625 401.9L623 401.5L621 399.4L619 406.5L617 400.2L615 400.3L613 402.6L611 406.8L609 402.3L607 399.6L605 399.2L603 399.1L601 396.7L599 400.1L597 407.5L595 404.7L593 402.4L591 399.5L589 404.3L587 401.2L585 402.2L583 399.8L581 406.2L579 408.1L577 403.1L575 404L573 400.6L571 409L569 400.8L567 402.2L565 398.3L563 400.5L561 401.5L559 400.3L557 403.3L555 404.9L553 405.9L551 399.2L549 400.3L547 398.9L545 400L543 402.6L541 409.2L539 402L537 400.4L535 399.6L533 410.9L531 401.4L529 403.1L527 402.9L525 403.3L523 402.9L521 399.1L519 405.3L517 404.5L515 398L513 402.1L511 399L509 404.5L507 409L505 399.4L503 402.5L501 403.4L499 406.1L497 400.1L495 403.8L493 400.5L491 401.2L489 400.9L487 398.1L485 406L483 405.2L481 405.2L479 401.1L477 398.2L475 399.2L473 402.1L471 402.1L469 403.8L467 399.8L465 398.5L463 404.7L461 402.8L459 404.9L457 402.1L455 399L453 400.5L451 398.2L449 404.6L447 399.8L445 400.2L443 400.7L441 401.9L439 399L437 407.7L435 399.7L433 406.5L431 413.6L429 403.1L427 403.1L425 400.6L423 407L421 398.7L419 398.8L417 412.1L415 398.8L413 399.6L411 404L409 402.3L407 401.5L405 401.3L403 401L401 403L399 404.4L397 405.4L395 398.3L393 399.6L391 398.4L389 398.9L387 403.9L385 401.5L383 402.4L381 413.6L379 414.2L377 398.8L375 415.2L373 398.4L371 399.8L369 400.4L367 402.3L365 404.1L363 402.7L361 404.9L359 399.1L357 398.8L355 400.6L353 400.8L351 402.3L349 401L347 402.4L345 403.3L343 399.5L341 402.5L339 400.8L337 400.4L335 398.2L333 405.7L331 403.8L329 398.6L327 403L325 400.7L323 400L321 399.2L319 400.7L317 398.7L315 402.3L313 404.9L311 401.2L309 398L307 399.5L305 406.3L303 404.2L301 400.4L299 407L297 403.1L295 400.4L293 400.5L291 400.2L289 403.8L287 401L285 404.3L283 399.2L281 408.7L279 401.3L277 404.1L275 401.3L273 402.6L271 401.6L269 399L267 403.9L265 408L263 397.8L261 401L259 399.9L257 403.8L255 404L253 402L251 402.3L249 400.6L247 401.4L245 399.5L243 397.6L241 401.5L239 399.2L237 402.2L235 405.8L233 405.1L231 406L229 400.8L227 400.2L225 397.5L223 402.3L221 406.9L219 405.5L217 399.7L215 401.7L213 402.3L211 402.4L209 400.7L207 411L205 403.2L203 401.7L201 402.4L199 404.1L197 400.6L195 401.5L193 399.2L191 404.5L189 398.7L187 398.6L185 402.4L183 409.4L181 402.9L179 399.8L177 399.7L175 403.2L173 407.1L171 404.9L169 400.2L167 405L165 414.1L163 415.3L161 403.9L159 402.5L157 397.8L155 402.1L153 402.1L151 403L149 406.6L147 400.6L145 400.7L143 399.4L141 400.3L139 400.8L137 406.1L135 400L133 397.5L131 403.7L129 398.4L127 400.2L125 404.4L123 406.3L121 407.3L119 402.5L117 399.1L115 403.8L113 400.4L111 404.2L109 404.9L107 399.6L105 398.4L103 401L101 400.9L99 400.8L97 402.4L95 399.7L93 399.8L91 405.7L89 401.3L87 398.5L85 408L83 411.2L81 400L79 402.1L77 398.5L75 401L73 404.1L71 401.7L69 397.3L67 396.5L65 396.3Z" />
+              <path class="ch-wash"
+                d="M65 574L67 574L69 574L71 573.5L73 571.7L75 569.3L77 566.4L79 563.6L81 560.8L83 557.8L85 554.2L87 550.1L89 546L91 542.2L93 538.7L95 535.5L97 532.4L99 529.3L101 525.7L103 522.3L105 519.3L107 516.8L109 514.5L111 511.9L113 509.6L115 507.5L117 505.7L119 504.2L121 502.7L123 501.2L125 499.8L127 498.7L129 497.9L131 497.3L133 496.9L135 496.5L137 495.8L139 495L141 494.3L143 493.8L145 493.5L147 493.3L149 493.1L151 493L153 492.9L155 492.8L157 492.8L159 492.9L161 492.8L163 492.7L165 492.5L167 492.2L169 491.7L171 491L173 490.2L175 489.3L177 488.5L179 487.9L181 487.5L183 487.1L185 486.5L187 485.9L189 485.5L191 485.2L193 484.8L195 484.5L197 484.4L199 484.3L201 484L203 483.8L205 483.6L207 483.4L209 482.8L211 482.2L213 481.7L215 481.4L217 480.9L219 480.6L221 480.2L223 479.6L225 479.1L227 478.8L229 478.7L231 478.6L233 478.5L235 478.6L237 478.7L239 478.8L241 479L243 479.2L245 479.6L247 480L249 480.4L251 480.9L253 481.3L255 481.6L257 481.7L259 481.8L261 482L263 482.2L265 482.4L267 482.5L269 482.6L271 482.6L273 482.7L275 482.8L277 483L279 483.2L281 483.3L283 483.3L285 483.3L287 483.4L289 483.2L291 483.1L293 483.1L295 483.1L297 483.1L299 483.2L301 483.3L303 483.5L305 483.3L307 482.9L309 482.6L311 482.6L313 482.5L315 482.3L317 482.2L319 482L321 481.9L323 481.9L325 482L327 482.2L329 482.5L331 482.8L333 483L335 483.2L337 483.4L339 483.7L341 483.9L343 484.2L345 484.5L347 484.7L349 484.7L351 484.8L353 484.8L355 484.9L357 484.9L359 485L361 485.2L363 485.4L365 485.6L367 485.8L369 485.8L371 485.9L373 486L375 486.1L377 486.1L379 486.3L381 486.1L383 485.7L385 485.4L387 484.7L389 484.2L391 483.8L393 483.5L395 483.4L397 483.3L399 483.4L401 483.3L403 483.1L405 482.9L407 482.8L409 482.8L411 482.9L413 483L415 483.1L417 483.2L419 483.1L421 483.1L423 483.2L425 483.2L427 483.1L429 483.1L431 482.9L433 482.4L435 481.9L437 481.5L439 481.3L441 481.2L443 481.1L445 481.2L447 481.3L449 481.4L451 481.4L453 481.5L455 481.6L457 481.7L459 481.5L461 481.4L463 481.3L465 481.3L467 481.4L469 481.6L471 481.9L473 482.1L475 482.5L477 482.8L479 483.3L481 483.8L483 484.2L485 484.5L487 484.7L489 485L491 485.2L493 485.5L495 485.6L497 485.8L499 486L501 486.3L503 486.5L505 486.8L507 486.9L509 486.8L511 486.6L513 486.4L515 486.4L517 486.2L519 485.7L521 485.3L523 485L525 484.7L527 484.3L529 484L531 483.8L533 483.5L535 483.1L537 482.9L539 482.9L541 482.8L543 482.6L545 482.5L547 482.5L549 482.5L551 482.6L553 482.7L555 482.8L557 482.7L559 482.4L561 482.1L563 481.9L565 481.8L567 481.9L569 481.9L571 482L573 482L575 482.1L577 482L579 481.9L581 481.9L583 482L585 482.2L587 482.3L589 482.3L591 482.3L593 482.2L595 482.2L597 482L599 481.6L601 481.4L603 481.3L605 481.4L607 481.3L609 481.4L611 481.5L613 481.6L615 481.4L617 481.2L619 481L621 480.9L623 480.8L625 480.9L627 480.9L629 481.1L631 481.2L633 481.4L635 481.6L637 481.8L639 482L641 481.8L643 481.6L645 481.5L647 481.4L649 481.5L651 481.5L653 481.6L655 481.8L657 481.9L659 482L661 482.2L663 482.5L665 482.3L667 481.9L669 481.6L671 481.4L673 481.3L675 481.3L677 481.3L679 481.2L681 481.2L683 481.2L685 480.9L687 480.5L689 480.2L691 480L693 479.9L695 479.8L697 479.8L699 479.7L701 479.6L703 479.6L705 479.7L707 479.8L709 479.9L711 480.1L713 480.2L715 480.3L717 480.4L719 480.3L721 480.2L723 480.2L725 480.1L727 479.9L729 479.8L731 479.8L733 479.9L735 479.9L737 479.9L739 480L741 480.1L743 480.2L745 480.5L747 480.8L749 481.1L751 481.3L753 481.6L755 481.9L757 482.2L759 482.6L761 482.9L763 483.1L765 483.2L767 483.5L769 483.7L771 484L773 484.3L775 484.5L777 484.7L779 484.8L781 484.9L783 484.9L785 484.5L787 484.2L789 484.1L791 484L793 484L795 483.9L797 483.9L799 483.7L801 483.4L803 483.1L805 482.8L807 482.6L809 482.3L811 482.2L813 482.1L815 482L817 482L819 482L821 481.8L823 481.7L825 481.7L827 481.8L829 481.9L831 482.1L833 482.3L835 482.5L837 482.7L839 483L841 483.2L843 483L845 482.8L847 482.7L849 482.7L851 482.8L853 482.6L855 481.7L857 481.1L859 480.6L861 480.2L863 480L865 479.9L867 479.8L869 479.7L871 479.7L873 479.7L875 479.7L877 479.7L879 479.5L881 479.4L883 479.4L885 479.6L887 479.6L889 479.7L891 479.8L893 479.7L895 479.6L897 479.6L899 479.7L901 479.9L903 480.2L905 480.6L907 481L909 481.3L911 481.6L913 481.7L915 481.8L917 482L919 482.2L921 482.5L923 482.7L925 482.9L927 483.1L929 483.3L931 483.5L933 483.8L935 484.1L937 484.2L939 483.9L941 483.5L943 482.9L945 482.4L947 482.1L949 482L951 481.9L953 481.9L955 481.9L957 481.9L959 482L961 482.3L963 482.5L965 482.8L967 483.1L969 483.5L971 483.8L973 484L975 484.3L977 484.5L979 484.9L981 485.3L983 485.5L983 574L65 574Z" />
+              <path class="ch-line"
+                d="M65 574L67 574L69 574L71 573.5L73 571.7L75 569.3L77 566.4L79 563.6L81 560.8L83 557.8L85 554.2L87 550.1L89 546L91 542.2L93 538.7L95 535.5L97 532.4L99 529.3L101 525.7L103 522.3L105 519.3L107 516.8L109 514.5L111 511.9L113 509.6L115 507.5L117 505.7L119 504.2L121 502.7L123 501.2L125 499.8L127 498.7L129 497.9L131 497.3L133 496.9L135 496.5L137 495.8L139 495L141 494.3L143 493.8L145 493.5L147 493.3L149 493.1L151 493L153 492.9L155 492.8L157 492.8L159 492.9L161 492.8L163 492.7L165 492.5L167 492.2L169 491.7L171 491L173 490.2L175 489.3L177 488.5L179 487.9L181 487.5L183 487.1L185 486.5L187 485.9L189 485.5L191 485.2L193 484.8L195 484.5L197 484.4L199 484.3L201 484L203 483.8L205 483.6L207 483.4L209 482.8L211 482.2L213 481.7L215 481.4L217 480.9L219 480.6L221 480.2L223 479.6L225 479.1L227 478.8L229 478.7L231 478.6L233 478.5L235 478.6L237 478.7L239 478.8L241 479L243 479.2L245 479.6L247 480L249 480.4L251 480.9L253 481.3L255 481.6L257 481.7L259 481.8L261 482L263 482.2L265 482.4L267 482.5L269 482.6L271 482.6L273 482.7L275 482.8L277 483L279 483.2L281 483.3L283 483.3L285 483.3L287 483.4L289 483.2L291 483.1L293 483.1L295 483.1L297 483.1L299 483.2L301 483.3L303 483.5L305 483.3L307 482.9L309 482.6L311 482.6L313 482.5L315 482.3L317 482.2L319 482L321 481.9L323 481.9L325 482L327 482.2L329 482.5L331 482.8L333 483L335 483.2L337 483.4L339 483.7L341 483.9L343 484.2L345 484.5L347 484.7L349 484.7L351 484.8L353 484.8L355 484.9L357 484.9L359 485L361 485.2L363 485.4L365 485.6L367 485.8L369 485.8L371 485.9L373 486L375 486.1L377 486.1L379 486.3L381 486.1L383 485.7L385 485.4L387 484.7L389 484.2L391 483.8L393 483.5L395 483.4L397 483.3L399 483.4L401 483.3L403 483.1L405 482.9L407 482.8L409 482.8L411 482.9L413 483L415 483.1L417 483.2L419 483.1L421 483.1L423 483.2L425 483.2L427 483.1L429 483.1L431 482.9L433 482.4L435 481.9L437 481.5L439 481.3L441 481.2L443 481.1L445 481.2L447 481.3L449 481.4L451 481.4L453 481.5L455 481.6L457 481.7L459 481.5L461 481.4L463 481.3L465 481.3L467 481.4L469 481.6L471 481.9L473 482.1L475 482.5L477 482.8L479 483.3L481 483.8L483 484.2L485 484.5L487 484.7L489 485L491 485.2L493 485.5L495 485.6L497 485.8L499 486L501 486.3L503 486.5L505 486.8L507 486.9L509 486.8L511 486.6L513 486.4L515 486.4L517 486.2L519 485.7L521 485.3L523 485L525 484.7L527 484.3L529 484L531 483.8L533 483.5L535 483.1L537 482.9L539 482.9L541 482.8L543 482.6L545 482.5L547 482.5L549 482.5L551 482.6L553 482.7L555 482.8L557 482.7L559 482.4L561 482.1L563 481.9L565 481.8L567 481.9L569 481.9L571 482L573 482L575 482.1L577 482L579 481.9L581 481.9L583 482L585 482.2L587 482.3L589 482.3L591 482.3L593 482.2L595 482.2L597 482L599 481.6L601 481.4L603 481.3L605 481.4L607 481.3L609 481.4L611 481.5L613 481.6L615 481.4L617 481.2L619 481L621 480.9L623 480.8L625 480.9L627 480.9L629 481.1L631 481.2L633 481.4L635 481.6L637 481.8L639 482L641 481.8L643 481.6L645 481.5L647 481.4L649 481.5L651 481.5L653 481.6L655 481.8L657 481.9L659 482L661 482.2L663 482.5L665 482.3L667 481.9L669 481.6L671 481.4L673 481.3L675 481.3L677 481.3L679 481.2L681 481.2L683 481.2L685 480.9L687 480.5L689 480.2L691 480L693 479.9L695 479.8L697 479.8L699 479.7L701 479.6L703 479.6L705 479.7L707 479.8L709 479.9L711 480.1L713 480.2L715 480.3L717 480.4L719 480.3L721 480.2L723 480.2L725 480.1L727 479.9L729 479.8L731 479.8L733 479.9L735 479.9L737 479.9L739 480L741 480.1L743 480.2L745 480.5L747 480.8L749 481.1L751 481.3L753 481.6L755 481.9L757 482.2L759 482.6L761 482.9L763 483.1L765 483.2L767 483.5L769 483.7L771 484L773 484.3L775 484.5L777 484.7L779 484.8L781 484.9L783 484.9L785 484.5L787 484.2L789 484.1L791 484L793 484L795 483.9L797 483.9L799 483.7L801 483.4L803 483.1L805 482.8L807 482.6L809 482.3L811 482.2L813 482.1L815 482L817 482L819 482L821 481.8L823 481.7L825 481.7L827 481.8L829 481.9L831 482.1L833 482.3L835 482.5L837 482.7L839 483L841 483.2L843 483L845 482.8L847 482.7L849 482.7L851 482.8L853 482.6L855 481.7L857 481.1L859 480.6L861 480.2L863 480L865 479.9L867 479.8L869 479.7L871 479.7L873 479.7L875 479.7L877 479.7L879 479.5L881 479.4L883 479.4L885 479.6L887 479.6L889 479.7L891 479.8L893 479.7L895 479.6L897 479.6L899 479.7L901 479.9L903 480.2L905 480.6L907 481L909 481.3L911 481.6L913 481.7L915 481.8L917 482L919 482.2L921 482.5L923 482.7L925 482.9L927 483.1L929 483.3L931 483.5L933 483.8L935 484.1L937 484.2L939 483.9L941 483.5L943 482.9L945 482.4L947 482.1L949 482L951 481.9L953 481.9L955 481.9L957 481.9L959 482L961 482.3L963 482.5L965 482.8L967 483.1L969 483.5L971 483.8L973 484L975 484.3L977 484.5L979 484.9L981 485.3L983 485.5" />
+            </g>
+            <line class="xh" x1="64" x2="64" y1="30" y2="574" style="display:none" />
+          </svg>
+        </div>
+        <p class="readout">Move the pointer over the recording, or focus it and press the arrow keys, to read the
+          values.</p>
+        <figcaption><b>Fig. 1</b>Output of the public scenario <em>Default - Soleus contraction</em>: 100 descending
+          axons firing as Poisson
+          processes drive the 900 motoneurons of the soleus. 332 of them are recruited, all of type S, and the
+          force settles near 309&nbsp;N. Nothing here is drawn by hand: the panels are the simulator&rsquo;s output for
+          seed 17, and the same seed and engine version give the same figure again.</figcaption>
+        <details class="data">
+          <summary>Values behind the figure</summary>
+          <div class="tbl-wrap" style="max-width:34rem">
+            <table>
+              <thead>
+                <tr>
+                  <th class="num">Time (s)</th>
+                  <th class="num">Force (N)</th>
+                  <th class="num">Units firing in the last 200 ms</th>
+                  <th class="num">Units recruited so far</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="num">0.5</td>
+                  <td class="num">273.5</td>
+                  <td class="num">260</td>
+                  <td class="num">293</td>
+                </tr>
+                <tr>
+                  <td class="num">1.0</td>
+                  <td class="num">315.7</td>
+                  <td class="num">273</td>
+                  <td class="num">309</td>
+                </tr>
+                <tr>
+                  <td class="num">1.5</td>
+                  <td class="num">303.6</td>
+                  <td class="num">274</td>
+                  <td class="num">312</td>
+                </tr>
+                <tr>
+                  <td class="num">2.0</td>
+                  <td class="num">307.4</td>
+                  <td class="num">284</td>
+                  <td class="num">318</td>
+                </tr>
+                <tr>
+                  <td class="num">2.5</td>
+                  <td class="num">300.1</td>
+                  <td class="num">282</td>
+                  <td class="num">323</td>
+                </tr>
+                <tr>
+                  <td class="num">3.0</td>
+                  <td class="num">312.0</td>
+                  <td class="num">285</td>
+                  <td class="num">325</td>
+                </tr>
+                <tr>
+                  <td class="num">3.5</td>
+                  <td class="num">317.0</td>
+                  <td class="num">283</td>
+                  <td class="num">326</td>
+                </tr>
+                <tr>
+                  <td class="num">4.0</td>
+                  <td class="num">304.5</td>
+                  <td class="num">281</td>
+                  <td class="num">328</td>
+                </tr>
+                <tr>
+                  <td class="num">4.5</td>
+                  <td class="num">317.2</td>
+                  <td class="num">272</td>
+                  <td class="num">330</td>
+                </tr>
+                <tr>
+                  <td class="num">5.0</td>
+                  <td class="num">297.8</td>
+                  <td class="num">263</td>
+                  <td class="num">332</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+        <script type="application/json"
+          id="rec-data">{"x0":64,"x1":984,"t1":5000,"dt":10,"force":[0,0,0,2.2,8.4,15.9,25,33.4,42.3,51.1,61.6,74.1,86.8,99.1,110.6,121.1,131.1,140.5,149.9,161.3,172,181.7,189.9,196.8,204.7,212.5,219.3,225.6,231,235.3,240.1,244.9,249.1,252.6,255.3,257.3,259,260,261.6,263.9,266.4,268.5,270,270.8,271.4,272.1,272.6,272.9,273.3,273.5,273.3,273.1,273.5,273.7,274.4,275.2,276.9,278.8,281.4,284.2,286.9,289,290.5,291.7,292.8,295,296.7,298,298.9,300.2,301.1,301.6,301.8,302.2,303.3,304,304.3,305.3,307.4,309,310.5,311.6,313,314.1,315,317,318.8,320,320.5,320.9,321.3,321.3,321.1,320.8,320.5,319.9,319.1,318.2,317.1,315.7,314.2,312.8,311.7,310.9,310.5,310.2,309.7,309.2,308.5,307.9,307.9,307.6,307.4,307.2,306.7,306.2,305.6,305,305.3,305.2,304.9,305.4,305.7,306,305.9,305.7,305.8,305.6,305.1,304.5,305.2,306.6,307.4,307.7,307.7,308.3,308.7,309.1,309.7,310,310,309.7,309,308,307,306.3,305.9,305.2,304.4,303.6,302.7,301.7,300.9,300.5,300.5,300.2,300,299.9,300,299.8,299.2,298.6,297.8,297.2,296.7,296.8,296.5,296,295.7,295.7,295.3,295.6,296.7,297.5,299.3,301.2,302.7,303.9,304.7,305.1,305.1,305.1,305,305.7,306.3,306.9,307,306.9,306.6,306.2,305.6,305.6,306,305.9,305.6,305.6,305.9,305.9,306.1,307.4,309.1,310.6,311.6,312.2,312.5,312.6,312.4,312,311.5,311.8,311.6,311.1,310.7,311,311.3,311.6,311.9,311.8,311.5,310.9,310.3,309.4,308.5,307.4,306.1,304.6,303.1,301.8,301.2,300.5,299.6,298.8,298.1,297.6,297.1,296.4,295.7,294.9,294.1,293.3,292.9,293.4,294,294.7,294.9,295.2,296.8,298.1,299.2,300.1,301.1,302.2,303,303.8,304.7,305.8,306.5,306.7,306.8,307.4,308,308.1,308,307.7,307.3,307,307.1,307.4,308.4,309.2,309.9,310.2,310.1,310,309.8,309.7,309.5,309.4,309.8,309.9,309.9,309.6,309.1,308.6,308.4,308.6,308.8,309,309.1,310,311.2,311.8,311.8,311.8,311.9,311.7,311.4,311.1,311.3,312,312.5,313.1,313.6,313.6,313.4,313.2,312.8,312.4,311.8,311.3,310.6,309.8,309.6,310.5,311,311.4,311.5,311.5,311.2,310.9,310.4,310,309.7,309.1,308.4,307.9,309.1,310.4,311.1,311.7,311.9,311.9,312.1,312.2,312.3,312.3,312.8,314,315.1,315.9,316.4,316.8,317,317.1,317.4,317.6,317.9,317.7,317.3,317,316.4,315.8,315.6,315.2,314.8,315.2,315.5,315.7,315.9,316.6,317.1,317.2,316.9,316.7,316.8,316.7,316.3,316.1,315.6,314.9,314,312.9,312.3,311.5,310.6,309.6,308.4,307.4,306.5,305.8,305.4,304.7,303.9,303.1,302.3,301.5,300.8,300.5,300.1,299.7,300.2,301.5,302.3,302.7,302.8,303,303.2,303,303.5,304.5,305.4,306.4,307.1,307.7,308.5,308.8,309.1,309.5,309.5,309.5,310,310.5,310.6,310.5,310.1,309.7,309.1,308.6,308,307.5,306.6,305.6,306,306.6,307.1,307.3,307.2,306.9,308.1,310.8,312.8,314.3,315.5,316.2,316.5,316.9,317.2,317.3,317.4,317.4,317.4,317.4,318.1,318.4,318.4,318,317.6,317.5,317.1,317.2,317.6,317.9,317.8,317.3,316.5,315.5,314.4,313.2,312,311.2,310.7,310.3,310,309.4,308.5,308,307.2,306.4,306,305.5,304.8,304,303,302.3,302.6,303.7,305.3,307.2,308.6,309.3,309.7,309.9,309.9,310.1,310.1,309.7,309.1,308.3,307.4,306.5,305.7,304.5,303.3,302.8,302.1,301.3,300.3,299.1,298,297.8],"units":[0,0,6,119,154,204,210,223,229,233,244,259,264,267,269,271,271,271,273,276,278,278,278,279,285,286,287,287,287,287,286,284,281,279,279,278,278,278,275,272,271,272,273,272,265,263,262,261,261,260,257,258,260,260,263,269,275,278,282,283,285,285,285,285,285,285,285,285,285,287,287,285,285,286,287,285,280,288,284,284,287,289,291,291,290,296,296,296,296,293,293,293,293,290,289,288,288,276,275,273,271,272,267,268,272,262,262,264,264,269,270,270,272,271,271,271,270,274,274,274,276,276,276,274,274,275,275,273,274,270,279,279,279,279,280,281,282,279,283,283,282,280,280,280,279,278,276,275,275,274,261,261,265,268,268,266,266,268,269,269,269,270,270,272,276,275,273,272,276,276,274,280,281,279,286,286,286,287,286,285,286,287,288,287,286,284,284,284,281,281,281,281,279,279,269,273,272,270,275,284,286,286,284,284,281,281,281,283,284,286,286,280,281,283,284,285,285,285,281,273,269,269,268,268,267,267,268,267,265,263,263,268,264,263,261,260,258,260,259,259,265,271,272,273,273,281,282,283,282,282,282,282,282,281,283,283,283,283,285,286,286,281,282,281,281,273,275,276,280,281,279,278,277,277,277,277,276,277,278,277,277,277,277,279,280,281,277,278,275,279,281,281,281,283,284,283,283,282,285,285,284,286,286,284,282,278,277,276,276,271,270,273,278,279,280,280,281,280,278,275,275,275,275,275,275,281,283,282,283,283,282,283,281,280,279,281,286,289,291,291,291,291,291,292,292,289,285,284,284,283,283,282,282,280,280,282,278,275,274,276,277,277,277,279,281,280,284,284,282,282,282,279,278,277,273,267,266,266,264,265,263,263,263,263,263,265,262,266,266,266,279,279,278,278,280,282,282,281,282,281,281,281,282,286,286,285,286,285,285,288,278,278,278,279,278,278,279,279,273,270,266,268,276,276,276,276,276,277,291,289,286,288,288,287,287,287,287,287,289,290,292,292,288,287,286,286,288,286,270,272,276,275,275,275,273,273,272,271,269,270,272,267,267,266,266,269,266,267,266,264,264,264,265,270,274,277,284,285,285,284,282,280,281,281,281,281,281,281,280,279,278,277,276,274,264,261,255,254,256,263]}</script>
+        <!-- recording:end -->
+      </figure>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="model">
+      <div class="sec-no"><b>1</b>The model</div>
+      <div class="sec-body">
+        <h2>From a descending command to the torque at the ankle</h2>
+        <div class="prose">
+          <p class="lead">ReMoto reproduces, neuron by neuron and motor unit by motor unit, the chain that turns a
+            command from the brain into muscle force. Each element has its own mathematical model, usually built on
+            voltage- or transmitter-dependent ionic conductances.</p>
+          <p>Because every level is simulated, one run can be read at several scales: the membrane potential of a
+            single motoneuron, the firing statistics of a pool, the electromyogram, the force of a muscle and the
+            torque at the joint. The simulated nuclei control flexion and extension of the human ankle: soleus (SOL),
+            medial gastrocnemius (MG), lateral gastrocnemius (LG) and tibialis anterior (TA).</p>
+          <p>It is used to interpret neurophysiological experiments in humans, to propose and test hypotheses about
+            spinal processing, to check an experimental protocol before running it, and to teach neurophysiology.</p>
+        </div>
+
+        <figure class="diagram">
+          <div class="scroll-x">
+            <svg viewBox="0 0 1000 632" role="img" aria-labelledby="dg-title dg-desc">
+              <title id="dg-title">Circuit simulated by ReMoto for one motor nucleus</title>
+              <desc id="dg-desc">Descending tracts excite and inhibit the motoneuron pool. Motoneurons excite Renshaw
+                cells, which inhibit them back. Motor axons run through the peripheral nerve to the motor units of the
+                muscle. The muscle spindle sends Ia afferents straight to the motoneurons and group II afferents to
+                group II interneurons, which excite the motoneurons. The Golgi tendon organ sends Ib afferents to Ib
+                interneurons, which inhibit the motoneurons. Ia afferents of the antagonist muscle excite Ia inhibitory
+                interneurons, which inhibit the motoneurons. Motor units produce force, which acts on the ankle joint.
+              </desc>
+              <defs>
+                <marker id="m-exc" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8"
+                  orient="auto-start-reverse">
+                  <path d="M0 0.8 9 5 0 9.2z" fill="#1f5f99" />
+                </marker>
+                <marker id="m-inh" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8.5" markerHeight="8.5">
+                  <circle cx="5" cy="5" r="4.2" fill="#ad3a2c" />
+                </marker>
+                <marker id="m-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8"
+                  orient="auto-start-reverse">
+                  <path d="M0 0.8 9 5 0 9.2z" fill="#17212b" />
+                </marker>
+              </defs>
+
+              <!-- legend -->
+              <g>
+                <path class="dg-exc" d="M690 40H736" marker-end="url(#m-exc)" />
+                <text class="dg-s" x="748" y="44">excitatory synapse or fiber</text>
+                <path class="dg-inh" d="M690 64H734" marker-end="url(#m-inh)" />
+                <text class="dg-s" x="748" y="68">inhibitory synapse</text>
+              </g>
+
+              <!-- descending tracts -->
+              <rect class="dg-node" x="270" y="20" width="320" height="64" rx="8" />
+              <text class="dg-t" x="430" y="47" text-anchor="middle">Descending tracts</text>
+              <text class="dg-s" x="430" y="67" text-anchor="middle">stochastic spike trains, optionally
+                modulated</text>
+
+              <!-- spinal cord -->
+              <rect class="dg-region" x="40" y="124" width="920" height="262" rx="20" />
+              <text class="dg-cap" x="62" y="150">SPINAL CORD</text>
+
+              <path class="dg-exc" d="M414 84V192" marker-end="url(#m-exc)" />
+              <path class="dg-inh" d="M446 84V193" marker-end="url(#m-inh)" />
+
+              <rect class="dg-node" x="300" y="200" width="260" height="100" rx="10" style="stroke-width:2" />
+              <text class="dg-t" x="430" y="238" text-anchor="middle" style="font-size:19px">Motoneuron pool</text>
+              <text class="dg-s" x="430" y="261" text-anchor="middle">types S &middot; FR &middot; FF</text>
+              <text class="dg-s" x="430" y="280" text-anchor="middle">two compartments, active dendrite</text>
+
+              <rect class="dg-node" x="70" y="215" width="170" height="70" rx="35" />
+              <text class="dg-t" x="155" y="256" text-anchor="middle">Renshaw cells</text>
+              <path class="dg-exc" d="M300 232H249" marker-end="url(#m-exc)" />
+              <path class="dg-inh" d="M240 268H293" marker-end="url(#m-inh)" />
+              <text class="dg-i" x="155" y="310" text-anchor="middle">recurrent inhibition</text>
+
+              <rect class="dg-node" x="660" y="150" width="170" height="56" rx="28" />
+              <text class="dg-t" x="745" y="184" text-anchor="middle">Ia interneurons</text>
+              <path class="dg-inh" d="M661 187L568 222" marker-end="url(#m-inh)" />
+              <path class="dg-exc" d="M992 178H839" marker-end="url(#m-exc)" />
+              <text class="dg-s" x="912" y="202" text-anchor="middle">Ia afferents of</text>
+              <text class="dg-s" x="912" y="218" text-anchor="middle">the antagonist</text>
+              <text class="dg-i" x="745" y="229" text-anchor="middle">reciprocal inhibition</text>
+
+              <rect class="dg-node" x="578" y="316" width="190" height="50" rx="25" />
+              <text class="dg-t" x="673" y="347" text-anchor="middle">Group II interneurons</text>
+              <path class="dg-exc" d="M606 316L568 288" marker-end="url(#m-exc)" />
+
+              <rect class="dg-node" x="780" y="316" width="160" height="50" rx="25" />
+              <text class="dg-t" x="860" y="347" text-anchor="middle">Ib interneurons</text>
+              <path class="dg-inh" d="M860 316V262H568" marker-end="url(#m-inh)" />
+
+              <!-- peripheral nerve -->
+              <rect class="dg-nerve" x="250" y="410" width="700" height="44" rx="22" />
+              <text class="dg-t" x="238" y="428" text-anchor="end">Peripheral nerve</text>
+              <text class="dg-s" x="238" y="446" text-anchor="end">tibial &middot; common peroneal</text>
+              <text class="dg-i" x="238" y="463" text-anchor="end">stimulation: M wave, H reflex</text>
+              <path d="M286 420l-9 14h8l-5 12 12-16h-8z" fill="#17212b" />
+
+              <!-- fibers crossing the nerve -->
+              <path class="dg-exc" d="M350 300V507" marker-end="url(#m-exc)" />
+              <text class="dg-s" x="360" y="394">&alpha; motor axons</text>
+              <path class="dg-exc" d="M470 516V309" marker-end="url(#m-exc)" />
+              <text class="dg-s" x="480" y="476">Ia</text>
+              <path class="dg-exc" d="M673 516V375" marker-end="url(#m-exc)" />
+              <text class="dg-s" x="683" y="476">II</text>
+              <path class="dg-exc" d="M860 516V375" marker-end="url(#m-exc)" />
+              <text class="dg-s" x="870" y="476">Ib</text>
+
+              <!-- muscle -->
+              <rect class="dg-region" x="250" y="484" width="700" height="128" rx="14" />
+              <text class="dg-cap" x="268" y="505">MUSCLE</text>
+              <rect class="dg-node" x="262" y="516" width="176" height="82" rx="8" />
+              <text class="dg-t" x="350" y="543" text-anchor="middle">Motor units</text>
+              <text class="dg-s" x="350" y="563" text-anchor="middle">twitches &rarr; force</text>
+              <text class="dg-s" x="350" y="581" text-anchor="middle">action potentials &rarr; EMG</text>
+              <rect class="dg-node" x="452" y="516" width="253" height="82" rx="8" />
+              <text class="dg-t" x="578" y="552" text-anchor="middle">Muscle spindle</text>
+              <text class="dg-s" x="578" y="573" text-anchor="middle">muscle length and velocity</text>
+              <rect class="dg-node" x="770" y="516" width="170" height="82" rx="8" />
+              <text class="dg-t" x="855" y="552" text-anchor="middle">Golgi tendon organ</text>
+              <text class="dg-s" x="855" y="573" text-anchor="middle">muscle force</text>
+
+              <!-- joint -->
+              <rect class="dg-node" x="56" y="524" width="160" height="66" rx="8" />
+              <text class="dg-t" x="136" y="553" text-anchor="middle">Ankle joint</text>
+              <text class="dg-s" x="136" y="573" text-anchor="middle">torque &middot; angle</text>
+              <path class="dg-ink" d="M262 557H225" marker-end="url(#m-ink)" />
+            </svg>
+          </div>
+          <figcaption><b>Fig. 2</b>The circuit simulated for each motor nucleus. The triceps surae (SOL, MG, LG) and the
+            tibialis anterior are antagonists, so the Ia afferents of one side drive the reciprocal inhibition of the
+            other. Each connection has its own conductance, reversal potential, delay and connectivity, all editable.
+          </figcaption>
+        </figure>
+
+        <dl class="sheet">
+          <div>
+            <dt>Motoneurons</dt>
+            <dd>Two-compartment (soma and dendrite) conductance-based models of types S, FR and FF,
+              with sodium, fast and slow potassium channels and a persistent inward current in the dendrite. Thresholds,
+              sizes and conduction velocities vary along the pool, which gives orderly recruitment.</dd>
+          </div>
+          <div>
+            <dt>Interneurons</dt>
+            <dd>Renshaw cells, Ia reciprocal inhibitory interneurons, Ib interneurons and
+              group II interneurons, for the extensor and flexor sides.</dd>
+          </div>
+          <div>
+            <dt>Afferents</dt>
+            <dd>Ia, II and Ib fibers, driven by the muscle spindle and Golgi tendon organ models or
+              by electrical stimulation of the nerve.</dd>
+          </div>
+          <div>
+            <dt>Descending tracts</dt>
+            <dd>Populations of axons firing as point processes (Poisson, gamma or Gaussian
+              intervals), with the mean rate constant or modulated by a sine, ramp, square wave or other waveform.</dd>
+          </div>
+          <div>
+            <dt>Synapses</dt>
+            <dd>Conductance changes with their own kinetics, delay and connectivity, with optional
+              short-term depression or facilitation.</dd>
+          </div>
+          <div>
+            <dt>Muscle</dt>
+            <dd>Each motoneuron spike produces, after its conduction delay, a motor-unit action
+              potential and a twitch. Their sums are the EMG and the muscle force. Twitch models or a Hill-type muscle
+              with tendon can be chosen.</dd>
+          </div>
+          <div>
+            <dt>Proprioceptors</dt>
+            <dd>Muscle spindle (Mileusnic or Prochazka models) with Ia and II outputs, and
+              Golgi tendon organ (Crago model) with Ib output.</dd>
+          </div>
+          <div>
+            <dt>Joint</dt>
+            <dd>The ankle as an isometric joint, as an inverted pendulum for upright stance, or in a
+              position task against a load.</dd>
+          </div>
+          <div>
+            <dt>Stimulation</dt>
+            <dd>Electrical pulses on the tibial and common peroneal nerves, with orthodromic and
+              antidromic propagation, for M waves and H reflexes; current injected into chosen neurons.</dd>
+          </div>
+          <div>
+            <dt>Scale</dt>
+            <dd>The scenario with every element switched on has 2,110 motoneurons, 2,800 interneurons,
+              2,930 afferent fibers and 1,500 descending axons.</dd>
+          </div>
+        </dl>
       </div>
-      <p class="readout">Move the pointer over the recording, or focus it and press the arrow keys, to read the values.</p>
-      <figcaption><b>Fig. 1</b>Output of the public scenario <em>Default - Soleus contraction</em>: 100 descending axons firing as Poisson
-        processes drive the 900 motoneurons of the soleus. 332 of them are recruited, all of type S, and the
-        force settles near 309&nbsp;N. Nothing here is drawn by hand: the panels are the simulator&rsquo;s output for
-        seed 17, and the same seed and engine version give the same figure again.</figcaption>
-      <details class="data">
-        <summary>Values behind the figure</summary>
-        <div class="tbl-wrap" style="max-width:34rem">
+    </section>
+
+    <section class="sec" id="version">
+      <div class="sec-no"><b>2</b>Version 3</div>
+      <div class="sec-body">
+        <h2>The published models on a platform that runs today</h2>
+        <div class="prose">
+          <p class="lead">ReMoto was developed over more than a decade at the Biomedical Engineering Laboratory of the
+            University of S&atilde;o Paulo. Its website depended on Java applets and on server software that no longer
+            receives security updates. Version 3 keeps the models and replaces everything around them.</p>
+        </div>
+
+        <div class="tbl-wrap">
           <table>
-            <thead><tr><th class="num">Time (s)</th><th class="num">Force (N)</th><th class="num">Units firing in the last 200 ms</th><th class="num">Units recruited so far</th></tr></thead>
+            <caption><b>Table 1</b>What changed between the legacy site and version 3.</caption>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Legacy version</th>
+                <th>Version 3</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr><td class="num">0.5</td><td class="num">273.5</td><td class="num">260</td><td class="num">293</td></tr>
-              <tr><td class="num">1.0</td><td class="num">315.7</td><td class="num">273</td><td class="num">309</td></tr>
-              <tr><td class="num">1.5</td><td class="num">303.6</td><td class="num">274</td><td class="num">312</td></tr>
-              <tr><td class="num">2.0</td><td class="num">307.4</td><td class="num">284</td><td class="num">318</td></tr>
-              <tr><td class="num">2.5</td><td class="num">300.1</td><td class="num">282</td><td class="num">323</td></tr>
-              <tr><td class="num">3.0</td><td class="num">312.0</td><td class="num">285</td><td class="num">325</td></tr>
-              <tr><td class="num">3.5</td><td class="num">317.0</td><td class="num">283</td><td class="num">326</td></tr>
-              <tr><td class="num">4.0</td><td class="num">304.5</td><td class="num">281</td><td class="num">328</td></tr>
-              <tr><td class="num">4.5</td><td class="num">317.2</td><td class="num">272</td><td class="num">330</td></tr>
-              <tr><td class="num">5.0</td><td class="num">297.8</td><td class="num">263</td><td class="num">332</td></tr>
+              <tr>
+                <th>Stack</th>
+                <td>Java 8, Struts 1, JSP, Java applets, Tomcat 7, HSQLDB</td>
+                <td>Java 25, Spring Boot 4, Thymeleaf, htmx and uPlot; files instead of a database; one executable JAR
+                </td>
+              </tr>
+              <tr>
+                <th>Models</th>
+                <td>All published models</td>
+                <td>The same models, ported with bit-for-bit identical results</td>
+              </tr>
+              <tr>
+                <th>Random numbers</th>
+                <td>Unseeded: no two runs alike</td>
+                <td>One seed per scenario: the same seed gives the same results</td>
+              </tr>
+              <tr>
+                <th>Users</th>
+                <td>Accounts stored in the database</td>
+                <td>No login: each browser has its own area, kept by a 30-day cookie; scenarios travel as files</td>
+              </tr>
+              <tr>
+                <th>Outside the browser</th>
+                <td>None</td>
+                <td>Command-line runner and REST API</td>
+              </tr>
+              <tr>
+                <th>Status</th>
+                <td>Unmaintained, kept in the <a href="https://github.com/rnwatanabe/remoto">parent repository</a></td>
+                <td>Maintained and tested on every commit</td>
+              </tr>
             </tbody>
           </table>
         </div>
-      </details>
-      <script type="application/json" id="rec-data">{"x0":64,"x1":984,"t1":5000,"dt":10,"force":[0,0,0,2.2,8.4,15.9,25,33.4,42.3,51.1,61.6,74.1,86.8,99.1,110.6,121.1,131.1,140.5,149.9,161.3,172,181.7,189.9,196.8,204.7,212.5,219.3,225.6,231,235.3,240.1,244.9,249.1,252.6,255.3,257.3,259,260,261.6,263.9,266.4,268.5,270,270.8,271.4,272.1,272.6,272.9,273.3,273.5,273.3,273.1,273.5,273.7,274.4,275.2,276.9,278.8,281.4,284.2,286.9,289,290.5,291.7,292.8,295,296.7,298,298.9,300.2,301.1,301.6,301.8,302.2,303.3,304,304.3,305.3,307.4,309,310.5,311.6,313,314.1,315,317,318.8,320,320.5,320.9,321.3,321.3,321.1,320.8,320.5,319.9,319.1,318.2,317.1,315.7,314.2,312.8,311.7,310.9,310.5,310.2,309.7,309.2,308.5,307.9,307.9,307.6,307.4,307.2,306.7,306.2,305.6,305,305.3,305.2,304.9,305.4,305.7,306,305.9,305.7,305.8,305.6,305.1,304.5,305.2,306.6,307.4,307.7,307.7,308.3,308.7,309.1,309.7,310,310,309.7,309,308,307,306.3,305.9,305.2,304.4,303.6,302.7,301.7,300.9,300.5,300.5,300.2,300,299.9,300,299.8,299.2,298.6,297.8,297.2,296.7,296.8,296.5,296,295.7,295.7,295.3,295.6,296.7,297.5,299.3,301.2,302.7,303.9,304.7,305.1,305.1,305.1,305,305.7,306.3,306.9,307,306.9,306.6,306.2,305.6,305.6,306,305.9,305.6,305.6,305.9,305.9,306.1,307.4,309.1,310.6,311.6,312.2,312.5,312.6,312.4,312,311.5,311.8,311.6,311.1,310.7,311,311.3,311.6,311.9,311.8,311.5,310.9,310.3,309.4,308.5,307.4,306.1,304.6,303.1,301.8,301.2,300.5,299.6,298.8,298.1,297.6,297.1,296.4,295.7,294.9,294.1,293.3,292.9,293.4,294,294.7,294.9,295.2,296.8,298.1,299.2,300.1,301.1,302.2,303,303.8,304.7,305.8,306.5,306.7,306.8,307.4,308,308.1,308,307.7,307.3,307,307.1,307.4,308.4,309.2,309.9,310.2,310.1,310,309.8,309.7,309.5,309.4,309.8,309.9,309.9,309.6,309.1,308.6,308.4,308.6,308.8,309,309.1,310,311.2,311.8,311.8,311.8,311.9,311.7,311.4,311.1,311.3,312,312.5,313.1,313.6,313.6,313.4,313.2,312.8,312.4,311.8,311.3,310.6,309.8,309.6,310.5,311,311.4,311.5,311.5,311.2,310.9,310.4,310,309.7,309.1,308.4,307.9,309.1,310.4,311.1,311.7,311.9,311.9,312.1,312.2,312.3,312.3,312.8,314,315.1,315.9,316.4,316.8,317,317.1,317.4,317.6,317.9,317.7,317.3,317,316.4,315.8,315.6,315.2,314.8,315.2,315.5,315.7,315.9,316.6,317.1,317.2,316.9,316.7,316.8,316.7,316.3,316.1,315.6,314.9,314,312.9,312.3,311.5,310.6,309.6,308.4,307.4,306.5,305.8,305.4,304.7,303.9,303.1,302.3,301.5,300.8,300.5,300.1,299.7,300.2,301.5,302.3,302.7,302.8,303,303.2,303,303.5,304.5,305.4,306.4,307.1,307.7,308.5,308.8,309.1,309.5,309.5,309.5,310,310.5,310.6,310.5,310.1,309.7,309.1,308.6,308,307.5,306.6,305.6,306,306.6,307.1,307.3,307.2,306.9,308.1,310.8,312.8,314.3,315.5,316.2,316.5,316.9,317.2,317.3,317.4,317.4,317.4,317.4,318.1,318.4,318.4,318,317.6,317.5,317.1,317.2,317.6,317.9,317.8,317.3,316.5,315.5,314.4,313.2,312,311.2,310.7,310.3,310,309.4,308.5,308,307.2,306.4,306,305.5,304.8,304,303,302.3,302.6,303.7,305.3,307.2,308.6,309.3,309.7,309.9,309.9,310.1,310.1,309.7,309.1,308.3,307.4,306.5,305.7,304.5,303.3,302.8,302.1,301.3,300.3,299.1,298,297.8],"units":[0,0,6,119,154,204,210,223,229,233,244,259,264,267,269,271,271,271,273,276,278,278,278,279,285,286,287,287,287,287,286,284,281,279,279,278,278,278,275,272,271,272,273,272,265,263,262,261,261,260,257,258,260,260,263,269,275,278,282,283,285,285,285,285,285,285,285,285,285,287,287,285,285,286,287,285,280,288,284,284,287,289,291,291,290,296,296,296,296,293,293,293,293,290,289,288,288,276,275,273,271,272,267,268,272,262,262,264,264,269,270,270,272,271,271,271,270,274,274,274,276,276,276,274,274,275,275,273,274,270,279,279,279,279,280,281,282,279,283,283,282,280,280,280,279,278,276,275,275,274,261,261,265,268,268,266,266,268,269,269,269,270,270,272,276,275,273,272,276,276,274,280,281,279,286,286,286,287,286,285,286,287,288,287,286,284,284,284,281,281,281,281,279,279,269,273,272,270,275,284,286,286,284,284,281,281,281,283,284,286,286,280,281,283,284,285,285,285,281,273,269,269,268,268,267,267,268,267,265,263,263,268,264,263,261,260,258,260,259,259,265,271,272,273,273,281,282,283,282,282,282,282,282,281,283,283,283,283,285,286,286,281,282,281,281,273,275,276,280,281,279,278,277,277,277,277,276,277,278,277,277,277,277,279,280,281,277,278,275,279,281,281,281,283,284,283,283,282,285,285,284,286,286,284,282,278,277,276,276,271,270,273,278,279,280,280,281,280,278,275,275,275,275,275,275,281,283,282,283,283,282,283,281,280,279,281,286,289,291,291,291,291,291,292,292,289,285,284,284,283,283,282,282,280,280,282,278,275,274,276,277,277,277,279,281,280,284,284,282,282,282,279,278,277,273,267,266,266,264,265,263,263,263,263,263,265,262,266,266,266,279,279,278,278,280,282,282,281,282,281,281,281,282,286,286,285,286,285,285,288,278,278,278,279,278,278,279,279,273,270,266,268,276,276,276,276,276,277,291,289,286,288,288,287,287,287,287,287,289,290,292,292,288,287,286,286,288,286,270,272,276,275,275,275,273,273,272,271,269,270,272,267,267,266,266,269,266,267,266,264,264,264,265,270,274,277,284,285,285,284,282,280,281,281,281,281,281,281,280,279,278,277,276,274,264,261,255,254,256,263]}</script>
-<!-- recording:end -->
-    </figure>
-  </div>
-</div>
 
-<main>
-
-  <section class="sec" id="model">
-    <div class="sec-no"><b>1</b>The model</div>
-    <div class="sec-body">
-      <h2>From a descending command to the torque at the ankle</h2>
-      <div class="prose">
-        <p class="lead">ReMoto reproduces, neuron by neuron and motor unit by motor unit, the chain that turns a
-          command from the brain into muscle force. Each element has its own mathematical model, usually built on
-          voltage- or transmitter-dependent ionic conductances.</p>
-        <p>Because every level is simulated, one run can be read at several scales: the membrane potential of a
-          single motoneuron, the firing statistics of a pool, the electromyogram, the force of a muscle and the
-          torque at the joint. The simulated nuclei control flexion and extension of the human ankle: soleus (SOL),
-          medial gastrocnemius (MG), lateral gastrocnemius (LG) and tibialis anterior (TA).</p>
-        <p>It is used to interpret neurophysiological experiments in humans, to propose and test hypotheses about
-          spinal processing, to check an experimental protocol before running it, and to teach neurophysiology.</p>
+        <ol class="feat">
+          <li>
+            <h3>Opens in any current browser</h3>
+            <p>No applets and no plug-ins. Simulations report their progress live, and results are drawn as interactive
+              charts that download as CSV or PNG.</p>
+          </li>
+          <li>
+            <h3>No account, no database</h3>
+            <p>Each browser gets a private working area, identified by a 30-day cookie, so the work survives closing the
+              browser and server restarts. To keep it longer or move it to another computer, export scenarios as JSON
+              and whole runs as a ZIP, and import them there. No personal data is stored.</p>
+          </li>
+          <li>
+            <h3>Reproducible by construction</h3>
+            <p>Every run stores the exact scenario, the random seed and the engine version. The same three things give
+              the same results, bit for bit, on any number of threads.</p>
+          </li>
+          <li>
+            <h3>The editor and results you know</h3>
+            <p>The scenario editor and the results screen follow the original site: the same menus, screens, fields,
+              units and limits, from descending commands and conductances to EMG filters, spike statistics and FFT.</p>
+          </li>
+          <li>
+            <h3>A command line for scripts and clusters</h3>
+            <p>The JSON file you export from the site runs unchanged without a server, and writes every result as CSV.
+              The original database can be converted to scenarios without installing it.</p>
+          </li>
+          <li>
+            <h3>Shared fairly in a classroom</h3>
+            <p>Several people can simulate at once. A round-robin queue keeps one visitor&rsquo;s large batch from
+              holding up everyone else, with limits per browser and per address.</p>
+          </li>
+          <li>
+            <h3>One file to deploy</h3>
+            <p>The web application is a single JAR with an embedded server, run as a system service. There is no
+              database to back up and no identity provider to configure.</p>
+          </li>
+          <li>
+            <h3>Faster, with the same numbers</h3>
+            <p>Motoneurons and interneurons are updated in parallel while everything that draws random numbers stays in
+              order, so the output does not depend on the thread count.</p>
+          </li>
+        </ol>
       </div>
+    </section>
 
-      <figure class="diagram">
-        <div class="scroll-x">
-          <svg viewBox="0 0 1000 632" role="img" aria-labelledby="dg-title dg-desc">
-            <title id="dg-title">Circuit simulated by ReMoto for one motor nucleus</title>
-            <desc id="dg-desc">Descending tracts excite and inhibit the motoneuron pool. Motoneurons excite Renshaw
-              cells, which inhibit them back. Motor axons run through the peripheral nerve to the motor units of the
-              muscle. The muscle spindle sends Ia afferents straight to the motoneurons and group II afferents to
-              group II interneurons, which excite the motoneurons. The Golgi tendon organ sends Ib afferents to Ib
-              interneurons, which inhibit the motoneurons. Ia afferents of the antagonist muscle excite Ia inhibitory
-              interneurons, which inhibit the motoneurons. Motor units produce force, which acts on the ankle joint.</desc>
-            <defs>
-              <marker id="m-exc" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0.8 9 5 0 9.2z" fill="#1f5f99"/>
-              </marker>
-              <marker id="m-inh" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8.5" markerHeight="8.5">
-                <circle cx="5" cy="5" r="4.2" fill="#ad3a2c"/>
-              </marker>
-              <marker id="m-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                <path d="M0 0.8 9 5 0 9.2z" fill="#17212b"/>
-              </marker>
-            </defs>
-
-            <!-- legend -->
-            <g>
-              <path class="dg-exc" d="M690 40H736" marker-end="url(#m-exc)"/>
-              <text class="dg-s" x="748" y="44">excitatory synapse or fiber</text>
-              <path class="dg-inh" d="M690 64H734" marker-end="url(#m-inh)"/>
-              <text class="dg-s" x="748" y="68">inhibitory synapse</text>
-            </g>
-
-            <!-- descending tracts -->
-            <rect class="dg-node" x="270" y="20" width="320" height="64" rx="8"/>
-            <text class="dg-t" x="430" y="47" text-anchor="middle">Descending tracts</text>
-            <text class="dg-s" x="430" y="67" text-anchor="middle">stochastic spike trains, optionally modulated</text>
-
-            <!-- spinal cord -->
-            <rect class="dg-region" x="40" y="124" width="920" height="262" rx="20"/>
-            <text class="dg-cap" x="62" y="150">SPINAL CORD</text>
-
-            <path class="dg-exc" d="M414 84V192" marker-end="url(#m-exc)"/>
-            <path class="dg-inh" d="M446 84V193" marker-end="url(#m-inh)"/>
-
-            <rect class="dg-node" x="300" y="200" width="260" height="100" rx="10" style="stroke-width:2"/>
-            <text class="dg-t" x="430" y="238" text-anchor="middle" style="font-size:19px">Motoneuron pool</text>
-            <text class="dg-s" x="430" y="261" text-anchor="middle">types S &middot; FR &middot; FF</text>
-            <text class="dg-s" x="430" y="280" text-anchor="middle">two compartments, active dendrite</text>
-
-            <rect class="dg-node" x="70" y="215" width="170" height="70" rx="35"/>
-            <text class="dg-t" x="155" y="256" text-anchor="middle">Renshaw cells</text>
-            <path class="dg-exc" d="M300 232H249" marker-end="url(#m-exc)"/>
-            <path class="dg-inh" d="M240 268H293" marker-end="url(#m-inh)"/>
-            <text class="dg-i" x="155" y="310" text-anchor="middle">recurrent inhibition</text>
-
-            <rect class="dg-node" x="660" y="150" width="170" height="56" rx="28"/>
-            <text class="dg-t" x="745" y="184" text-anchor="middle">Ia interneurons</text>
-            <path class="dg-inh" d="M661 187L568 222" marker-end="url(#m-inh)"/>
-            <path class="dg-exc" d="M992 178H839" marker-end="url(#m-exc)"/>
-            <text class="dg-s" x="912" y="202" text-anchor="middle">Ia afferents of</text>
-            <text class="dg-s" x="912" y="218" text-anchor="middle">the antagonist</text>
-            <text class="dg-i" x="745" y="229" text-anchor="middle">reciprocal inhibition</text>
-
-            <rect class="dg-node" x="578" y="316" width="190" height="50" rx="25"/>
-            <text class="dg-t" x="673" y="347" text-anchor="middle">Group II interneurons</text>
-            <path class="dg-exc" d="M606 316L568 288" marker-end="url(#m-exc)"/>
-
-            <rect class="dg-node" x="780" y="316" width="160" height="50" rx="25"/>
-            <text class="dg-t" x="860" y="347" text-anchor="middle">Ib interneurons</text>
-            <path class="dg-inh" d="M860 316V262H568" marker-end="url(#m-inh)"/>
-
-            <!-- peripheral nerve -->
-            <rect class="dg-nerve" x="250" y="410" width="700" height="44" rx="22"/>
-            <text class="dg-t" x="238" y="428" text-anchor="end">Peripheral nerve</text>
-            <text class="dg-s" x="238" y="446" text-anchor="end">tibial &middot; common peroneal</text>
-            <text class="dg-i" x="238" y="463" text-anchor="end">stimulation: M wave, H reflex</text>
-            <path d="M286 420l-9 14h8l-5 12 12-16h-8z" fill="#17212b"/>
-
-            <!-- fibers crossing the nerve -->
-            <path class="dg-exc" d="M350 300V507" marker-end="url(#m-exc)"/>
-            <text class="dg-s" x="360" y="394">&alpha; motor axons</text>
-            <path class="dg-exc" d="M470 516V309" marker-end="url(#m-exc)"/>
-            <text class="dg-s" x="480" y="476">Ia</text>
-            <path class="dg-exc" d="M673 516V375" marker-end="url(#m-exc)"/>
-            <text class="dg-s" x="683" y="476">II</text>
-            <path class="dg-exc" d="M860 516V375" marker-end="url(#m-exc)"/>
-            <text class="dg-s" x="870" y="476">Ib</text>
-
-            <!-- muscle -->
-            <rect class="dg-region" x="250" y="484" width="700" height="128" rx="14"/>
-            <text class="dg-cap" x="268" y="505">MUSCLE</text>
-            <rect class="dg-node" x="262" y="516" width="176" height="82" rx="8"/>
-            <text class="dg-t" x="350" y="543" text-anchor="middle">Motor units</text>
-            <text class="dg-s" x="350" y="563" text-anchor="middle">twitches &rarr; force</text>
-            <text class="dg-s" x="350" y="581" text-anchor="middle">action potentials &rarr; EMG</text>
-            <rect class="dg-node" x="452" y="516" width="253" height="82" rx="8"/>
-            <text class="dg-t" x="578" y="552" text-anchor="middle">Muscle spindle</text>
-            <text class="dg-s" x="578" y="573" text-anchor="middle">muscle length and velocity</text>
-            <rect class="dg-node" x="770" y="516" width="170" height="82" rx="8"/>
-            <text class="dg-t" x="855" y="552" text-anchor="middle">Golgi tendon organ</text>
-            <text class="dg-s" x="855" y="573" text-anchor="middle">muscle force</text>
-
-            <!-- joint -->
-            <rect class="dg-node" x="56" y="524" width="160" height="66" rx="8"/>
-            <text class="dg-t" x="136" y="553" text-anchor="middle">Ankle joint</text>
-            <text class="dg-s" x="136" y="573" text-anchor="middle">torque &middot; angle</text>
-            <path class="dg-ink" d="M262 557H225" marker-end="url(#m-ink)"/>
-          </svg>
+    <section class="sec" id="validation">
+      <div class="sec-no"><b>3</b>Validation</div>
+      <div class="sec-body">
+        <h2>Checked against the original, bit for bit</h2>
+        <div class="prose">
+          <p class="lead">A new platform is only useful if the published results still come out of it. Each family of
+            models was moved under one rule: the output had to match the original code exactly before the old code
+            was removed.</p>
+          <p>These checks run as automated tests on every change, so a refactoring that alters a single bit of the
+            output is caught at once.</p>
         </div>
-        <figcaption><b>Fig. 2</b>The circuit simulated for each motor nucleus. The triceps surae (SOL, MG, LG) and the
-          tibialis anterior are antagonists, so the Ia afferents of one side drive the reciprocal inhibition of the
-          other. Each connection has its own conductance, reversal potential, delay and connectivity, all editable.</figcaption>
-      </figure>
 
-      <dl class="sheet">
-        <div><dt>Motoneurons</dt><dd>Two-compartment (soma and dendrite) conductance-based models of types S, FR and FF,
-          with sodium, fast and slow potassium channels and a persistent inward current in the dendrite. Thresholds,
-          sizes and conduction velocities vary along the pool, which gives orderly recruitment.</dd></div>
-        <div><dt>Interneurons</dt><dd>Renshaw cells, Ia reciprocal inhibitory interneurons, Ib interneurons and
-          group II interneurons, for the extensor and flexor sides.</dd></div>
-        <div><dt>Afferents</dt><dd>Ia, II and Ib fibers, driven by the muscle spindle and Golgi tendon organ models or
-          by electrical stimulation of the nerve.</dd></div>
-        <div><dt>Descending tracts</dt><dd>Populations of axons firing as point processes (Poisson, gamma or Gaussian
-          intervals), with the mean rate constant or modulated by a sine, ramp, square wave or other waveform.</dd></div>
-        <div><dt>Synapses</dt><dd>Conductance changes with their own kinetics, delay and connectivity, with optional
-          short-term depression or facilitation.</dd></div>
-        <div><dt>Muscle</dt><dd>Each motoneuron spike produces, after its conduction delay, a motor-unit action
-          potential and a twitch. Their sums are the EMG and the muscle force. Twitch models or a Hill-type muscle
-          with tendon can be chosen.</dd></div>
-        <div><dt>Proprioceptors</dt><dd>Muscle spindle (Mileusnic or Prochazka models) with Ia and II outputs, and
-          Golgi tendon organ (Crago model) with Ib output.</dd></div>
-        <div><dt>Joint</dt><dd>The ankle as an isometric joint, as an inverted pendulum for upright stance, or in a
-          position task against a load.</dd></div>
-        <div><dt>Stimulation</dt><dd>Electrical pulses on the tibial and common peroneal nerves, with orthodromic and
-          antidromic propagation, for M waves and H reflexes; current injected into chosen neurons.</dd></div>
-        <div><dt>Scale</dt><dd>The scenario with every element switched on has 2,110 motoneurons, 2,800 interneurons,
-          2,930 afferent fibers and 1,500 descending axons.</dd></div>
-      </dl>
-    </div>
-  </section>
-
-  <section class="sec" id="version">
-    <div class="sec-no"><b>2</b>Version 3</div>
-    <div class="sec-body">
-      <h2>The published models on a platform that runs today</h2>
-      <div class="prose">
-        <p class="lead">ReMoto was developed over more than a decade at the Biomedical Engineering Laboratory of the
-          University of S&atilde;o Paulo. Its website depended on Java applets and on server software that no longer
-          receives security updates. Version 3 keeps the models and replaces everything around them.</p>
-      </div>
-
-      <div class="tbl-wrap">
-        <table>
-          <caption><b>Table 1</b>What changed between the legacy site and version 3.</caption>
-          <thead><tr><th></th><th>Legacy version</th><th>Version 3</th></tr></thead>
-          <tbody>
-            <tr><th>Stack</th><td>Java 8, Struts 1, JSP, Java applets, Tomcat 7, HSQLDB</td><td>Java 25, Spring Boot 4, Thymeleaf, htmx and uPlot; files instead of a database; one executable JAR</td></tr>
-            <tr><th>Models</th><td>All published models</td><td>The same models, ported with bit-for-bit identical results</td></tr>
-            <tr><th>Random numbers</th><td>Unseeded: no two runs alike</td><td>One seed per scenario: the same seed gives the same results</td></tr>
-            <tr><th>Users</th><td>Accounts stored in the database</td><td>No login: each browser has its own area, kept by a 30-day cookie; scenarios travel as files</td></tr>
-            <tr><th>Outside the browser</th><td>None</td><td>Command-line runner and REST API</td></tr>
-            <tr><th>Status</th><td>Unmaintained, kept in the <a href="https://github.com/rnwatanabe/remoto">parent repository</a></td><td>Maintained and tested on every commit</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <ol class="feat">
-        <li><h3>Opens in any current browser</h3>
-          <p>No applets and no plug-ins. Simulations report their progress live, and results are drawn as interactive
-            charts that download as CSV or PNG.</p></li>
-        <li><h3>No account, no database</h3>
-          <p>Each browser gets a private working area, identified by a 30-day cookie, so the work survives closing the
-            browser and server restarts. To keep it longer or move it to another computer, export scenarios as JSON
-            and whole runs as a ZIP, and import them there. No personal data is stored.</p></li>
-        <li><h3>Reproducible by construction</h3>
-          <p>Every run stores the exact scenario, the random seed and the engine version. The same three things give
-            the same results, bit for bit, on any number of threads.</p></li>
-        <li><h3>The editor and results you know</h3>
-          <p>The scenario editor and the results screen follow the original site: the same menus, screens, fields,
-            units and limits, from descending commands and conductances to EMG filters, spike statistics and FFT.</p></li>
-        <li><h3>A command line for scripts and clusters</h3>
-          <p>The JSON file you export from the site runs unchanged without a server, and writes every result as CSV.
-            The original database can be converted to scenarios without installing it.</p></li>
-        <li><h3>Shared fairly in a classroom</h3>
-          <p>Several people can simulate at once. A round-robin queue keeps one visitor&rsquo;s large batch from
-            holding up everyone else, with limits per browser and per address.</p></li>
-        <li><h3>One file to deploy</h3>
-          <p>The web application is a single JAR with an embedded server, run as a system service. There is no
-            database to back up and no identity provider to configure.</p></li>
-        <li><h3>Faster, with the same numbers</h3>
-          <p>Motoneurons and interneurons are updated in parallel while everything that draws random numbers stays in
-            order, so the output does not depend on the thread count.</p></li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="sec" id="validation">
-    <div class="sec-no"><b>3</b>Validation</div>
-    <div class="sec-body">
-      <h2>Checked against the original, bit for bit</h2>
-      <div class="prose">
-        <p class="lead">A new platform is only useful if the published results still come out of it. Each family of
-          models was moved under one rule: the output had to match the original code exactly before the old code
-          was removed.</p>
-        <p>These checks run as automated tests on every change, so a refactoring that alters a single bit of the
-          output is caught at once.</p>
-      </div>
-
-      <ul class="checks">
-        <li><span><b>The whole original database.</b> All 30 configurations stored in the legacy database give the
-          reference results recorded while the original data-access code was still assembling them.</span></li>
-        <li><span><b>Golden master.</b> For the three public scenarios of the old site, force, spikes, torque, EMG and
-          every other output match stored reference hashes.</span></li>
-        <li><span><b>The database without the database.</b> The reader reproduces the rounding, truncation and row
-          ordering of the original database engine, because the order of rows decides the order in which neurons are
-          created and random numbers are drawn.</span></li>
-        <li><span><b>Editor against the original.</b> Editing every screen and saving writes the same tables that the
-          original site wrote; saving without editing changes nothing.</span></li>
-        <li><span><b>One thread against four.</b> The public scenarios give identical output with any number of
-          threads, and a worker thread that tries to draw a random number stops the run instead of silently changing it.</span></li>
-        <li><span><b>Synapses against the analytical solution.</b> The synaptic conductance follows the closed-form
-          solution of Lytton (1996) during and after each pulse.</span></li>
-      </ul>
-
-      <div class="note">
-        <h3>What deliberately differs from the legacy code</h3>
-        <ul>
-          <li><b>Seeded random numbers.</b> The original drew from unseeded generators. Version 3 routes every draw
-            through one generator started from the scenario seed.</li>
-          <li><b>Synaptic decay.</b> A change made to the legacy code in December 2016 left the synaptic conductance
-            frozen between events. The engine goes back to the closed-form solution used before that change. Results
-            from different engine versions should not be compared.</li>
-          <li><b>Gamma-process tracts.</b> The original site never saved the order of the gamma process, so stored
-            configurations with gamma tracts fired only at time zero. The public scenarios that had them now use
-            Poisson tracts with the same mean interval, and the editor saves the order.</li>
+        <ul class="checks">
+          <li><span><b>The whole original database.</b> All 30 configurations stored in the legacy database give the
+              reference results recorded while the original data-access code was still assembling them.</span></li>
+          <li><span><b>Golden master.</b> For the three public scenarios of the old site, force, spikes, torque, EMG and
+              every other output match stored reference hashes.</span></li>
+          <li><span><b>The database without the database.</b> The reader reproduces the rounding, truncation and row
+              ordering of the original database engine, because the order of rows decides the order in which neurons are
+              created and random numbers are drawn.</span></li>
+          <li><span><b>Editor against the original.</b> Editing every screen and saving writes the same tables that the
+              original site wrote; saving without editing changes nothing.</span></li>
+          <li><span><b>One thread against four.</b> The public scenarios give identical output with any number of
+              threads, and a worker thread that tries to draw a random number stops the run instead of silently changing
+              it.</span></li>
+          <li><span><b>Synapses against the analytical solution.</b> The synaptic conductance follows the closed-form
+              solution of Lytton (1996) during and after each pulse.</span></li>
         </ul>
-      </div>
 
-      <div class="tbl-wrap" style="max-width:50rem">
-        <table>
-          <caption><b>Table 2</b>Wall-clock time for one simulated second on a machine with four physical cores.
-            The outputs of the three columns are identical byte for byte.</caption>
-          <thead><tr><th>Scenario</th><th class="num">Before optimization</th><th class="num">1 thread</th><th class="num">4 threads</th></tr></thead>
-          <tbody>
-            <tr><th>Default &ndash; Soleus contraction</th><td class="num">~51 s</td><td class="num">~46 s</td><td class="num">~23 s</td></tr>
-            <tr><th>ISB 2013 &ndash; Stretch reflex</th><td class="num">71 s</td><td class="num">65 s</td><td class="num">30 s</td></tr>
-            <tr><th>Watanabe and Kohn (2015)</th><td class="num">32 s</td><td class="num">28 s</td><td class="num">17 s</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+        <div class="note">
+          <h3>What deliberately differs from the legacy code</h3>
+          <ul>
+            <li><b>Seeded random numbers.</b> The original drew from unseeded generators. Version 3 routes every draw
+              through one generator started from the scenario seed.</li>
+            <li><b>Synaptic decay.</b> A change made to the legacy code in December 2016 left the synaptic conductance
+              frozen between events. The engine goes back to the closed-form solution used before that change. Results
+              from different engine versions should not be compared.</li>
+            <li><b>Gamma-process tracts.</b> The original site never saved the order of the gamma process, so stored
+              configurations with gamma tracts fired only at time zero. The public scenarios that had them now use
+              Poisson tracts with the same mean interval, and the editor saves the order.</li>
+          </ul>
+        </div>
 
-  <section class="sec" id="run">
-    <div class="sec-no"><b>4</b>Run it</div>
-    <div class="sec-body">
-      <h2>Clone, start, simulate</h2>
-      <div class="prose">
-        <p class="lead">You need JDK 25. Maven is downloaded by the wrapper included in the repository.</p>
+        <div class="tbl-wrap" style="max-width:50rem">
+          <table>
+            <caption><b>Table 2</b>Wall-clock time for one simulated second on a machine with four physical cores.
+              The outputs of the three columns are identical byte for byte.</caption>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th class="num">Before optimization</th>
+                <th class="num">1 thread</th>
+                <th class="num">4 threads</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Default &ndash; Soleus contraction</th>
+                <td class="num">~51 s</td>
+                <td class="num">~46 s</td>
+                <td class="num">~23 s</td>
+              </tr>
+              <tr>
+                <th>ISB 2013 &ndash; Stretch reflex</th>
+                <td class="num">71 s</td>
+                <td class="num">65 s</td>
+                <td class="num">30 s</td>
+              </tr>
+              <tr>
+                <th>Watanabe and Kohn (2015)</th>
+                <td class="num">32 s</td>
+                <td class="num">28 s</td>
+                <td class="num">17 s</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+    </section>
 
-      <div class="cols">
-        <div>
-          <h3>In the browser</h3>
-<pre class="term"><span class="p">$</span> git clone https://github.com/rogeriocisi/remoto.git
+    <section class="sec" id="run">
+      <div class="sec-no"><b>4</b>Run it</div>
+      <div class="sec-body">
+        <h2>Clone, start, simulate</h2>
+        <div class="prose">
+          <p class="lead">You need JDK 25. Maven is downloaded by the wrapper included in the repository.</p>
+        </div>
+
+        <div class="cols">
+          <div>
+            <h3>In the browser</h3>
+            <pre class="term"><span class="p">$</span> git clone https://github.com/rogeriocisi/remoto.git
 <span class="p">$</span> cd remoto
 <span class="p">$</span> scripts/start.sh        <span class="c"># Linux, macOS, Git Bash</span>
 <span class="p">&gt;</span> scripts\start.cmd       <span class="c"># Windows, cmd</span>
 <span class="p">&gt;</span> .\scripts\start.ps1     <span class="c"># Windows, PowerShell</span></pre>
-          <p class="fine" style="margin-top:.9rem">Then open <code>http://localhost:8080</code>. There is no login. Pick a public scenario
-            and press Run, or copy it and change it in the editor. The start scripts look for a JDK 25 even when an
-            older Java is the default; an optional argument sets the port.</p>
-        </div>
-        <div>
-          <h3>On the command line</h3>
-<pre class="term"><span class="p">$</span> ./mvnw -pl remoto-cli -am package -DskipTests
+            <p class="fine" style="margin-top:.9rem">Then open <code>http://localhost:8080</code>. There is no login.
+              Pick a public scenario
+              and press Run, or copy it and change it in the editor. The start scripts look for a JDK 25 even when an
+              older Java is the default; an optional argument sets the port.</p>
+          </div>
+          <div>
+            <h3>On the command line</h3>
+            <pre class="term"><span class="p">$</span> ./mvnw -pl remoto-cli -am package -DskipTests
 <span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
     run scenarios/remoto-17-default-soleus-contraction.json \
     --duration-ms 500 --threads 4 -o results/soleus</pre>
-          <p class="fine" style="margin-top:.9rem">The output folder receives the frozen scenario, a manifest with the seed and engine
-            version, and one compressed CSV per result. <code>validate</code> checks scenario files and
-            <code>export-legacy</code> converts configurations from the original database.</p>
+            <p class="fine" style="margin-top:.9rem">The output folder receives the frozen scenario, a manifest with the
+              seed and engine
+              version, and one compressed CSV per result. <code>validate</code> checks scenario files and
+              <code>export-legacy</code> converts configurations from the original database.
+            </p>
+          </div>
+        </div>
+
+        <div class="prose" style="margin-top:1.8rem">
+          <p class="fine">The models are detailed, and therefore slow: one simulated second of the public scenarios
+            takes
+            about 17 to 30 seconds on four cores (Table 2). The simulator&rsquo;s interface is available in English and
+            Portuguese; the editor and the results menus keep the English labels of the original. Build instructions,
+            the REST API,
+            the scenario format and the deployment guide are in the
+            <a href="https://github.com/rogeriocisi/remoto#readme">README</a> and in the
+            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">full documentation</a> (in
+            Portuguese).
+          </p>
         </div>
       </div>
+    </section>
 
-      <div class="prose" style="margin-top:1.8rem">
-        <p class="fine">The models are detailed, and therefore slow: one simulated second of the public scenarios takes
-          about 17 to 30 seconds on four cores (Table 2). The site&rsquo;s own text is in Portuguese for now; the
-          editor and the results menus keep the English labels of the original. Build instructions, the REST API,
-          the scenario format and the deployment guide are in the
-          <a href="https://github.com/rogeriocisi/remoto#readme">README</a> and in the
-          <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">full documentation</a> (in Portuguese).</p>
+    <section class="sec" id="scenarios">
+      <div class="sec-no"><b>5</b>Scenarios</div>
+      <div class="sec-body">
+        <h2>Twenty scenarios ready to run</h2>
+        <div class="prose">
+          <p class="lead">A scenario is one JSON file with the whole configuration, the duration, the time step and the
+            seed. The first three were the public scenarios of the old site; the others were recovered from its
+            database.</p>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <caption><b>Table 3</b>Public scenarios in the <a
+                href="https://github.com/rogeriocisi/remoto/tree/master/scenarios"><code>scenarios/</code></a> folder.
+            </caption>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>What it simulates</th>
+                <th class="num">Simulated</th>
+                <th>File</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Default &ndash; Soleus contraction</th>
+                <td>The soleus driven by 100 descending axons firing as Poisson processes</td>
+                <td class="num">5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-17-default-soleus-contraction.json">remoto-17</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ISB 2013 &ndash; Stretch reflex</th>
+                <td>All four muscles with Ia afferents; the triceps surae receives the descending command</td>
+                <td class="num">30 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-24-isb-2013-stretch-reflex.json">remoto-24</a>
+                </td>
+              </tr>
+              <tr>
+                <th>JN &ndash; Watanabe and Kohn (2015)</th>
+                <td>The soleus, with the descending command modulated at 20 Hz from 3 s on</td>
+                <td class="num">15 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-42-jn-watanabe-and-kohn-2015.json">remoto-42</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Isometric contraction</th>
+                <td>The triceps surae (SOL, MG, LG) driven by 400 descending axons, mean interval 11 ms</td>
+                <td class="num">5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-14-isometric-contraction.json">remoto-14</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Recruitment</th>
+                <td>The same, with the mean interval of the axons ramping from 20 to 4 ms</td>
+                <td class="num">20 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-16-recruitment.json">remoto-16</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Neuroscience Meeting 2012</th>
+                <td>Soleus H reflex and the reciprocal inhibition pathway through the common peroneal nerve</td>
+                <td class="num">0.2 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-18-neuroscience-meeting-2012.json">remoto-18</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Biceps Brachii &ndash; Stim Ia</th>
+                <td>Nerve pulses at 5 Hz during a contraction (run on the SOL nucleus)</td>
+                <td class="num">30 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-19-biceps-brachii-stim-ia.json">remoto-19</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Position Task</th>
+                <td>Ankle position task with the triceps surae and Ia afferents</td>
+                <td class="num">30 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-25-position-task.json">remoto-25</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Position Task &ndash; IIa</th>
+                <td>The same, adding group II afferents</td>
+                <td class="num">30 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-26-position-task-iia.json">remoto-26</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Position Task &ndash; IIa no Ia</th>
+                <td>The same, with group II afferents only</td>
+                <td class="num">30 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-27-position-task-iia-no-ia.json">remoto-27</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Position Task &ndash; Ib</th>
+                <td>The position task with Ib afferents and Ib interneurons</td>
+                <td class="num">30 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-28-position-task-ib.json">remoto-28</a>
+                </td>
+              </tr>
+              <tr>
+                <th>variability_gamma</th>
+                <td>Isometric contraction of the triceps surae, mean interval 3 ms</td>
+                <td class="num">5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-32-variability-gamma.json">remoto-32</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Identification_SOL_MG</th>
+                <td>The triceps surae with the command modulated at 20 Hz from 2 s on</td>
+                <td class="num">15 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-34-identification-sol-mg.json">remoto-34</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Identification_LG</th>
+                <td>Both gastrocnemii, mean interval 3 ms</td>
+                <td class="num">1.5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-35-identification-lg.json">remoto-35</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Identification SOL_MG</th>
+                <td>Scenario 34 cut to 1.5 s, before the modulation starts</td>
+                <td class="num">1.5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-36-identification-sol-mg.json">remoto-36</a>
+                </td>
+              </tr>
+              <tr>
+                <th>IdentSOL</th>
+                <td>The soleus, mean interval 12 ms</td>
+                <td class="num">1.5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-38-identsol.json">remoto-38</a>
+                </td>
+              </tr>
+              <tr>
+                <th>IsometricTaskAM</th>
+                <td>Isometric contraction of the triceps surae with Ia afferents</td>
+                <td class="num">8 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-39-isometrictaskam.json">remoto-39</a>
+                </td>
+              </tr>
+              <tr>
+                <th>AMmodRenshaw</th>
+                <td>The soleus, with the command modulated at 20 Hz from 3 s on</td>
+                <td class="num">15 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-41-ammodrenshaw.json">remoto-41</a>
+                </td>
+              </tr>
+              <tr>
+                <th>identSOLRenshaw</th>
+                <td>The soleus with Renshaw cells (recurrent inhibition)</td>
+                <td class="num">1.5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-44-identsolrenshaw.json">remoto-44</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Full model</th>
+                <td>Every element of the model switched on, to explore the results screen; not a published experiment
+                </td>
+                <td class="num">2 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/modelo-completo.json">modelo-completo</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="publications">
+      <div class="sec-no"><b>6</b>Publications</div>
+      <div class="sec-body">
+        <h2>The papers behind the models</h2>
+        <div class="prose">
+          <p class="lead">These papers describe ReMoto and the models it simulates. If you use ReMoto in your work,
+            please cite them.</p>
+        </div>
+        <ol class="refs">
+          <li><a class="t" href="https://doi.org/10.1007/s10827-008-0092-8">Simulation system of spinal cord motor
+              nuclei and associated nerves and muscles, in a Web-based architecture</a>
+            <span>Cisi, R. R. L.; Kohn, A. F. <em>Journal of Computational Neuroscience</em>, 25(3), 520&ndash;542,
+              2008.</span>
+          </li>
+          <li><a class="t" href="https://doi.org/10.1007/s10827-012-0398-4">Models of passive and active dendrite
+              motoneuron pools and their differences in muscle force control</a>
+            <span>Elias, L. A.; Chaud, V. M.; Kohn, A. F. <em>Journal of Computational Neuroscience</em>, 33(3),
+              515&ndash;531, 2012.</span>
+          </li>
+          <li><a class="t" href="https://doi.org/10.1016/j.neucom.2012.06.038">Individual and collective properties of
+              computationally efficient motoneuron models of types S and F with active dendrites</a>
+            <span>Elias, L. A.; Kohn, A. F. <em>Neurocomputing</em>, 99, 521&ndash;533, 2013.</span>
+          </li>
+          <li><a class="t" href="https://doi.org/10.1152/jn.00073.2013">Influences of premotoneuronal command statistics
+              on the scaling of motor output variability during isometric plantarflexion</a>
+            <span>Watanabe, R. N.; Magalh&atilde;es, F. H.; Elias, L. A.; Chaud, V. M.; Mello, E. M.; Kohn, A. F.
+              <em>Journal of Neurophysiology</em>, 110(11), 2592&ndash;2606, 2013.</span>
+          </li>
+          <li><a class="t" href="https://doi.org/10.1371/journal.pcbi.1003944">Spinal mechanisms may provide a
+              combination of intermittent and continuous control of human posture: predictions from a biologically based
+              neuromusculoskeletal model</a>
+            <span>Elias, L. A.; Watanabe, R. N.; Kohn, A. F. <em>PLoS Computational Biology</em>, 10(11), e1003944,
+              2014.</span>
+          </li>
+          <li><a class="t" href="https://doi.org/10.1523/JNEUROSCI.1950-15.2015">Fast oscillatory commands from the
+              motor cortex can be decoded by the spinal cord for force control</a>
+            <span>Watanabe, R. N.; Kohn, A. F. <em>Journal of Neuroscience</em>, 35(40), 13687&ndash;13697, 2015.</span>
+          </li>
+        </ol>
+        <ul class="links">
+          <li><a class="btn" href="https://github.com/rogeriocisi/remoto/blob/master/ref.bib">BibTeX entries</a></li>
+          <li><a class="btn" href="https://modeldb.science/117810">ModelDB entry</a></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="#top"><img src="assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>A simulator of spinal cord motor nuclei and their nerves and muscles, developed at the Biomedical
+          Engineering Laboratory (LEB) of the University of S&atilde;o Paulo.</p>
+      </div>
+      <div>
+        <h2>Project</h2>
+        <p><a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
+          <a href="https://github.com/rogeriocisi/remoto/issues">Questions and bug reports</a><br>
+          <a href="https://github.com/rnwatanabe/remoto">Legacy version (parent repository)</a>
+        </p>
+      </div>
+      <div>
+        <h2>License</h2>
+        <p>Released under the <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi and the ReMoto contributors.</p>
       </div>
     </div>
-  </section>
+  </footer>
 
-  <section class="sec" id="scenarios">
-    <div class="sec-no"><b>5</b>Scenarios</div>
-    <div class="sec-body">
-      <h2>Twenty scenarios ready to run</h2>
-      <div class="prose">
-        <p class="lead">A scenario is one JSON file with the whole configuration, the duration, the time step and the
-          seed. The first three were the public scenarios of the old site; the others were recovered from its database.</p>
-      </div>
-      <div class="tbl-wrap">
-        <table>
-          <caption><b>Table 3</b>Public scenarios in the <a href="https://github.com/rogeriocisi/remoto/tree/master/scenarios"><code>scenarios/</code></a> folder.</caption>
-          <thead><tr><th>Scenario</th><th>What it simulates</th><th class="num">Simulated</th><th>File</th></tr></thead>
-          <tbody>
-            <tr><th>Default &ndash; Soleus contraction</th><td>The soleus driven by 100 descending axons firing as Poisson processes</td><td class="num">5 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-17-default-soleus-contraction.json">remoto-17</a></td></tr>
-            <tr><th>ISB 2013 &ndash; Stretch reflex</th><td>All four muscles with Ia afferents; the triceps surae receives the descending command</td><td class="num">30 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-24-isb-2013-stretch-reflex.json">remoto-24</a></td></tr>
-            <tr><th>JN &ndash; Watanabe and Kohn (2015)</th><td>The soleus, with the descending command modulated at 20 Hz from 3 s on</td><td class="num">15 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-42-jn-watanabe-and-kohn-2015.json">remoto-42</a></td></tr>
-            <tr><th>Isometric contraction</th><td>The triceps surae (SOL, MG, LG) driven by 400 descending axons, mean interval 11 ms</td><td class="num">5 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-14-isometric-contraction.json">remoto-14</a></td></tr>
-            <tr><th>Recruitment</th><td>The same, with the mean interval of the axons ramping from 20 to 4 ms</td><td class="num">20 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-16-recruitment.json">remoto-16</a></td></tr>
-            <tr><th>Neuroscience Meeting 2012</th><td>Soleus H reflex and the reciprocal inhibition pathway through the common peroneal nerve</td><td class="num">0.2 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-18-neuroscience-meeting-2012.json">remoto-18</a></td></tr>
-            <tr><th>Biceps Brachii &ndash; Stim Ia</th><td>Nerve pulses at 5 Hz during a contraction (run on the SOL nucleus)</td><td class="num">30 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-19-biceps-brachii-stim-ia.json">remoto-19</a></td></tr>
-            <tr><th>Position Task</th><td>Ankle position task with the triceps surae and Ia afferents</td><td class="num">30 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-25-position-task.json">remoto-25</a></td></tr>
-            <tr><th>Position Task &ndash; IIa</th><td>The same, adding group II afferents</td><td class="num">30 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-26-position-task-iia.json">remoto-26</a></td></tr>
-            <tr><th>Position Task &ndash; IIa no Ia</th><td>The same, with group II afferents only</td><td class="num">30 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-27-position-task-iia-no-ia.json">remoto-27</a></td></tr>
-            <tr><th>Position Task &ndash; Ib</th><td>The position task with Ib afferents and Ib interneurons</td><td class="num">30 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-28-position-task-ib.json">remoto-28</a></td></tr>
-            <tr><th>variability_gamma</th><td>Isometric contraction of the triceps surae, mean interval 3 ms</td><td class="num">5 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-32-variability-gamma.json">remoto-32</a></td></tr>
-            <tr><th>Identification_SOL_MG</th><td>The triceps surae with the command modulated at 20 Hz from 2 s on</td><td class="num">15 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-34-identification-sol-mg.json">remoto-34</a></td></tr>
-            <tr><th>Identification_LG</th><td>Both gastrocnemii, mean interval 3 ms</td><td class="num">1.5 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-35-identification-lg.json">remoto-35</a></td></tr>
-            <tr><th>Identification SOL_MG</th><td>Scenario 34 cut to 1.5 s, before the modulation starts</td><td class="num">1.5 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-36-identification-sol-mg.json">remoto-36</a></td></tr>
-            <tr><th>IdentSOL</th><td>The soleus, mean interval 12 ms</td><td class="num">1.5 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-38-identsol.json">remoto-38</a></td></tr>
-            <tr><th>IsometricTaskAM</th><td>Isometric contraction of the triceps surae with Ia afferents</td><td class="num">8 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-39-isometrictaskam.json">remoto-39</a></td></tr>
-            <tr><th>AMmodRenshaw</th><td>The soleus, with the command modulated at 20 Hz from 3 s on</td><td class="num">15 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-41-ammodrenshaw.json">remoto-41</a></td></tr>
-            <tr><th>identSOLRenshaw</th><td>The soleus with Renshaw cells (recurrent inhibition)</td><td class="num">1.5 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/remoto-44-identsolrenshaw.json">remoto-44</a></td></tr>
-            <tr><th>Full model</th><td>Every element of the model switched on, to explore the results screen; not a published experiment</td><td class="num">2 s</td><td class="file"><a href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/modelo-completo.json">modelo-completo</a></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section class="sec" id="publications">
-    <div class="sec-no"><b>6</b>Publications</div>
-    <div class="sec-body">
-      <h2>The papers behind the models</h2>
-      <div class="prose">
-        <p class="lead">These papers describe ReMoto and the models it simulates. If you use ReMoto in your work,
-          please cite them.</p>
-      </div>
-      <ol class="refs">
-        <li><a class="t" href="https://doi.org/10.1007/s10827-008-0092-8">Simulation system of spinal cord motor nuclei and associated nerves and muscles, in a Web-based architecture</a>
-          <span>Cisi, R. R. L.; Kohn, A. F. <em>Journal of Computational Neuroscience</em>, 25(3), 520&ndash;542, 2008.</span></li>
-        <li><a class="t" href="https://doi.org/10.1007/s10827-012-0398-4">Models of passive and active dendrite motoneuron pools and their differences in muscle force control</a>
-          <span>Elias, L. A.; Chaud, V. M.; Kohn, A. F. <em>Journal of Computational Neuroscience</em>, 33(3), 515&ndash;531, 2012.</span></li>
-        <li><a class="t" href="https://doi.org/10.1016/j.neucom.2012.06.038">Individual and collective properties of computationally efficient motoneuron models of types S and F with active dendrites</a>
-          <span>Elias, L. A.; Kohn, A. F. <em>Neurocomputing</em>, 99, 521&ndash;533, 2013.</span></li>
-        <li><a class="t" href="https://doi.org/10.1152/jn.00073.2013">Influences of premotoneuronal command statistics on the scaling of motor output variability during isometric plantarflexion</a>
-          <span>Watanabe, R. N.; Magalh&atilde;es, F. H.; Elias, L. A.; Chaud, V. M.; Mello, E. M.; Kohn, A. F. <em>Journal of Neurophysiology</em>, 110(11), 2592&ndash;2606, 2013.</span></li>
-        <li><a class="t" href="https://doi.org/10.1371/journal.pcbi.1003944">Spinal mechanisms may provide a combination of intermittent and continuous control of human posture: predictions from a biologically based neuromusculoskeletal model</a>
-          <span>Elias, L. A.; Watanabe, R. N.; Kohn, A. F. <em>PLoS Computational Biology</em>, 10(11), e1003944, 2014.</span></li>
-        <li><a class="t" href="https://doi.org/10.1523/JNEUROSCI.1950-15.2015">Fast oscillatory commands from the motor cortex can be decoded by the spinal cord for force control</a>
-          <span>Watanabe, R. N.; Kohn, A. F. <em>Journal of Neuroscience</em>, 35(40), 13687&ndash;13697, 2015.</span></li>
-      </ol>
-      <ul class="links">
-        <li><a class="btn" href="https://github.com/rogeriocisi/remoto/blob/master/ref.bib">BibTeX entries</a></li>
-        <li><a class="btn" href="https://modeldb.science/117810">ModelDB entry</a></li>
-      </ul>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="in">
-    <div>
-      <a class="brand" href="#top"><img src="assets/remoto-icon.svg" width="28" height="28" alt=""><span><i>Re</i>Moto</span></a>
-      <p>A simulator of spinal cord motor nuclei and their nerves and muscles, developed at the Biomedical
-        Engineering Laboratory (LEB) of the University of S&atilde;o Paulo.</p>
-    </div>
-    <div>
-      <h2>Project</h2>
-      <p><a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
-        <a href="https://github.com/rogeriocisi/remoto/issues">Questions and bug reports</a><br>
-        <a href="https://github.com/rnwatanabe/remoto">Legacy version (parent repository)</a></p>
-    </div>
-    <div>
-      <h2>License</h2>
-      <p>Released under the <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>.<br>
-        &copy; 2006&ndash;2026 Rogerio R. L. Cisi and the ReMoto contributors.</p>
-    </div>
-  </div>
-</footer>
-
-<script>
-  // Crosshair for the recording: pointer or arrow keys move it, the readout below shows the values.
-  (function () {
-    var fig = document.getElementById('rec');
-    var dataEl = document.getElementById('rec-data');
-    if (!fig || !dataEl) return;
-    var svg = fig.querySelector('svg'), xh = fig.querySelector('.xh'), out = fig.querySelector('.readout');
-    if (!svg || !xh || !out) return;
-    var d = JSON.parse(dataEl.textContent);
-    var n = d.force.length, cur = -1, idle = out.innerHTML;
-    var cell = {};
-    function build() {
-      out.textContent = '';
-      [['t', 'time'], ['force', 'force'], ['units', 'motor units firing in the last 200 ms']].forEach(function (k) {
-        var s = document.createElement('span'), b = document.createElement('b');
-        cell[k[0]] = b;
-        s.appendChild(b); s.appendChild(document.createTextNode(' ' + k[1]));
-        out.appendChild(s);
+  <script>
+    // Crosshair for the recording: pointer or arrow keys move it, the readout below shows the values.
+    (function () {
+      var fig = document.getElementById('rec');
+      var dataEl = document.getElementById('rec-data');
+      if (!fig || !dataEl) return;
+      var svg = fig.querySelector('svg'), xh = fig.querySelector('.xh'), out = fig.querySelector('.readout');
+      if (!svg || !xh || !out) return;
+      var d = JSON.parse(dataEl.textContent);
+      var n = d.force.length, cur = -1, idle = out.innerHTML;
+      var cell = {};
+      function build() {
+        out.textContent = '';
+        [['t', 'time'], ['force', 'force'], ['units', 'motor units firing in the last 200 ms']].forEach(function (k) {
+          var s = document.createElement('span'), b = document.createElement('b');
+          cell[k[0]] = b;
+          s.appendChild(b); s.appendChild(document.createTextNode(' ' + k[1]));
+          out.appendChild(s);
+        });
+      }
+      function show(i) {
+        cur = Math.max(0, Math.min(n - 1, i));
+        if (!cell.t) build();
+        var t = (cur + 1) * d.dt, x = d.x0 + t / d.t1 * (d.x1 - d.x0);
+        xh.setAttribute('x1', x); xh.setAttribute('x2', x); xh.style.display = '';
+        cell.t.textContent = (t / 1000).toFixed(2) + ' s';
+        cell.force.textContent = d.force[cur].toFixed(1) + ' N';
+        cell.units.textContent = String(d.units[cur]);
+      }
+      function hide() { cur = -1; cell = {}; xh.style.display = 'none'; out.innerHTML = idle; }
+      svg.addEventListener('pointermove', function (e) {
+        var p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+        var q = p.matrixTransform(svg.getScreenCTM().inverse());
+        var t = (q.x - d.x0) / (d.x1 - d.x0) * d.t1;
+        if (t < 0 || t > d.t1) { hide(); return; }
+        show(Math.round(t / d.dt) - 1);
       });
-    }
-    function show(i) {
-      cur = Math.max(0, Math.min(n - 1, i));
-      if (!cell.t) build();
-      var t = (cur + 1) * d.dt, x = d.x0 + t / d.t1 * (d.x1 - d.x0);
-      xh.setAttribute('x1', x); xh.setAttribute('x2', x); xh.style.display = '';
-      cell.t.textContent = (t / 1000).toFixed(2) + ' s';
-      cell.force.textContent = d.force[cur].toFixed(1) + ' N';
-      cell.units.textContent = String(d.units[cur]);
-    }
-    function hide() { cur = -1; cell = {}; xh.style.display = 'none'; out.innerHTML = idle; }
-    svg.addEventListener('pointermove', function (e) {
-      var p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
-      var q = p.matrixTransform(svg.getScreenCTM().inverse());
-      var t = (q.x - d.x0) / (d.x1 - d.x0) * d.t1;
-      if (t < 0 || t > d.t1) { hide(); return; }
-      show(Math.round(t / d.dt) - 1);
-    });
-    svg.addEventListener('pointerleave', hide);
-    svg.addEventListener('blur', hide);
-    svg.addEventListener('keydown', function (e) {
-      var step = e.shiftKey ? 10 : 1;
-      if (e.key === 'ArrowRight') { show(cur < 0 ? 0 : cur + step); e.preventDefault(); }
-      else if (e.key === 'ArrowLeft') { show(cur < 0 ? n - 1 : cur - step); e.preventDefault(); }
-      else if (e.key === 'Escape') { hide(); }
-    });
-  })();
-</script>
+      svg.addEventListener('pointerleave', hide);
+      svg.addEventListener('blur', hide);
+      svg.addEventListener('keydown', function (e) {
+        var step = e.shiftKey ? 10 : 1;
+        if (e.key === 'ArrowRight') { show(cur < 0 ? 0 : cur + step); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft') { show(cur < 0 ? n - 1 : cur - step); e.preventDefault(); }
+        else if (e.key === 'Escape') { hide(); }
+      });
+    })();
+  </script>
 </body>
+
 </html>

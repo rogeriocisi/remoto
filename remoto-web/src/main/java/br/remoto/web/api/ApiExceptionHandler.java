@@ -1,6 +1,7 @@
 package br.remoto.web.api;
 
 import br.remoto.storage.StaleWriteException;
+import br.remoto.web.i18n.Messages;
 import br.remoto.web.sim.InvalidScenarioException;
 import br.remoto.web.sim.QuotaExceededException;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,8 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(InvalidScenarioException.class)
     ProblemDetail invalid(InvalidScenarioException e) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "cenário inválido");
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                Messages.msg("scenario.invalid.title"));
         problem.setProperty("erros", e.errors());
         return problem;
     }

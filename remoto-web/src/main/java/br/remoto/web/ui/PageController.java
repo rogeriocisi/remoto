@@ -7,6 +7,7 @@ import br.remoto.storage.scenario.PublicScenarioCatalog;
 import br.remoto.storage.scenario.ScenarioRepository;
 import br.remoto.web.api.ScenarioFiles;
 import br.remoto.web.api.ScenarioSources;
+import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
 import br.remoto.web.sim.QuotaExceededException;
@@ -39,7 +40,10 @@ class PageController {
                   String created, String elapsed, boolean active) {
     }
 
-    private static final DateTimeFormatter CREATED = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss").withZone(ZoneId.systemDefault());
+    /** O formato da data vem do idioma (dia/mês em português, mês/dia em inglês). */
+    private static DateTimeFormatter created() {
+        return DateTimeFormatter.ofPattern(Messages.msg("runs.created.pattern")).withZone(ZoneId.systemDefault());
+    }
 
     private final PublicScenarioCatalog catalog;
     private final ScenarioRepository scenarios;
@@ -147,7 +151,7 @@ class PageController {
     String importRun(Caller caller, @RequestParam(name = "file", required = false) MultipartFile file, Model model,
                      jakarta.servlet.http.HttpServletResponse response) {
         if (file == null || file.isEmpty()) {
-            model.addAttribute("importError", "nenhum arquivo enviado");
+            model.addAttribute("importError", Messages.msg("import.noFile"));
         } else {
             try (var in = file.getInputStream()) {
                 RunManifest m = runs.importZip(caller.id(), in);
@@ -171,17 +175,11 @@ class PageController {
     private RunRow row(RunManifest m) {
         Integer percent = simulations.liveProgress(m.runId()).map(f -> (int) Math.round(f * 100)).orElse(null);
         return new RunRow(m.runId(), m.scenarioName(), m.status(), label(m.status()), percent,
-                CREATED.format(m.createdAt()), elapsed(m), simulations.isActive(m.runId()));
+                created().format(m.createdAt()), elapsed(m), simulations.isActive(m.runId()));
     }
 
     static String label(RunStatus status) {
-        return switch (status) {
-            case QUEUED -> "na fila";
-            case RUNNING -> "rodando";
-            case DONE -> "concluída";
-            case FAILED -> "falhou";
-            case CANCELED -> "cancelada";
-        };
+        return Messages.msg("status." + status.name());
     }
 
     /** Do início ao fim da simulação (ou até agora, se ainda roda); "—" se não chegou a começar. */

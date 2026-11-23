@@ -5,6 +5,7 @@ import br.remoto.core.scenario.ScenarioValidator;
 import br.remoto.storage.Versioned;
 import br.remoto.storage.scenario.PublicScenarioCatalog;
 import br.remoto.storage.scenario.ScenarioRepository;
+import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
 import org.springframework.http.ContentDisposition;
@@ -54,7 +55,7 @@ class ScenarioController {
 
     @GetMapping("/public/{id}")
     Scenario publicScenario(@PathVariable String id) {
-        return catalog.find(id).orElseThrow(() -> new NoSuchElementException("cenário público não encontrado"));
+        return catalog.find(id).orElseThrow(() -> new NoSuchElementException(Messages.msg("scenario.public.notFound")));
     }
 
     @GetMapping("/public/{id}/export")
@@ -127,7 +128,7 @@ class ScenarioController {
     }
 
     private Versioned<Scenario> find(Caller caller, String id) {
-        return scenarios.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException("cenário não encontrado"));
+        return scenarios.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException(Messages.msg("scenario.notFound")));
     }
 
     private static void validate(Scenario scenario) {

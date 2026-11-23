@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${lang == 'pt'} ? 'pt-BR' : 'en'" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
   <meta name="theme-color" content="#1f5f99">
   <link rel="stylesheet" th:href="@{/css/app.css}">
+  <script th:src="@{/js/i18n.js}"></script>
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js" defer></script>
   <script th:src="@{/js/results.js}" defer></script>
@@ -20,16 +21,17 @@
   <a th:href="@{/}" class="marca marca-link">
     <img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="30" height="30">
     <strong>ReMoto</strong>
-    <span class="sub">simulador de núcleos motores da medula espinhal</span>
+    <span class="sub" th:text="#{app.tagline}">simulador de núcleos motores da medula espinhal</span>
+    <span class="versao" th:if="${appVersion}" th:text="#{app.version(${appVersion})}">Versão 3.0</span>
   </a>
   <nav class="conta">
-    <a th:href="@{/publicacoes}" class="botao secundario pequeno">Publicações</a>
+    <a th:href="@{/publicacoes}" class="botao secundario pequeno" th:text="#{nav.publications}">Publicações</a>
+    <th:block th:replace="~{fragments :: idioma}"></th:block>
   </nav>
 </header>
 
 <script th:inline="javascript">
-  console.info("ReMoto: não há login. Seus cenários e simulações ficam guardados neste navegador e são apagados depois de "
-      + /*[[${areaDays}]]*/ 30 + " dias sem uso; exporte-os para guardá-los por mais tempo ou levá-los a outro computador.");
+  console.info(/*[[#{index.console(${areaDays})}]]*/ 'ReMoto');
 </script>
 
 <main class="area">
@@ -37,49 +39,43 @@
   <aside class="lateral">
     <section class="cartao bloco-simulacoes">
       <div class="titulo-bloco">
-        <h2>Minhas simulações</h2>
+        <h2 th:text="#{index.runs.heading}">Minhas simulações</h2>
         <form hx-post="/ui/runs/import" hx-target="#importacao-simulacao" hx-encoding="multipart/form-data"
               hx-trigger="change from:find input" class="inline">
-          <label class="botao secundario pequeno"
-                 title="Traz de volta uma simulação exportada antes (.zip), para ver os resultados de novo">
-            Importar…
+          <label class="botao secundario pequeno" th:title="#{index.runs.import.title}">
+            <th:block th:text="#{index.runs.import}">Importar…</th:block>
             <input type="file" name="file" accept=".zip,application/zip" hidden>
           </label>
         </form>
       </div>
       <div id="importacao-simulacao" class="mensagem"></div>
-      <div id="execucoes" hx-get="/ui/runs" hx-trigger="load, every 4s, execucoes from:body">Carregando…</div>
+      <div id="execucoes" hx-get="/ui/runs" hx-trigger="load, every 4s, execucoes from:body"
+           th:text="#{index.loading}">Carregando…</div>
     </section>
 
     <section class="cartao bloco-cenarios">
-      <h2>Cenários</h2>
-      <div id="cenarios" hx-get="/ui/scenarios" hx-trigger="load">Carregando…</div>
+      <h2 th:text="#{index.scenarios.heading}">Cenários</h2>
+      <div id="cenarios" hx-get="/ui/scenarios" hx-trigger="load" th:text="#{index.loading}">Carregando…</div>
     </section>
   </aside>
 
   <!-- área de trabalho: os resultados da simulação aberta -->
   <section class="trabalho">
     <div id="boas-vindas" class="cartao vazio-grande">
-      <h2>Nenhuma simulação aberta</h2>
+      <h2 th:text="#{index.welcome.heading}">Nenhuma simulação aberta</h2>
       <ol>
-        <li>Escolha um cenário à esquerda e clique em <strong>Rodar</strong>: a simulação abre aqui e o
-          progresso aparece ao vivo.</li>
-        <li>Para mudar parâmetros, clique em <strong>Editar</strong>: o editor abre numa cópia sua do
-          cenário.</li>
-        <li>Para rever uma simulação, clique na linha dela em <strong>Minhas simulações</strong>.</li>
+        <li th:utext="#{index.welcome.step1}">Escolha um cenário à esquerda e clique em Rodar.</li>
+        <li th:utext="#{index.welcome.step2}">Para mudar parâmetros, clique em Editar.</li>
+        <li th:utext="#{index.welcome.step3}">Para rever uma simulação, clique na linha dela.</li>
       </ol>
-      <p class="notas">Não há login: cenários e simulações ficam guardados neste navegador e são apagados
-        depois de <th:block th:text="${areaDays}">30</th:block> dias sem uso. Use <strong>Exportar</strong>
-        para guardá-los por mais tempo ou levá-los a outro computador, e <strong>Importar…</strong> para
-        trazê-los de volta.</p>
-      <p class="notas">Os modelos e o simulador estão descritos nas
-        <a th:href="@{/publicacoes}">publicações sobre o ReMoto</a>.</p>
+      <p class="notas" th:utext="#{index.welcome.storage(${areaDays})}">Não há login.</p>
+      <p class="notas" th:utext="#{index.welcome.papers(@{/publicacoes})}">Publicações sobre o ReMoto.</p>
     </div>
 
     <section id="detalhe" class="cartao" hidden>
       <div class="cabecalho-detalhe">
         <div>
-          <h2 data-campo="nome">Simulação</h2>
+          <h2 data-campo="nome" th:text="#{index.detail.simulation}">Simulação</h2>
           <code class="id-execucao" data-campo="id"></code>
         </div>
         <div class="progresso">

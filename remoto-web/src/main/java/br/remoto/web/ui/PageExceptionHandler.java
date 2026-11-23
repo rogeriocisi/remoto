@@ -1,5 +1,7 @@
 package br.remoto.web.ui;
 
+import br.remoto.web.i18n.LangLinks;
+import br.remoto.web.i18n.Messages;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,7 @@ class PageExceptionHandler {
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     ModelAndView tooLarge(MaxUploadSizeExceededException e, HttpServletRequest request) {
-        return page(HttpStatus.CONTENT_TOO_LARGE, "o arquivo passa do tamanho máximo aceito", request);
+        return page(HttpStatus.CONTENT_TOO_LARGE, Messages.msg("upload.tooLarge"), request);
     }
 
     /** Erros do próprio Spring MVC (parâmetro faltando, método errado...) mantêm o status deles. */
@@ -56,6 +58,7 @@ class PageExceptionHandler {
         mv.addObject("status", status.value());
         mv.addObject("message", message);
         mv.addObject("path", request.getRequestURI());
+        mv.addAllObjects(LangLinks.attributes(request)); // o seletor de idioma da página de erro
         return mv;
     }
 }

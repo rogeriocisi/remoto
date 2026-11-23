@@ -79,6 +79,7 @@ class EditorIntegrationTest {
                 .andExpect(status().is3xxRedirection());
 
         mvc.perform(post("/editor/" + id).session(session("ana")).with(csrf())
+                        .header("Accept-Language", "pt-BR")
                         .param("screen", "general").param("etag", etag).param("name", "segunda").param("seed", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("alterado em outra aba")));
@@ -88,7 +89,7 @@ class EditorIntegrationTest {
 
     @Test
     void paginaDePublicacoesEIconeDoSite() throws Exception {
-        mvc.perform(get("/publicacoes"))
+        mvc.perform(get("/publicacoes").header("Accept-Language", "pt-BR"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Publicações")))
                 .andExpect(content().string(containsString("https://doi.org/10.1007/s10827-008-0092-8")));
@@ -98,7 +99,7 @@ class EditorIntegrationTest {
 
     @Test
     void enderecoInexistenteMostraAPaginaDeErroEAApiDevolveJson() throws Exception {
-        mvc.perform(get("/nao-existe").session(session("ana")))
+        mvc.perform(get("/nao-existe").session(session("ana")).header("Accept-Language", "pt-BR"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("Não encontrado")));
         mvc.perform(get("/api/nao-existe").session(session("ana")))
@@ -110,13 +111,15 @@ class EditorIntegrationTest {
     void outroUsuarioNaoAbreOEditor() throws Exception {
         String id = copyAs("ana");
 
-        mvc.perform(get("/editor/" + id).session(session("bruno")))
+        // o idioma vem do navegador (aqui, português); ver LanguageIntegrationTest
+        mvc.perform(get("/editor/" + id).session(session("bruno")).header("Accept-Language", "pt-BR"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("Não encontrado")))
                 .andExpect(content().string(containsString("Voltar à página inicial")))
                 .andExpect(content().string(org.hamcrest.Matchers.not(containsString("Whitelabel"))));
         // pedido do htmx: só a mensagem, que a página mostra num aviso
-        mvc.perform(get("/editor/" + id).session(session("bruno")).header("HX-Request", "true"))
+        mvc.perform(get("/editor/" + id).session(session("bruno")).header("HX-Request", "true")
+                        .header("Accept-Language", "pt-BR"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("cenário não encontrado")))
                 .andExpect(content().string(org.hamcrest.Matchers.not(containsString("<html"))));

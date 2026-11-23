@@ -3,6 +3,9 @@
 (() => {
   'use strict';
 
+  // textos no idioma da página (/js/i18n.js, montado a partir de messages*.properties)
+  const T = (key, ...args) => (window.T ? window.T(key, ...args) : key);
+
   const cookie = (name) => {
     const entry = document.cookie.split('; ').find((c) => c.startsWith(name + '='));
     return entry ? decodeURIComponent(entry.substring(name.length + 1)) : null;
@@ -24,7 +27,7 @@
     const close = document.createElement('button');
     close.type = 'button';
     close.textContent = '×';
-    close.setAttribute('aria-label', 'Fechar');
+    close.setAttribute('aria-label', T('close'));
     const text = document.createElement('p');
     text.textContent = message;
     const box = document.createElement('div');
@@ -38,14 +41,14 @@
 
   const offline = document.createElement('div');
   offline.className = 'sem-conexao';
-  offline.textContent = 'Sem conexão com o servidor. Tentando de novo…';
+  offline.textContent = T('offline');
   offline.hidden = true;
   document.body.append(offline);
 
   document.body.addEventListener('htmx:responseError', (event) => {
     const xhr = event.detail.xhr;
     const text = (xhr.responseText || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-    notify(text && text.length < 300 ? text : `Não foi possível concluir (erro ${xhr.status}).`);
+    notify(text && text.length < 300 ? text : T('requestFailed', xhr.status));
   });
   document.body.addEventListener('htmx:sendError', () => { offline.hidden = false; });
   document.body.addEventListener('htmx:afterRequest', (event) => {
@@ -55,11 +58,12 @@
   const panel = document.getElementById('detalhe');
   const welcome = document.getElementById('boas-vindas');
   const field = (name) => panel.querySelector(`[data-campo="${name}"]`);
-  const STATUS = { QUEUED: 'na fila', RUNNING: 'rodando', DONE: 'concluída', FAILED: 'falhou', CANCELED: 'cancelada' };
+  const FINISHED = ['DONE', 'FAILED', 'CANCELED'];
   const stacked = () => window.matchMedia('(max-width: 1000px)').matches;
   let source = null;
   let charts = [];
   let current = null;
+  let lastStatus = null;
 
   // ---- simulações: a linha inteira abre os resultados (os botões da linha fazem só o que dizem) ----
   document.addEventListener('click', (event) => {
@@ -87,7 +91,7 @@
     if (welcome) welcome.hidden = true;
     panel.hidden = false;
     field('id').textContent = runId;
-    field('nome').textContent = 'Simulação';
+    field('nome').textContent = T('simulation');
     field('links').replaceChildren();
     clearCharts();
     if (source) source.close();
@@ -98,28 +102,30 @@
     const bar = panel.querySelector('progress');
     bar.hidden = false;
     bar.value = 0;
+    lastStatus = null;
     source = new EventSource(`/api/runs/${runId}/events`);
     source.addEventListener('progresso', (event) => {
       const p = JSON.parse(event.data);
       const status = field('status');
-      status.textContent = STATUS[p.status] || p.status;
+      lastStatus = p.status;
+      status.textContent = T(`status.${p.status}`);
       status.className = `status ${p.status}`;
       bar.value = Math.round(p.fraction * 100);
-      if (['DONE', 'FAILED', 'CANCELED'].includes(p.status)) {
+      if (FINISHED.includes(p.status)) {
         source.close();
         bar.hidden = true;
         if (p.status === 'DONE') {
-          loadResults(runId).catch(() => notify('Não foi possível carregar os resultados desta simulação.'));
+          loadResults(runId).catch(() => notify(T('loadResultsFailed')));
         }
       }
     });
     source.onerror = () => {
       source.close();
       const status = field('status');
-      if (current === runId && !['concluída', 'falhou', 'cancelada'].includes(status.textContent)) {
-        status.textContent = 'sem conexão';
+      if (current === runId && !FINISHED.includes(lastStatus)) {
+        status.textContent = T('noConnection');
         status.className = 'status FAILED';
-        notify('Perdi a conexão com o progresso da simulação. Clique na linha dela para tentar de novo.');
+        notify(T('progressLost'));
       }
     };
     if (stacked()) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -184,11 +190,11 @@
     const run = await response.json();
     const links = field('links');
     const graphs = field('graficos');
-    const zip = link(`/api/runs/${runId}/export.zip`, 'Exportar (ZIP)');
+    const zip = link(`/api/runs/${runId}/export.zip`, T('export.zip'));
     zip.download = '';
     zip.className = 'botao secundario pequeno';
-    zip.title = 'Baixa a simulação num .zip: a configuração usada e todos os resultados em CSV';
-    const config = link(`/api/runs/${runId}/config`, 'Configuração (JSON)');
+    zip.title = T('export.zip.title');
+    const config = link(`/api/runs/${runId}/config`, T('config.json'));
     config.className = 'botao secundario pequeno';
     config.target = '_blank';
     links.replaceChildren(zip, config);
@@ -197,7 +203,7 @@
     if (window.ReMotoResults && await window.ReMotoResults.show(runId, field('resultados'))) {
       const files = document.createElement('details');
       const summary = document.createElement('summary');
-      summary.textContent = `arquivos (${run.results.length} resultados em CSV)`;
+      summary.textContent = T('files', run.results.length);
       files.append(summary);
       for (const name of run.results) files.append(link(`/api/runs/${runId}/results/${name}.csv`, `${name}.csv`));
       links.append(files);
@@ -213,7 +219,7 @@
       box.className = 'grafico';
       graphs.append(box);
       const title = preview.totalPoints > preview.x.length
-        ? `${name} (prévia: ${preview.x.length} de ${preview.totalPoints} pontos)`
+        ? T('preview', name, preview.x.length, preview.totalPoints)
         : name;
       charts.push(new uPlot(chartOptions(name, title, yLabel(name, preview.header), box.clientWidth),
         [preview.x, preview.y], box));
@@ -221,11 +227,11 @@
   }
 
   function yLabel(name, header) {
-    if (name.startsWith('disparos-')) return 'unidade motora';
+    if (name.startsWith('disparos-')) return T('y.motorUnit');
     const unit = /\[(.*)\]/.exec(header || '');
-    const what = name.startsWith('forca-') ? 'força'
-      : name.startsWith('emg-bruto-') ? 'EMG bruto'
-      : name.startsWith('emg-') ? 'EMG'
+    const what = name.startsWith('forca-') ? T('y.force')
+      : name.startsWith('emg-bruto-') ? T('y.rawEmg')
+      : name.startsWith('emg-') ? T('y.emg')
       : name;
     return unit ? `${what} (${unit[1]})` : what;
   }
@@ -238,11 +244,11 @@
       width: Math.max(320, width),
       height: 260,
       scales: { x: { time: false } },
-      axes: [{ label: 'tempo (ms)' }, { label }],
+      axes: [{ label: T('x.time') }, { label }],
       series: [
         { label: 't (ms)' },
         spikes
-          ? { label: 'unidade', stroke: color, paths: () => null, points: { show: true, size: 3, fill: color } }
+          ? { label: T('series.unit'), stroke: color, paths: () => null, points: { show: true, size: 3, fill: color } }
           : { label, stroke: color, width: 1.5 },
       ],
     };

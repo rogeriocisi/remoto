@@ -1,21 +1,29 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${lang == 'pt'} ? 'pt-BR' : 'en'" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- duração simulada: em s a partir de 1 s, senão em ms -->
+<!-- seletor de idioma: a mesma página no outro idioma (?lang=pt / ?lang=en) -->
+<a th:fragment="idioma" th:href="${langSwitchUrl}" th:hreflang="${langOther}"
+   class="botao secundario pequeno idioma" rel="alternate"
+   th:title="#{lang.other.title}" th:text="#{lang.other}">EN</a>
+
+<!-- duração simulada: em s a partir de 1 s, senão em ms (separador decimal do idioma) -->
 <th:block th:fragment="duracao(ms)"><th:block
-    th:text="${ms >= 1000} ? |${#numbers.formatDecimal(ms / 1000, 1, 'POINT', 1, 'COMMA')} s simulados|
-                           : |${#numbers.formatDecimal(ms, 1, 'POINT', 0, 'COMMA')} ms simulados|">5,0 s simulados</th:block></th:block>
+    th:text="${ms >= 1000} ? #{duration.seconds(${#numbers.formatDecimal(ms / 1000, 1, 1)})}
+                           : #{duration.ms(${#numbers.formatInteger(ms, 1)})}">5,0 s simulados</th:block></th:block>
 
 <th:block th:fragment="scenarios">
   <div class="cenarios" th:data-aba-inicial="${aba}">
     <div class="abas" role="tablist">
       <button type="button" class="aba" role="tab" data-aba="publicos">
-        Públicos <span class="contagem" th:text="${#lists.size(publicScenarios)}">20</span></button>
+        <th:block th:text="#{scenarios.tab.public}">Públicos</th:block>
+        <span class="contagem" th:text="${#lists.size(publicScenarios)}">20</span></button>
       <button type="button" class="aba" role="tab" data-aba="meus">
-        Meus cenários <span class="contagem" th:text="${#lists.size(mine)}">0</span></button>
+        <th:block th:text="#{scenarios.tab.mine}">Meus cenários</th:block>
+        <span class="contagem" th:text="${#lists.size(mine)}">0</span></button>
     </div>
-    <input type="search" class="busca" placeholder="Buscar por nome, id ou descrição" aria-label="Buscar cenários">
+    <input type="search" class="busca" th:placeholder="#{scenarios.search.placeholder}"
+           th:aria-label="#{scenarios.search.aria}">
 
     <div class="painel-aba" data-painel="publicos" role="tabpanel">
       <ul class="lista-cenarios">
@@ -26,50 +34,51 @@
             <span class="meta"><th:block th:replace="~{fragments :: duracao(${s.durationMs})}"></th:block></span>
           </div>
           <code class="id-cenario" th:text="${s.id}">id</code>
-          <p class="descricao" th:text="${s.description}" title="Clique para ver a descrição inteira">descrição</p>
+          <p class="descricao" th:text="${s.description}" th:title="#{scenario.description.title}">descrição</p>
           <div class="acoes">
             <form hx-post="/ui/runs" hx-target="#execucoes">
               <input type="hidden" name="publicScenarioId" th:value="${s.id}">
-              <button type="submit" class="pequeno" title="Roda o cenário e abre a simulação ao lado">Rodar</button>
+              <button type="submit" class="pequeno" th:title="#{scenario.run.title}"
+                      th:text="#{scenario.run}">Rodar</button>
             </form>
             <!-- formulário comum (sem htmx): o servidor cria a cópia e redireciona para o editor dela -->
             <form th:action="@{/ui/scenarios/edit-copy}" method="post">
               <input type="hidden" name="publicScenarioId" th:value="${s.id}">
-              <button type="submit" class="secundario pequeno"
-                      title="Cria uma cópia em Meus cenários e abre o editor nela">Editar</button>
+              <button type="submit" class="secundario pequeno" th:title="#{scenario.edit.copy.title}"
+                      th:text="#{scenario.edit}">Editar</button>
             </form>
             <form hx-post="/ui/scenarios/copy" hx-target="#cenarios">
               <input type="hidden" name="publicScenarioId" th:value="${s.id}">
-              <button type="submit" class="secundario pequeno" title="Cria uma cópia em Meus cenários">Copiar</button>
+              <button type="submit" class="secundario pequeno" th:title="#{scenario.copy.title}"
+                      th:text="#{scenario.copy}">Copiar</button>
             </form>
             <a th:href="@{/api/scenarios/public/{id}/export(id=${s.id})}" class="botao secundario pequeno" download
-               title="Baixa o cenário em JSON, para guardar, importar depois ou rodar na CLI">Exportar</a>
+               th:title="#{scenario.export.title}" th:text="#{scenario.export}">Exportar</a>
           </div>
         </li>
       </ul>
-      <p class="vazio sem-resultado" hidden>Nenhum cenário com esse texto.</p>
+      <p class="vazio sem-resultado" hidden th:text="#{scenarios.none.search}">Nenhum cenário com esse texto.</p>
     </div>
 
     <div class="painel-aba" data-painel="meus" role="tabpanel" hidden>
       <div class="importar">
         <form hx-post="/ui/scenarios/import" hx-target="#cenarios" hx-encoding="multipart/form-data"
               hx-trigger="change from:find input">
-          <label class="botao secundario pequeno"
-                 title="Envia cenários exportados antes (.json, ou vários num .zip) para Meus cenários">
-            Importar…
+          <label class="botao secundario pequeno" th:title="#{scenarios.import.title}">
+            <th:block th:text="#{scenarios.import}">Importar…</th:block>
             <input type="file" name="files" accept=".json,.zip,application/json,application/zip" multiple hidden>
           </label>
         </form>
         <a th:unless="${#lists.isEmpty(mine)}" th:href="@{/api/scenarios/export}" class="botao secundario pequeno"
-           download title="Baixa todos os seus cenários num .zip, um JSON cada">Exportar todos</a>
+           download th:title="#{scenarios.exportAll.title}" th:text="#{scenarios.exportAll}">Exportar todos</a>
       </div>
       <p th:if="${imported != null and imported > 0}" class="ok"
-         th:text="${imported == 1} ? '1 cenário importado.' : |${imported} cenários importados.|">importados</p>
+         th:text="${imported == 1} ? #{scenarios.imported.one} : #{scenarios.imported.many(${imported})}">importados</p>
       <ul th:if="${importErrors != null and !#lists.isEmpty(importErrors)}" class="erro">
         <li th:each="e : ${importErrors}" th:text="${e}">erro</li>
       </ul>
-      <p th:if="${#lists.isEmpty(mine)}" class="vazio">
-        Nenhum ainda. Copie ou edite um cenário público, ou importe um que você exportou antes.
+      <p th:if="${#lists.isEmpty(mine)}" class="vazio" th:text="#{scenarios.mine.empty}">
+        Nenhum ainda. Copie ou edite um cenário público.
       </p>
       <ul class="lista-cenarios">
         <li th:each="s : ${mine}" class="cenario"
@@ -79,49 +88,52 @@
             <span class="meta"><th:block th:replace="~{fragments :: duracao(${s.durationMs})}"></th:block></span>
           </div>
           <code class="id-cenario" th:text="${s.id}">id</code>
-          <p class="descricao" th:text="${s.description}" title="Clique para ver a descrição inteira">descrição</p>
+          <p class="descricao" th:text="${s.description}" th:title="#{scenario.description.title}">descrição</p>
           <div class="acoes">
             <form hx-post="/ui/runs" hx-target="#execucoes">
               <input type="hidden" name="scenarioId" th:value="${s.id}">
-              <button type="submit" class="pequeno" title="Roda o cenário e abre a simulação ao lado">Rodar</button>
+              <button type="submit" class="pequeno" th:title="#{scenario.run.title}"
+                      th:text="#{scenario.run}">Rodar</button>
             </form>
-            <a th:href="@{/editor/{id}(id=${s.id})}" class="botao secundario pequeno">Editar</a>
+            <a th:href="@{/editor/{id}(id=${s.id})}" class="botao secundario pequeno"
+               th:text="#{scenario.edit}">Editar</a>
             <a th:href="@{/api/scenarios/{id}/export(id=${s.id})}" class="botao secundario pequeno" download
-               title="Baixa o cenário em JSON, para guardar, importar depois ou rodar na CLI">Exportar</a>
+               th:title="#{scenario.export.title}" th:text="#{scenario.export}">Exportar</a>
             <form th:hx-post="@{/ui/scenarios/{id}/delete(id=${s.id})}" hx-target="#cenarios"
-                  hx-confirm="Apagar este cenário?">
-              <button type="submit" class="secundario pequeno perigo">Apagar</button>
+                  th:hx-confirm="#{scenario.delete.confirm}">
+              <button type="submit" class="secundario pequeno perigo" th:text="#{scenario.delete}">Apagar</button>
             </form>
           </div>
         </li>
       </ul>
-      <p class="vazio sem-resultado" hidden>Nenhum cenário com esse texto.</p>
+      <p class="vazio sem-resultado" hidden th:text="#{scenarios.none.search}">Nenhum cenário com esse texto.</p>
     </div>
   </div>
 </th:block>
 
 <!-- erro num pedido do htmx: a página mostra este texto num aviso (PageExceptionHandler) -->
 <th:block th:fragment="erroHtmx"><th:block
-    th:text="${message != null} ? ${message} : (${status == 500} ? 'Algo deu errado no servidor. Tente de novo; se continuar, recarregue a página.' : |Não foi possível concluir (erro ${status}).|)">erro</th:block></th:block>
+    th:text="${message != null} ? ${message} : (${status == 500} ? #{error.htmx.500} : #{error.htmx.other(${status})})">erro</th:block></th:block>
 
 <th:block th:fragment="runImport">
-  <span th:if="${importedRun}" class="ok" th:text="|Simulação importada: ${importedRun}|">importada</span>
+  <span th:if="${importedRun}" class="ok" th:text="#{runs.imported(${importedRun})}">importada</span>
   <span th:if="${importError}" class="erro" th:text="${importError}">erro</span>
 </th:block>
 
 <th:block th:fragment="runs">
   <p th:if="${error}" class="erro" th:text="${error}">erro</p>
-  <p th:if="${#lists.isEmpty(runs)}" class="vazio">Nenhuma simulação ainda. Clique em <strong>Rodar</strong> num cenário.</p>
+  <p th:if="${#lists.isEmpty(runs)}" class="vazio" th:utext="#{runs.empty}">Nenhuma simulação ainda.</p>
   <div th:unless="${#lists.isEmpty(runs)}" class="tabela-rolavel">
     <table class="tabela tabela-simulacoes">
       <thead>
-      <tr><th>Cenário</th><th>Status</th><th>Criada</th>
-        <th title="Tempo que a simulação levou, do início ao fim (ou até agora, se ainda roda)">Tempo</th>
-        <th><span class="so-leitor">Ações</span></th></tr>
+      <tr><th th:text="#{runs.col.scenario}">Cenário</th><th th:text="#{runs.col.status}">Status</th>
+        <th th:text="#{runs.col.created}">Criada</th>
+        <th th:title="#{runs.col.time.title}" th:text="#{runs.col.time}">Tempo</th>
+        <th><span class="so-leitor" th:text="#{runs.col.actions}">Ações</span></th></tr>
       </thead>
       <tbody>
       <tr th:each="r : ${runs}" class="linha-execucao" th:data-run-id="${r.runId}" tabindex="0"
-          title="Clique para abrir os resultados">
+          th:title="#{runs.open.title}">
         <td class="nome-execucao" th:text="${r.scenarioName}">cenário</td>
         <td class="sem-quebra">
           <span th:class="|status ${r.status}|" th:text="${r.statusLabel}">concluída</span>
@@ -131,14 +143,15 @@
         <td class="sem-quebra" th:text="${r.elapsed}">1 min 05 s</td>
         <td class="acoes">
           <a th:unless="${r.active}" th:href="@{/api/runs/{id}/export.zip(id=${r.runId})}"
-             class="botao secundario icone" download aria-label="Exportar"
-             title="Exportar: baixa a simulação num .zip, com a configuração usada e todos os resultados em CSV">
+             class="botao secundario icone" download th:aria-label="#{runs.export}"
+             th:title="#{runs.export.title}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
           </a>
           <form th:hx-post="@{/ui/runs/{id}/delete(id=${r.runId})}" hx-target="#execucoes"
-                th:attr="hx-confirm=${r.active} ? 'Cancelar esta simulação?' : 'Apagar esta simulação?'">
-            <button type="submit" class="secundario icone perigo" th:aria-label="${r.active} ? 'Cancelar' : 'Apagar'"
-                    th:title="${r.active} ? 'Cancelar a simulação' : 'Apagar a simulação'">
+                th:hx-confirm="${r.active} ? #{runs.cancel.confirm} : #{runs.delete.confirm}">
+            <button type="submit" class="secundario icone perigo"
+                    th:aria-label="${r.active} ? #{runs.cancel} : #{runs.delete}"
+                    th:title="${r.active} ? #{runs.cancel.title} : #{runs.delete.title}">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
           </form>

@@ -1,13 +1,15 @@
 #!/usr/bin/env node
-// Gera a figura de abertura da GitHub Pages (docs/index.html) a partir de uma execução do cenário
+// Gera a figura de abertura da GitHub Pages a partir de uma execução do cenário
 // "Default - Soleus contraction". Só usa o Node (18 ou mais novo), sem dependências.
 //
 //   java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run \
 //        scenarios/remoto-17-default-soleus-contraction.json --threads 4 -o resultados/soleus
 //   node scripts/pages-figure.mjs resultados/soleus
 //
-// Grava docs/assets/raster-soleus.png e troca, em docs/index.html, o trecho entre os comentários
-// "recording:begin" e "recording:end". A mesma seed e a mesma versão do motor dão a mesma figura.
+// Grava docs/assets/raster-soleus.png e troca, nas duas páginas do site (docs/index.html em inglês
+// e docs/pt/index.html em português), o trecho entre os comentários "recording:begin" e
+// "recording:end", com os rótulos no idioma de cada uma. A mesma seed e a mesma versão do motor
+// dão a mesma figura.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { deflateSync, gunzipSync } from 'node:zlib';
@@ -143,74 +145,128 @@ const plateauFrom = duration * 0.4;
 let sum = 0, count = 0;
 for (let i = 0; i < force.t.length; i++) if (force.t[i] >= plateauFrom) { sum += force.v[i]; count++; }
 const plateau = sum / count;
-const tableRows = [];
-for (let t = 500; t <= duration + 1e-9; t += 500) {
-  tableRows.push(`<tr><td class="num">${(t / 1000).toFixed(1)}</td><td class="num">${sampleAt(force, t).toFixed(1)}</td>` +
-      `<td class="num">${firingUnits(t)}</td><td class="num">${recruitedBy(t)}</td></tr>`);
-}
 
-// ---- SVG -----------------------------------------------------------------------------------------
+// ---- geometria dos traços (igual nos dois idiomas) -----------------------------------------------
 const seconds = Math.round(duration / 1000);
-const marks = [], axes = [];
-function frame(key, title, unit) {
-  const p = P[key];
-  axes.push(`<text class="ch-title" x="${ML}" y="${p.top - 9}">${title}</text>`);
-  axes.push(`<text class="ch-unit" x="${W - MR}" y="${p.top - 9}" text-anchor="end">${unit}</text>`);
-  for (let s = 0; s <= seconds; s++) {
-    axes.push(`<line class="${s === 0 ? 'ch-axis' : 'ch-grid'}" x1="${n1(xOf(s * 1000))}" x2="${n1(xOf(s * 1000))}" y1="${p.top}" y2="${p.top + p.h}"/>`);
-  }
-}
-function yTicks(key, label = v => String(v)) {
-  const p = P[key];
-  for (const v of p.ticks) {
-    const y = n1(yOf(p, v));
-    axes.push(`<line class="ch-grid" x1="${ML}" x2="${ML + PW}" y1="${y}" y2="${y}"/>`);
-    axes.push(`<text class="ch-tick" x="${ML - 8}" y="${n1(+y + 3.5)}" text-anchor="end">${label(v)}</text>`);
-  }
-}
-
-frame('vs', 'SOMA POTENTIAL OF ONE MOTONEURON (S 1)', 'mV above rest');
-yTicks('vs');
-marks.push(`<path class="ch-env" d="${envelope(vs, P.vs)}"/>`);
-
-frame('raster', 'SPIKES OF THE MOTONEURON POOL', 'motoneuron #');
 P.raster.min = 0; P.raster.max = topUnit; P.raster.ticks = [];
 for (let u = 0; u <= topUnit; u += 200) P.raster.ticks.push(u);
-yTicks('raster', v => (v === 0 ? '1' : String(v)));
-marks.push(`<image href="assets/raster-soleus.png" x="${ML}" y="${P.raster.top}" width="${PW}" height="${P.raster.h}" preserveAspectRatio="none"/>`);
-
-frame('emg', 'SURFACE EMG (WITH NOISE, 50&#8211;1000 HZ)', 'mV');
-yTicks('emg', v => (v === 0 ? '0' : v.toFixed(1).replace('-', '&#8722;')));
-marks.push(`<path class="ch-env" d="${envelope(emg, P.emg)}"/>`);
-
-frame('force', 'MUSCLE FORCE', 'N');
-yTicks('force');
+const vsPath = envelope(vs, P.vs);
+const emgPath = envelope(emg, P.emg);
 const pts = line(force, P.force);
-const path = pts.map((q, i) => (i ? 'L' : 'M') + n1(q[0]) + ' ' + n1(q[1])).join('');
+const forcePath = pts.map((q, i) => (i ? 'L' : 'M') + n1(q[0]) + ' ' + n1(q[1])).join('');
 const base = P.force.top + P.force.h;
-marks.push(`<path class="ch-wash" d="${path}L${n1(pts[pts.length - 1][0])} ${base}L${n1(pts[0][0])} ${base}Z"/>`);
-marks.push(`<path class="ch-line" d="${path}"/>`);
-axes.push(`<line class="ch-axis" x1="${ML}" x2="${ML + PW}" y1="${base}" y2="${base}"/>`);
-for (let s = 0; s <= seconds; s++) {
-  axes.push(`<text class="ch-tick" x="${n1(xOf(s * 1000))}" y="${base + 16}" text-anchor="middle">${s}</text>`);
-}
-axes.push(`<text class="ch-unit" x="${W - MR}" y="${base + 33}" text-anchor="end">time (s)</text>`);
 
 const name = esc(manifest.scenarioName);
-const types = [...new Set([...recruited].map(u => rowType(u)))].sort();
 function rowType(unit) {
   const { header, lines } = rowType.table ??= rows('tabela-motoneuronios-' + NUCLEUS);
   const iu = header.indexOf('unidade'), it = header.indexOf('tipo');
   const map = rowType.map ??= new Map(lines.map(l => { const c = l.split(','); return [+c[iu], c[it]]; }));
   return map.get(unit);
 }
-const typeText = types.length === 1 ? `all of type ${esc(types[0])}` : `of types ${esc(types.join(', '))}`;
+const types = [...new Set([...recruited].map(u => rowType(u)))].sort();
 
-const html = `      <div class="strip-head"><span><b>Recording</b> &middot; ${name}</span><span>seed ${esc(manifest.seed)} &middot; engine ${esc(manifest.engineVersion)}</span></div>
+// ---- rótulos de cada idioma -----------------------------------------------------------------------
+// Cada página do site (docs/index.html e docs/pt/index.html) recebe o mesmo desenho com estes textos.
+// "dec" é o separador decimal e "assets" o caminho da pasta de imagens vista pela página.
+const LANGS = [
+  {
+    file: 'index.html', assets: 'assets/', dec: '.',
+    recording: 'Recording', engine: 'engine',
+    svgTitle: `Simulated recording of the scenario ${name}`,
+    svgDesc: `Four stacked panels over ${seconds} seconds: the soma potential of one motoneuron, the spikes of the`
+        + ` motoneuron pool, the surface EMG and the muscle force, which rises in the first second and settles near`
+        + ` ${Math.round(plateau)} newtons. The values are in the table below the figure.`,
+    vs: ['SOMA POTENTIAL OF ONE MOTONEURON (S 1)', 'mV above rest'],
+    raster: ['SPIKES OF THE MOTONEURON POOL', 'motoneuron #'],
+    emg: ['SURFACE EMG (WITH NOISE, 50&#8211;1000 HZ)', 'mV'],
+    force: ['MUSCLE FORCE', 'N'],
+    time: 'time (s)',
+    readout: 'Move the pointer over the recording, or focus it and press the arrow keys, to read the values.',
+    caption: (typeText) => `<b>Fig. 1</b>Output of the public scenario <em>${name}</em>: 100 descending axons firing as Poisson
+        processes drive the ${poolSize} motoneurons of the soleus. ${recruited.size} of them are recruited, ${typeText}, and the
+        force settles near ${Math.round(plateau)}&nbsp;N. Nothing here is drawn by hand: the panels are the simulator&rsquo;s output for
+        seed ${esc(manifest.seed)}, and the same seed and engine version give the same figure again.`,
+    typeText: types.length === 1 ? `all of type ${esc(types[0])}` : `of types ${esc(types.join(', '))}`,
+    summary: 'Values behind the figure',
+    columns: ['Time (s)', 'Force (N)', `Units firing in the last ${WINDOW} ms`, 'Units recruited so far'],
+  },
+  {
+    file: 'pt/index.html', assets: '../assets/', dec: ',',
+    recording: 'Registro', engine: 'motor',
+    svgTitle: `Registro simulado do cenário ${name}`,
+    svgDesc: `Quatro painéis empilhados ao longo de ${seconds} segundos: o potencial do soma de um motoneurônio, os`
+        + ` disparos do núcleo de motoneurônios, o EMG de superfície e a força do músculo, que sobe no primeiro`
+        + ` segundo e se acomoda perto de ${Math.round(plateau)} newtons. Os valores estão na tabela abaixo da figura.`,
+    vs: ['POTENCIAL DO SOMA DE UM MOTONEURÔNIO (S 1)', 'mV acima do repouso'],
+    raster: ['DISPAROS DO NÚCLEO DE MOTONEURÔNIOS', 'motoneurônio nº'],
+    emg: ['EMG DE SUPERFÍCIE (COM RUÍDO, 50&#8211;1000 HZ)', 'mV'],
+    force: ['FORÇA DO MÚSCULO', 'N'],
+    time: 'tempo (s)',
+    readout: 'Passe o ponteiro sobre o registro, ou foque-o e use as setas do teclado, para ler os valores.',
+    caption: (typeText) => `<b>Fig. 1</b>Saída do cenário público <em>${name}</em>: 100 axônios descendentes disparando como
+        processos de Poisson movem os ${poolSize} motoneurônios do sóleo. ${recruited.size} deles são recrutados, ${typeText}, e a
+        força se acomoda perto de ${Math.round(plateau)}&nbsp;N. Nada aqui é desenhado à mão: os painéis são a saída do simulador para a
+        seed ${esc(manifest.seed)}, e a mesma seed com a mesma versão do motor dão a mesma figura de novo.`,
+    typeText: types.length === 1 ? `todos do tipo ${esc(types[0])}` : `dos tipos ${esc(types.join(', '))}`,
+    summary: 'Valores da figura',
+    columns: ['Tempo (s)', 'Força (N)', `Unidades com disparo nos últimos ${WINDOW} ms`, 'Unidades recrutadas até aqui'],
+  },
+];
+
+// ---- SVG e trecho HTML de um idioma ----------------------------------------------------------------
+function buildBlock(L) {
+  const dec = s => (L.dec === ',' ? String(s).replace('.', ',') : String(s));
+  const marks = [], axes = [];
+  function frame(key, [title, unit]) {
+    const p = P[key];
+    axes.push(`<text class="ch-title" x="${ML}" y="${p.top - 9}">${title}</text>`);
+    axes.push(`<text class="ch-unit" x="${W - MR}" y="${p.top - 9}" text-anchor="end">${unit}</text>`);
+    for (let s = 0; s <= seconds; s++) {
+      axes.push(`<line class="${s === 0 ? 'ch-axis' : 'ch-grid'}" x1="${n1(xOf(s * 1000))}" x2="${n1(xOf(s * 1000))}" y1="${p.top}" y2="${p.top + p.h}"/>`);
+    }
+  }
+  function yTicks(key, label = v => String(v)) {
+    const p = P[key];
+    for (const v of p.ticks) {
+      const y = n1(yOf(p, v));
+      axes.push(`<line class="ch-grid" x1="${ML}" x2="${ML + PW}" y1="${y}" y2="${y}"/>`);
+      axes.push(`<text class="ch-tick" x="${ML - 8}" y="${n1(+y + 3.5)}" text-anchor="end">${label(v)}</text>`);
+    }
+  }
+
+  frame('vs', L.vs);
+  yTicks('vs');
+  marks.push(`<path class="ch-env" d="${vsPath}"/>`);
+
+  frame('raster', L.raster);
+  yTicks('raster', v => (v === 0 ? '1' : String(v)));
+  marks.push(`<image href="${L.assets}raster-soleus.png" x="${ML}" y="${P.raster.top}" width="${PW}" height="${P.raster.h}" preserveAspectRatio="none"/>`);
+
+  frame('emg', L.emg);
+  yTicks('emg', v => (v === 0 ? '0' : dec(v.toFixed(1)).replace('-', '&#8722;')));
+  marks.push(`<path class="ch-env" d="${emgPath}"/>`);
+
+  frame('force', L.force);
+  yTicks('force');
+  marks.push(`<path class="ch-wash" d="${forcePath}L${n1(pts[pts.length - 1][0])} ${base}L${n1(pts[0][0])} ${base}Z"/>`);
+  marks.push(`<path class="ch-line" d="${forcePath}"/>`);
+  axes.push(`<line class="ch-axis" x1="${ML}" x2="${ML + PW}" y1="${base}" y2="${base}"/>`);
+  for (let s = 0; s <= seconds; s++) {
+    axes.push(`<text class="ch-tick" x="${n1(xOf(s * 1000))}" y="${base + 16}" text-anchor="middle">${s}</text>`);
+  }
+  axes.push(`<text class="ch-unit" x="${W - MR}" y="${base + 33}" text-anchor="end">${L.time}</text>`);
+
+  const body = [];
+  for (let t = 500; t <= duration + 1e-9; t += 500) {
+    body.push(`<tr><td class="num">${dec((t / 1000).toFixed(1))}</td><td class="num">${dec(sampleAt(force, t).toFixed(1))}</td>`
+        + `<td class="num">${firingUnits(t)}</td><td class="num">${recruitedBy(t)}</td></tr>`);
+  }
+
+  return `      <div class="strip-head"><span><b>${L.recording}</b> &middot; ${name}</span><span>seed ${esc(manifest.seed)} &middot; ${L.engine} ${esc(manifest.engineVersion)}</span></div>
       <div class="scroll-x">
         <svg viewBox="0 0 ${W} ${H}" role="img" tabindex="0" aria-labelledby="rec-title rec-desc">
-          <title id="rec-title">Simulated recording of the scenario ${name}</title>
-          <desc id="rec-desc">Four stacked panels over ${seconds} seconds: the soma potential of one motoneuron, the spikes of the motoneuron pool, the surface EMG and the muscle force, which rises in the first second and settles near ${Math.round(plateau)} newtons. The values are in the table below the figure.</desc>
+          <title id="rec-title">${L.svgTitle}</title>
+          <desc id="rec-desc">${L.svgDesc}</desc>
           ${axes.join('\n          ')}
           <g class="reveal">
           ${marks.join('\n          ')}
@@ -218,30 +274,33 @@ const html = `      <div class="strip-head"><span><b>Recording</b> &middot; ${na
           <line class="xh" x1="${ML}" x2="${ML}" y1="${P.vs.top}" y2="${base}" style="display:none"/>
         </svg>
       </div>
-      <p class="readout">Move the pointer over the recording, or focus it and press the arrow keys, to read the values.</p>
-      <figcaption><b>Fig. 1</b>Output of the public scenario <em>${name}</em>: 100 descending axons firing as Poisson
-        processes drive the ${poolSize} motoneurons of the soleus. ${recruited.size} of them are recruited, ${typeText}, and the
-        force settles near ${Math.round(plateau)}&nbsp;N. Nothing here is drawn by hand: the panels are the simulator&rsquo;s output for
-        seed ${esc(manifest.seed)}, and the same seed and engine version give the same figure again.</figcaption>
+      <p class="readout">${L.readout}</p>
+      <figcaption>${L.caption(L.typeText)}</figcaption>
       <details class="data">
-        <summary>Values behind the figure</summary>
+        <summary>${L.summary}</summary>
         <div class="tbl-wrap" style="max-width:34rem">
           <table>
-            <thead><tr><th class="num">Time (s)</th><th class="num">Force (N)</th><th class="num">Units firing in the last ${WINDOW} ms</th><th class="num">Units recruited so far</th></tr></thead>
+            <thead><tr>${L.columns.map(c => `<th class="num">${c}</th>`).join('')}</tr></thead>
             <tbody>
-              ${tableRows.join('\n              ')}
+              ${body.join('\n              ')}
             </tbody>
           </table>
         </div>
       </details>
       <script type="application/json" id="rec-data">${JSON.stringify(hover)}</script>`;
-
-const index = join(docs, 'index.html');
-const page = readFileSync(index, 'utf8');
-const block = /(<!-- recording:begin[^>]*-->)[\s\S]*?(<!-- recording:end -->)/;
-if (!block.test(page)) {
-  console.error('docs/index.html não tem os comentários recording:begin e recording:end');
-  process.exit(1);
 }
-writeFileSync(index, page.replace(block, (_, a, b) => a + '\n' + html + '\n' + b));
-console.log(`figura gravada: ${recruited.size} de ${poolSize} motoneurônios recrutados, platô de ${plateau.toFixed(1)} N, ${spikes.length} disparos`);
+
+// ---- grava as duas páginas ------------------------------------------------------------------------
+const block = /(<!-- recording:begin[^>]*-->)[\s\S]*?(<!-- recording:end -->)/;
+for (const L of LANGS) {
+  const file = join(docs, L.file);
+  const page = readFileSync(file, 'utf8');
+  if (!block.test(page)) {
+    console.error(`docs/${L.file} não tem os comentários recording:begin e recording:end`);
+    process.exit(1);
+  }
+  const html = buildBlock(L);
+  writeFileSync(file, page.replace(block, (_, a, b) => a + '\n' + html + '\n' + b));
+  console.log(`docs/${L.file}: figura gravada`);
+}
+console.log(`${recruited.size} de ${poolSize} motoneurônios recrutados, platô de ${plateau.toFixed(1)} N, ${spikes.length} disparos`);

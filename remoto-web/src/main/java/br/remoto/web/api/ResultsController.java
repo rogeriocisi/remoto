@@ -3,6 +3,7 @@ package br.remoto.web.api;
 import br.remoto.core.scenario.Scenario;
 import br.remoto.storage.run.RunManifest;
 import br.remoto.storage.run.RunRepository;
+import br.remoto.web.i18n.Messages;
 import br.remoto.web.results.ResultCatalog;
 import br.remoto.web.results.ResultMenu;
 import br.remoto.web.results.ResultViews;
@@ -138,6 +139,6 @@ class ResultsController {
     }
 
     private RunManifest find(Caller caller, String id) {
-        return runs.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException("execução não encontrada"));
+        return runs.find(caller.id(), id).orElseThrow(() -> new NoSuchElementException(Messages.msg("run.notFound")));
     }
 }
