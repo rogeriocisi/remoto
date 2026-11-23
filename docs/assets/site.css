@@ -249,6 +249,10 @@ pre.term .c { color: #8fa0b1; }
 .refs li { counter-increment: r; position: relative; padding: .9rem 0 .9rem 3rem; border-top: 1px solid var(--rule); line-height: 1.5; }
 .refs li::before { content: "[" counter(r) "]"; position: absolute; left: 0; top: 1rem; font: 500 .8rem/1.5 var(--mono); color: var(--ink-3); }
 .refs a.t { font-weight: 600; color: var(--ink); text-decoration-color: var(--rule); }
+/* trabalho sem DOI: o título não é link */
+.refs b.t { font-weight: 600; }
+/* grupos seguintes continuam a numeração do primeiro */
+.refs.segue { counter-reset: none; }
 .refs a.t:hover { color: var(--blue-deep); text-decoration-color: var(--blue); }
 .refs span { display: block; font-size: .93rem; color: var(--ink-2); }
 .links { list-style: none; padding: 0; margin: 1.6rem 0 0; display: flex; flex-wrap: wrap; gap: .7rem; }
