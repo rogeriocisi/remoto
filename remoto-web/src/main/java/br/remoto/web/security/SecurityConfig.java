@@ -8,7 +8,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Sem login e sem contas: cada sessão do navegador tem sua área ({@link CallerResolver}). O Spring
+ * Sem login e sem contas: cada navegador tem sua área ({@link CallerResolver}). O Spring
  * Security fica para a proteção contra CSRF e os cabeçalhos de segurança.
  */
 @Configuration(proxyBeanMethods = false)

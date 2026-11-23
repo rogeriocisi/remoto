@@ -13,7 +13,7 @@ spring:
 server:
   servlet:
     session:
-      timeout: 12h            # sem login: a área da sessão some depois deste tempo sem uso
+      timeout: 12h            # a área do navegador não depende da sessão (ver remoto.retention.area-days)
   # atrás de um proxy reverso (nginx/Apache do LEB), descomente:
   # forward-headers-strategy: native
 
@@ -29,7 +29,7 @@ remoto:
     threads-per-run: 0       # threads do motor original por simulação; 0 = núcleos ÷ slots
   retention:
     run-days: 30             # execuções terminadas e não fixadas
-    session-hours: 24        # áreas de sessão abandonadas (ex.: depois de um reinício)
+    area-days: 30            # áreas sem uso (o cookie que as identifica dura o mesmo)
 
 management:
   endpoints:

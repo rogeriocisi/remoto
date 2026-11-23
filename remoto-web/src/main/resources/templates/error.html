@@ -25,13 +25,12 @@
 
     <th:block th:case="404">
       <h1>Não encontrado</h1>
-      <p>O endereço não existe, ou o cenário ou a simulação não está mais nesta sessão. Sem login,
-        cada sessão do navegador tem a sua área, apagada depois de um tempo sem uso.</p>
+      <p>O endereço não existe, ou o cenário ou a simulação não está mais na sua área. Sem login,
+        cada navegador tem a sua área, apagada depois de um tempo sem uso.</p>
     </th:block>
     <th:block th:case="403">
       <h1>A página ficou desatualizada</h1>
-      <p>O token de segurança da página não vale mais (por exemplo, porque a sessão expirou).
-        Volte à página inicial e tente de novo.</p>
+      <p>O token de segurança da página não vale mais. Volte à página inicial e tente de novo.</p>
     </th:block>
     <th:block th:case="400">
       <h1>Pedido inválido</h1>
@@ -44,7 +43,7 @@
     <th:block th:case="*">
       <h1>Algo deu errado</h1>
       <p>O servidor não conseguiu concluir o pedido. Tente de novo; se o erro continuar, recarregue
-        a página inicial. Os seus cenários e simulações continuam na sessão.</p>
+        a página inicial. Os seus cenários e simulações continuam guardados.</p>
     </th:block>
 
     <p th:if="${message != null and !#strings.isEmpty(message) and status != 500}" class="detalhe-erro"

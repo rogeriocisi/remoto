@@ -18,7 +18,7 @@ código original continuam no histórico e no repositório pai.
 | Linguagem | Java 25 LTS (records, enums, `RandomGenerator`) |
 | Build | Maven multimódulo + Maven Wrapper (`./mvnw`) |
 | Web | Spring Boot 4.1 (Spring MVC, Spring Security 7, Actuator) |
-| Login | nenhum: cada sessão do navegador tem sua área; os cenários entram e saem como arquivos (.json, .zip) |
+| Login | nenhum: cada navegador tem sua área (cookie de 30 dias); os cenários entram e saem como arquivos (.json, .zip) |
 | Interface | Thymeleaf + htmx 2 + uPlot (gráficos interativos) |
 | Figuras | JFreeChart 1.5 (PNG para artigos) |
 | Persistência | Arquivos: JSON (cenários, manifestos) e CSV.gz (resultados) — **sem banco** |
@@ -121,16 +121,20 @@ curl -s http://localhost:8080/actuator/health
 
 ## Sem login e sem banco
 
-### Sessões
+### Áreas e o cookie
 
-Não há contas nem login. Cada sessão do navegador ganha uma área própria, com um `UserId`
-aleatório (`g-` + 32 dígitos hexadecimais) guardado na sessão; tudo o que a pessoa faz (cópias
-de cenários, edições, simulações) fica nessa área. A sessão dura **12 h sem uso**
-(`server.servlet.session.timeout`); quando termina, as simulações dela são canceladas e a área é
-apagada. Uma tarefa diária apaga também as áreas abandonadas há mais de 24 h, como as que um
-reinício do servidor deixou para trás (`remoto.retention.session-hours`).
+Não há contas nem login. Cada navegador ganha uma área própria, identificada por um id aleatório
+(`g-` + 32 dígitos hexadecimais) no cookie `remoto-area` (HttpOnly, SameSite=Lax e Secure sob
+HTTPS), que dura **30 dias** e se renova a cada visita; tudo o que a pessoa faz (cópias de
+cenários, edições, simulações) fica nessa área. Por isso cenários e simulações sobrevivem a
+reinícios e quedas do servidor e a fechar o navegador. A área só é apagada depois de 30 dias sem
+uso, pela tarefa diária de limpeza (`remoto.retention.area-days`), ou quando a pessoa pede
+(`DELETE /api/me`). Como só ler não muda a data dos arquivos, cada área marca o último uso num
+arquivo oculto (`.ultimo-uso`), no máximo uma vez por hora. O id também fica na sessão, para quem
+bloqueia cookies continuar com a mesma área enquanto ela durar. Um cookie adulterado não alcança
+outra pasta: o `UserId` só aceita o formato que ele mesmo gera.
 
-Para guardar o trabalho, a pessoa **exporta**: cada cenário em JSON (o mesmo arquivo que a CLI
+Para guardar o trabalho por mais tempo, ou levá-lo a outro computador ou navegador, a pessoa **exporta**: cada cenário em JSON (o mesmo arquivo que a CLI
 roda), todos os cenários num .zip, uma simulação inteira num .zip (configuração, manifesto e
 todos os resultados em CSV). Na próxima visita, ela **importa** os
 .json, ou o .zip com eles, para "Meus cenários". A importação confere cada cenário como o editor
@@ -163,7 +167,7 @@ data/
 | Isolamento | todo acesso passa pelo `UserId` do `Caller`; outra sessão recebe `404` |
 | Recuperação após queda | ao subir, execuções `QUEUED`/`RUNNING` viram `FAILED` ("interrompida") |
 | Levar os dados | exportar cada cenário (ou todos num `.zip`) e cada simulação; pela API, também a área inteira (`/api/me/export`) |
-| Limpeza | fim da sessão; tarefa diária para áreas abandonadas e execuções antigas não fixadas |
+| Limpeza | tarefa diária: áreas sem uso há 30 dias e execuções antigas não fixadas |
 
 ### Várias sessões simulando ao mesmo tempo
 
@@ -643,7 +647,7 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
 7. ~~Sem login, com exportação e importação de cenários.~~ Feito: ver
    [Sem login e sem banco](#sem-login-e-sem-banco). Saíram o login OIDC (ORCID, GitHub), os
    usuários de teste, os perfis, a exclusão de conta e os links de compartilhamento (o arquivo
-   exportado faz esse papel); a sessão passou de 2 h para 12 h sem uso; e entraram o limite de
+   exportado faz esse papel); e entraram o limite de
    simulações por endereço de origem e o teto da fila.
 8. ~~Ordem do processo gama dos tratos.~~ Feito: o editor grava o *Std* dos tratos no
    `settings` (`tractStd`), e um trato gama com ordem dispara; ver
@@ -651,5 +655,8 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
 9. ~~Mais configurações do banco antigo.~~ Feito: as que tinham tratos gama (25 a 28, 32, 34 a
    36, 38, 39, 41 e 44) foram publicadas com Poisson, e as *Position Task* com o tornozelo em
    tarefa de posição; ver [Cenários públicos](#cenários-públicos).
-10. **Ordens do processo gama dos trabalhos originais.** Se as ordens usadas nas publicações
+10. ~~Dados que sobrevivem a reinícios.~~ Feito: a área deixou de depender da sessão (que ficava
+    só na memória do servidor e, ao parar, apagava as áreas) e passou a ser identificada por um
+    cookie de 30 dias; ver [Áreas e o cookie](#áreas-e-o-cookie).
+11. **Ordens do processo gama dos trabalhos originais.** Se as ordens usadas nas publicações
     forem recuperadas, os cenários com tratos gama podem voltar a ser gama, com o `tractStd`.

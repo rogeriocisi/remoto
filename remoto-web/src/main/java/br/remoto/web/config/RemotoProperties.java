@@ -44,9 +44,9 @@ public record RemotoProperties(
 
     /**
      * @param runDays    execuções terminadas (e não fixadas) são apagadas depois deste prazo
-     * @param sessionHours áreas de sessão abandonadas (que o fim da sessão não apagou, por
-     *                     exemplo num reinício do servidor) são apagadas depois deste prazo
+     * @param areaDays   áreas sem uso (cenários e simulações de um navegador) são apagadas depois
+     *                   deste prazo; o cookie que identifica a área dura o mesmo
      */
-    public record Retention(@DefaultValue("30") int runDays, @DefaultValue("24") int sessionHours) {
+    public record Retention(@DefaultValue("30") int runDays, @DefaultValue("30") int areaDays) {
     }
 }

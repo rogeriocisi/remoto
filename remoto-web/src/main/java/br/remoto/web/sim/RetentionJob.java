@@ -1,8 +1,7 @@
 package br.remoto.web.sim;
 
-import br.remoto.storage.DataLayout;
-import br.remoto.storage.StorageFiles;
 import br.remoto.storage.UserId;
+import br.remoto.storage.area.AreaRepository;
 import br.remoto.storage.run.RunManifest;
 import br.remoto.storage.run.RunRepository;
 import br.remoto.storage.run.RunStatus;
@@ -12,26 +11,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.EnumSet;
 
-/** Limpeza diária: execuções antigas não fixadas e áreas de sessão abandonadas. */
+/** Limpeza diária: execuções antigas não fixadas e áreas sem uso. */
 @Component
 class RetentionJob {
 
     private static final Logger log = LoggerFactory.getLogger(RetentionJob.class);
 
     private final RunRepository runs;
-    private final DataLayout layout;
+    private final AreaRepository areas;
     private final RemotoProperties props;
 
-    RetentionJob(RunRepository runs, DataLayout layout, RemotoProperties props) {
+    RetentionJob(RunRepository runs, AreaRepository areas, RemotoProperties props) {
         this.runs = runs;
-        this.layout = layout;
+        this.areas = areas;
         this.props = props;
     }
 
@@ -46,22 +42,7 @@ class RetentionJob {
             }
         }
 
-        Instant areaLimit = Instant.now().minus(Duration.ofHours(props.retention().sessionHours()));
-        int areasRemoved = 0;
-        for (Path dir : StorageFiles.subdirectories(layout.sessionsDir())) {
-            if (lastModified(dir).isBefore(areaLimit)) {
-                StorageFiles.deleteRecursively(dir);
-                areasRemoved++;
-            }
-        }
-        log.info("Retenção: {} execuções antigas e {} áreas de sessão abandonadas removidas", runsRemoved, areasRemoved);
-    }
-
-    private static Instant lastModified(Path dir) {
-        try {
-            return Files.getLastModifiedTime(dir).toInstant();
-        } catch (IOException e) {
-            return Instant.now();
-        }
+        int areasRemoved = areas.deleteUnusedSince(Instant.now().minus(Duration.ofDays(props.retention().areaDays())));
+        log.info("Retenção: {} execuções antigas e {} áreas sem uso removidas", runsRemoved, areasRemoved);
     }
 }

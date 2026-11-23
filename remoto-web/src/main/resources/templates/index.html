@@ -28,8 +28,8 @@
 </header>
 
 <script th:inline="javascript">
-  console.info("ReMoto: não há login. Seus cenários e simulações ficam nesta sessão do navegador e são apagados depois de "
-      + /*[[${sessionHours}]]*/ 12 + " h sem uso; exporte os cenários (e baixe as simulações) para guardá-los.");
+  console.info("ReMoto: não há login. Seus cenários e simulações ficam guardados neste navegador e são apagados depois de "
+      + /*[[${areaDays}]]*/ 30 + " dias sem uso; exporte-os para guardá-los por mais tempo ou levá-los a outro computador.");
 </script>
 
 <main class="area">
@@ -68,8 +68,10 @@
           cenário.</li>
         <li>Para rever uma simulação, clique na linha dela em <strong>Minhas simulações</strong>.</li>
       </ol>
-      <p class="notas">Não há login: cenários e simulações ficam nesta sessão do navegador. Use
-        <strong>Exportar</strong> para guardá-los e <strong>Importar…</strong> para trazê-los de volta.</p>
+      <p class="notas">Não há login: cenários e simulações ficam guardados neste navegador e são apagados
+        depois de <th:block th:text="${areaDays}">30</th:block> dias sem uso. Use <strong>Exportar</strong>
+        para guardá-los por mais tempo ou levá-los a outro computador, e <strong>Importar…</strong> para
+        trazê-los de volta.</p>
       <p class="notas">Os modelos e o simulador estão descritos nas
         <a th:href="@{/publicacoes}">publicações sobre o ReMoto</a>.</p>
     </div>

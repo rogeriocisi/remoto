@@ -4,7 +4,8 @@ import br.remoto.storage.area.AreaRepository;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.SimulationService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
+import br.remoto.web.security.CallerResolver;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-/** A área da sessão: quanto ocupa, todos os arquivos num .zip e apagar tudo agora. */
+/** A área do navegador: quanto ocupa, todos os arquivos num .zip e apagar tudo agora. */
 @RestController
 @RequestMapping("/api/me")
 class AreaController {
@@ -43,15 +44,12 @@ class AreaController {
                 .body(body);
     }
 
-    /** Cancela as simulações, apaga a área e encerra a sessão, sem esperar ela expirar. */
+    /** Cancela as simulações, apaga a área e a esquece neste navegador, sem esperar a limpeza. */
     @DeleteMapping
-    ResponseEntity<Void> delete(Caller caller, HttpServletRequest request) {
+    ResponseEntity<Void> delete(Caller caller, HttpServletRequest request, HttpServletResponse response) {
         simulations.cancelAll(caller.id());
         areas.delete(caller.id());
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+        CallerResolver.clear(request, response);
         return ResponseEntity.noContent().build();
     }
 }

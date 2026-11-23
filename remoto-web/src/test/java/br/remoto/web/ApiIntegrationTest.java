@@ -237,13 +237,41 @@ class ApiIntegrationTest {
         mvc.perform(get("/api/scenarios").session(session("ana"))).andExpect(jsonPath("$", hasSize(0)));
     }
 
+    /**
+     * A área é do navegador, pelo cookie de 30 dias: sobrevive a uma sessão nova (o que acontece
+     * depois de um reinício do servidor ou ao fechar o navegador).
+     */
+    @Test
+    void areaSobreviveASessaoPeloCookie() throws Exception {
+        var first = mvc.perform(post("/api/scenarios").session(new MockHttpSession()).with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON).content(SCENARIO))
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("remoto-area=g-")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("Max-Age=2592000")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("HttpOnly")))
+                .andExpect(header().string(HttpHeaders.SET_COOKIE, containsString("SameSite=Lax")))
+                .andReturn().getResponse();
+        jakarta.servlet.http.Cookie area = first.getCookie("remoto-area");
+
+        mvc.perform(get("/api/scenarios").session(new MockHttpSession()).cookie(area))
+                .andExpect(jsonPath("$", hasSize(1)));
+        mvc.perform(get("/api/scenarios").session(new MockHttpSession()))
+                .andExpect(jsonPath("$", hasSize(0)));
+        // um cookie adulterado não dá acesso a nada: vira uma área nova
+        mvc.perform(get("/api/scenarios").cookie(new jakarta.servlet.http.Cookie("remoto-area", "../../etc")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
     @Test
     void semLoginASessaoBaixaEApagaSuaArea() throws Exception {
         createScenarioAs("ana");
         byte[] zip = download(get("/api/me/export").session(session("ana")));
         assertThat(zipEntries(zip)).anyMatch(e -> e.startsWith("scenarios/"));
 
-        mvc.perform(delete("/api/me").session(session("ana")).with(csrf())).andExpect(status().isNoContent());
+        mvc.perform(delete("/api/me").session(session("ana")).with(csrf()))
+                .andExpect(status().isNoContent())
+                .andExpect(header().stringValues(HttpHeaders.SET_COOKIE, hasItem(containsString("Max-Age=0"))));
         assertThat(session("ana").isInvalid()).isTrue();
     }
 

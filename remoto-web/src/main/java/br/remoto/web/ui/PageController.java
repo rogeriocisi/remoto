@@ -47,13 +47,13 @@ class PageController {
     private final SimulationService simulations;
     private final ScenarioSources sources;
     private final ScenarioFiles files;
-    private final long sessionHours;
+    private final int areaDays;
 
     PageController(PublicScenarioCatalog catalog, ScenarioRepository scenarios, RunRepository runs,
                    SimulationService simulations, ScenarioSources sources, ScenarioFiles files,
-                   @Value("${server.servlet.session.timeout:12h}") Duration sessionTimeout) {
+                   @Value("${remoto.retention.area-days:30}") int areaDays) {
         this.files = files;
-        this.sessionHours = sessionTimeout.toHours();
+        this.areaDays = areaDays;
         this.catalog = catalog;
         this.scenarios = scenarios;
         this.runs = runs;
@@ -63,7 +63,7 @@ class PageController {
 
     @GetMapping("/")
     String index(Caller caller, Model model) {
-        model.addAttribute("sessionHours", sessionHours);
+        model.addAttribute("areaDays", areaDays);
         return "index";
     }
 
