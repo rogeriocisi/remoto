@@ -3,14 +3,15 @@ package br.remoto.core.model.stimulus;
 import br.remoto.core.model.signal.Modulation;
 
 /**
- * Estimulação elétrica de um nervo: pulsos de {@link #PULSE_WIDTH} ms entre {@code tini} e
+ * Estimulação elétrica de um nervo: pulsos de {@code pulseWidth} ms ({@link #PULSE_WIDTH} no
+ * original, que não deixava mudar) entre {@code tini} e
  * {@code tfin}, com o período modulado por um sinal, e opcionalmente um segundo trem de pulsos
  * (pareado) que começa {@code delayPaired} ms depois. A intensidade de cada passo vai para os
  * axônios dos motoneurônios e das fibras aferentes do nervo.
  *
  * <p>Fiel ao ReMoto original: o sinal soma à frequência (o período é {@code 1000/(freq + sinal)});
  * o trem principal avança um período sempre que o tempo se afasta do início do último pulso por
- * um período ou mais, e o pulso dura enquanto o tempo está a até {@link #PULSE_WIDTH} desse
+ * um período ou mais, e o pulso dura enquanto o tempo está a até {@code pulseWidth} desse
  * início, inclusive; o trem pareado é calculado pelos ciclos desde o seu próprio início.
  */
 public final class NerveStimulation {
@@ -31,6 +32,7 @@ public final class NerveStimulation {
     private final double delayPaired;
     private final double ampPaired;
     private final double freqPaired;
+    private final double pulseWidth;
 
     private double start;
     private double period;
@@ -45,6 +47,16 @@ public final class NerveStimulation {
      */
     public NerveStimulation(double tini, double tfin, double amp, double freq, Modulation signal,
             boolean paired, double delayPaired, double ampPaired, double freqPaired, double step) {
+        this(tini, tfin, amp, freq, signal, paired, delayPaired, ampPaired, freqPaired, step, PULSE_WIDTH);
+    }
+
+    /**
+     * @param pulseWidth duração de cada pulso (ms), maior que zero; o original usava
+     *     {@link #PULSE_WIDTH}
+     */
+    public NerveStimulation(double tini, double tfin, double amp, double freq, Modulation signal,
+            boolean paired, double delayPaired, double ampPaired, double freqPaired, double step,
+            double pulseWidth) {
         if (signal == null) {
             throw new IllegalArgumentException("o sinal do nervo é obrigatório");
         }
@@ -66,6 +78,10 @@ public final class NerveStimulation {
         this.delayPaired = delayPaired;
         this.ampPaired = ampPaired;
         this.freqPaired = freqPaired;
+        if (!(pulseWidth > 0)) {
+            throw new IllegalArgumentException("a duração do pulso deve ser maior que zero: " + pulseWidth);
+        }
+        this.pulseWidth = pulseWidth;
         this.start = tini;
     }
 
@@ -83,7 +99,7 @@ public final class NerveStimulation {
             start = start + period;
         }
 
-        if (Math.abs(t - start) <= PULSE_WIDTH) {
+        if (Math.abs(t - start) <= pulseWidth) {
             intensity = amp;
         }
 
@@ -102,7 +118,7 @@ public final class NerveStimulation {
         double periodPaired = 1000.0 / freqPaired;
         int cycle = (int) ((t - tIniPaired) / periodPaired);
         double startPaired = tIniPaired + cycle * periodPaired;
-        double finish = startPaired + PULSE_WIDTH;
+        double finish = startPaired + pulseWidth;
 
         if (t > startPaired && t < finish + Modulation.T_TOLERANCE) {
             intensity += ampPaired;
@@ -122,6 +138,11 @@ public final class NerveStimulation {
     /** Frequência dos pulsos (Hz), já limitada pelo passo. */
     public double freq() {
         return freq;
+    }
+
+    /** Duração de cada pulso (ms). */
+    public double pulseWidth() {
+        return pulseWidth;
     }
 
     /** Frequência do trem pareado (Hz). */

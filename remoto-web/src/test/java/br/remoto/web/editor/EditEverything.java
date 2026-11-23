@@ -57,9 +57,12 @@ final class EditEverything {
                                 if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")) {
                                     continue; // campo novo, que o DAO original não gravava: a referência é anterior a ele
                                 }
-                                if ((item.id().equals("joint") || item.id().equals("muscleSpindle"))
-                                        && cell.name().startsWith("p1.")) {
-                                    continue; // sinais no tempo (ângulo imposto, fusimotor): também posteriores à referência
+                                if ((item.id().equals("joint") || item.id().equals("muscleSpindle")
+                                        || item.id().equals("sensory")) && cell.name().startsWith("p1.")
+                                        || item.id().equals("stimulation") && cell.name().startsWith("p2.")) {
+                                    // partes novas, posteriores à referência: sinais no tempo (ângulo imposto,
+                                    // fusimotor), ordem gama dos aferentes, pulso e limiar do estímulo do nervo
+                                    continue;
                                 }
                                 if (cell.name().endsWith(".std")) {
                                     // o Std dos tratos existia na referência, mas o DAO original o perdia ao

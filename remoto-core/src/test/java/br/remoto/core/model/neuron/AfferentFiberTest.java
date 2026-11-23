@@ -126,4 +126,66 @@ class AfferentFiberTest {
         run(fiber, 2_000, t -> 0);
         assertThat(fiber.axonSpikes()).isEmpty();
     }
+    @Test
+    void comOrdemEscolhidaOResetSorteiaOLimiarDoTipoComEla() {
+        Rng.seed(11);
+        AfferentFiber fiber = new AfferentFiber(Kind.IB, SETTINGS, delivered::add, 4);
+        fiber.reset();
+        Random same = new Random(11);
+        for (int i = 0; i < 25 + 4 + 400; i++) { // os outros dois sorteios continuam os do original
+            same.nextDouble();
+        }
+        assertThat(Rng.random()).isEqualTo(same.nextDouble());
+        assertThat(fiber.gammaOrder()).isEqualTo(4);
+    }
+
+    @Test
+    void ordemZeroEhADoOriginal() {
+        Rng.seed(5);
+        AfferentFiber original = fiber(Kind.II);
+        original.setFiringRate(() -> 50);
+        run(original, 2_000, t -> 0);
+
+        Rng.seed(5);
+        AfferentFiber zero = new AfferentFiber(Kind.II, SETTINGS, t -> { }, 0);
+        zero.setAxonThreshold(10);
+        zero.setLatency(60, 0.6, 0.12);
+        zero.reset();
+        zero.setFiringRate(() -> 50);
+        run(zero, 2_000, t -> 0);
+
+        assertThat(zero.axonSpikes()).isEqualTo(original.axonSpikes()).isNotEmpty();
+    }
+
+    /** Com a taxa constante, a ordem maior deixa os intervalos mais regulares. */
+    @Test
+    void ordemMaiorDeixaODisparoMaisRegular() {
+        double irregular = cv(1);
+        double regular = cv(100);
+        assertThat(irregular).isGreaterThan(0.6);
+        assertThat(regular).isLessThan(0.15);
+    }
+
+    private double cv(int order) {
+        AfferentFiber fiber = new AfferentFiber(Kind.IA, SETTINGS, t -> { }, order);
+        fiber.setAxonThreshold(10);
+        fiber.setLatency(60, 0.6, 0.12);
+        fiber.reset();
+        fiber.setFiringRate(() -> 50);
+        run(fiber, 20_000, t -> 0);
+        double[] spikes = fiber.axonSpikes();
+        double[] isi = new double[spikes.length - 1];
+        for (int i = 1; i < spikes.length; i++) {
+            isi[i - 1] = spikes[i] - spikes[i - 1];
+        }
+        double mean = java.util.Arrays.stream(isi).average().orElseThrow();
+        double var = java.util.Arrays.stream(isi).map(x -> (x - mean) * (x - mean)).sum() / (isi.length - 1);
+        return Math.sqrt(var) / mean;
+    }
+
+    @Test
+    void ordemNegativaEhRecusada() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> new AfferentFiber(Kind.IA, SETTINGS, t -> { }, -1))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

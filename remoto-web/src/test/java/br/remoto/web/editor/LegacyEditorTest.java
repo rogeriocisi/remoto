@@ -297,6 +297,66 @@ class LegacyEditorTest {
         assertThat(value(reopened.view("biomechanicalElements", Map.of()), "Joint model")).isEqualTo(ReMoto.imposedAngle);
     }
 
+    /**
+     * O pulso e o limiar do estímulo do nervo (tela Nerve Stimulation) e a ordem gama dos aferentes
+     * (tela das fibras sensoriais), que o site antigo não tinha: ficam no settings e voltam ao reabrir;
+     * um valor recusado vira erro do campo e não muda nada.
+     */
+    @Test
+    void pulsoLimiarEOrdemGamaFicamGravados() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView stimulation = editor.view("stimulation", Map.of());
+        Map<String, String> form = fullForm(stimulation);
+        form.put(listCell(stimulation, 2, "PTN", "Pulse width").name(), "0.5");
+        form.put(listCell(stimulation, 2, "PTN", "Axon threshold").name(), "charge");
+        form.put(listCell(stimulation, 2, "PTN", "Time constant, sensory axons").name(), "0.7");
+        assertThat(editor.apply("stimulation", Map.of(), form)).isEmpty();
+
+        ScreenView sensory = editor.view("sensory", Map.of("pool", "SOL"));
+        ScreenView.Section orders = sensory.sections().get(1);
+        String iaOrder = row(sensory, 1, "Gamma order").cells().get(orders.headers().indexOf("Ia")).name();
+        assertThat(editor.apply("sensory", Map.of("pool", "SOL"), Map.of(iaOrder, "4"))).isEmpty();
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(saved.settings().get("afferentGammaOrder")).isEqualTo(Map.of("SOL:Ia", 4));
+        Map<?, ?> ptn = (Map<?, ?>) ((Map<?, ?>) saved.settings().get("nerveStimulus")).get("PTN");
+        assertThat(ptn.get("pulseWidth")).isEqualTo(0.5);
+        assertThat(ptn.get("thresholdModel")).isEqualTo("charge");
+        assertThat(ptn.get("tauSensory")).isEqualTo(0.7);
+        assertThat(((Map<?, ?>) saved.settings().get("nerveStimulus")).containsKey("CPN")).isFalse();
+
+        LegacyEditor reopened = LegacyEditor.open(saved, 5000, 0.05);
+        ScreenView stimulation2 = reopened.view("stimulation", Map.of());
+        assertThat(listCell(stimulation2, 2, "PTN", "Pulse width").value()).isEqualTo("0.5");
+        assertThat(listCell(stimulation2, 2, "PTN", "Axon threshold").value()).isEqualTo("charge");
+        assertThat(listCell(stimulation2, 2, "CPN", "Axon threshold").value()).isEqualTo("current");
+        ScreenView sensory2 = reopened.view("sensory", Map.of("pool", "SOL"));
+        assertThat(row(sensory2, 1, "Gamma order").cells().get(orders.headers().indexOf("Ia")).value()).isEqualTo("4");
+        assertThat(row(sensory2, 1, "Gamma order").cells().get(orders.headers().indexOf("II")).value()).isEqualTo("0");
+
+        // valores recusados pelo modelo: erro do campo, e nada muda
+        List<String> errors = reopened.apply("sensory", Map.of("pool", "SOL"), Map.of(iaOrder, "-3"));
+        assertThat(errors).singleElement().asString().contains("Gamma order");
+        errors = reopened.apply("stimulation", Map.of(),
+                Map.of(listCell(stimulation2, 2, "PTN", "Pulse width").name(), "0"));
+        assertThat(errors).anyMatch(e -> e.contains("Pulse width"));
+        assertThat(row(reopened.view("sensory", Map.of("pool", "SOL")), 1, "Gamma order").cells()
+                .get(orders.headers().indexOf("Ia")).value()).isEqualTo("4");
+    }
+
+    /** A célula de uma parte em lista: a linha do item e a coluna do campo ("Start" acha "Start [ms]"). */
+    private static ScreenView.Cell listCell(ScreenView view, int section, String rowLabel, String header) {
+        List<String> headers = view.sections().get(section).headers();
+        int column = -1;
+        for (int i = 0; i < headers.size() && column < 0; i++) {
+            if (headers.get(i).equals(header) || headers.get(i).startsWith(header + " [")) {
+                column = i;
+            }
+        }
+        assertThat(column).as(header + " em " + headers).isNotNegative();
+        return row(view, section, rowLabel).cells().get(column);
+    }
+
     /** O formulário inteiro, como o navegador manda (checkbox ausente = desmarcado). */
     private static Map<String, String> fullForm(ScreenView view) {
         Map<String, String> form = new HashMap<>();
@@ -314,15 +374,7 @@ class LegacyEditorTest {
 
     /** A célula de um sinal (a segunda parte das telas Joint e Muscle Spindle). */
     private static ScreenView.Cell signal(ScreenView view, String rowLabel, String header) {
-        List<String> headers = view.sections().get(1).headers();
-        int column = -1;
-        for (int i = 0; i < headers.size() && column < 0; i++) {
-            if (headers.get(i).equals(header) || headers.get(i).startsWith(header + " [")) { // "Start [ms]"
-                column = i;
-            }
-        }
-        assertThat(column).as(header + " em " + headers).isNotNegative();
-        return row(view, 1, rowLabel).cells().get(column);
+        return listCell(view, 1, rowLabel, header);
     }
 
     private static String signalCell(ScreenView view, String rowLabel, String header) {

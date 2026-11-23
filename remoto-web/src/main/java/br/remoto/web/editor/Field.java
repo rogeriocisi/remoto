@@ -90,7 +90,12 @@ public record Field(String label, String unit, Kind kind, List<Option> options, 
             Object value = convert(raw, type, kind);
             try {
                 pd.getWriteMethod().invoke(item, value);
-            } catch (IllegalAccessException | InvocationTargetException e) {
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof IllegalArgumentException invalid) {
+                    throw invalid; // o setter recusou o valor: um erro do campo, como um número inválido
+                }
+                throw new IllegalStateException("não foi possível gravar " + name, e);
+            } catch (IllegalAccessException e) {
                 throw new IllegalStateException("não foi possível gravar " + name, e);
             }
         }

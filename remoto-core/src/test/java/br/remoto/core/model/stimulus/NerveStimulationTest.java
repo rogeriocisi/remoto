@@ -101,4 +101,28 @@ class NerveStimulationTest {
         assertThat(current.value(200)).isCloseTo(8, within(1e-12));
         assertThat(new InjectedCurrent(6, null).value(200)).isEqualTo(6);
     }
+    /** A duração do pulso escolhida: o mesmo trem, com pulsos mais curtos ou mais longos. */
+    @Test
+    void duracaoDoPulsoEscolhida() {
+        int[] onSteps = new int[3];
+        double[] widths = {NerveStimulation.PULSE_WIDTH, 0.5, 2};
+        for (int k = 0; k < widths.length; k++) {
+            NerveStimulation nerve = new NerveStimulation(10, 1000, 5, 0, NO_SIGNAL, false, 0, 0, 0, STEP, widths[k]);
+            for (int i = 0; i < 2000; i++) {
+                nerve.step(i * STEP);
+                onSteps[k] += nerve.intensity() > 0 ? 1 : 0;
+            }
+            assertThat(nerve.pulseWidth()).isEqualTo(widths[k]);
+        }
+        // de t a t + duração, inclusive (o original): 21 passos em 1 ms
+        assertThat(onSteps[0]).isEqualTo(21);
+        assertThat(onSteps[1]).isBetween(10, 11);
+        assertThat(onSteps[2]).isBetween(40, 41);
+        // o construtor antigo é o pulso de 1 ms
+        NerveStimulation original = new NerveStimulation(10, 1000, 5, 0, NO_SIGNAL, false, 0, 0, 0, STEP);
+        assertThat(original.pulseWidth()).isEqualTo(NerveStimulation.PULSE_WIDTH);
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                () -> new NerveStimulation(10, 1000, 5, 0, NO_SIGNAL, false, 0, 0, 0, STEP, 0))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

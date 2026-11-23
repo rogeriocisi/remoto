@@ -233,8 +233,8 @@ class LegacyEngineTest {
 
     /**
      * O "Reflexo de estiramento no tornozelo" de scenarios/ impõe um trapézio ao ângulo. Para caber
-     * nos 40 ms do teste, o trapézio começa em 10 ms, com rampas de 10 ms: o ângulo sobe os 5°, fica
-     * e volta, e os fusos do sóleo respondem.
+     * nos 40 ms do teste, o trapézio vai de 5 a 35 ms, com rampas de 10 ms: o ângulo sobe os 5°, fica
+     * e volta, e os fusos do tríceps sural respondem.
      */
     @Test
     @SuppressWarnings("unchecked")
@@ -248,8 +248,8 @@ class LegacyEngineTest {
         assertThat(signal.get("shape")).isEqualTo("trapezoid");
         assertThat(((Number) signal.get("amp")).doubleValue()).isEqualTo(5.0);
 
-        signal.put("tini", 10.0);
-        signal.put("tfin", 40.0);
+        signal.put("tini", 5.0);
+        signal.put("tfin", 35.0);
         signal.put("width", 10.0);
         Map<String, Object> settings = new java.util.LinkedHashMap<>(config.settings());
         settings.put("jointAngleSignal", signal);

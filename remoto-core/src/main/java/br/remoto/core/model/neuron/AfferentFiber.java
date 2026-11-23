@@ -21,6 +21,11 @@ import java.util.function.DoubleSupplier;
  *   <li>depois do primeiro disparo, a fibra II sorteia o limiar com a ordem da Ia (25), não com a
  *   sua (400).</li>
  * </ul>
+ *
+ * <p>Com uma ordem escolhida (como no ReMoto em Fortran, por tipo e músculo), a fibra usa essa
+ * ordem no seu limiar, no reset e depois de cada disparo; os outros dois sorteios do reset
+ * continuam os do original. Ordem maior deixa o disparo mais regular: o coeficiente de variação
+ * dos intervalos, com a taxa constante, é {@code 1/sqrt(ordem)}.
  */
 public final class AfferentFiber {
 
@@ -73,6 +78,8 @@ public final class AfferentFiber {
     private final Kind kind;
     private final AfferentSettings settings;
     private final Output output;
+    /** A ordem escolhida para esta fibra; 0 = as do original. */
+    private final int gammaOrder;
 
     private DoubleSupplier firingRate;
     private double axonThreshold;
@@ -90,19 +97,31 @@ public final class AfferentFiber {
     private double yInt = 0;
 
     public AfferentFiber(Kind kind, AfferentSettings settings, Output output) {
+        this(kind, settings, output, 0);
+    }
+
+    /**
+     * @param gammaOrder a ordem do processo gama do disparo pelo receptor, inteira; 0 para as do
+     *     original
+     */
+    public AfferentFiber(Kind kind, AfferentSettings settings, Output output, int gammaOrder) {
         if (kind == null || settings == null || output == null) {
             throw new IllegalArgumentException("tipo, parâmetros e saída são obrigatórios");
+        }
+        if (gammaOrder < 0) {
+            throw new IllegalArgumentException("a ordem gama deve ser 0 (a do original) ou positiva: " + gammaOrder);
         }
         this.kind = kind;
         this.settings = settings;
         this.output = output;
+        this.gammaOrder = gammaOrder;
     }
 
     /** Volta ao início da simulação: sorteia os limiares e esvazia o axônio. */
     public void reset() {
-        double thresIa = Draws.gamma(1 / GAMMA_ORDER_IA, GAMMA_ORDER_IA);
-        double thresIb = Draws.gamma(1 / GAMMA_ORDER_IB, GAMMA_ORDER_IB);
-        double thresII = Draws.gamma(1 / GAMMA_ORDER_II, GAMMA_ORDER_II);
+        double thresIa = Draws.gamma(1 / order(Kind.IA, GAMMA_ORDER_IA), order(Kind.IA, GAMMA_ORDER_IA));
+        double thresIb = Draws.gamma(1 / order(Kind.IB, GAMMA_ORDER_IB), order(Kind.IB, GAMMA_ORDER_IB));
+        double thresII = Draws.gamma(1 / order(Kind.II, GAMMA_ORDER_II), order(Kind.II, GAMMA_ORDER_II));
 
         thres = switch (kind) {
             case IA -> thresIa;
@@ -168,14 +187,28 @@ public final class AfferentFiber {
                 if (yInt >= thres) {
                     tAxonSpike = t + latencyStimulusEndPlate;
                     yInt = 0;
-                    thres = switch (kind) {
-                        case IA, II -> Draws.gamma(1 / GAMMA_ORDER_IA, GAMMA_ORDER_IA);
-                        default -> Draws.gamma(1 / GAMMA_ORDER_IB, GAMMA_ORDER_IB);
-                    };
+                    if (gammaOrder > 0) {
+                        thres = Draws.gamma(1.0 / gammaOrder, gammaOrder);
+                    } else {
+                        thres = switch (kind) {
+                            case IA, II -> Draws.gamma(1 / GAMMA_ORDER_IA, GAMMA_ORDER_IA);
+                            default -> Draws.gamma(1 / GAMMA_ORDER_IB, GAMMA_ORDER_IB);
+                        };
+                    }
                     addAxonSpike(tAxonSpike);
                 }
             }
         }
+    }
+
+    /** A ordem do sorteio de {@code type} no reset: a escolhida, se for o tipo desta fibra. */
+    private double order(Kind type, double original) {
+        return gammaOrder > 0 && type == kind ? gammaOrder : original;
+    }
+
+    /** A ordem escolhida para esta fibra; 0 = as do original. */
+    public int gammaOrder() {
+        return gammaOrder;
     }
 
     private void addAxonSpike(double t) {

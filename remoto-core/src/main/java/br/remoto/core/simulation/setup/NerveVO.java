@@ -36,6 +36,19 @@ public class NerveVO implements Serializable
 	protected double modulating_freq;
 	protected double width;
     protected double delay;
+
+	// Not stored by the original DAO (in the scenario settings, "nerveStimulus"): the pulse width
+	// and the axon threshold, by current (the original) or by charge with leak, with the
+	// strength-duration time constants (ms) of the motor and of the sensory axons
+	public static final String CURRENT_THRESHOLD = "current";
+	public static final String CHARGE_THRESHOLD = "charge";
+	public static final double DEFAULT_TAU_MOTOR = 0.45;
+	public static final double DEFAULT_TAU_SENSORY = 0.65;
+
+	protected double pulseWidth = br.remoto.core.model.stimulus.NerveStimulation.PULSE_WIDTH;
+	protected String thresholdModel = CURRENT_THRESHOLD;
+	protected double tauMotor = DEFAULT_TAU_MOTOR;
+	protected double tauSensory = DEFAULT_TAU_SENSORY;
     //----------------------------------
 
 	public NerveVO()
@@ -235,5 +248,52 @@ public class NerveVO implements Serializable
 
 	public void setCdJoint(String cdJoint) {
 		this.cdJoint = cdJoint;
+	}
+
+	public double getPulseWidth() {
+		return pulseWidth;
+	}
+
+	public void setPulseWidth(double pulseWidth) {
+		if( !(pulseWidth > 0) )
+			throw new IllegalArgumentException("the pulse width must be greater than zero");
+		this.pulseWidth = pulseWidth;
+	}
+
+	public String getThresholdModel() {
+		return thresholdModel;
+	}
+
+	public void setThresholdModel(String thresholdModel) {
+		if( !CURRENT_THRESHOLD.equals(thresholdModel) && !CHARGE_THRESHOLD.equals(thresholdModel) )
+			throw new IllegalArgumentException("unknown threshold model: " + thresholdModel);
+		this.thresholdModel = thresholdModel;
+	}
+
+	public double getTauMotor() {
+		return tauMotor;
+	}
+
+	public void setTauMotor(double tauMotor) {
+		if( !(tauMotor > 0) )
+			throw new IllegalArgumentException("the time constant must be greater than zero");
+		this.tauMotor = tauMotor;
+	}
+
+	public double getTauSensory() {
+		return tauSensory;
+	}
+
+	public void setTauSensory(double tauSensory) {
+		if( !(tauSensory > 0) )
+			throw new IllegalArgumentException("the time constant must be greater than zero");
+		this.tauSensory = tauSensory;
+	}
+
+	/** Whether the pulse and the threshold are the original ones (nothing to store in the settings). */
+	public boolean hasOriginalStimulus() {
+		return pulseWidth == br.remoto.core.model.stimulus.NerveStimulation.PULSE_WIDTH
+				&& CURRENT_THRESHOLD.equals(thresholdModel)
+				&& tauMotor == DEFAULT_TAU_MOTOR && tauSensory == DEFAULT_TAU_SENSORY;
 	}
 }

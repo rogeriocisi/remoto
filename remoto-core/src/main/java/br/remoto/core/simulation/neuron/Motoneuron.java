@@ -193,7 +193,7 @@ public class Motoneuron extends SpinalNeuron
 
 		// Verify axon spike generation
 		// Verify colision between axon and soma spikes
-		if( nerve.getIntensity() > axonThreshold &&
+		if( nerve.getMotorIntensity() > axonThreshold &&
 			t - tAxonSpike > miscellaneous.getMnAxonRefractoryPeriod() )
 		{
 			addAxonSpike(t);

@@ -29,7 +29,7 @@ public class SensoryFiber extends Neuron
 		this.fiber = new AfferentFiber(AfferentFiber.Kind.of( getType() ), misc, t -> {
 			propagateSpike(t);
 			terminalSpikeTrain.add( Double.valueOf(t) );
-		});
+		}, Math.max(0, neu.getGammaOrder()));
 
 		reset();
 	}
@@ -62,7 +62,7 @@ public class SensoryFiber extends Neuron
 			fiber.deliver(t);
 
 			// Stimulation by the nerve and firing driven by the receptor
-			fiber.generate(t, nerve.getIntensity());
+			fiber.generate(t, nerve.getSensoryIntensity());
 		}
 		catch (Exception e)
 		{

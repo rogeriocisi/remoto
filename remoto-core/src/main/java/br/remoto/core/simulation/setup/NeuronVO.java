@@ -25,6 +25,10 @@ public class NeuronVO extends NeuronProperties implements Comparable
 	protected int order;
 	protected String distribution;
 
+	// Afferent fibers: the order of the gamma process of the receptor-driven firing, not stored by
+	// the original DAO (in the scenario settings, "afferentGammaOrder"); 0 = the original (25, 30, 400)
+	protected int gammaOrder;
+
 	// Pool properties
 	protected int quantity;
 
@@ -340,6 +344,14 @@ public class NeuronVO extends NeuronProperties implements Comparable
 	}
 	public double getStd() {
 		return std;
+	}
+	public int getGammaOrder() {
+		return gammaOrder;
+	}
+	public void setGammaOrder(int gammaOrder) {
+		if( gammaOrder < 0 )
+			throw new IllegalArgumentException("the gamma order must be 0 (the original) or positive");
+		this.gammaOrder = gammaOrder;
 	}
 	public void setStd(double std) {
 		this.std = std;

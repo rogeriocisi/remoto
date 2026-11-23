@@ -341,14 +341,22 @@ public final class LegacyScreens {
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.number("Axon threshold", "mA", "axonThreshold1", "axonThreshold2"),
                         Field.number("Axon conduction velocity", "m/s", "axonVelocity1", "axonVelocity2")));
+        Part order = new Part("Receptor-driven firing (not in the original site)", Layout.MATRIX,
+                (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.AF),
+                item -> ((NeuronVO) item).getType(),
+                List.of(Field.integer("Gamma order", null, "gammaOrder")));
         return new LegacyScreen("sensory", "Parameters of the sensory fibers",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
-                List.of(part),
+                List.of(part, order),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setListNeuronTypes(items.get(0));
                 },
-                List.of());
+                List.of("Gamma order: the receptor (spindle or tendon organ) drives the fiber through a gamma"
+                        + " process of this integer order; the higher the order, the more regular the firing"
+                        + " (coefficient of variation 1/\u221Aorder at a constant rate). 0 keeps the orders of the"
+                        + " original, fixed in its code: Ia 25, Ib 30 and II 400 (the II uses 25 after its first"
+                        + " spike)."));
     }
 
     // ------------------------------------------------------------------ Biomechanical Parameters
@@ -454,7 +462,16 @@ public final class LegacyScreens {
                         Field.number("Width", null, "width")));
         Part order = confPart(null, List.of(Field.choice("Motor-unit recruitment order", "recruitmentOrderFES",
                 "linear", "Linear")));
-        return new LegacyScreen("stimulation", "Nerve Stimulation", List.of(), List.of(order, part),
+        Part pulse = new Part("Pulse and axon threshold (not in the original site)", Layout.LIST,
+                (conf, sel) -> conf.getNerves(),
+                item -> ((NerveVO) item).getCdNerve(),
+                List.of(Field.number("Pulse width", "ms", "pulseWidth"),
+                        Field.choice("Axon threshold", "thresholdModel",
+                                NerveVO.CURRENT_THRESHOLD, "By current (original)",
+                                NerveVO.CHARGE_THRESHOLD, "By charge, with leak"),
+                        Field.number("Time constant, motor axons", "ms", "tauMotor"),
+                        Field.number("Time constant, sensory axons", "ms", "tauSensory")));
+        return new LegacyScreen("stimulation", "Nerve Stimulation", List.of(), List.of(order, part, pulse),
                 (conf, sel, items) -> {
                     for (Object o : items.get(1)) {
                         NerveVO nerve = (NerveVO) o;
@@ -464,8 +481,16 @@ public final class LegacyScreens {
                     }
                     conf.setNerves(new ArrayList<>(items.get(1)));
                 },
-                List.of("Pulse width: 1 ms. A stop time after the end of the simulation extends its duration"
-                        + " (as in the original StimulationAction)."));
+                List.of("A stop time after the end of the simulation extends its duration (as in the original"
+                                + " StimulationAction).",
+                        "Pulse width: 1 ms in the original. Axon threshold by current (the original): an axon fires"
+                                + " when the intensity passes its threshold, whatever the pulse width. By charge, with"
+                                + " leak: each axon integrates the stimulus with the time constant of its kind (motor"
+                                + " or sensory) and fires when the charge passes the threshold, giving the"
+                                + " strength-duration curve: short pulses need more current, long pulses favor the"
+                                + " axons with the longer time constant (the sensory ones, hence the H reflex). The"
+                                + " thresholds of the axons keep their meaning: the current of a 1 ms pulse."
+                                + " Chronaxie = time constant \u00D7 ln 2."));
     }
 
     /** injectedCurrent.jsp / InjectedCurrentAction. */

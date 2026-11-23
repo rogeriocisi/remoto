@@ -3,6 +3,7 @@ package br.remoto.core.engine.legacy;
 import br.remoto.core.simulation.ModulatingSignal;
 import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.setup.Configuration;
+import br.remoto.core.simulation.setup.NerveVO;
 import br.remoto.core.simulation.setup.NeuronVO;
 
 import java.beans.IntrospectionException;
@@ -51,6 +52,20 @@ public final class LegacySettings {
      * gravado quando tem forma ("none" é o padrão: o comportamento do original).
      */
     public static final List<String> SIGNALS = List.of("jointAngleSignal", "gammaDynamicSignal", "gammaStaticSignal");
+
+    /**
+     * O pulso e o limiar do estímulo de cada nervo, que o site antigo não deixava mudar: nervo →
+     * {@code pulseWidth} (ms), {@code thresholdModel} ("current", o do original, ou "charge", por
+     * carga com vazamento) e as constantes de tempo {@code tauMotor} e {@code tauSensory} (ms). Só é
+     * gravado o nervo que sai do padrão (pulso de 1 ms, limiar por corrente).
+     */
+    public static final String NERVE_STIMULUS = "nerveStimulus";
+
+    /**
+     * A ordem do processo gama do disparo das fibras aferentes pelo receptor, que no original era
+     * fixa no código (Ia 25, Ib 30, II 400): "músculo:tipo" → ordem inteira. Sem valor, a do original.
+     */
+    public static final String AFFERENT_GAMMA_ORDER = "afferentGammaOrder";
 
     private static final List<String> SIGNAL_FIELDS =
             List.of("tini", "tfin", "amp", "freq", "width", "delay", "modFreq", "modFactor");
@@ -101,6 +116,32 @@ public final class LegacySettings {
                 }
             }
         }
+        if (settings.get(AFFERENT_GAMMA_ORDER) instanceof Map<?, ?> orders) {
+            for (Object o : conf.getNeuronTypes()) {
+                if (o instanceof NeuronVO neu && ReMoto.AF.equals(neu.getCategory())
+                        && orders.get(neu.getCdNucleus() + ":" + neu.getType()) != null) {
+                    neu.setGammaOrder(((Number) number(orders.get(neu.getCdNucleus() + ":" + neu.getType()))).intValue());
+                }
+            }
+        }
+        if (settings.get(NERVE_STIMULUS) instanceof Map<?, ?> nerves) {
+            for (Object o : nerves(conf)) {
+                if (o instanceof NerveVO nerve && nerves.get(nerve.getCdNerve()) instanceof Map<?, ?> values) {
+                    if (values.get("pulseWidth") != null) {
+                        nerve.setPulseWidth(((Number) number(values.get("pulseWidth"))).doubleValue());
+                    }
+                    if (values.get("thresholdModel") != null) {
+                        nerve.setThresholdModel(values.get("thresholdModel").toString());
+                    }
+                    if (values.get("tauMotor") != null) {
+                        nerve.setTauMotor(((Number) number(values.get("tauMotor"))).doubleValue());
+                    }
+                    if (values.get("tauSensory") != null) {
+                        nerve.setTauSensory(((Number) number(values.get("tauSensory"))).doubleValue());
+                    }
+                }
+            }
+        }
         if (settings.get(STORED_NEURONS) instanceof Map<?, ?> stored) {
             for (Object o : conf.getNeuronTypes()) {
                 if (o instanceof NeuronVO neu && stored.get(neu.getCdNucleus() + ":" + neu.getType()) instanceof List<?> idx) {
@@ -144,6 +185,29 @@ public final class LegacySettings {
         if (!std.isEmpty()) {
             settings.put(TRACT_STD, std);
         }
+        Map<String, Object> orders = new LinkedHashMap<>();
+        for (Object o : conf.getNeuronTypes()) {
+            if (o instanceof NeuronVO neu && ReMoto.AF.equals(neu.getCategory()) && neu.getGammaOrder() > 0) {
+                orders.put(neu.getCdNucleus() + ":" + neu.getType(), neu.getGammaOrder());
+            }
+        }
+        if (!orders.isEmpty()) {
+            settings.put(AFFERENT_GAMMA_ORDER, orders);
+        }
+        Map<String, Object> nerves = new LinkedHashMap<>();
+        for (Object o : nerves(conf)) {
+            if (o instanceof NerveVO nerve && !nerve.hasOriginalStimulus()) {
+                Map<String, Object> values = new LinkedHashMap<>();
+                values.put("pulseWidth", nerve.getPulseWidth());
+                values.put("thresholdModel", nerve.getThresholdModel());
+                values.put("tauMotor", nerve.getTauMotor());
+                values.put("tauSensory", nerve.getTauSensory());
+                nerves.put(nerve.getCdNerve(), values);
+            }
+        }
+        if (!nerves.isEmpty()) {
+            settings.put(NERVE_STIMULUS, nerves);
+        }
         for (String key : SIGNALS) {
             ModulatingSignal signal = signal(conf, key);
             if (signal != null && signal.getCdSignal() != null && !ReMoto.none.equals(signal.getCdSignal())) {
@@ -156,6 +220,10 @@ public final class LegacySettings {
             }
         }
         return settings;
+    }
+
+    private static List<?> nerves(Configuration conf) {
+        return conf.getAllNerves() == null ? List.of() : conf.getAllNerves();
     }
 
     private static ModulatingSignal signal(Configuration conf, String key) {

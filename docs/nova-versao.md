@@ -409,6 +409,8 @@ antigo**:
 | Banco original × referência | As 30 configurações do banco original (40 ms, seed = ID) batem com hashes gerados quando a configuração ainda era montada pelo `ConfigurationDAO` original lendo do HSQLDB (antes, um teste comparava os dois caminhos campo a campo) |
 | Export sem HSQLDB | O export lê o `remoto.script` direto e reproduz os cenários `remoto-*` de `scenarios/`, fora a descrição, escrita à mão nos que não tinham uma, e os tratos gama do 24 e do 42, publicados como Poisson (os três do site antigo tinham sido exportados pelo HSQLDB) |
 | Modelo completo | O `modelo-completo.json` liga todos os elementos do modelo, e cada um (músculos, fusos, OTG, aferentes, interneurônios, tratos, articulação) aparece nas saídas |
+| Sinais no tempo | Com o ângulo imposto, o tornozelo segue o ângulo inicial mais o sinal, e o comprimento e os fusos acompanham; com o fusimotor modulado, nada muda antes do início do sinal, e o estático aumenta o disparo dos II; no fuso isolado, o dinâmico aumenta a Ia no estiramento e o estático, a II (`SignalsOverTimeTest`, `SpindleTest`); o `estiramento-tornozelo.json` impõe o trapézio |
+| Estímulo e aferentes | Por corrente, a duração do pulso não muda quem dispara; por carga, o pulso de 1 ms recruta quase os mesmos axônios e o de 0,2 ms, nenhum; cada duração precisa da intensidade da curva de Lapicque (`LeakyChargeTest`); a ordem gama escolhida muda a regularidade dos aferentes, e 0 é a do original (`NerveAndAfferentOptionsTest`, `AfferentFiberTest`) |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
 | Golden master | As saídas das configurações 17, 24 e 42 do banco (os três cenários públicos do site antigo, como estão lá), com 40 ms, batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro; todas as saídas, as da tela de resultados incluídas, num terceiro) |
 | Editor × DAO original | Editar todas as telas de uma vez e gravar dá as mesmas tabelas que o `saveConfiguration` original gravava num HSQLDB, nos três cenários públicos do site antigo (`LegacyEditorTest`); gravar sem editar preserva as tabelas e a simulação (`LegacyStoreTest`) |
@@ -453,6 +455,7 @@ linha), e o `LegacyDatabase` o lê direto, sem o HSQLDB.
 | `remoto-41-…` | *AMmodRenshaw*: o sóleo, com o comando modulado a 20 Hz a partir de 3 s | 15 s |
 | `remoto-44-…` | *identSOLRenshaw*: o sóleo com as células de Renshaw (inibição recorrente) | 1,5 s |
 | `modelo-completo` | Todos os elementos do modelo ligados, a partir do 24 (detalhes na descrição do cenário) | 2 s |
+| `estiramento-tornozelo` | Reflexo de estiramento: o 24 com o tornozelo em ângulo imposto, um trapézio de 5° em dorsiflexão a partir de 700 ms | 1,5 s |
 
 Os três primeiros são os públicos do site antigo (usuário `guest`). Os seguintes são
 configurações de outros usuários do banco, publicadas com uma descrição escrita a partir do que
@@ -464,7 +467,10 @@ uma carga de 15% do torque voluntário máximo, e os aferentes respondem. O `mod
 e Ib, os interneurônios (Ia recíprocos, Ib, grupo II e Renshaw) dos extensores e dos flexores, os
 seis tratos descendentes com Poisson e um pulso no nervo tibial, e escolhe, no `settings`, o
 músculo de Hill e o tornozelo em pêndulo invertido; as taxas e o pulso foram escolhidos para
-mostrar todos os elementos, não para reproduzir um experimento.
+mostrar todos os elementos, não para reproduzir um experimento. O `estiramento-tornozelo` também
+parte do 24 e escolhe, no `settings`, o músculo de Hill e o tornozelo em ângulo imposto: em 700 ms
+o pé é levado 5° em dorsiflexão em 100 ms, fica 100 ms e volta em 100 ms; os fusos do tríceps sural
+respondem, e os Ia excitam os motoneurônios. Mostra o recurso; não reproduz um experimento.
 
 **Tratos com processo gama.** O processo gama dos tratos descendentes usa como ordem o `std` do
 `NeuronVO`, que o `ConfigurationDAO` original não gravava: ele gravava na coluna `STD` o campo
@@ -571,6 +577,32 @@ O *Std* dos tratos descendentes (tela *Descending Commands*) também fica no `se
 gaussiano, o desvio-padrão do intervalo. O DAO original gravava na coluna `STD` outro campo
 (`order`, que nada lê), e o Std se perdia ao gravar, deixando os tratos gama mudos depois de
 t = 0. As tabelas continuam iguais às do DAO; sem `tractStd`, vale o do DAO (0).
+
+Quatro recursos que o site antigo não tinha (e o ReMoto em Fortran tem; ver o item 13 dos
+[Próximos passos](#próximos-passos)) também ficam no `settings`, e sem eles tudo é como no
+original:
+
+- **Ângulo imposto ao tornozelo** (tela *Joint*, e o modelo de articulação *Imposed angle* em
+  *Biomechanical Elements*, `cdJointModel` = `"imposed"`): o tornozelo isométrico seguindo o ângulo
+  inicial mais um sinal, em graus (`jointAngleSignal`: a forma e os parâmetros de um sinal
+  modulante, como os dos tratos). O comprimento dos músculos e os fusos acompanham; o fuso só é
+  integrado com o músculo de Hill.
+- **Fusimotor no tempo** (tela *Muscle Spindle*): sinais somados aos disparos γ dinâmico e
+  estático constantes (`gammaDynamicSignal`, `gammaStaticSignal`), nunca abaixo de zero.
+- **Pulso e limiar do estímulo do nervo** (tela *Nerve Stimulation*, `nerveStimulus`: nervo →
+  `pulseWidth`, `thresholdModel`, `tauMotor`, `tauSensory`). O pulso do original tem 1 ms, e o
+  axônio dispara quando a intensidade passa do seu limiar (`"current"`). Por carga com vazamento
+  (`"charge"`), cada axônio integra o estímulo com a constante de tempo do seu tipo (motor ou
+  sensitivo) e dispara quando a carga passa do limiar: um pulso de duração *d* precisa de
+  `reobase / (1 − e^(−d/τ))` (Lapicque), e a cronaxia é τ ln 2. Os limiares das tabelas continuam
+  sendo a corrente de um pulso de 1 ms. Os padrões, 0,45 ms nos axônios motores e 0,65 ms nos
+  sensitivos, são da ordem dos medidos em nervos humanos, em que a constante dos sensitivos é a
+  maior (por isso pulsos longos favorecem o reflexo H); conferir na literatura antes de usá-los
+  num trabalho.
+- **Ordem gama dos aferentes** (tela das fibras sensoriais, `afferentGammaOrder`: "músculo:tipo"
+  → ordem inteira). O disparo pelo receptor é um processo gama; o original fixava a ordem no
+  código (Ia 25, Ib 30, II 400, e a II volta para 25 depois do primeiro disparo). Ordem maior
+  deixa o disparo mais regular; 0 mantém a do original.
 
 **Ainda de fora:** a escolha de articulação (os cenários convertidos só têm dados do tornozelo),
 as caixas de músculo de *Biomechanical Elements* (o Action original não as salvava; use *Neural
@@ -738,16 +770,22 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
     Hermite-Rodriguez com atenuação e alargamento, sinapses com dinâmica, tratos gama, colisão
     antidrômica, interneurônios, pêndulo invertido); aqui há a mais o dendrito ativo com a PIC
     (lá ele é passivo), os músculos de Raikova e de momentos, o fuso de Prochazka e a tarefa de
-    posição. O que falta aqui:
-    - [ ] **Ângulo do tornozelo imposto**: o ângulo segue uma trajetória dada (perturbação), e
+    posição. O que faltava aqui:
+    - [x] **Ângulo do tornozelo imposto**: o ângulo segue uma trajetória dada (perturbação), e
       o comprimento dos músculos e os fusos acompanham (o exemplo *ImpedanceAnkle* de lá).
-    - [ ] **Fusimotor variável no tempo**: os disparos γ dinâmico e estático como sinais, e
-      não constantes (o exemplo *PosturalControl* de lá os varia em rampa).
-    - [ ] **Estímulo do nervo com duração de pulso configurável** e limiar por carga com
+      Feito: o modelo de articulação *Imposed angle* e o sinal da tela *Joint*; exemplo no
+      cenário `estiramento-tornozelo`.
+    - [x] **Fusimotor variável no tempo**: os disparos γ dinâmico e estático como sinais, e
+      não constantes (o exemplo *PosturalControl* de lá os varia em rampa). Feito: os sinais
+      da tela *Muscle Spindle*.
+    - [x] **Estímulo do nervo com duração de pulso configurável** e limiar por carga com
       vazamento (curva intensidade-duração), como opção; o padrão continua o do original
-      (pulso de 1 ms, limiar de corrente).
-    - [ ] **Ordem gama dos aferentes configurável** por tipo (Ia, Ib, II) e músculo; aqui é
-      fixa no código (25, 30 e 400).
+      (pulso de 1 ms, limiar de corrente). Feito: a parte nova da tela *Nerve Stimulation*.
+    - [x] **Ordem gama dos aferentes configurável** por tipo (Ia, Ib, II) e músculo; aqui era
+      fixa no código (25, 30 e 400). Feito: a parte nova da tela das fibras sensoriais.
+
+    Os quatro ficam no `settings` (ver *Campos que o DAO original não gravava*, no Editor), e sem
+    eles as simulações são as mesmas de antes. Os que faltam:
     - [ ] **Axônio com nós de Ranvier** para motoneurônios e aferentes: internós e nós com
       sódio rápido e persistente, potássio rápido e lento, corrente h e bomba iônica; aqui o
       axônio é um atraso de condução com limiar.
