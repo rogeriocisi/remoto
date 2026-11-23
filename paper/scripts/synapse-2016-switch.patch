@@ -1,0 +1,24 @@
+--- a/remoto-core/src/main/java/br/remoto/core/model/synapse/SynapseGroup.java
++++ b/remoto-core/src/main/java/br/remoto/core/model/synapse/SynapseGroup.java
+@@ -21,6 +21,9 @@
+     /** Folga para comparar instantes de eventos com o tempo da simulação (ms). */
+     private static final double T_TOLERANCE = 0.001;
+ 
++    /** Só para o estudo do artigo: com -Dremoto.frozenStep=<passo em ms>, reproduz o defeito de 2016. */
++    private static final double FROZEN_STEP = Double.parseDouble(System.getProperty("remoto.frozenStep", "NaN"));
++
+     private final double e;
+     private final double pulseDuration;
+     private final double rInf;
+@@ -116,8 +119,9 @@
+         boolean changed = false;
+ 
+         // solução fechada desde o último evento (Lytton, 1996)
+-        sumOn = non * rInf + (ron - non * rInf) * Math.exp(-(t - t0) / tauOn);
+-        sumOff = roff * Math.exp(-(t - t0) / tauOff);
++        double dt = Double.isNaN(FROZEN_STEP) ? (t - t0) : FROZEN_STEP;
++        sumOn = non * rInf + (ron - non * rInf) * Math.exp(-dt / tauOn);
++        sumOff = roff * Math.exp(-dt / tauOff);
+ 
+         while (!received.isEmpty()) {
+             Received spike = received.peekFirst();

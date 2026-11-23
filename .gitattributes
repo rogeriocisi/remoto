@@ -3,3 +3,5 @@ mvnw text eol=lf
 *.sh text eol=lf
 deploy/** text eol=lf
 *.ps1 text eol=crlf
+# o patch do artigo tem de sair byte a byte como entrou, senao nao aplica
+paper/scripts/*.patch -text
