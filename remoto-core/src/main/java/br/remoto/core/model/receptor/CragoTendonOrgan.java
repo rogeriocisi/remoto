@@ -6,7 +6,9 @@ package br.remoto.core.model.receptor;
  * (discretizado por Tustin no passo da simulação); a taxa resultante é dividida entre as fibras Ib
  * do núcleo.
  *
- * <p>Como no original, a primeira chamada (iteração 0) devolve 0 sem levar a força em conta.
+ * <p>Como no original, a primeira chamada (iteração 0) devolve 0 sem levar a força em conta, e,
+ * sem fibras Ib, a divisão dá NaN e depois infinito; nenhuma fibra lê esse valor, e os resultados
+ * não o mostram.
  */
 public final class CragoTendonOrgan {
 

@@ -85,6 +85,15 @@ public class GolgiTendonOrgan {
 		this.cdNucleus = cdNucleus;
 	}
 
+	/**
+	 * Whether the muscle has active Ib fibers. Without them, the rate per fiber of the original is
+	 * the rate of the tendon organ divided by zero (NaN, then infinity): nothing reads it, and the
+	 * results do not show it.
+	 */
+	public boolean hasIbFibers() {
+		return afferentNumber > 0;
+	}
+
 	public double getIbFiringRate() {
 		return IbFiringRate;
 	}

@@ -211,6 +211,28 @@ class LegacyEngineTest {
                 .anyMatch(v -> v != 0);
     }
 
+    /**
+     * Nenhuma série sai com NaN ou infinito. A taxa do órgão tendinoso é dividida pelas fibras Ib
+     * ativas do músculo, e a força normalizada, pela força máxima das unidades motoras: sem fibras Ib
+     * (o 17) ou sem unidades motoras (o tibial anterior do 18, que só tem aferentes), as duas séries
+     * seriam divisões por zero, e não saem.
+     */
+    @Test
+    void nenhumaSerieTemNaNNemInfinito() {
+        for (int id : new int[] {17, 18}) {
+            Recorder r = run(viaJsonFile(db.exportScenario(id)).withDuration(SHORT_RUN_MS));
+            r.outputs.forEach((name, csv) -> {
+                if (!name.startsWith("tabela") && !name.equals("catalogo")) {
+                    assertThat(csv).as("%s em %d", name, id).doesNotContain("NaN").doesNotContain("Infinity");
+                }
+            });
+            assertThat(r.outputs).doesNotContainKey("otg-ib-SOL").containsKey("musculo-forca-normalizada-SOL");
+            if (id == 18) {
+                assertThat(r.outputs).containsKey("mt-comprimento-TA").doesNotContainKey("musculo-forca-normalizada-TA");
+            }
+        }
+    }
+
     /** O "Modelo completo" de scenarios/ liga todos os elementos: cada um aparece nas saídas. */
     @Test
     void modeloCompletoLigaTodosOsElementos() throws Exception {

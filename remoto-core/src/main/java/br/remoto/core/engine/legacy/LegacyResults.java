@@ -179,7 +179,8 @@ final class LegacyResults {
             series(m, "fuso-ii-" + m, "fuso", "IIFiringRate", "Hz", "II mean firing rate", spindle::getIIFiringRateStore);
         }
         GolgiTendonOrgan gto = quietly(() -> sim.getGolgiTendonOrgan(m));
-        if (gto != null) {
+        // sem fibras Ib ativas, a taxa por fibra é uma divisão por zero (NaN e infinito)
+        if (gto != null && gto.hasIbFibers()) {
             series(m, "otg-ib-" + m, "otg", "IbFiringRate", "Hz", "Ib mean firing rate", gto::getIbFiringRateStore);
         }
     }
@@ -191,14 +192,15 @@ final class LegacyResults {
 
     /**
      * "Normalized musculotendon force" da tela antiga: a força do tendão no Hill, a do músculo nos
-     * outros modelos, em % da força máxima do músculo.
+     * outros modelos, em % da força máxima do músculo. Um músculo sem unidades motoras (que existe
+     * por causa dos aferentes) tem força máxima 0, e a série não sai (seria 0/0).
      */
     private void normalizedForce(String m, ExtrafusalMuscleSuperClass muscle, NonInnervatedTendon tendon) {
         List<?> force = "hill".equals(quietly(muscle::getMuscleModel)) && tendon != null
                 ? quietly(tendon::getForceStore) : quietly(muscle::getForceStore);
         Double max = quietly(muscle::getMaximumMuscleForce);
         double[][] tv = values(force);
-        if (tv == null || max == null) {
+        if (tv == null || max == null || !(max > 0)) {
             return;
         }
         double[] v = new double[tv[1].length];
