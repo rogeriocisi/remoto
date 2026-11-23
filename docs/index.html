@@ -420,17 +420,20 @@
           <div>
             <dt>Afferents</dt>
             <dd>Ia, II and Ib fibers, driven by the muscle spindle and Golgi tendon organ models or
-              by electrical stimulation of the nerve.</dd>
+              by electrical stimulation of the nerve. The regularity of receptor-driven firing (the order of the gamma
+              process) can be set per type and muscle.</dd>
           </div>
           <div>
             <dt>Descending tracts</dt>
             <dd>Populations of axons firing as point processes (Poisson, gamma or Gaussian
-              intervals), with the mean rate constant or modulated by a sine, ramp, square wave or other waveform.</dd>
+              intervals), with the mean rate constant, modulated by a sine, ramp, square wave or other waveform, or
+              following any rate series.</dd>
           </div>
           <div>
             <dt>Synapses</dt>
             <dd>Conductance changes with their own kinetics, delay and connectivity, with optional
-              short-term depression or facilitation.</dd>
+              short-term depression or facilitation and, in any pathway, a weight that can fall with the distance
+              between the cells.</dd>
           </div>
           <div>
             <dt>Muscle</dt>
@@ -440,18 +443,21 @@
           </div>
           <div>
             <dt>Proprioceptors</dt>
-            <dd>Muscle spindle (Mileusnic or Prochazka models) with Ia and II outputs, and
-              Golgi tendon organ (Crago model) with Ib output.</dd>
+            <dd>Muscle spindle (Mileusnic or Prochazka models) with Ia and II outputs and a dynamic
+              and static fusimotor drive, constant or varying in time, and Golgi tendon organ (Crago model) with Ib
+              output.</dd>
           </div>
           <div>
             <dt>Joint</dt>
-            <dd>The ankle as an isometric joint, as an inverted pendulum for upright stance, or in a
-              position task against a load.</dd>
+            <dd>The ankle as an isometric joint, as an inverted pendulum for upright stance, in a
+              position task against a load, or following an imposed angle, as in a perturbation.</dd>
           </div>
           <div>
             <dt>Stimulation</dt>
-            <dd>Electrical pulses on the tibial and common peroneal nerves, with orthodromic and
-              antidromic propagation, for M waves and H reflexes; current injected into chosen neurons.</dd>
+            <dd>Electrical pulses of chosen width on the tibial and common peroneal nerves, with
+              orthodromic and antidromic propagation, for M waves and H reflexes. Each axon fires by a current
+              threshold, by a leaky charge threshold or through a model of a human node of Ranvier, which gives the
+              strength-duration curve and refractoriness. Current injected into chosen neurons.</dd>
           </div>
           <div>
             <dt>Scale</dt>
@@ -469,7 +475,8 @@
         <div class="prose">
           <p class="lead">ReMoto was developed over more than a decade at the Biomedical Engineering Laboratory of the
             University of S&atilde;o Paulo. Its website depended on Java applets and on server software that no longer
-            receives security updates. Version 3 keeps the models and replaces everything around them.</p>
+            receives security updates. Version 3 keeps the models, replaces everything around them, and adds the
+            features of the Fortran version as options.</p>
         </div>
 
         <div class="tbl-wrap">
@@ -492,7 +499,8 @@
               <tr>
                 <th>Models</th>
                 <td>All published models</td>
-                <td>The same models, ported with bit-for-bit identical results</td>
+                <td>The same models, ported with bit-for-bit identical results, plus the features of the Fortran
+                  version as options</td>
               </tr>
               <tr>
                 <th>Random numbers</th>
@@ -507,7 +515,7 @@
               <tr>
                 <th>Outside the browser</th>
                 <td>None</td>
-                <td>Command-line runner and REST API</td>
+                <td>Command-line runner, batch protocols and REST API</td>
               </tr>
               <tr>
                 <th>Status</th>
@@ -543,7 +551,17 @@
           <li>
             <h3>A command line for scripts and clusters</h3>
             <p>The JSON file you export from the site runs unchanged without a server, and writes every result as CSV.
-              The original database can be converted to scenarios without installing it.</p>
+              Batch protocols run a scenario once for each value of a parameter, such as the H-reflex and M-wave
+              recruitment curve or force variability, and write a table with the measures of each run. The original
+              database can be converted to scenarios without installing it.</p>
+          </li>
+          <li>
+            <h3>What came from the Fortran version</h3>
+            <p>From the Fortran version of ReMoto (<a href="https://github.com/rnwatanabe/projectFR">projectFR</a>, by
+              R. N. Watanabe) came the imposed ankle angle, the time-varying fusimotor drive, the stimulus pulse and
+              threshold with a node of Ranvier, the gamma order of the afferents, connections that weaken with distance,
+              tract commands as rate series and the batch protocols. They were implemented from the papers and are off
+              by default.</p>
           </li>
           <li>
             <h3>Shared fairly in a classroom</h3>
@@ -604,6 +622,9 @@
             <li><b>Gamma-process tracts.</b> The original site never saved the order of the gamma process, so stored
               configurations with gamma tracts fired only at time zero. The public scenarios that had them now use
               Poisson tracts with the same mean interval, and the editor saves the order.</li>
+            <li><b>New features, off by default.</b> The features that came from the Fortran version act only when a
+              scenario chooses them. Without them, the outputs stay those of the original, and the same tests check
+              it.</li>
           </ul>
         </div>
 
@@ -670,11 +691,15 @@
             <pre class="term"><span class="p">$</span> ./mvnw -pl remoto-cli -am package -DskipTests
 <span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
     run scenarios/remoto-17-default-soleus-contraction.json \
-    --duration-ms 500 --threads 4 -o results/soleus</pre>
+    --duration-ms 500 --threads 4 -o results/soleus
+<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
+    sweep scenarios/remoto-17-default-soleus-contraction.json \
+    --protocol hm --range 5:40:1 -o results/hm-curve</pre>
             <p class="fine" style="margin-top:.9rem">The output folder receives the frozen scenario, a manifest with the
               seed and engine
-              version, and one compressed CSV per result. <code>validate</code> checks scenario files and
-              <code>export-legacy</code> converts configurations from the original database.
+              version, and one compressed CSV per result. <code>sweep</code> runs a batch protocol (here, the H/M
+              curve from 5 to 40 mA) and writes one row of measures per run. <code>validate</code> checks scenario
+              files and <code>export-legacy</code> converts configurations from the original database.
             </p>
           </div>
         </div>
@@ -697,11 +722,11 @@
     <section class="sec" id="scenarios">
       <div class="sec-no"><b>5</b>Scenarios</div>
       <div class="sec-body">
-        <h2>Twenty scenarios ready to run</h2>
+        <h2>Twenty-one scenarios ready to run</h2>
         <div class="prose">
           <p class="lead">A scenario is one JSON file with the whole configuration, the duration, the time step and the
-            seed. The first three were the public scenarios of the old site; the others were recovered from its
-            database.</p>
+            seed. The first three were the public scenarios of the old site; the next sixteen were recovered from
+            its database; the last two start from scenario 24 and were built to show features.</p>
         </div>
         <div class="tbl-wrap">
           <table>

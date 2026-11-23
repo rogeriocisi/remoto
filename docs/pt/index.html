@@ -422,18 +422,20 @@
           <div>
             <dt>Aferentes</dt>
             <dd>Fibras Ia, II e Ib, movidas pelos modelos de fuso muscular e de órgão tendinoso de
-              Golgi ou pela estimulação elétrica do nervo.</dd>
+              Golgi ou pela estimulação elétrica do nervo. A regularidade do disparo pelo receptor (a ordem do processo
+              gama) pode ser escolhida por tipo e músculo.</dd>
           </div>
           <div>
             <dt>Tratos descendentes</dt>
             <dd>Populações de axônios que disparam como processos pontuais (Poisson, gama
-              ou intervalos gaussianos), com a taxa média constante ou modulada por uma senoide, rampa, onda quadrada ou
-              outra forma.</dd>
+              ou intervalos gaussianos), com a taxa média constante, modulada por uma senoide, rampa, onda quadrada ou
+              outra forma, ou seguindo uma série de taxas qualquer.</dd>
           </div>
           <div>
             <dt>Sinapses</dt>
             <dd>Variações de condutância com sua própria cinética, atraso e conectividade, com
-              depressão ou facilitação de curto prazo opcionais.</dd>
+              depressão ou facilitação de curto prazo opcionais e, em qualquer via, um peso que pode cair com a
+              distância entre as células.</dd>
           </div>
           <div>
             <dt>Músculo</dt>
@@ -443,18 +445,21 @@
           </div>
           <div>
             <dt>Proprioceptores</dt>
-            <dd>Fuso muscular (modelos de Mileusnic ou de Prochazka) com saídas Ia e II, e
-              órgão tendinoso de Golgi (modelo de Crago) com saída Ib.</dd>
+            <dd>Fuso muscular (modelos de Mileusnic ou de Prochazka) com saídas Ia e II e o comando
+              fusimotor dinâmico e estático constante ou variando no tempo, e órgão tendinoso de Golgi (modelo de Crago)
+              com saída Ib.</dd>
           </div>
           <div>
             <dt>Articulação</dt>
-            <dd>O tornozelo isométrico, como pêndulo invertido para a postura ereta, ou numa
-              tarefa de posição contra uma carga.</dd>
+            <dd>O tornozelo isométrico, como pêndulo invertido para a postura ereta, numa
+              tarefa de posição contra uma carga, ou seguindo um ângulo imposto, como numa perturbação.</dd>
           </div>
           <div>
             <dt>Estimulação</dt>
-            <dd>Pulsos elétricos nos nervos tibial e fibular comum, com propagação ortodrômica e
-              antidrômica, para ondas M e reflexos H; corrente injetada em neurônios escolhidos.</dd>
+            <dd>Pulsos elétricos nos nervos tibial e fibular comum, de duração escolhida, com
+              propagação ortodrômica e antidrômica, para ondas M e reflexos H. Cada axônio dispara por limiar de
+              corrente, por carga com vazamento ou pelo modelo de um nó de Ranvier humano, que dá a curva
+              intensidade-duração e a refratariedade. Corrente injetada em neurônios escolhidos.</dd>
           </div>
           <div>
             <dt>Tamanho</dt>
@@ -472,7 +477,8 @@
         <div class="prose">
           <p class="lead">O ReMoto foi desenvolvido ao longo de mais de uma década no Laboratório de Engenharia
             Biomédica da Universidade de São Paulo. O site dele dependia de applets Java e de software de servidor que
-            não recebe mais atualizações de segurança. A versão 3 mantém os modelos e troca tudo em volta deles.</p>
+            não recebe mais atualizações de segurança. A versão 3 mantém os modelos e troca tudo em volta deles, e
+            acrescenta, como opção, os recursos da versão em Fortran.</p>
         </div>
 
         <div class="tbl-wrap">
@@ -495,7 +501,8 @@
               <tr>
                 <th>Modelos</th>
                 <td>Todos os modelos publicados</td>
-                <td>Os mesmos modelos, portados com resultados idênticos bit a bit</td>
+                <td>Os mesmos modelos, portados com resultados idênticos bit a bit, e os recursos da versão em
+                  Fortran, como opção</td>
               </tr>
               <tr>
                 <th>Números aleatórios</th>
@@ -511,7 +518,7 @@
               <tr>
                 <th>Fora do navegador</th>
                 <td>Nada</td>
-                <td>Execução pela linha de comando e API REST</td>
+                <td>Execução pela linha de comando, protocolos em lote e API REST</td>
               </tr>
               <tr>
                 <th>Estado</th>
@@ -549,7 +556,17 @@
           <li>
             <h3>Uma linha de comando para scripts e clusters</h3>
             <p>O arquivo JSON que você exporta do site roda sem alteração e sem servidor, e grava cada resultado em CSV.
+              Protocolos em lote rodam um cenário para cada valor de um parâmetro, como a curva de recrutamento do
+              reflexo H e da onda M ou a variabilidade da força, e gravam uma tabela com as medidas de cada simulação.
               O banco de dados original pode ser convertido em cenários sem instalá-lo.</p>
+          </li>
+          <li>
+            <h3>O que veio da versão em Fortran</h3>
+            <p>Da versão em Fortran do ReMoto (<a href="https://github.com/rnwatanabe/projectFR">projectFR</a>, de
+              R. N. Watanabe) vieram o ângulo imposto ao tornozelo, o fusimotor variando no tempo, o pulso e o limiar do
+              estímulo com um nó de Ranvier, a ordem gama dos aferentes, as conexões que enfraquecem com a distância, o
+              comando dos tratos como série de taxas e os protocolos em lote. Foram implementados a partir dos artigos e
+              ficam desligados por padrão.</p>
           </li>
           <li>
             <h3>Dividido com justiça numa sala de aula</h3>
@@ -613,6 +630,9 @@
             <li><b>Tratos com processo gama.</b> O site original nunca gravava a ordem do processo gama, então as
               configurações guardadas com tratos gama disparavam só no instante zero. Os cenários públicos que os tinham
               agora usam tratos de Poisson com o mesmo intervalo médio, e o editor grava a ordem.</li>
+            <li><b>Recursos novos, desligados por padrão.</b> Os recursos que vieram da versão em Fortran só agem
+              quando um cenário os escolhe. Sem eles, as saídas continuam as do original, e os mesmos testes conferem
+              isso.</li>
           </ul>
         </div>
 
@@ -680,12 +700,16 @@
             <pre class="term"><span class="p">$</span> ./mvnw -pl remoto-cli -am package -DskipTests
 <span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
     run scenarios/remoto-17-default-soleus-contraction.json \
-    --duration-ms 500 --threads 4 -o results/soleus</pre>
+    --duration-ms 500 --threads 4 -o results/soleus
+<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
+    sweep scenarios/remoto-17-default-soleus-contraction.json \
+    --protocol hm --range 5:40:1 -o results/hm-curve</pre>
             <p class="fine" style="margin-top:.9rem">A pasta de saída recebe o cenário congelado, um manifesto com a
               seed e
-              a versão do motor, e um CSV compactado por resultado. O <code>validate</code> confere arquivos de cenário
-              e o
-              <code>export-legacy</code> converte configurações do banco de dados original.
+              a versão do motor, e um CSV compactado por resultado. O <code>sweep</code> roda um protocolo em lote (no
+              exemplo, a curva H/M de 5 a 40 mA) e grava uma linha de medidas por simulação. O <code>validate</code>
+              confere arquivos de cenário e o <code>export-legacy</code> converte configurações do banco de dados
+              original.
             </p>
           </div>
         </div>
@@ -705,11 +729,11 @@
     <section class="sec" id="scenarios">
       <div class="sec-no"><b>5</b>Cenários</div>
       <div class="sec-body">
-        <h2>Vinte cenários prontos para rodar</h2>
+        <h2>Vinte e um cenários prontos para rodar</h2>
         <div class="prose">
           <p class="lead">Um cenário é um arquivo JSON com a configuração inteira, a duração, o passo de integração e a
-            seed. Os três primeiros eram os cenários públicos do site antigo; os outros foram recuperados do banco de
-            dados dele.</p>
+            seed. Os três primeiros eram os cenários públicos do site antigo; os dezesseis seguintes foram recuperados
+            do banco de dados dele; os dois últimos partem do 24 e foram montados para mostrar recursos.</p>
         </div>
         <div class="tbl-wrap">
           <table>
