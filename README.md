@@ -90,11 +90,12 @@ Then open http://localhost:8080. There is no login.
 ```bash
 ./mvnw -pl remoto-cli -am package -DskipTests
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 --threads 4 -o results/soleus
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar sweep scenarios/remoto-17-default-soleus-contraction.json --protocol hm --range 5:40:1 -o results/hm-curve
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar validate scenarios/*.json
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list
 ```
 
-`export-legacy` converts configurations from the old HSQLDB database file into JSON scenarios (it reads the file directly; HSQLDB is not needed). `--threads` sets how many threads update the neurons (default: CPU cores); the results are identical, bit for bit, with any value.
+`sweep` runs a scenario once for each value of a parameter and writes one row of measures per run to `sweep.csv`: `--protocol hm` is the H-reflex and M-wave recruitment curve (stimulus intensity), `--protocol force` the force variability (ISI mean of a descending tract), and `--param` with `--measure` any other batch (see `sweep --help`). `export-legacy` converts configurations from the old HSQLDB database file into JSON scenarios (it reads the file directly; HSQLDB is not needed). `--threads` sets how many threads update the neurons (default: CPU cores); the results are identical, bit for bit, with any value.
 
 ### Deployment
 

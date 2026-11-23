@@ -172,7 +172,8 @@ public final class LegacyScreens {
     /** input.jsp / InputAction. */
     private static LegacyScreen descendingCommands() {
         String[] signals = {"none", "none", "constant", "constant", "ramp", "ramp", "random", "random",
-                "sine", "sine", "square", "square", "trapezoid", "trapezoid", "triangle", "triangle", "AM", "AM"};
+                "sine", "sine", "square", "square", "trapezoid", "trapezoid", "triangle", "triangle", "AM", "AM",
+                "series", "series"};
         Part inputs = new Part(null, Layout.LIST,
                 (conf, sel) -> {
                     List list = conf.getNeuronTypes(ReMoto.DT, ReMoto.TR);
@@ -202,7 +203,18 @@ public final class LegacyScreens {
                 (conf, sel) -> conf.getNeuronTypes(ReMoto.DT, ReMoto.Noise),
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.bool("Active", "active"), Field.number("ISI mean", "ms", "mean")));
-        return new LegacyScreen("input", "Descending Commands", List.of(), List.of(inputs, noises),
+        Part series = new Part("Series modulation (not in the original site)", Layout.LIST,
+                (conf, sel) -> {
+                    List list = conf.getNeuronTypes(ReMoto.DT, ReMoto.TR);
+                    Collections.sort(list);
+                    return list;
+                },
+                item -> {
+                    NeuronVO n = (NeuronVO) item;
+                    return n.getTractName() == null || n.getTractName().isBlank() ? n.getType() : n.getTractName();
+                },
+                List.of(Field.text("Points: time [ms] and value", "rateSeries")));
+        return new LegacyScreen("input", "Descending Commands", List.of(), List.of(inputs, noises, series),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     List<Object> modulations = new ArrayList<>();
@@ -241,7 +253,14 @@ public final class LegacyScreens {
                     conf.setListNeuronTypes(items.get(0));
                     conf.setListNeuronTypes(items.get(1));
                 },
-                List.of("Only active tracts keep their modulating signal (as in the original InputAction)."));
+                List.of("Only active tracts keep their modulating signal (as in the original InputAction).",
+                        "Series modulation: with the modulation \"series\", the signal follows these points,"
+                                + " linearly interpolated, from the first to the last; two points at the same time"
+                                + " make a step. Write them as time and value separated by a space, the points"
+                                + " separated by \";\" (decimal point: 0 20; 1000 40; 1000 10; 3000 10). With the"
+                                + " target \"rate\", the value is added to the rate of the ISI mean, in spikes/s;"
+                                + " with the ISI mean 0, it is the rate itself (any rate profile). Start, Stop and"
+                                + " the other signal fields are not used."));
     }
 
     // ------------------------------------------------------------------ Neural Parameters

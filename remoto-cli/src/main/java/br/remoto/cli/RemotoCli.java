@@ -15,7 +15,7 @@ import java.util.List;
         mixinStandardHelpOptions = true,
         version = "ReMoto 3.0.0-SNAPSHOT",
         description = "Executa cenários do ReMoto sem servidor (mesmo JSON do site).",
-        subcommands = {RunCommand.class, ValidateCommand.class, ExportLegacyCommand.class})
+        subcommands = {RunCommand.class, SweepCommand.class, ValidateCommand.class, ExportLegacyCommand.class})
 public final class RemotoCli implements Runnable {
 
     public static void main(String[] args) {

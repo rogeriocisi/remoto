@@ -29,6 +29,10 @@ public class NeuronVO extends NeuronProperties implements Comparable
 	// the original DAO (in the scenario settings, "afferentGammaOrder"); 0 = the original (25, 30, 400)
 	protected int gammaOrder;
 
+	// Descending tracts: the points of the "series" modulation (time [ms] and value alternated), not
+	// stored by the original DAO (in the scenario settings, "tractSeries")
+	protected double[] rateSeries;
+
 	// Pool properties
 	protected int quantity;
 
@@ -344,6 +348,21 @@ public class NeuronVO extends NeuronProperties implements Comparable
 	}
 	public double getStd() {
 		return std;
+	}
+	/** The points of the "series" modulation as text ("0 20; 1000 40"), for the editor. */
+	public String getRateSeries() {
+		return br.remoto.core.model.signal.Modulation.formatSeries(rateSeries);
+	}
+	public void setRateSeries(String text) {
+		this.rateSeries = br.remoto.core.model.signal.Modulation.parseSeries(text);
+	}
+	public double[] getRateSeriesPoints() {
+		return rateSeries;
+	}
+	public void setRateSeriesPoints(double[] points) {
+		if( points != null )
+			br.remoto.core.model.signal.Modulation.checkSeries(points);
+		this.rateSeries = points;
 	}
 	public int getGammaOrder() {
 		return gammaOrder;

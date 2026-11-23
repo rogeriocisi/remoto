@@ -75,6 +75,13 @@ public final class LegacySettings {
      */
     public static final String SYNAPSE_DISTANCE_DECAY = "synapseDistanceDecay";
 
+    /**
+     * Os pontos da forma "series" dos tratos descendentes, que o original não tinha: "DT:tipo" →
+     * lista de pares [tempo (ms), valor]. Com o alvo "rate", o valor soma à taxa do intervalo
+     * médio (Hz); com o intervalo médio 0, é a própria taxa.
+     */
+    public static final String TRACT_SERIES = "tractSeries";
+
     private static final List<String> SIGNAL_FIELDS =
             List.of("tini", "tfin", "amp", "freq", "width", "delay", "modFreq", "modFactor");
 
@@ -129,6 +136,22 @@ public final class LegacySettings {
                 if (o instanceof NeuronVO neu && ReMoto.AF.equals(neu.getCategory())
                         && orders.get(neu.getCdNucleus() + ":" + neu.getType()) != null) {
                     neu.setGammaOrder(((Number) number(orders.get(neu.getCdNucleus() + ":" + neu.getType()))).intValue());
+                }
+            }
+        }
+        if (settings.get(TRACT_SERIES) instanceof Map<?, ?> series) {
+            for (Object o : conf.getNeuronTypes()) {
+                if (o instanceof NeuronVO neu && ReMoto.TR.equals(neu.getCategory())
+                        && series.get(neu.getCdNucleus() + ":" + neu.getType()) instanceof List<?> points) {
+                    double[] flat = new double[points.size() * 2];
+                    for (int i = 0; i < points.size(); i++) {
+                        if (!(points.get(i) instanceof List<?> pair) || pair.size() != 2) {
+                            throw new IllegalArgumentException("tractSeries: cada ponto é [tempo, valor]");
+                        }
+                        flat[2 * i] = ((Number) number(pair.get(0))).doubleValue();
+                        flat[2 * i + 1] = ((Number) number(pair.get(1))).doubleValue();
+                    }
+                    neu.setRateSeriesPoints(flat);
                 }
             }
         }
@@ -208,6 +231,20 @@ public final class LegacySettings {
         }
         if (!orders.isEmpty()) {
             settings.put(AFFERENT_GAMMA_ORDER, orders);
+        }
+        Map<String, Object> series = new LinkedHashMap<>();
+        for (Object o : conf.getNeuronTypes()) {
+            if (o instanceof NeuronVO neu && ReMoto.TR.equals(neu.getCategory()) && neu.getRateSeriesPoints() != null) {
+                double[] flat = neu.getRateSeriesPoints();
+                List<List<Double>> points = new java.util.ArrayList<>();
+                for (int i = 0; i < flat.length; i += 2) {
+                    points.add(List.of(flat[i], flat[i + 1]));
+                }
+                series.put(neu.getCdNucleus() + ":" + neu.getType(), points);
+            }
+        }
+        if (!series.isEmpty()) {
+            settings.put(TRACT_SERIES, series);
         }
         Map<String, Object> decays = new java.util.TreeMap<>();
         if (conf.getSynapseTypes() != null) {

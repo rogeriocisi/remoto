@@ -378,12 +378,36 @@ class LegacyEditorTest {
         assertThat(errors).anyMatch(e -> e.contains("Distance decay"));
     }
 
-    /** A célula de uma parte em lista: a linha do item e a coluna do campo ("Start" acha "Start [ms]"). */
+    /** A série de taxas de um trato (tela Descending Commands): fica no settings e volta ao reabrir. */
+    @Test
+    void serieDeTaxasDoTratoFicaGravada() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        ScreenView input = editor.view("input", Map.of());
+        String label = "Direct corticomotor (CM_ext)";
+        Map<String, String> form = fullForm(input);
+        form.put(listCell(input, 0, label, "Modulation").name(), "series");
+        form.put(listCell(input, 0, label, "Target").name(), "rate");
+        form.put(listCell(input, 2, label, "Points: time").name(), "0 20; 1000 40; 1000 10; 3000 10");
+        assertThat(editor.apply("input", Map.of(), form)).isEmpty();
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(saved.settings().get("tractSeries")).isEqualTo(Map.of("DT:CM_ext", List.of(List.of(0.0, 20.0),
+                List.of(1000.0, 40.0), List.of(1000.0, 10.0), List.of(3000.0, 10.0))));
+        ScreenView reopened = LegacyEditor.open(saved, 5000, 0.05).view("input", Map.of());
+        assertThat(listCell(reopened, 2, label, "Points: time").value()).isEqualTo("0 20; 1000 40; 1000 10; 3000 10");
+        assertThat(listCell(reopened, 0, label, "Modulation").value()).isEqualTo("series");
+
+        List<String> errors = editor.apply("input", Map.of(),
+                Map.of(listCell(input, 2, label, "Points: time").name(), "0 20; 10 1,5"));
+        assertThat(errors).anyMatch(e -> e.contains("Points"));
+    }
+
+    /** A célula de uma parte em lista: a linha do item e a primeira coluna que começa com {@code header}. */
     private static ScreenView.Cell listCell(ScreenView view, int section, String rowLabel, String header) {
         List<String> headers = view.sections().get(section).headers();
         int column = -1;
         for (int i = 0; i < headers.size() && column < 0; i++) {
-            if (headers.get(i).equals(header) || headers.get(i).startsWith(header + " [")) {
+            if (headers.get(i).startsWith(header)) {
                 column = i;
             }
         }

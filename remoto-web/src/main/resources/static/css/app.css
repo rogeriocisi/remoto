@@ -360,6 +360,7 @@ span.titulo-publicacao { color: var(--texto); }
 .tabela-editor tr.sub th { font-weight: 400; color: var(--suave); font-size: .8rem; }
 .tabela-editor tr.divisao th { padding-top: 12px; color: var(--suave); }
 .tabela-editor input.numero { width: 7em; }
+.tabela-editor input.texto { width: 100%; min-width: 12em; box-sizing: border-box; }
 .tabela-editor input, .tabela-editor select, .form-geral input, .form-geral textarea {
   font: inherit;
   background: var(--cartao);

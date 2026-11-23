@@ -11,7 +11,8 @@
   </select>
   <input th:if="${c.kind().name() == 'NUMBER' or c.kind().name() == 'INTEGER'}" type="text" th:name="${c.name()}"
          th:value="${c.value()}" size="8" inputmode="decimal" class="numero">
-  <input th:if="${c.kind().name() == 'TEXT'}" type="text" th:name="${c.name()}" th:value="${c.value()}">
+  <input th:if="${c.kind().name() == 'TEXT'}" type="text" th:name="${c.name()}" th:value="${c.value()}"
+         class="texto">
 </th:block>
 </body>
 </html>

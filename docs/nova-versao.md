@@ -37,7 +37,7 @@ ferramenta para instalar e manter.
 remoto-core          cenário, modelos do ReMoto, motor "legacy", leitura do banco antigo (Java puro, sem dependências)
 remoto-storage       repositórios em arquivo: cenários, execuções e a área de cada navegador
 remoto-web           aplicação Spring Boot sem login (API REST + páginas), com o editor de cenários
-remoto-cli           execução sem servidor: remoto run / validate / export-legacy
+remoto-cli           execução sem servidor: remoto run / sweep / validate / export-legacy
 scenarios/           cenários públicos versionados no Git (o antigo usuário "guest")
 ```
 
@@ -72,6 +72,8 @@ Os comandos equivalentes, sem os scripts:
 # CLI
 ./mvnw -pl remoto-cli -am package -DskipTests
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 -o resultados/teste
+# protocolo em lote: a curva H/M, de 5 a 40 mA (ver "Protocolos em lote")
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar sweep scenarios/remoto-17-default-soleus-contraction.json --protocol hm --range 5:40:1 -o resultados/curva-hm
 ```
 
 No Windows, use `mvnw.cmd` no lugar de `./mvnw`. No PowerShell, mantenha as aspas em
@@ -412,6 +414,8 @@ antigo**:
 | Sinais no tempo | Com o ângulo imposto, o tornozelo segue o ângulo inicial mais o sinal, e o comprimento e os fusos acompanham; com o fusimotor modulado, nada muda antes do início do sinal, e o estático aumenta o disparo dos II; no fuso isolado, o dinâmico aumenta a Ia no estiramento e o estático, a II (`SignalsOverTimeTest`, `SpindleTest`); o `estiramento-tornozelo.json` impõe o trapézio |
 | Estímulo e aferentes | Por corrente, a duração do pulso não muda quem dispara; por carga, o pulso de 1 ms recruta quase os mesmos axônios e o de 0,2 ms, nenhum; cada duração precisa da intensidade da curva de Lapicque (`LeakyChargeTest`); a ordem gama escolhida muda a regularidade dos aferentes, e 0 é a do original (`NerveAndAfferentOptionsTest`, `AfferentFiberTest`) |
 | Nó de Ranvier | Parado, o nó fica no repouso da tabela 1 de Howells et al. (2012); o limiar da configuração vale para um pulso de 1 ms; a constante intensidade-duração sai do modelo, de cerca de 0,4 ms no motor e 0,5 ms no sensitivo; há refratariedade (`AxonNodeTest`); no motor, o pulso de 1 ms recruta quase os mesmos axônios que o limiar de corrente, e o de 0,2 ms, nenhum (`NerveAndAfferentOptionsTest`) |
+| Série de taxas | A forma "series" interpola os pontos, faz degraus e vale 0 fora da janela; os 100 axônios do CM_ext seguem 0 Hz, um degrau para 200 Hz e uma rampa de volta (cerca de 2000 disparos no platô e 1000 na rampa); a série fica no `settings` (`ModulationTest`, `TractSeriesTest`) |
+| Protocolos em lote | O parâmetro muda uma célula de tabela, o `settings`, a seed ou a duração; as medidas; na curva H/M da configuração 17, sem corrente nenhum motoneurônio dispara na janela da onda M e, com 40 mA, todos; na variabilidade da força, o intervalo maior dá força menor (`SweepTest`); o `remoto sweep` grava uma linha por simulação (`RemotoCliTest`) |
 | Decaimento com a distância | Com decaimento nas sinapses do trato CM_ext no sóleo, a parte do trato na condutância de cada motoneurônio cai e fica maior no meio do núcleo que nas pontas; o valor fica no `settings` e volta ao reabrir (`SynapseDistanceDecayTest`) |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
 | Golden master | As saídas das configurações 17, 24 e 42 do banco (os três cenários públicos do site antigo, como estão lá), com 40 ms, batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro; todas as saídas, as da tela de resultados incluídas, num terceiro) |
@@ -428,6 +432,39 @@ java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db leg
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --owner guest --out scenarios
 java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --id 34,41 --out meus-cenarios
 ```
+
+### Protocolos em lote
+
+O `remoto sweep` roda um cenário uma vez para cada valor de um parâmetro e grava em `sweep.csv`
+uma linha por simulação, com o valor e as medidas (`br.remoto.core.protocol`). Dois protocolos
+estão prontos:
+
+- `--protocol hm`: a curva de recrutamento do reflexo H e da onda M. Varia a intensidade (mA) do
+  estímulo de um nervo (`--nerve`, padrão PTN) e mede o pico a pico do EMG do músculo
+  (`--muscle`, padrão SOL) e quantos motoneurônios dispararam nas janelas da onda M (de 2 a 20 ms
+  depois do início do estímulo) e do reflexo H (de 20 a 50 ms), que `--m-window` e `--h-window`
+  mudam. O nervo é ativado; sem janela de estímulo, ele dá um pulso só, no START da tabela. A
+  simulação vai até 10 ms depois do fim da janela do H.
+- `--protocol force`: a variabilidade da força. Varia o intervalo médio (ms) de um trato
+  descendente (`--tract`, padrão CM_ext) e mede a média, o desvio-padrão e o coeficiente de
+  variação da força do músculo, e quantos motoneurônios dispararam, numa janela (`--from` e
+  `--to`; o padrão é a segunda metade da simulação, depois do transitório).
+
+Qualquer outro lote é um `--param` e uma ou mais `--measure`:
+
+```bash
+java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar sweep cenario.json \
+  --param NERVE:CD_NERVE=PTN:PEAK --range 5:40:1 \
+  --measure "M=p2p(emg-SOL,7,25)" --measure "H=p2p(emg-SOL,25,55)" --keep-runs -o resultados/lote
+```
+
+O parâmetro é uma célula das tabelas (`TABELA:CHAVE=VALOR[,CHAVE=VALOR]:COLUNA`; todas as linhas
+que batem mudam), um valor do `settings` (`settings.nerveStimulus.PTN.pulseWidth`), a `seed`
+(repetições com sorteios diferentes) ou a `durationMs`. A medida é `[nome=]função(saída[,de,até])`,
+com a janela em ms: `p2p`, `max`, `min`, `mean`, `sd` e `cv` numa série (força, EMG, ângulo...), e
+`count` e `units` num trem de disparos. Os valores vêm de `--values 5,10,20` ou de
+`--range DE:ATÉ:PASSO`; `--keep-runs` grava também os resultados de cada simulação. As simulações
+rodam uma depois da outra, e o site ainda não tem os protocolos em lote.
 
 Os cenários públicos de `scenarios/` estão na seção [Cenários públicos](#cenários-públicos). O
 banco é um arquivo de texto (`remoto.script`, com um `CREATE TABLE` por tabela e um `INSERT` por
@@ -580,7 +617,7 @@ gaussiano, o desvio-padrão do intervalo. O DAO original gravava na coluna `STD`
 (`order`, que nada lê), e o Std se perdia ao gravar, deixando os tratos gama mudos depois de
 t = 0. As tabelas continuam iguais às do DAO; sem `tractStd`, vale o do DAO (0).
 
-Seis recursos que o site antigo não tinha (e o ReMoto em Fortran tem; ver o item 13 dos
+Sete recursos que o site antigo não tinha (e o ReMoto em Fortran tem; ver o item 13 dos
 [Próximos passos](#próximos-passos)) também ficam no `settings`, e sem eles tudo é como no
 original:
 
@@ -618,6 +655,11 @@ original:
   → ordem inteira). O disparo pelo receptor é um processo gama; o original fixava a ordem no
   código (Ia 25, Ib 30, II 400, e a II volta para 25 depois do primeiro disparo). Ordem maior
   deixa o disparo mais regular; 0 mantém a do original.
+- **Série de taxas dos tratos** (a modulação *series* e a parte nova da tela *Descending
+  Commands*, `tractSeries`: "DT:tipo" → lista de pares [tempo em ms, valor]): o sinal segue os
+  pontos, interpolados, do primeiro ao último (dois pontos no mesmo tempo fazem um degrau). Com o
+  alvo *rate*, o valor soma à taxa do intervalo médio; com o intervalo médio 0, é a própria taxa
+  de cada axônio, em disparos/s. No editor, os pontos são escritos como "0 20; 1000 40".
 - **Decaimento com a distância** (a coluna *Distance decay* da tela *Synaptic Parameters*,
   `synapseDistanceDecay`: "núcleoPré>núcleo:tipo" → dec, em mm²): cada sinapse do tipo ganha o
   peso `dec / (dec + d²)`, sendo *d* a distância entre as duas células na coluna caudal-rostral, e
@@ -815,15 +857,17 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
     - [x] **Conexões que enfraquecem com a distância** em qualquer via (peso
       `dec / (dec + distância²)`); aqui era só entre motoneurônios e células de Renshaw. Feito: a
       coluna *Distance decay* da tela *Synaptic Parameters*, com posições para aferentes e tratos.
-
-    Os seis ficam no `settings` (ver *Campos que o DAO original não gravava*, no Editor), e sem
-    eles as simulações são as mesmas de antes. Os que faltam:
-    - [ ] **Motoneurônio integra-e-dispara** (sem canais iônicos), para simulações rápidas.
-    - [ ] **Protocolos em lote**: varrer um parâmetro em várias simulações, como a curva de
+    - [x] **Protocolos em lote**: varrer um parâmetro em várias simulações, como a curva de
       recrutamento do reflexo H e da onda M (intensidade do estímulo) e a variabilidade da
-      força (comando descendente); ver também o item 3.
-    - [ ] **Comando dos tratos como série de taxas qualquer**, além das formas prontas
-      (senoide, AM, rampa...).
+      força (comando descendente). Feito na linha de comando: `remoto sweep`, com os dois
+      protocolos prontos e lotes quaisquer (ver [Protocolos em lote](#protocolos-em-lote)); o
+      site ainda não os tem.
+    - [x] **Comando dos tratos como série de taxas qualquer**, além das formas prontas
+      (senoide, AM, rampa...). Feito: a modulação *series* da tela *Descending Commands*.
+
+    Os que mudam o modelo ficam no `settings` (ver *Campos que o DAO original não gravava*, no
+    Editor), e sem eles as simulações são as mesmas de antes. Falta um:
+    - [ ] **Motoneurônio integra-e-dispara** (sem canais iônicos), para simulações rápidas.
 
     O projectFR é GPL-3 e esta versão é MIT: os itens devem ser implementados a partir dos
     artigos e das equações, sem copiar o código, ou com a licença combinada com o autor.

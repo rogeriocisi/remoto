@@ -102,4 +102,30 @@ class ModulationTest {
         double product = same.nextDouble() * same.nextDouble() * same.nextDouble();
         assertThat(gamma).isEqualTo(-1.5 * Math.log(product));
     }
+    /** A série de pontos, que o original não tinha: interpolação linear, degraus e a janela. */
+    @Test
+    void serieDePontos() {
+        Modulation series = Modulation.series(new double[] {100, 0, 200, 50, 200, 10, 400, 30});
+        assertThat(series.tini()).isEqualTo(100);
+        assertThat(series.tfin()).isEqualTo(400);
+        assertThat(series.value(99)).isZero();
+        assertThat(series.value(150)).isCloseTo(25, within(1e-12));
+        assertThat(series.value(200)).isEqualTo(10); // o degrau: no mesmo tempo, vale o segundo
+        assertThat(series.value(300)).isCloseTo(20, within(1e-12));
+        assertThat(series.value(400)).isEqualTo(30);
+        assertThat(series.value(401)).isZero();
+        assertThat(Shape.of("series")).isEqualTo(Shape.SERIES);
+    }
+
+    @Test
+    void serieEmTexto() {
+        double[] points = Modulation.parseSeries("0 20; 1000:40 ;1000 10\n3000 10.5");
+        assertThat(points).containsExactly(0, 20, 1000, 40, 1000, 10, 3000, 10.5);
+        assertThat(Modulation.formatSeries(points)).isEqualTo("0 20; 1000 40; 1000 10; 3000 10.5");
+        assertThat(Modulation.parseSeries(" ")).isNull();
+        assertThatThrownBy(() -> Modulation.parseSeries("0 20")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Modulation.parseSeries("0 20; 10 1,5")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Modulation.parseSeries("100 20; 50 1")).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> Modulation.parseSeries("0 20 30; 50 1")).isInstanceOf(IllegalArgumentException.class);
+    }
 }

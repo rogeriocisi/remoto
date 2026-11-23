@@ -48,4 +48,33 @@ class RemotoCliTest {
 
         assertThat(new CommandLine(new RemotoCli()).execute("validate", bad.toString())).isEqualTo(2);
     }
+    /** A curva H/M em lote, com duas intensidades: uma linha por simulação em sweep.csv. */
+    @Test
+    void varreduraGravaUmaLinhaPorSimulacao() throws Exception {
+        Path scenario = Path.of("..", "scenarios", "remoto-17-default-soleus-contraction.json");
+        Path out = tmp.resolve("lote");
+
+        int exit = new CommandLine(new RemotoCli()).execute("sweep", scenario.toString(), "--protocol", "hm",
+                "--values", "0,40", "--keep-runs", "-o", out.toString());
+
+        assertThat(exit).isZero();
+        java.util.List<String> lines = Files.readAllLines(out.resolve("sweep.csv"));
+        assertThat(lines).hasSize(3);
+        assertThat(lines.get(0)).isEqualTo("NERVE:CD_NERVE=PTN:PEAK,M_p2p[mV],H_p2p[mV],M_motoneuronios,H_motoneuronios");
+        assertThat(lines.get(1)).startsWith("0,");
+        assertThat(lines.get(2)).startsWith("40,").endsWith(",900,0");
+        assertThat(out.resolve("run-2").resolve("results").resolve("emg-SOL.csv.gz")).exists();
+        assertThat(out.resolve("run-2").resolve("config.json")).exists();
+    }
+
+    @Test
+    void varreduraComParametroOuMedidaInvalidaRetornaCodigoDeErro() {
+        Path scenario = Path.of("..", "scenarios", "remoto-17-default-soleus-contraction.json");
+        CommandLine cli = new CommandLine(new RemotoCli());
+        assertThat(cli.execute("sweep", scenario.toString(), "--param", "NERVE:CD_NERVE=XX:PEAK", "--values", "1",
+                "--measure", "p2p(emg-SOL)", "-o", tmp.toString())).isEqualTo(2);
+        assertThat(cli.execute("sweep", scenario.toString(), "--param", "NERVE:CD_NERVE=PTN:PEAK", "--values", "1",
+                "--measure", "media(emg-SOL)", "-o", tmp.toString())).isEqualTo(2);
+        assertThat(cli.execute("sweep", scenario.toString(), "--protocol", "hm", "-o", tmp.toString())).isEqualTo(2);
+    }
 }

@@ -47,6 +47,7 @@ public class NeuralTract extends Neuron
 			signal.setWidth( neu.getWidth() );
 			signal.setDelay( neu.getDelay() );
 			signal.setModFactor( neu.getModFactor() );
+			signal.setSeries( neu.getRateSeriesPoints() );
 		}
 
 		this.generator = new TractSpikeGenerator(

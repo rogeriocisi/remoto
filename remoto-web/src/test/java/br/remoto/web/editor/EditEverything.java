@@ -55,7 +55,7 @@ final class EditEverything {
                         for (ScreenView.Row row : section.rows()) {
                             for (ScreenView.Cell cell : row.cells()) {
                                 if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")
-                                        || cell.name().endsWith(".distanceDecay")) {
+                                        || cell.name().endsWith(".distanceDecay") || cell.name().endsWith(".rateSeries")) {
                                     continue; // campo novo, que o DAO original não gravava: a referência é anterior a ele
                                 }
                                 if ((item.id().equals("joint") || item.id().equals("muscleSpindle")
@@ -97,7 +97,9 @@ final class EditEverything {
             case CHOICE -> {
                 // a opção "imposed" do modelo de articulação é posterior à referência
                 List<Field.Option> options = cell.options().stream()
-                        .filter(o -> !br.remoto.core.simulation.ReMoto.imposedAngle.equals(o.value())).toList();
+                        .filter(o -> !br.remoto.core.simulation.ReMoto.imposedAngle.equals(o.value())
+                                && !"series".equals(o.value()))
+                        .toList();
                 yield options.isEmpty() || k % 4 != 0 ? v : options.get(k % options.size()).value();
             }
             default -> v == null ? "" : v + (k % 2 == 0 ? " (editado)" : "");

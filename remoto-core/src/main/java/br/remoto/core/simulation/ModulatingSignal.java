@@ -25,6 +25,8 @@ public class ModulatingSignal implements Serializable
     private double delay;
     private double modFreq;
     private double modFactor;
+    // The points of the "series" shape (time and value alternated), not in the original
+    private double[] series;
 
     // Rebuilt from the properties above when one of them changes
     private transient Modulation modulation;
@@ -53,13 +55,26 @@ public class ModulatingSignal implements Serializable
 
     	if( m == null )
     	{
-    		m = new Modulation(Modulation.Shape.of(cdSignal), tini, tfin, amp, freq, width, delay, modFreq, modFactor);
+    		Modulation.Shape shape = Modulation.Shape.of(cdSignal);
+    		if( shape == Modulation.Shape.SERIES )
+    			// without points, the series does not modulate
+    			m = series == null ? new Modulation(Modulation.Shape.NONE, tini, tfin, amp, freq, width, delay, modFreq, modFactor)
+    					: Modulation.series(series);
+    		else
+    			m = new Modulation(shape, tini, tfin, amp, freq, width, delay, modFreq, modFactor);
     		modulation = m;
     	}
 
     	return m;
     }
 
+	public double[] getSeries() {
+		return series;
+	}
+	public void setSeries(double[] series) {
+		this.series = series;
+		this.modulation = null;
+	}
 	public double getAmp() {
 		return amp;
 	}
