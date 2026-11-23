@@ -648,9 +648,13 @@ final class LegacyResults {
             type[k] = neuron.getType();
             cd[k] = neuron.getCd();
             index[k] = neuron.getIndex();
-            double[] spikes = times(neuron.getTerminalSpikeTrain());
+            double[] train = times(neuron.getTerminalSpikeTrain());
+            count[k] = train.length;
+            // as frequências saem dos instantes distintos, em ordem: o reset dos tratos anota um
+            // disparo em t = 0 que pode coincidir com o primeiro (intervalo 0, frequência infinita),
+            // e o trem do terminal de um motoneurônio estimulado mistura os disparos do axônio
+            double[] spikes = distinctSorted(train);
             int s = spikes.length;
-            count[k] = s;
             if (s > 1) {
                 first[k] = 1000.0 / (spikes[1] - spikes[0]);
             }
@@ -771,6 +775,19 @@ final class LegacyResults {
             times[i] = spikes.get(i).time();
         }
         sink.spikes(name, units, times);
+    }
+
+    /** Os instantes em ordem, sem repetir os iguais. */
+    private static double[] distinctSorted(double[] times) {
+        double[] t = times.clone();
+        Arrays.sort(t);
+        int n = 0;
+        for (int i = 0; i < t.length; i++) {
+            if (n == 0 || t[i] != t[n - 1]) {
+                t[n++] = t[i];
+            }
+        }
+        return Arrays.copyOf(t, n);
     }
 
     private static double[] times(List<?> train) {

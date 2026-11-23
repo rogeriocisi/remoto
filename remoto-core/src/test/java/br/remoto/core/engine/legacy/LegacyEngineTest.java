@@ -233,6 +233,43 @@ class LegacyEngineTest {
         }
     }
 
+    /**
+     * O resumo dos disparos não tem frequência infinita: o reset de um trato anota um disparo em
+     * t = 0, que pode coincidir com o primeiro do processo (intervalo 0). As frequências saem dos
+     * instantes distintos, em ordem; a contagem de disparos continua a do trem.
+     */
+    @Test
+    void resumoSemFrequenciaInfinita() throws Exception {
+        Scenario scenario = json.fromBytes(Files.readAllBytes(scenariosDir().resolve("projectfr-neural-tract.json")),
+                Scenario.class);
+        Recorder r = run(scenario.withDuration(200));
+
+        String[] lines = r.outputs.get("tabela-resumo").split("\n");
+        assertThat(lines).hasSize(401);
+        List<String> header = List.of(lines[0].split(","));
+        int count = header.indexOf("disparos");
+        int first = header.indexOf("freq_primeiro_intervalo[Hz]");
+        int duplicates = 0;
+        for (int i = 1; i < lines.length; i++) {
+            assertThat(lines[i]).doesNotContain("Infinity").doesNotContain("NaN");
+            String[] f = lines[i].split(",");
+            if (Integer.parseInt(f[count]) > 2) {
+                assertThat(Double.parseDouble(f[first])).as(lines[i]).isPositive();
+            }
+        }
+        // o trem do trato tem disparos repetidos em t = 0, que a contagem mantém
+        String[] spikes = r.outputs.get("disparos-DT-CM_ext").split("\n");
+        java.util.Map<String, Integer> atZero = new java.util.HashMap<>();
+        for (int i = 1; i < spikes.length; i++) {
+            String[] f = spikes[i].split(",");
+            if (Double.parseDouble(f[0]) == 0) {
+                atZero.merge(f[1], 1, Integer::sum);
+            }
+        }
+        duplicates = (int) atZero.values().stream().filter(n -> n > 1).count();
+        assertThat(duplicates).as("axônios com dois disparos em t = 0").isPositive();
+    }
+
     /** O "Modelo completo" de scenarios/ liga todos os elementos: cada um aparece nas saídas. */
     @Test
     void modeloCompletoLigaTodosOsElementos() throws Exception {

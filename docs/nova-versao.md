@@ -406,7 +406,12 @@ antigo**:
   séries do original eram divisões por zero e não saem mais: a taxa do órgão tendinoso de um
   músculo sem fibras Ib ativas (o original divide a taxa pelo número delas: NaN, depois infinito) e
   a força normalizada de um músculo sem unidades motoras (força máxima 0). Nenhuma fibra lia a
-  primeira, então a dinâmica não muda; só o hash "completo" do golden master do 17 mudou.
+  primeira, então a dinâmica não muda; só o hash "completo" do golden master do 17 mudou. No
+  resumo dos disparos, as frequências (do primeiro intervalo, dos quatro primeiros e do regime)
+  saem dos instantes distintos do trem, em ordem: o reset de um trato anota um disparo que pode
+  coincidir com o primeiro, e os ruídos de intervalos gaussianos às vezes repetem um instante,
+  o que dava intervalo 0 e frequência infinita (o hash "completo" do 42 mudou por isso). A contagem
+  de disparos continua a do trem.
 
 ### Garantias (testes em `br.remoto.core.engine.legacy`; os do editor, no `remoto-web`)
 
@@ -414,7 +419,7 @@ antigo**:
 |---|---|
 | Banco original × referência | As 30 configurações do banco original (40 ms, seed = ID) batem com hashes gerados quando a configuração ainda era montada pelo `ConfigurationDAO` original lendo do HSQLDB (antes, um teste comparava os dois caminhos campo a campo) |
 | Export sem HSQLDB | O export lê o `remoto.script` direto e reproduz os cenários `remoto-*` de `scenarios/`, fora a descrição, escrita à mão nos que não tinham uma, e os tratos gama do 24 e do 42, publicados como Poisson (os três do site antigo tinham sido exportados pelo HSQLDB) |
-| Sem NaN nas séries | Nas configurações 17 e 18, nenhuma série tem NaN nem infinito: o órgão tendinoso sem fibras Ib e a força normalizada de músculo sem unidades motoras não saem (`LegacyEngineTest`) |
+| Sem NaN nas séries | Nas configurações 17 e 18, nenhuma série tem NaN nem infinito: o órgão tendinoso sem fibras Ib e a força normalizada de músculo sem unidades motoras não saem; o resumo do `projectfr-neural-tract`, com disparos repetidos em t = 0, não tem frequência infinita (`LegacyEngineTest`) |
 | Modelo completo | O `modelo-completo.json` liga todos os elementos do modelo, e cada um (músculos, fusos, OTG, aferentes, interneurônios, tratos, articulação) aparece nas saídas |
 | Sinais no tempo | Com o ângulo imposto, o tornozelo segue o ângulo inicial mais o sinal, e o comprimento e os fusos acompanham; com o fusimotor modulado, nada muda antes do início do sinal, e o estático aumenta o disparo dos II; no fuso isolado, o dinâmico aumenta a Ia no estiramento e o estático, a II (`SignalsOverTimeTest`, `SpindleTest`); o `estiramento-tornozelo.json` impõe o trapézio |
 | Estímulo e aferentes | Por corrente, a duração do pulso não muda quem dispara; por carga, o pulso de 1 ms recruta quase os mesmos axônios e o de 0,2 ms, nenhum; cada duração precisa da intensidade da curva de Lapicque (`LeakyChargeTest`); a ordem gama escolhida muda a regularidade dos aferentes, e 0 é a do original (`NerveAndAfferentOptionsTest`, `AfferentFiberTest`) |
