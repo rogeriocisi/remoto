@@ -673,7 +673,8 @@ public final class LegacyScreens {
         // as formas de sinal da tela Descending Commands (aqui, e não num campo estático, que as telas
         // são registradas antes de os campos estáticos serem iniciados)
         String[] shapes = {"none", "none", "constant", "constant", "ramp", "ramp", "random", "random",
-                "sine", "sine", "square", "square", "trapezoid", "trapezoid", "triangle", "triangle", "AM", "AM"};
+                "sine", "sine", "square", "square", "trapezoid", "trapezoid", "triangle", "triangle", "AM", "AM",
+                "series", "series"};
         return new Part(title, Layout.LIST,
                 (conf, sel) -> signals.apply(conf),
                 item -> switch (String.valueOf(((ModulatingSignal) item).getCdNeuronType())) {
@@ -690,7 +691,8 @@ public final class LegacyScreens {
                         Field.number("Delay", "ms", "delay"),
                         Field.number("Width", null, "width"),
                         Field.number("Modulating frequency", "Hz", "modFreq"),
-                        Field.number("Modulating factor", null, "modFactor")));
+                        Field.number("Modulating factor", null, "modFactor"),
+                        Field.text("Series points: time [ms] and value", "seriesText")));
     }
 
     /** muscleSpindle.jsp / MuscleSpindleAction. */
@@ -748,7 +750,9 @@ public final class LegacyScreens {
                         "Imposed ankle angle: with the joint model \"Imposed angle (perturbation)\", the ankle"
                                 + " follows the initial angle plus this signal, in degrees (a ramp-and-hold stretch,"
                                 + " a sine, steps...), and the muscle lengths follow it. The spindles only respond"
-                                + " with the Hill muscle model, which computes the fascicle length.",
+                                + " with the Hill muscle model, which computes the fascicle length. With the"
+                                + " modulation \"series\", the angle follows the points (time and value separated"
+                                + " by a space, the points by \";\"), linearly interpolated: any trajectory.",
                         SETTINGS_NOTE));
     }
 

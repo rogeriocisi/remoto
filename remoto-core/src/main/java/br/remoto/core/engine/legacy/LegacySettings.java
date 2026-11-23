@@ -50,7 +50,8 @@ public final class LegacySettings {
      * Sinais no tempo, que o site antigo não tinha: o ângulo imposto ao tornozelo (graus, somado ao
      * inicial, no modelo de articulação "imposed") e os disparos fusimotores dinâmico e estático
      * (Hz, somados aos constantes). Cada um é a forma e os parâmetros de um sinal modulante; só é
-     * gravado quando tem forma ("none" é o padrão: o comportamento do original).
+     * gravado quando tem forma ("none" é o padrão: o comportamento do original). Na forma "series",
+     * os pontos vão em {@code points}, uma lista de pares [tempo (ms), valor].
      */
     public static final List<String> SIGNALS = List.of("jointAngleSignal", "gammaDynamicSignal", "gammaStaticSignal");
 
@@ -121,6 +122,9 @@ public final class LegacySettings {
                                 ((Number) number(values.get(field))).doubleValue());
                     }
                 }
+                if (values.get("points") != null) {
+                    signal.setSeries(points(values.get("points"), key));
+                }
             }
         }
         if (settings.get(TRACT_STD) instanceof Map<?, ?> std) {
@@ -142,16 +146,8 @@ public final class LegacySettings {
         if (settings.get(TRACT_SERIES) instanceof Map<?, ?> series) {
             for (Object o : conf.getNeuronTypes()) {
                 if (o instanceof NeuronVO neu && ReMoto.TR.equals(neu.getCategory())
-                        && series.get(neu.getCdNucleus() + ":" + neu.getType()) instanceof List<?> points) {
-                    double[] flat = new double[points.size() * 2];
-                    for (int i = 0; i < points.size(); i++) {
-                        if (!(points.get(i) instanceof List<?> pair) || pair.size() != 2) {
-                            throw new IllegalArgumentException("tractSeries: cada ponto é [tempo, valor]");
-                        }
-                        flat[2 * i] = ((Number) number(pair.get(0))).doubleValue();
-                        flat[2 * i + 1] = ((Number) number(pair.get(1))).doubleValue();
-                    }
-                    neu.setRateSeriesPoints(flat);
+                        && series.get(neu.getCdNucleus() + ":" + neu.getType()) != null) {
+                    neu.setRateSeriesPoints(points(series.get(neu.getCdNucleus() + ":" + neu.getType()), TRACT_SERIES));
                 }
             }
         }
@@ -235,12 +231,7 @@ public final class LegacySettings {
         Map<String, Object> series = new LinkedHashMap<>();
         for (Object o : conf.getNeuronTypes()) {
             if (o instanceof NeuronVO neu && ReMoto.TR.equals(neu.getCategory()) && neu.getRateSeriesPoints() != null) {
-                double[] flat = neu.getRateSeriesPoints();
-                List<List<Double>> points = new java.util.ArrayList<>();
-                for (int i = 0; i < flat.length; i += 2) {
-                    points.add(List.of(flat[i], flat[i + 1]));
-                }
-                series.put(neu.getCdNucleus() + ":" + neu.getType(), points);
+                series.put(neu.getCdNucleus() + ":" + neu.getType(), pairs(neu.getRateSeriesPoints()));
             }
         }
         if (!series.isEmpty()) {
@@ -279,10 +270,38 @@ public final class LegacySettings {
                 for (String field : SIGNAL_FIELDS) {
                     values.put(field, invoke(signalDescriptor(field).getReadMethod(), signal));
                 }
+                if ("series".equals(signal.getCdSignal()) && signal.getSeries() != null) {
+                    values.put("points", pairs(signal.getSeries()));
+                }
                 settings.put(key, values);
             }
         }
         return settings;
+    }
+
+    /** Uma lista de pares [tempo, valor] como a série achatada (t0, v0, t1, v1...), conferida. */
+    private static double[] points(Object raw, String key) {
+        if (!(raw instanceof List<?> points)) {
+            throw new IllegalArgumentException(key + ": os pontos são uma lista de pares [tempo, valor]");
+        }
+        double[] flat = new double[points.size() * 2];
+        for (int i = 0; i < points.size(); i++) {
+            if (!(points.get(i) instanceof List<?> pair) || pair.size() != 2) {
+                throw new IllegalArgumentException(key + ": cada ponto é [tempo, valor]");
+            }
+            flat[2 * i] = ((Number) number(pair.get(0))).doubleValue();
+            flat[2 * i + 1] = ((Number) number(pair.get(1))).doubleValue();
+        }
+        br.remoto.core.model.signal.Modulation.checkSeries(flat);
+        return flat;
+    }
+
+    private static List<List<Double>> pairs(double[] flat) {
+        List<List<Double>> points = new java.util.ArrayList<>();
+        for (int i = 0; i < flat.length; i += 2) {
+            points.add(List.of(flat[i], flat[i + 1]));
+        }
+        return points;
     }
 
     private static List<?> nerves(Configuration conf) {

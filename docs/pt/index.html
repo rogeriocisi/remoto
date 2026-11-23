@@ -729,11 +729,14 @@
     <section class="sec" id="scenarios">
       <div class="sec-no"><b>5</b>Cenários</div>
       <div class="sec-body">
-        <h2>Vinte e um cenários prontos para rodar</h2>
+        <h2>Trinta e sete cenários prontos para rodar</h2>
         <div class="prose">
           <p class="lead">Um cenário é um arquivo JSON com a configuração inteira, a duração, o passo de integração e a
             seed. Os três primeiros eram os cenários públicos do site antigo; os dezesseis seguintes foram recuperados
-            do banco de dados dele; os dois últimos partem do 24 e foram montados para mostrar recursos.</p>
+            do banco de dados dele; os dois seguintes partem do 24 e foram montados para mostrar recursos; e os
+            dezesseis últimos convertem os exemplos da versão em Fortran (<a
+              href="https://github.com/rnwatanabe/projectFR">projectFR</a>): o desenho de cada experimento, com os
+            parâmetros dos modelos do ReMoto em Java.</p>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -917,6 +920,134 @@
                 <td class="num">1,5 s</td>
                 <td class="file"><a
                     href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/estiramento-tornozelo.json">estiramento-tornozelo</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Antidromic stimulation of MN and RC</th>
+                <td>Estimulação antidrômica de 5 motoneurônios do sóleo ligados a 2 células de Renshaw</td>
+                <td class="num">0,6 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-antidromic-stimulation.json">projectfr-antidromic-stimulation</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Force variability</th>
+                <td>Força isométrica do tríceps sural com 400 axônios num processo gama, a 140 disparos/s</td>
+                <td class="num">16 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-force-variability.json">projectfr-force-variability</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – H-reflex and M-wave curve</th>
+                <td>Reflexo H e onda M do sóleo com um pulso de 12 mA; a curva sai do <code>remoto sweep</code></td>
+                <td class="num">0,05 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-h-reflex-m-wave.json">projectfr-h-reflex-m-wave</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Ankle impedance</th>
+                <td>O tornozelo perturbado por uma soma de 200 senoides, com os quatro músculos passivos</td>
+                <td class="num">2 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-ankle-impedance.json">projectfr-ankle-impedance</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Renshaw cells with injected current</th>
+                <td>350 células de Renshaw com corrente injetada, sem motoneurônios</td>
+                <td class="num">0,1 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-renshaw-injected-current.json">projectfr-renshaw-injected-current</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Closed loop with Ia feedback</th>
+                <td>O sóleo com comando descendente e realimentação Ia, e o tornozelo numa senoide de 1 Hz</td>
+                <td class="num">5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-isometric-closed-loop.json">projectfr-isometric-closed-loop</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – MN pool with Renshaw cells</th>
+                <td>O sóleo com inibição recorrente pelas células de Renshaw</td>
+                <td class="num">5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-mn-pool-renshaw.json">projectfr-mn-pool-renshaw</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Motor-unit pool EMG</th>
+                <td>800 unidades motoras com corrente constante no dendrito: a força e o EMG</td>
+                <td class="num">5 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-motor-unit-pool-emg.json">projectfr-motor-unit-pool-emg</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Motor-unit pool with descending command</th>
+                <td>O sóleo movido por 400 axônios descendentes a 60 disparos/s</td>
+                <td class="num">1 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-descending-command.json">projectfr-descending-command</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Motor units with node-of-Ranvier axons</th>
+                <td>3 motoneurônios com nó de Ranvier no ponto do estímulo, passo de 0,005 ms</td>
+                <td class="num">0,1 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-node-axons.json">projectfr-node-axons</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Hill muscle with imposed angle</th>
+                <td>O músculo de Hill do sóleo, com o tornozelo numa senoide de 1 Hz</td>
+                <td class="num">1 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-hill-muscle.json">projectfr-hill-muscle</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Muscle spindle</th>
+                <td>O fuso do tibial anterior num estiramento senoidal de 0,25 Hz</td>
+                <td class="num">20 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-muscle-spindle.json">projectfr-muscle-spindle</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Neural tract</th>
+                <td>400 axônios descendentes sozinhos, a 83 disparos/s</td>
+                <td class="num">10 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-neural-tract.json">projectfr-neural-tract</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Single neural tract unit</th>
+                <td>Um axônio descendente com intervalos de 4 ms e a estatística deles</td>
+                <td class="num">10 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-neural-tract-unit.json">projectfr-neural-tract-unit</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Postural control</th>
+                <td>Postura ereta com os quatro músculos, aferentes Ia, II e Ib e interneurônios; o corpo cai em cerca de 1,3 s</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-postural-control.json">projectfr-postural-control</a>
+                </td>
+              </tr>
+              <tr>
+                <th>projectFR – Reciprocal inhibition</th>
+                <td>Inibição recíproca do sóleo por um pulso no nervo fibular comum</td>
+                <td class="num">1,1 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-reciprocal-inhibition.json">projectfr-reciprocal-inhibition</a>
                 </td>
               </tr>
             </tbody>

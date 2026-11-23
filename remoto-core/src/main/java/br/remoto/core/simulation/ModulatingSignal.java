@@ -68,6 +68,13 @@ public class ModulatingSignal implements Serializable
     	return m;
     }
 
+	/** The points of the "series" shape as text ("0 20; 1000 40"), for the editor. */
+	public String getSeriesText() {
+		return Modulation.formatSeries(series);
+	}
+	public void setSeriesText(String text) {
+		setSeries(Modulation.parseSeries(text));
+	}
 	public double[] getSeries() {
 		return series;
 	}

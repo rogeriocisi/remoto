@@ -104,6 +104,26 @@ class SignalsOverTimeTest {
                 .doesNotContainKeys("jointAngleSignal", "gammaDynamicSignal", "gammaStaticSignal");
     }
 
+    /** O ângulo imposto como série de pontos (a forma "series"): os pontos vão e voltam pelo settings. */
+    @Test
+    void anguloComoSerieDePontos() {
+        LegacyConfig original = db.export(17);
+        Map<String, Object> angle = signal("series", 0, 0, 0, 0);
+        angle.put("points", java.util.List.of(java.util.List.of(0.0, 0.0), java.util.List.of(50.0, 4.0),
+                java.util.List.of(100.0, 0.0)));
+        Map<String, Object> settings = Map.of("cdJointModel", "imposed", "jointAngleSignal", angle);
+        LegacyConfig with = new LegacyConfig(original.format(), original.idConfiguration(), original.tables(), settings);
+
+        LegacyConfig stored = LegacyConfigurations.store(LegacyConfigurations.load(with), with);
+        Map<?, ?> saved = (Map<?, ?>) stored.settings().get("jointAngleSignal");
+        assertThat(saved.get("shape")).isEqualTo("series");
+        assertThat(saved.get("points")).isEqualTo(angle.get("points"));
+
+        Recorder r = run(Map.of("cdJointModel", "imposed", "cdMuscleModel", "hill", "jointAngleSignal", angle));
+        double[] a = values(r, "articulacao-angulo");
+        assertThat(java.util.Arrays.stream(a).max().orElseThrow()).isCloseTo(4, within(1e-6));
+    }
+
     private static Map<String, Object> signal(String shape, double tini, double tfin, double amp, double width) {
         Map<String, Object> s = new LinkedHashMap<>();
         s.put("shape", shape);

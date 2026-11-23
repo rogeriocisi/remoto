@@ -402,7 +402,11 @@ antigo**:
   "summary" do site antigo); e o `catalogo`, que descreve cada saída. Tudo isso já é calculado
   pela simulação: nada é sorteado e as saídas básicas não mudam. O ISI médio dos tratos e a
   corrente injetada são gravados durante a simulação, com o valor que o modelo usou, porque os
-  sinais aleatório e gama sorteiam a cada avaliação e não podem ser recalculados depois.
+  sinais aleatório e gama sorteiam a cada avaliação e não podem ser recalculados depois. Duas
+  séries do original eram divisões por zero e não saem mais: a taxa do órgão tendinoso de um
+  músculo sem fibras Ib ativas (o original divide a taxa pelo número delas: NaN, depois infinito) e
+  a força normalizada de um músculo sem unidades motoras (força máxima 0). Nenhuma fibra lia a
+  primeira, então a dinâmica não muda; só o hash "completo" do golden master do 17 mudou.
 
 ### Garantias (testes em `br.remoto.core.engine.legacy`; os do editor, no `remoto-web`)
 
@@ -410,10 +414,12 @@ antigo**:
 |---|---|
 | Banco original × referência | As 30 configurações do banco original (40 ms, seed = ID) batem com hashes gerados quando a configuração ainda era montada pelo `ConfigurationDAO` original lendo do HSQLDB (antes, um teste comparava os dois caminhos campo a campo) |
 | Export sem HSQLDB | O export lê o `remoto.script` direto e reproduz os cenários `remoto-*` de `scenarios/`, fora a descrição, escrita à mão nos que não tinham uma, e os tratos gama do 24 e do 42, publicados como Poisson (os três do site antigo tinham sido exportados pelo HSQLDB) |
+| Sem NaN nas séries | Nas configurações 17 e 18, nenhuma série tem NaN nem infinito: o órgão tendinoso sem fibras Ib e a força normalizada de músculo sem unidades motoras não saem (`LegacyEngineTest`) |
 | Modelo completo | O `modelo-completo.json` liga todos os elementos do modelo, e cada um (músculos, fusos, OTG, aferentes, interneurônios, tratos, articulação) aparece nas saídas |
 | Sinais no tempo | Com o ângulo imposto, o tornozelo segue o ângulo inicial mais o sinal, e o comprimento e os fusos acompanham; com o fusimotor modulado, nada muda antes do início do sinal, e o estático aumenta o disparo dos II; no fuso isolado, o dinâmico aumenta a Ia no estiramento e o estático, a II (`SignalsOverTimeTest`, `SpindleTest`); o `estiramento-tornozelo.json` impõe o trapézio |
 | Estímulo e aferentes | Por corrente, a duração do pulso não muda quem dispara; por carga, o pulso de 1 ms recruta quase os mesmos axônios e o de 0,2 ms, nenhum; cada duração precisa da intensidade da curva de Lapicque (`LeakyChargeTest`); a ordem gama escolhida muda a regularidade dos aferentes, e 0 é a do original (`NerveAndAfferentOptionsTest`, `AfferentFiberTest`) |
 | Nó de Ranvier | Parado, o nó fica no repouso da tabela 1 de Howells et al. (2012); o limiar da configuração vale para um pulso de 1 ms; a constante intensidade-duração sai do modelo, de cerca de 0,4 ms no motor e 0,5 ms no sensitivo; há refratariedade (`AxonNodeTest`); no motor, o pulso de 1 ms recruta quase os mesmos axônios que o limiar de corrente, e o de 0,2 ms, nenhum (`NerveAndAfferentOptionsTest`) |
+| Exemplos do projectFR | Os 16 `projectfr-*.json` são o que o gerador produz, e cada um valida e roda (`ProjectFrExamplesTest`) |
 | Série de taxas | A forma "series" interpola os pontos, faz degraus e vale 0 fora da janela; os 100 axônios do CM_ext seguem 0 Hz, um degrau para 200 Hz e uma rampa de volta (cerca de 2000 disparos no platô e 1000 na rampa); a série fica no `settings` (`ModulationTest`, `TractSeriesTest`) |
 | Protocolos em lote | O parâmetro muda uma célula de tabela, o `settings`, a seed ou a duração; as medidas; na curva H/M da configuração 17, sem corrente nenhum motoneurônio dispara na janela da onda M e, com 40 mA, todos; na variabilidade da força, o intervalo maior dá força menor (`SweepTest`); o `remoto sweep` grava uma linha por simulação (`RemotoCliTest`) |
 | Decaimento com a distância | Com decaimento nas sinapses do trato CM_ext no sóleo, a parte do trato na condutância de cada motoneurônio cai e fica maior no meio do núcleo que nas pontas; o valor fica no `settings` e volta ao reabrir (`SynapseDistanceDecayTest`) |
@@ -495,6 +501,22 @@ linha), e o `LegacyDatabase` o lê direto, sem o HSQLDB.
 | `remoto-44-…` | *identSOLRenshaw*: o sóleo com as células de Renshaw (inibição recorrente) | 1,5 s |
 | `modelo-completo` | Todos os elementos do modelo ligados, a partir do 24 (detalhes na descrição do cenário) | 2 s |
 | `estiramento-tornozelo` | Reflexo de estiramento: o 24 com o tornozelo em ângulo imposto, um trapézio de 5° em dorsiflexão a partir de 700 ms | 1,5 s |
+| `projectfr-antidromic-stimulation` | *AntidromicSimulationofMNandRC*: Estimulação antidrômica de 5 motoneurônios do sóleo ligados a 2 células de Renshaw | 0,6 s |
+| `projectfr-force-variability` | *ForceVariability*: Força isométrica do tríceps sural com 400 axônios num processo gama, a 140 disparos/s | 16 s |
+| `projectfr-h-reflex-m-wave` | *H-ReflexM-WaveCurve*: Reflexo H e onda M do sóleo com um pulso de 12 mA; a curva sai do `remoto sweep` | 0,05 s |
+| `projectfr-ankle-impedance` | *ImpedanceAnkle*: O tornozelo perturbado por uma soma de 200 senoides, com os quatro músculos passivos | 2 s |
+| `projectfr-renshaw-injected-current` | *InjectedCurrentRenshawCellPool*: 350 células de Renshaw com corrente injetada, sem motoneurônios | 0,1 s |
+| `projectfr-isometric-closed-loop` | *IsometricClosedLoop*: O sóleo com comando descendente e realimentação Ia, e o tornozelo numa senoide de 1 Hz | 5 s |
+| `projectfr-mn-pool-renshaw` | *MNPoolWithRenshawCells*: O sóleo com inibição recorrente pelas células de Renshaw | 5 s |
+| `projectfr-motor-unit-pool-emg` | *MotorUnitPoolEMG*: 800 unidades motoras com corrente constante no dendrito: a força e o EMG | 5 s |
+| `projectfr-descending-command` | *MotorUnitWithDescendingCommand*: O sóleo movido por 400 axônios descendentes a 60 disparos/s | 1 s |
+| `projectfr-node-axons` | *MotorUnitWithNodeAxonsAndDescendingCommand*: 3 motoneurônios com nó de Ranvier no ponto do estímulo, passo de 0,005 ms | 0,1 s |
+| `projectfr-hill-muscle` | *MuscleHillExample*: O músculo de Hill do sóleo, com o tornozelo numa senoide de 1 Hz | 1 s |
+| `projectfr-muscle-spindle` | *MuscleSpindleExample*: O fuso do tibial anterior num estiramento senoidal de 0,25 Hz | 20 s |
+| `projectfr-neural-tract` | *NeuralTractExample*: 400 axônios descendentes sozinhos, a 83 disparos/s | 10 s |
+| `projectfr-neural-tract-unit` | *NeuralTractUnitExample*: Um axônio descendente com intervalos de 4 ms e a estatística deles | 10 s |
+| `projectfr-postural-control` | *PosturalControl*: Postura ereta com os quatro músculos, aferentes Ia, II e Ib e interneurônios; o corpo cai em cerca de 1,3 s | 12 s |
+| `projectfr-reciprocal-inhibition` | *reciprocalInhibition*: Inibição recíproca do sóleo por um pulso no nervo fibular comum | 1,1 s |
 
 Os três primeiros são os públicos do site antigo (usuário `guest`). Os seguintes são
 configurações de outros usuários do banco, publicadas com uma descrição escrita a partir do que
@@ -510,6 +532,22 @@ mostrar todos os elementos, não para reproduzir um experimento. O `estiramento-
 parte do 24 e escolhe, no `settings`, o músculo de Hill e o tornozelo em ângulo imposto: em 700 ms
 o pé é levado 5° em dorsiflexão em 100 ms, fica 100 ms e volta em 100 ms; os fusos do tríceps sural
 respondem, e os Ia excitam os motoneurônios. Mostra o recurso; não reproduz um experimento.
+
+Os 16 `projectfr-*` convertem os exemplos da pasta `Examples` do
+[projectFR](https://github.com/rnwatanabe/projectFR), a versão em Fortran do ReMoto (R. N.
+Watanabe). Cada um tem o desenho do exemplo (o que é simulado, por quanto tempo, com que comando,
+estímulo, mecânica e fusimotor) sobre a configuração 24, que tem os quatro músculos e todas as
+tabelas; os parâmetros dos modelos são os do ReMoto em Java, e quando o exemplo muda uma
+conectividade, uma condutância ou a dinâmica de uma sinapse (o projectFR usa a mesma estrutura, em
+µS em vez de nS), o cenário muda também. Os lotes dos exemplos viram um cenário e o comando do
+`remoto sweep` na descrição (a curva H/M, a variabilidade da força, as tentativas do controle
+postural), e o que não tem equivalente também está na descrição: a cadeia de 50 nós de Ranvier vira
+um nó no ponto do estímulo, e o fuso sozinho recebe o comprimento pelo tornozelo, calibrado para a
+faixa do exemplo. As taxas que não dão um intervalo médio inteiro (a coluna MEAN do banco é
+inteira) usam o intervalo 0 e um sinal constante com o alvo *rate*. Os arquivos saem de um gerador
+(`ProjectFrExamples`, nos testes do `remoto-cli`); o `ProjectFrExamplesTest` confere que os arquivos
+são o que ele produz e roda cada um, e `-Dremoto.gerar.cenarios=<pasta>` os grava de novo. O
+projectFR é GPL-3: dos exemplos vêm o desenho dos experimentos e alguns valores, não código.
 
 **Tratos com processo gama.** O processo gama dos tratos descendentes usa como ordem o `std` do
 `NeuronVO`, que o `ConfigurationDAO` original não gravava: ele gravava na coluna `STD` o campo
@@ -655,6 +693,9 @@ original:
   → ordem inteira). O disparo pelo receptor é um processo gama; o original fixava a ordem no
   código (Ia 25, Ib 30, II 400, e a II volta para 25 depois do primeiro disparo). Ordem maior
   deixa o disparo mais regular; 0 mantém a do original.
+- **Sinais como série de pontos** no ângulo imposto e no fusimotor: a forma *series*, com os
+  pontos em `points` (pares [tempo em ms, valor]) e, no editor, no campo *Series points*; o
+  `projectfr-ankle-impedance` usa uma soma de 200 senoides amostrada a cada 0,5 ms.
 - **Série de taxas dos tratos** (a modulação *series* e a parte nova da tela *Descending
   Commands*, `tractSeries`: "DT:tipo" → lista de pares [tempo em ms, valor]): o sinal segue os
   pontos, interpolados, do primeiro ao último (dois pontos no mesmo tempo fazem um degrau). Com o
