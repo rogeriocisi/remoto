@@ -54,6 +54,21 @@ code.forEach((l, i) => {
   if (/[<>]/.test(noMath)) bad(`line ${i + 1}: < or > in text mode`);
   for (const e of l.matchAll(/\\end\{([^}]+)\}/g)) { const k = env.lastIndexOf(e[1]); if (k >= 0) env.splice(k, 1); }
 });
+// 7b. a comment that swallowed the rest of a line (an edit inserted "%..." mid-paragraph).
+// Runs over the raw lines, before comments are stripped.
+let verb = false;
+lines.forEach((l, i) => {
+  if (l.includes('\\begin{verbatim}')) verb = true;
+  if (l.includes('\\end{verbatim}')) verb = false;
+  if (verb) return;
+  const cm = l.match(/(^|[^\\])%(.*)$/);
+  if (!cm) return;
+  const after = cm[2];
+  if (/\\(cite[tp]?|ref|eqref|includegraphics|label)\{/.test(after) || after.length > 400) {
+    bad(`line ${i + 1}: comment looks like it swallowed text (${after.length} chars after %)`);
+  }
+});
+
 // 8. figures exist
 for (const x of body.matchAll(/\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}/g)) { const p = path.join(dir, 'figures', x[1] + '.pdf'); if (!fs.existsSync(p)) bad('missing figure file ' + p); }
 // 9. table rows: same number of columns within each tabular

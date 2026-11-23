@@ -65,6 +65,10 @@
 
 ReMoto is a simulator of the spinal cord circuits that control muscles, built to interpret human neurophysiological experiments, to test hypotheses about neuronal dynamics and to teach neurophysiology \citep{Cisi2008}. It represents the motor nuclei of four ankle muscles (soleus, medial and lateral gastrocnemius, tibialis anterior) with two-compartment motoneurons of types S, FR and FF, Renshaw cells and other spinal interneurons, Ia, II and Ib afferents, descending tracts modeled as stochastic point processes, and electrical stimulation of nerves with orthodromic and antidromic propagation. Each motoneuron spike produces, after a conduction delay, a motor-unit action potential and a twitch, and their sums give the electromyogram (EMG) and the muscle force. Later work added active dendrites with persistent inward currents \citep{Elias2012,Elias2013}, studied how the statistics of the descending command shape force and EMG variability \citep{Watanabe2013}, closed the loop with proprioceptors and an inverted-pendulum model of upright stance \citep{Elias2014}, and showed that fast oscillatory commands from the motor cortex can be decoded by the spinal cord for force control \citep{Watanabe2015}.
 
+The simulator has also been used to study the depression of the H-reflex \citep{Cisi2007}, force fluctuations in a motoneuron pool \citep{Kohn2009}, the effect of activation-dependent muscle stiffness on proprioceptive feedback and the short-latency reflex \citep{Chaud2012}, the H and T reflexes \citep{Mezzarane2013}, the low-frequency fluctuations of plantar-flexion torque in force and position tasks \citep{Watanabe2013ner}, the identification of a motor-unit pool \citep{Watanabe2014} and the effect of neurodegenerative diseases on sensorimotor control \citep{Elias2018,Oliveira2022}, and in the teaching of neuroscience \citep{EliasKohn2013teaching}.
+% TODO(authors): the project site lists nine more conference presentations, without DOIs;
+% they are transcribed at the end of references.bib for you to add if you want them cited.
+
 General-purpose simulators such as NEURON \citep{Hines1997}, NEST \citep{Gewaltig2007}, Brian~2 \citep{Stimberg2019} and NetPyNE \citep{DuraBernal2019} cover the neuronal part of such a system, and musculoskeletal packages such as OpenSim \citep{Delp2007} cover the mechanical part. Models of the motor-unit pool with force and EMG generation \citep{Fuglevand1993,Dideriksen2010} sit between the two. ReMoto was designed for the whole chain from descending command to joint torque in one tool, configured through a Web page, so that an experimentalist can set up a virtual version of an H-reflex or force-control experiment without programming. A version of ReMoto written in Fortran, announced on the project site, was later adapted to study Guillain--Barr\'e syndrome \citep{Oliveira2022}.
 % TODO(authors): describe the relation between the Java code base of this paper and the
 % Fortran versions announced on the project site on 2024-06-26
@@ -79,7 +83,12 @@ That Web page is what aged. The original system was a Java Web application built
 % applets were not tried.
 The code also called \code{Math.random()} and \code{new Random()} without a seed, so two runs of the same configuration never gave the same spike trains and no published figure could be regenerated exactly. Reproducibility of simulation results is a long-standing concern in computational neuroscience \citep{Crook2013,McDougal2016,Eglen2017}, and reproducing a model from its original code can be hard even when that code is available \citep{Pauli2018,Rougier2017}.
 
-This paper describes a new version of ReMoto that keeps the published models and replaces the platform around them. We set one requirement for the port: the new code had to give the same numbers as the old one, bit for bit, in every output, and every exception had to be deliberate, tested and recorded. This is stricter than the statistical comparison used when a model is moved between simulators \citep{Gutzen2018,Trensch2018}, and it was possible here because the language stayed the same. It turned the original program into the specification of the new one, in the way characterization tests are used on legacy software \citep{Feathers2004}. The requirement had a scientific return as well: holding the outputs fixed while the code was taken apart exposed two defects in the inherited code, one of which had changed the dynamics of every synapse since 2016.
+This paper describes a new version of ReMoto, 3.0, that keeps the published models and replaces the platform around them. The last release of the Web application was 2.1, in December 2011, preceded by 2.0 (July 2011) and 1.1.5 (2008).
+% TODO(authors): the release dates above come from the Downloads page of the project site,
+% read on 2026-11-23, which also lists a 2.2 beta (June 2012) and a standalone 2.0 for
+% Windows. Confirm them, and confirm that the new version should be numbered 3.0 (it is
+% 3.0.0-SNAPSHOT in the Maven modules).
+We set one requirement for the port: the new code had to give the same numbers as the old one, bit for bit, in every output, and every exception had to be deliberate, tested and recorded. This is stricter than the statistical comparison used when a model is moved between simulators \citep{Gutzen2018,Trensch2018}, and it was possible here because the language stayed the same. It turned the original program into the specification of the new one, in the way characterization tests are used on legacy software \citep{Feathers2004}. The requirement had a scientific return as well: holding the outputs fixed while the code was taken apart exposed two defects in the inherited code, one of which had changed the dynamics of every synapse since 2016.
 
 The contributions are (i) a description of the new architecture, in which a simulation is fully determined by a scenario file, a seed and an engine version; (ii) the method used to port a legacy simulator with bit-for-bit equivalence, including the behavior of the database that the old code relied on without stating it; (iii) a parallel update of the neurons whose results do not depend on the number of threads; and (iv) the analysis of the two defects and of their effect on the simulated motor output.
 
@@ -140,7 +149,7 @@ Time advances with a fixed step $h$ (0.05\,ms in all public scenarios). In each 
 
 \subsection{Software architecture}\label{sec:architecture}
 
-The new version is written in Java~25 and built with Maven as four modules (Fig.~\ref{fig:architecture}). Table~\ref{tab:stack} compares it with the original system.
+Version 3.0 is written in Java~25 and built with Maven as four modules (Fig.~\ref{fig:architecture}). Table~\ref{tab:stack} compares it with the original system.
 
 \begin{figure*}[t]
 \centering
@@ -552,11 +561,22 @@ The scenarios used in this paper are distributed with the source code. The outpu
 
 \bmhead{Code availability}
 
-The source code of the simulator, the public scenarios, the original database as a text file and the automated tests are available at \url{https://github.com/rogeriocisi/remoto} under the MIT license. The original system remains available in the parent repository, \url{https://github.com/rnwatanabe/remoto}.
+The source code of version 3.0, the public scenarios, the original database as a text file and the automated tests are available at \url{https://github.com/rogeriocisi/remoto}. The original system remains available in the parent repository, \url{https://github.com/rnwatanabe/remoto}, and the model of \citet{Cisi2008} has an entry in ModelDB (accession 117810).
 % TODO(authors): tag the release that the paper describes, archive it with a DOI (for
-% example on Zenodo), and give the tag, the commit and the DOI here. Consider an entry in
-% ModelDB, which the journal mentions in its guidelines.
+% example on Zenodo), give the tag, the commit and the DOI here, and update the ModelDB
+% entry, which still points at the old Web application.
 \TODO{authors: release tag, commit and DOI}
+
+% TODO(authors): THE LICENCE NEEDS A DECISION BEFORE SUBMISSION. The repository of the new
+% version carries an MIT licence, but the Downloads page of the project site states that
+% "The ReMoto simulator is a free software under the terms of the GNU General Public
+% License ... either version 3 of the license, or any later version" (read on 2026-11-23),
+% and the parent repository has no licence file at all. The new version contains models
+% ported from that code, which has several authors. Whether it may be released under MIT
+% is a question for the authors and, if need be, for the university; this draft therefore
+% states no licence in the sentence above. The journal requires only that program code and
+% model parameters be freely available for academic use, which both licences allow.
+\TODO{authors: licence of version 3.0 (MIT in the repository, GPL on the project site)}
 
 \bmhead{Author contributions}
 
