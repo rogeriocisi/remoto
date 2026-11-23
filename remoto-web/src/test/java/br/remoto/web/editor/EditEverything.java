@@ -54,7 +54,8 @@ final class EditEverything {
                     for (ScreenView.Section section : view.sections()) {
                         for (ScreenView.Row row : section.rows()) {
                             for (ScreenView.Cell cell : row.cells()) {
-                                if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")) {
+                                if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")
+                                        || cell.name().endsWith(".distanceDecay")) {
                                     continue; // campo novo, que o DAO original não gravava: a referência é anterior a ele
                                 }
                                 if ((item.id().equals("joint") || item.id().equals("muscleSpindle")

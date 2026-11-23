@@ -2,6 +2,7 @@ package br.remoto.core.engine.legacy;
 
 import br.remoto.core.simulation.ModulatingSignal;
 import br.remoto.core.simulation.ReMoto;
+import br.remoto.core.simulation.setup.ConductanceVO;
 import br.remoto.core.simulation.setup.Configuration;
 import br.remoto.core.simulation.setup.NerveVO;
 import br.remoto.core.simulation.setup.NeuronVO;
@@ -67,6 +68,13 @@ public final class LegacySettings {
      */
     public static final String AFFERENT_GAMMA_ORDER = "afferentGammaOrder";
 
+    /**
+     * O decaimento com a distância de cada tipo de sinapse, que o original só tinha entre células
+     * de Renshaw e motoneurônios (na tela Miscellaneous): "núcleoPré>núcleo:tipo" → dec (mm²), com o
+     * peso {@code dec / (dec + d²)}. Sem valor, peso 1.
+     */
+    public static final String SYNAPSE_DISTANCE_DECAY = "synapseDistanceDecay";
+
     private static final List<String> SIGNAL_FIELDS =
             List.of("tini", "tfin", "amp", "freq", "width", "delay", "modFreq", "modFactor");
 
@@ -121,6 +129,13 @@ public final class LegacySettings {
                 if (o instanceof NeuronVO neu && ReMoto.AF.equals(neu.getCategory())
                         && orders.get(neu.getCdNucleus() + ":" + neu.getType()) != null) {
                     neu.setGammaOrder(((Number) number(orders.get(neu.getCdNucleus() + ":" + neu.getType()))).intValue());
+                }
+            }
+        }
+        if (settings.get(SYNAPSE_DISTANCE_DECAY) instanceof Map<?, ?> decays && conf.getSynapseTypes() != null) {
+            for (Object o : conf.getSynapseTypes().values()) {
+                if (o instanceof ConductanceVO g && decays.get(g.settingsKey()) != null) {
+                    g.setDistanceDecay(((Number) number(decays.get(g.settingsKey()))).doubleValue());
                 }
             }
         }
@@ -193,6 +208,17 @@ public final class LegacySettings {
         }
         if (!orders.isEmpty()) {
             settings.put(AFFERENT_GAMMA_ORDER, orders);
+        }
+        Map<String, Object> decays = new java.util.TreeMap<>();
+        if (conf.getSynapseTypes() != null) {
+            for (Object o : conf.getSynapseTypes().values()) {
+                if (o instanceof ConductanceVO g && g.getDistanceDecay() > 0) {
+                    decays.put(g.settingsKey(), g.getDistanceDecay());
+                }
+            }
+        }
+        if (!decays.isEmpty()) {
+            settings.put(SYNAPSE_DISTANCE_DECAY, decays);
         }
         Map<String, Object> nerves = new LinkedHashMap<>();
         for (Object o : nerves(conf)) {

@@ -22,6 +22,9 @@ import java.util.function.DoubleSupplier;
  *   sua (400).</li>
  * </ul>
  *
+ * <p>Com o nó de Ranvier no ponto do estímulo ({@link #useAxonNode()}), é o modelo do nó que
+ * decide quando o estímulo faz o axônio disparar, com a sua própria refratariedade.
+ *
  * <p>Com uma ordem escolhida (como no ReMoto em Fortran, por tipo e músculo), a fibra usa essa
  * ordem no seu limiar, no reset e depois de cada disparo; os outros dois sorteios do reset
  * continuam os do original. Ordem maior deixa o disparo mais regular: o coeficiente de variação
@@ -95,6 +98,9 @@ public final class AfferentFiber {
 
     private double thres;
     private double yInt = 0;
+
+    /** O nó de Ranvier no ponto do estímulo; null = limiar de corrente (ou de carga) do nervo. */
+    private AxonNode axonNode;
 
     public AfferentFiber(Kind kind, AfferentSettings settings, Output output) {
         this(kind, settings, output, 0);
@@ -171,7 +177,10 @@ public final class AfferentFiber {
     public void generate(double t, double stimulus) {
         double refractory = settings.afferentAxonRefractoryPeriod();
 
-        if (stimulus > axonThreshold && t - tAxonSpike > refractory) {
+        boolean stimulated = axonNode != null
+                ? axonNode.step(stimulus)
+                : stimulus > axonThreshold && t - tAxonSpike > refractory;
+        if (stimulated) {
             tAxonSpike = t;
             addAxonSpike(t);
         }
@@ -236,6 +245,20 @@ public final class AfferentFiber {
 
         latencyStimulusSpinal = Math.round(latencyStimulusSpinal / settings.step()) * settings.step();
         latencyStimulusEndPlate = Math.round(latencyStimulusEndPlate / settings.step()) * settings.step();
+    }
+
+    /**
+     * Passa a usar um nó de Ranvier (de axônio sensitivo) no ponto do estímulo: é ele, e não o
+     * limiar de corrente, que decide quando o estímulo faz o axônio disparar. O limiar do axônio
+     * continua sendo a intensidade de um pulso de 1 ms.
+     */
+    public void useAxonNode() {
+        axonNode = new AxonNode(AxonNode.Kind.SENSORY, settings.step(), Math.max(axonThreshold, 1e-9));
+    }
+
+    /** O nó de Ranvier no ponto do estímulo, ou null. */
+    public AxonNode axonNode() {
+        return axonNode;
     }
 
     /** A taxa de disparo (Hz) do receptor desta fibra; null = sem receptor ligado. */

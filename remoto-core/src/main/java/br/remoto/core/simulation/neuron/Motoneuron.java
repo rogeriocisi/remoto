@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import br.remoto.core.model.channel.PulseChannel;
 import br.remoto.core.model.neuron.MotoneuronMembrane;
 import br.remoto.core.model.neuron.SpinalMembrane;
+import br.remoto.core.model.neuron.AxonNode;
 import br.remoto.core.simulation.Nerve;
 import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.setup.NeuronVO;
@@ -34,6 +35,9 @@ public class Motoneuron extends SpinalNeuron
 	protected Miscellaneous misc;
 
 	protected Nerve nerve;
+
+	// The node of Ranvier at the stimulus site, when the nerve uses them (created at the first step)
+	private AxonNode axonNode;
 
 	private final MotoneuronMembrane membrane;
 
@@ -190,6 +194,20 @@ public class Motoneuron extends SpinalNeuron
 	{
 		if( nerve == null || nerve.isActive() == false )
 			return;
+
+		// A node of Ranvier at the stimulus site: the model decides when the axon fires
+		if( nerve.usesAxonNodes() )
+		{
+			if( axonNode == null )
+				axonNode = new AxonNode(AxonNode.Kind.MOTOR, miscellaneous.step(), Math.max(axonThreshold, 1e-9));
+
+			if( axonNode.step(nerve.getIntensity()) )
+			{
+				addAxonSpike(t);
+				antidromicSpikeTrain.add( new Double(t) );
+			}
+			return;
+		}
 
 		// Verify axon spike generation
 		// Verify colision between axon and soma spikes

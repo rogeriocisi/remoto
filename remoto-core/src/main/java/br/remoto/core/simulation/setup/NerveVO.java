@@ -42,6 +42,8 @@ public class NerveVO implements Serializable
 	// strength-duration time constants (ms) of the motor and of the sensory axons
 	public static final String CURRENT_THRESHOLD = "current";
 	public static final String CHARGE_THRESHOLD = "charge";
+	/** Each axon with a node of Ranvier at the stimulus site (br.remoto.core.model.neuron.AxonNode). */
+	public static final String NODE_THRESHOLD = "node";
 	public static final double DEFAULT_TAU_MOTOR = 0.45;
 	public static final double DEFAULT_TAU_SENSORY = 0.65;
 
@@ -265,7 +267,8 @@ public class NerveVO implements Serializable
 	}
 
 	public void setThresholdModel(String thresholdModel) {
-		if( !CURRENT_THRESHOLD.equals(thresholdModel) && !CHARGE_THRESHOLD.equals(thresholdModel) )
+		if( !CURRENT_THRESHOLD.equals(thresholdModel) && !CHARGE_THRESHOLD.equals(thresholdModel)
+				&& !NODE_THRESHOLD.equals(thresholdModel) )
 			throw new IllegalArgumentException("unknown threshold model: " + thresholdModel);
 		this.thresholdModel = thresholdModel;
 	}

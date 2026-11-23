@@ -61,6 +61,10 @@ public class SensoryFiber extends Neuron
 			// Propagate spike to all post-synaptic neurons
 			fiber.deliver(t);
 
+			// A node of Ranvier at the stimulus site, when the nerve uses them
+			if( nerve.isActive() && nerve.usesAxonNodes() && fiber.axonNode() == null )
+				fiber.useAxonNode();
+
 			// Stimulation by the nerve and firing driven by the receptor
 			fiber.generate(t, nerve.getSensoryIntensity());
 		}

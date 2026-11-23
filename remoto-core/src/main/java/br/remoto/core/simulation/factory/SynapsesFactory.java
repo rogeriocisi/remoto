@@ -24,6 +24,8 @@ public class SynapsesFactory
 
 	public void createSynapses(Configuration conf, Neuron neurons[][])
 	{
+		placeAfferentsAndTracts(neurons);
+
 		List nt = new ArrayList();
 		List in = new ArrayList();
 		List rc = new ArrayList();
@@ -164,7 +166,8 @@ public class SynapsesFactory
 
 					if( connectivity > 0.01 && rand < connectivity)
 					{
-						double weight = conf.getMiscellaneous( ReMoto.decliningRCtoMN ) / (conf.getMiscellaneous( ReMoto.decliningRCtoMN ) + distance * distance);
+						double declining = declining(conf, g, ReMoto.decliningRCtoMN);
+						double weight = declining / (declining + distance * distance);
 
 						if( weight >= 0.01 )
 						{
@@ -181,7 +184,8 @@ public class SynapsesFactory
 
 					if( connectivity > 0.01 && rand < connectivity)
 					{
-						double weight = conf.getMiscellaneous( ReMoto.decliningMNtoRC ) / (conf.getMiscellaneous( ReMoto.decliningMNtoRC ) + distance * distance);
+						double declining = declining(conf, g, ReMoto.decliningMNtoRC);
+						double weight = declining / (declining + distance * distance);
 
 						if( weight >= 0.01 )
 						{
@@ -487,6 +491,21 @@ public class SynapsesFactory
 		if( gType.isActive() == false )
 			return;
 
+		// Weight falling with the distance, when the synapse type has a decay (the Renshaw-motoneuron
+		// synapses have their own rule above; the noises have no position)
+		if( gType.getDistanceDecay() > 0 && !renshawPair(neuronPre, neuronPos)
+				&& !ReMoto.Noise.equals(neuronPre.getCategory()) )
+		{
+			double distance = Math.abs( neuronPre.getXPosition() - neuronPos.getXPosition() );
+			double factor = gType.getDistanceDecay() / (gType.getDistanceDecay() + distance * distance);
+
+			// As the Renshaw synapses of the original: too weak, no synapse
+			if( factor < 0.01 )
+				return;
+
+			weight = weight * factor;
+		}
+
 		// ??? teste para saber o numero de sinapses de uma simulacao de larga escala
 
 		// Set dynamics type (depressing, facilitating or none)  ????
@@ -521,6 +540,86 @@ public class SynapsesFactory
 				addSynapse( ((SpinalNeuron)neuronPos).getDendInhibSynapses(), gType, weight, cd );
 				neuronPre.getTransmittingSynapses().add( ((SpinalNeuron)neuronPos).getDendInhibSynapses() );
 			}
+		}
+	}
+
+	// The declining factor of a Renshaw-motoneuron synapse: the one of the synapse type, when set,
+	// or the one of the Miscellaneous screen (the original)
+	private static double declining(Configuration conf, ConductanceVO g, String miscellaneous)
+	{
+		return g != null && g.getDistanceDecay() > 0 ? g.getDistanceDecay() : conf.getMiscellaneous( miscellaneous );
+	}
+
+	private static boolean renshawPair(Neuron pre, Neuron pos)
+	{
+		return ( ReMoto.RC.equals(pre.getType()) && ReMoto.MN.equals(pos.getCategory()) )
+				|| ( ReMoto.MN.equals(pre.getCategory()) && ReMoto.RC.equals(pos.getType()) );
+	}
+
+	/**
+	 * Positions (mm) in the caudal-rostral column for the cells the original did not place, used
+	 * only by the synapses with a distance decay: the afferents of a muscle spread over its
+	 * motoneuron pool (xIni to xEnd of the nucleus), each type in the order of its fibers, and the
+	 * descending axons spread over the whole column (the first xIni to the last xEnd).
+	 */
+	static void placeAfferentsAndTracts(Neuron neurons[][])
+	{
+		double columnIni = Double.POSITIVE_INFINITY;
+		double columnEnd = Double.NEGATIVE_INFINITY;
+
+		for(int x = ReMoto.indDT + 1; x < neurons.length; x++)
+		{
+			java.util.Map<String, List> afferents = new java.util.LinkedHashMap<>();
+			double ini = Double.POSITIVE_INFINITY;
+			double end = Double.NEGATIVE_INFINITY;
+
+			for(int n = 0; n < neurons[x].length; n++)
+			{
+				Neuron neu = neurons[x][n];
+
+				if( ReMoto.MN.equals(neu.getCategory()) )
+				{
+					ini = Math.min(ini, neu.getXPosition());
+					end = Math.max(end, neu.getXPosition());
+				}
+				else if( ReMoto.AF.equals(neu.getCategory()) )
+				{
+					afferents.computeIfAbsent(neu.getType(), k -> new ArrayList()).add(neu);
+				}
+				if( ReMoto.MN.equals(neu.getCategory()) || ReMoto.IN.equals(neu.getCategory()) )
+				{
+					columnIni = Math.min(columnIni, neu.getXPosition());
+					columnEnd = Math.max(columnEnd, neu.getXPosition());
+				}
+			}
+
+			if( ini > end )
+				continue; // afferents of a muscle without motoneurons keep position 0
+
+			for(List fibers : afferents.values())
+				spread(fibers, ini, end);
+		}
+
+		if( columnIni > columnEnd || neurons[ReMoto.indDT] == null )
+			return;
+
+		java.util.Map<String, List> tracts = new java.util.LinkedHashMap<>();
+		for(Neuron neu : neurons[ReMoto.indDT])
+		{
+			if( ReMoto.TR.equals(neu.getCategory()) )
+				tracts.computeIfAbsent(neu.getType(), k -> new ArrayList()).add(neu);
+		}
+		for(List axons : tracts.values())
+			spread(axons, columnIni, columnEnd);
+	}
+
+	private static void spread(List cells, double ini, double end)
+	{
+		int n = cells.size();
+		for(int k = 0; k < n; k++)
+		{
+			double x = n == 1 ? (ini + end) / 2 : ini + (end - ini) * k / (n - 1);
+			((Neuron)cells.get(k)).setXPosition(x);
 		}
 	}
 

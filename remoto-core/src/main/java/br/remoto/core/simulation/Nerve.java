@@ -9,7 +9,9 @@ import br.remoto.core.simulation.setup.NerveVO;
  * the stimulus at each step, from br.remoto.core.model.stimulus.NerveStimulation. Motoneurons and
  * afferent fibers of the nerve read the intensity to fire their axons: the intensity itself, with
  * the threshold by current of the original, or the intensity equivalent to the charge with leak
- * of each kind of axon (br.remoto.core.model.stimulus.LeakyCharge).
+ * of each kind of axon (br.remoto.core.model.stimulus.LeakyCharge), or, with a node of Ranvier at
+ * the stimulus site of each axon (br.remoto.core.model.neuron.AxonNode), the intensity itself, which
+ * each axon model integrates.
  */
 public class Nerve extends NerveVO
 {
@@ -77,6 +79,11 @@ public class Nerve extends NerveVO
 
 	public double getIntensity() {
 		return stimulation.intensity();
+	}
+
+	/** Whether each axon has its own node of Ranvier at the stimulus site (it reads getIntensity). */
+	public boolean usesAxonNodes() {
+		return NODE_THRESHOLD.equals(thresholdModel);
 	}
 
 	/** What the motor axons compare with their threshold. */

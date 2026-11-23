@@ -35,6 +35,11 @@ public class ConductanceVO extends ConductanceProperties implements Comparable
 	protected double beta;
 	protected DynamicVO dynamics;
 
+	// Not stored by the original DAO (in the scenario settings, "synapseDistanceDecay"): the
+	// weight of each synapse falls with the distance d between the cells as dec / (dec + d²),
+	// dec in mm²; 0 = no decay (weight 1; between Renshaw cells and motoneurons, the Miscellaneous one)
+	protected double distanceDecay;
+
 	public ConductanceVO()
 	{
 	}
@@ -63,6 +68,22 @@ public class ConductanceVO extends ConductanceProperties implements Comparable
 		this.tmax = ref.tmax;
 		this.alpha = ref.alpha;
 		this.beta = ref.beta;
+		this.distanceDecay = ref.distanceDecay;
+	}
+
+	public double getDistanceDecay() {
+		return distanceDecay;
+	}
+
+	public void setDistanceDecay(double distanceDecay) {
+		if( !(distanceDecay >= 0) || Double.isInfinite(distanceDecay) )
+			throw new IllegalArgumentException("the distance decay must be 0 (no decay) or positive");
+		this.distanceDecay = distanceDecay;
+	}
+
+	/** The key of this synapse type in the scenario settings: "nucleusPre>nucleus:type". */
+	public String settingsKey() {
+		return cdNucleusPre + ">" + cdNucleus + ":" + cdConductanceType;
 	}
 
 	// ----------------------------

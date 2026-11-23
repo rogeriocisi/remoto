@@ -344,6 +344,40 @@ class LegacyEditorTest {
                 .get(orders.headers().indexOf("Ia")).value()).isEqualTo("4");
     }
 
+    /**
+     * O decaimento com a distância de um tipo de sinapse (tela Synaptic Parameters) e o nó de
+     * Ranvier no estímulo do nervo, que o site antigo não tinha: ficam no settings e voltam ao reabrir.
+     */
+    @Test
+    void decaimentoDaSinapseENoDeRanvierFicamGravados() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        Map<String, String> pool = Map.of("pool", "SOL");
+        ScreenView synapses = editor.view("synapse", pool);
+        String label = synapses.sections().get(0).rows().stream().map(ScreenView.Row::label)
+                .filter(l -> l.contains("CM_ext") && l.contains("MN S")).findFirst().orElseThrow();
+        Map<String, String> form = fullForm(synapses);
+        form.put(listCell(synapses, 0, label, "Distance decay").name(), "3");
+        assertThat(editor.apply("synapse", pool, form)).isEmpty();
+
+        ScreenView stimulation = editor.view("stimulation", Map.of());
+        form = fullForm(stimulation);
+        form.put(listCell(stimulation, 2, "PTN", "Axon threshold").name(), "node");
+        assertThat(editor.apply("stimulation", Map.of(), form)).isEmpty();
+        LegacyConfig saved = editor.save().config();
+
+        assertThat(saved.settings().get("synapseDistanceDecay")).isEqualTo(Map.of("DT>SOL:TR CM_ext-MN S", 3.0));
+        Map<?, ?> ptn = (Map<?, ?>) ((Map<?, ?>) saved.settings().get("nerveStimulus")).get("PTN");
+        assertThat(ptn.get("thresholdModel")).isEqualTo("node");
+
+        LegacyEditor reopened = LegacyEditor.open(saved, 5000, 0.05);
+        assertThat(listCell(reopened.view("synapse", pool), 0, label, "Distance decay").value()).isEqualTo("3");
+        assertThat(listCell(reopened.view("stimulation", Map.of()), 2, "PTN", "Axon threshold").value())
+                .isEqualTo("node");
+        List<String> errors = reopened.apply("synapse", pool,
+                Map.of(listCell(synapses, 0, label, "Distance decay").name(), "-1"));
+        assertThat(errors).anyMatch(e -> e.contains("Distance decay"));
+    }
+
     /** A célula de uma parte em lista: a linha do item e a coluna do campo ("Start" acha "Start [ms]"). */
     private static ScreenView.Cell listCell(ScreenView view, int section, String rowLabel, String header) {
         List<String> headers = view.sections().get(section).headers();

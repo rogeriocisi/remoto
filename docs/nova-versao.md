@@ -411,6 +411,8 @@ antigo**:
 | Modelo completo | O `modelo-completo.json` liga todos os elementos do modelo, e cada um (músculos, fusos, OTG, aferentes, interneurônios, tratos, articulação) aparece nas saídas |
 | Sinais no tempo | Com o ângulo imposto, o tornozelo segue o ângulo inicial mais o sinal, e o comprimento e os fusos acompanham; com o fusimotor modulado, nada muda antes do início do sinal, e o estático aumenta o disparo dos II; no fuso isolado, o dinâmico aumenta a Ia no estiramento e o estático, a II (`SignalsOverTimeTest`, `SpindleTest`); o `estiramento-tornozelo.json` impõe o trapézio |
 | Estímulo e aferentes | Por corrente, a duração do pulso não muda quem dispara; por carga, o pulso de 1 ms recruta quase os mesmos axônios e o de 0,2 ms, nenhum; cada duração precisa da intensidade da curva de Lapicque (`LeakyChargeTest`); a ordem gama escolhida muda a regularidade dos aferentes, e 0 é a do original (`NerveAndAfferentOptionsTest`, `AfferentFiberTest`) |
+| Nó de Ranvier | Parado, o nó fica no repouso da tabela 1 de Howells et al. (2012); o limiar da configuração vale para um pulso de 1 ms; a constante intensidade-duração sai do modelo, de cerca de 0,4 ms no motor e 0,5 ms no sensitivo; há refratariedade (`AxonNodeTest`); no motor, o pulso de 1 ms recruta quase os mesmos axônios que o limiar de corrente, e o de 0,2 ms, nenhum (`NerveAndAfferentOptionsTest`) |
+| Decaimento com a distância | Com decaimento nas sinapses do trato CM_ext no sóleo, a parte do trato na condutância de cada motoneurônio cai e fica maior no meio do núcleo que nas pontas; o valor fica no `settings` e volta ao reabrir (`SynapseDistanceDecayTest`) |
 | Reprodutibilidade | Mesma seed → saídas idênticas; seed diferente → saídas diferentes |
 | Golden master | As saídas das configurações 17, 24 e 42 do banco (os três cenários públicos do site antigo, como estão lá), com 40 ms, batem com os hashes em `golden-master.properties` (força, disparos e torque num hash; EMG noutro; todas as saídas, as da tela de resultados incluídas, num terceiro) |
 | Editor × DAO original | Editar todas as telas de uma vez e gravar dá as mesmas tabelas que o `saveConfiguration` original gravava num HSQLDB, nos três cenários públicos do site antigo (`LegacyEditorTest`); gravar sem editar preserva as tabelas e a simulação (`LegacyStoreTest`) |
@@ -578,7 +580,7 @@ gaussiano, o desvio-padrão do intervalo. O DAO original gravava na coluna `STD`
 (`order`, que nada lê), e o Std se perdia ao gravar, deixando os tratos gama mudos depois de
 t = 0. As tabelas continuam iguais às do DAO; sem `tractStd`, vale o do DAO (0).
 
-Quatro recursos que o site antigo não tinha (e o ReMoto em Fortran tem; ver o item 13 dos
+Seis recursos que o site antigo não tinha (e o ReMoto em Fortran tem; ver o item 13 dos
 [Próximos passos](#próximos-passos)) também ficam no `settings`, e sem eles tudo é como no
 original:
 
@@ -599,10 +601,31 @@ original:
   sensitivos, são da ordem dos medidos em nervos humanos, em que a constante dos sensitivos é a
   maior (por isso pulsos longos favorecem o reflexo H); conferir na literatura antes de usá-los
   num trabalho.
+- **Nó de Ranvier no ponto do estímulo** (a terceira opção do limiar, `thresholdModel` =
+  `"node"`): cada axônio do nervo, motor ou aferente, tem um nó de Ranvier e o internó vizinho,
+  ligados pela via de Barrett-Barrett, com os canais do modelo de axônio humano de Bostock (sódio
+  transitório e persistente, potássio rápido e lento, corrente h no internó, vazamento e bombas) e
+  os parâmetros motores e sensitivos de Howells, Trevillion, Bostock e Burke (2012, *J Physiol*
+  590:1625–1640, tabelas 1 e 2 e apêndice). O estímulo entra no nó com a escala do limiar da
+  configuração (a corrente de um pulso de 1 ms continua sendo o limiar), e o modelo dá a curva
+  intensidade-duração, a refratariedade, a supernormalidade e a acomodação; as constantes de tempo
+  do limiar por carga não são usadas. A condução a partir do ponto do estímulo continua sendo um
+  atraso, e os disparos que vêm do soma ou do receptor não passam pelo nó. O apêndice publicado no
+  PubMed Central tem as equações cortadas à esquerda: as tensões seguem o circuito da figura 1, e
+  as bombas são as que mantêm os potenciais de repouso da tabela 1 (calculadas assim, dão −41 e
+  −9,2 pA no motor, contra −33 e −7,9 pA da tabela; algum detalhe do original difere).
 - **Ordem gama dos aferentes** (tela das fibras sensoriais, `afferentGammaOrder`: "músculo:tipo"
   → ordem inteira). O disparo pelo receptor é um processo gama; o original fixava a ordem no
   código (Ia 25, Ib 30, II 400, e a II volta para 25 depois do primeiro disparo). Ordem maior
   deixa o disparo mais regular; 0 mantém a do original.
+- **Decaimento com a distância** (a coluna *Distance decay* da tela *Synaptic Parameters*,
+  `synapseDistanceDecay`: "núcleoPré>núcleo:tipo" → dec, em mm²): cada sinapse do tipo ganha o
+  peso `dec / (dec + d²)`, sendo *d* a distância entre as duas células na coluna caudal-rostral, e
+  não é criada abaixo de 1%, como as de Renshaw do original. Motoneurônios e interneurônios ficam
+  onde o original os punha (as posições inicial e final de cada núcleo, em *Miscellaneous*); os
+  aferentes de um músculo se espalham sobre o seu núcleo motor, e os axônios descendentes, pela
+  coluna toda. Entre células de Renshaw e motoneurônios, 0 mantém os fatores da tela
+  *Miscellaneous*.
 
 **Ainda de fora:** a escolha de articulação (os cenários convertidos só têm dados do tornozelo),
 as caixas de músculo de *Biomechanical Elements* (o Action original não as salvava; use *Neural
@@ -783,15 +806,19 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
       (pulso de 1 ms, limiar de corrente). Feito: a parte nova da tela *Nerve Stimulation*.
     - [x] **Ordem gama dos aferentes configurável** por tipo (Ia, Ib, II) e músculo; aqui era
       fixa no código (25, 30 e 400). Feito: a parte nova da tela das fibras sensoriais.
-
-    Os quatro ficam no `settings` (ver *Campos que o DAO original não gravava*, no Editor), e sem
-    eles as simulações são as mesmas de antes. Os que faltam:
-    - [ ] **Axônio com nós de Ranvier** para motoneurônios e aferentes: internós e nós com
+    - [x] **Axônio com nós de Ranvier** para motoneurônios e aferentes: internós e nós com
       sódio rápido e persistente, potássio rápido e lento, corrente h e bomba iônica; aqui o
-      axônio é um atraso de condução com limiar.
+      axônio era um atraso de condução com limiar. Feito no ponto do estímulo, com o modelo de
+      Bostock e os parâmetros de Howells et al. (2012): a opção *Node of Ranvier* do limiar, na
+      tela *Nerve Stimulation*. A condução continua sendo um atraso (lá, uma cadeia de nós pode
+      substituí-lo), e os disparos do soma e do receptor não passam pelo nó.
+    - [x] **Conexões que enfraquecem com a distância** em qualquer via (peso
+      `dec / (dec + distância²)`); aqui era só entre motoneurônios e células de Renshaw. Feito: a
+      coluna *Distance decay* da tela *Synaptic Parameters*, com posições para aferentes e tratos.
+
+    Os seis ficam no `settings` (ver *Campos que o DAO original não gravava*, no Editor), e sem
+    eles as simulações são as mesmas de antes. Os que faltam:
     - [ ] **Motoneurônio integra-e-dispara** (sem canais iônicos), para simulações rápidas.
-    - [ ] **Conexões que enfraquecem com a distância** em qualquer via (peso
-      `dec / (dec + distância²)`); aqui só entre motoneurônios e células de Renshaw.
     - [ ] **Protocolos em lote**: varrer um parâmetro em várias simulações, como a curva de
       recrutamento do reflexo H e da onda M (intensidade do estímulo) e a variabilidade da
       força (comando descendente); ver também o item 3.

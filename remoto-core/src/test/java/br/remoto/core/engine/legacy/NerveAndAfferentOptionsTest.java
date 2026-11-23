@@ -59,6 +59,25 @@ class NerveAndAfferentOptionsTest {
     }
 
     /**
+     * O mesmo pulso com um nó de Ranvier em cada axônio (Howells et al., 2012): o de 1 ms recruta
+     * quase os mesmos axônios que o limiar de corrente (os limiares valem para 1 ms), e o de 0,2 ms,
+     * que precisaria de mais que o dobro da corrente, nenhum.
+     */
+    @Test
+    void noDeRanvierNoPontoDoEstimulo() {
+        int[] current1 = recruited(null, 1);
+        int[] node1 = recruited("node", 1);
+        int[] node02 = recruited("node", 0.2);
+        int[] none = recruited(null, 0);
+
+        assertThat(node1[0]).isBetween((int) (current1[0] * 0.95), (int) (current1[0] * 1.1));
+        assertThat(node1[1] - none[1]).isBetween((int) ((current1[1] - none[1]) * 0.95),
+                (int) ((current1[1] - none[1]) * 1.1));
+        assertThat(node02[0]).isZero();
+        assertThat(node02[1]).isEqualTo(none[1]);
+    }
+
+    /**
      * Os Ia do sóleo disparando pelo fuso (músculo de Hill), com a ordem gama do original (25) e com
      * ordem 1 (Poisson): os intervalos de cada fibra ficam bem mais irregulares.
      */

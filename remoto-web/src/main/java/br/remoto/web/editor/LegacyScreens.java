@@ -264,13 +264,20 @@ public final class LegacyScreens {
                         Field.choice("Compartment", "compartment", "S", "soma", "D", "dendrite"),
                         Field.number("Maximum conductance", "nS", "gmax"),
                         Field.number("Connectivity", "%", "connectivity"),
-                        Field.number("Transmission delay", "ms", "delay")));
+                        Field.number("Transmission delay", "ms", "delay"),
+                        Field.number("Distance decay", "mm²", "distanceDecay")));
         return new LegacyScreen("synapse", "Synaptic Parameters", selectors, List.of(part),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setSynapseTypes(new ArrayList<>(items.get(0)));
                 },
-                List.of());
+                List.of("Distance decay (not in the original site): each synapse of the type gets the weight"
+                        + " dec / (dec + d\u00B2), d being the distance (mm) between the two cells in the"
+                        + " caudal-rostral column, and no synapse is made below 1%. 0 = no decay (weight 1)."
+                        + " Motoneurons and interneurons are placed as in the original (Miscellaneous: initial"
+                        + " and final positions of each pool); the afferents of a muscle spread over its"
+                        + " motoneuron pool, and the descending axons over the whole column. Between Renshaw"
+                        + " cells and motoneurons, 0 keeps the declining factors of the Miscellaneous screen."));
     }
 
     /** motoneuron.jsp / NeuronAction (task=MN). */
@@ -468,7 +475,8 @@ public final class LegacyScreens {
                 List.of(Field.number("Pulse width", "ms", "pulseWidth"),
                         Field.choice("Axon threshold", "thresholdModel",
                                 NerveVO.CURRENT_THRESHOLD, "By current (original)",
-                                NerveVO.CHARGE_THRESHOLD, "By charge, with leak"),
+                                NerveVO.CHARGE_THRESHOLD, "By charge, with leak",
+                                NerveVO.NODE_THRESHOLD, "Node of Ranvier"),
                         Field.number("Time constant, motor axons", "ms", "tauMotor"),
                         Field.number("Time constant, sensory axons", "ms", "tauSensory")));
         return new LegacyScreen("stimulation", "Nerve Stimulation", List.of(), List.of(order, part, pulse),
@@ -490,7 +498,16 @@ public final class LegacyScreens {
                                 + " strength-duration curve: short pulses need more current, long pulses favor the"
                                 + " axons with the longer time constant (the sensory ones, hence the H reflex). The"
                                 + " thresholds of the axons keep their meaning: the current of a 1 ms pulse."
-                                + " Chronaxie = time constant \u00D7 ln 2."));
+                                + " Chronaxie = time constant \u00D7 ln 2.",
+                        "Node of Ranvier: each axon has, at the stimulus site, a node and its internode with the"
+                                + " channels of the human axon model of Bostock (transient and persistent Na\u207A,"
+                                + " fast and slow K\u207A, h current, leak and Na\u207A/K\u207A pump), with the"
+                                + " motor and sensory parameters of Howells et al. (2012, J Physiol 590:1625). The"
+                                + " strength-duration curve, refractoriness, supernormality and accommodation come"
+                                + " from the model; the time constants above are not used. The thresholds of the axons"
+                                + " keep their meaning (the current of a 1 ms pulse), and the conduction from the"
+                                + " stimulus site is still a delay. Spikes that come from the soma or the receptor"
+                                + " do not pass through the node model."));
     }
 
     /** injectedCurrent.jsp / InjectedCurrentAction. */
