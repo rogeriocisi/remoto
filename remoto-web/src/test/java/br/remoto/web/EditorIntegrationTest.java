@@ -87,6 +87,16 @@ class EditorIntegrationTest {
     }
 
     @Test
+    void paginaDePublicacoesEIconeDoSite() throws Exception {
+        mvc.perform(get("/publicacoes"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Publicações")))
+                .andExpect(content().string(containsString("https://doi.org/10.1007/s10827-008-0092-8")));
+        mvc.perform(get("/favicon.ico")).andExpect(status().isOk());
+        mvc.perform(get("/img/remoto-icon.svg")).andExpect(status().isOk());
+    }
+
+    @Test
     void enderecoInexistenteMostraAPaginaDeErroEAApiDevolveJson() throws Exception {
         mvc.perform(get("/nao-existe").session(session("ana")))
                 .andExpect(status().isNotFound())

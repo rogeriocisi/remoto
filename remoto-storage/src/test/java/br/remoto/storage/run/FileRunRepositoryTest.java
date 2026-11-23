@@ -71,6 +71,30 @@ class FileRunRepositoryTest {
                 .containsExactlyInAnyOrder(daAna.runId(), daOutra.runId());
     }
 
+    /**
+     * Enquanto uma simulação roda, o manifesto é regravado (troca atômica por cima). No Windows,
+     * quem lê nessa hora podia não achar o arquivo e a página respondia 500; a leitura tenta de novo.
+     */
+    @Test
+    void lerOManifestoEnquantoEleEhRegravadoNaoFalha() throws Exception {
+        RunManifest m = runs.create(ana, scenario("a"), "motor-1");
+        java.util.concurrent.atomic.AtomicBoolean stop = new java.util.concurrent.atomic.AtomicBoolean();
+        Thread writer = Thread.ofPlatform().start(() -> {
+            for (int i = 0; i < 400 && !stop.get(); i++) {
+                runs.save(ana, m.running(Instant.now()));
+            }
+        });
+        try {
+            for (int i = 0; i < 400; i++) {
+                assertThat(runs.find(ana, m.runId())).isPresent();
+                assertThat(runs.list(ana)).hasSize(1);
+            }
+        } finally {
+            stop.set(true);
+            writer.join();
+        }
+    }
+
     @Test
     void naoRessuscitaExecucaoApagada() {
         RunManifest m = runs.create(ana, scenario("x"), "motor-1");

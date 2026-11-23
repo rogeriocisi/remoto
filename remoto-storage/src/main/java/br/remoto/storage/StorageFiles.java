@@ -3,6 +3,7 @@ package br.remoto.storage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,23 +55,46 @@ public final class StorageFiles {
                 if (attempt >= MOVE_ATTEMPTS) {
                     throw e;
                 }
-                try {
-                    Thread.sleep(Math.min(100, 5L * attempt));
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw e;
-                }
+                pause(attempt);
             }
         }
     }
 
     private static final int MOVE_ATTEMPTS = 20;
 
+    /**
+     * Lê o arquivo inteiro. No Windows (e mais ainda numa pasta sincronizada, como a do Google
+     * Drive), quem lê não vê a troca de {@link #writeAtomically} de uma vez só: por um instante o
+     * arquivo some ou fica bloqueado. Nesses casos tenta de novo por até ~1 s.
+     *
+     * @throws UncheckedIOException com a causa original, se o arquivo continua sem poder ser lido
+     */
     public static byte[] readAllBytes(Path file) {
+        for (int attempt = 1; ; attempt++) {
+            try {
+                return Files.readAllBytes(file);
+            } catch (NoSuchFileException | AccessDeniedException e) {
+                if (attempt >= MOVE_ATTEMPTS) {
+                    throw new UncheckedIOException(e);
+                }
+                try {
+                    pause(attempt);
+                } catch (IOException interrupted) {
+                    throw new UncheckedIOException(interrupted);
+                }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
+    /** Espera um pouco mais a cada tentativa (até 100 ms); interrompido, desiste. */
+    private static void pause(int attempt) throws IOException {
         try {
-            return Files.readAllBytes(file);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            Thread.sleep(Math.min(100, 5L * attempt));
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new java.io.InterruptedIOException("interrompido");
         }
     }
 

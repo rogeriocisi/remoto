@@ -67,6 +67,12 @@ class PageController {
         return "index";
     }
 
+    /** As principais publicações sobre o ReMoto, e como citá-las. */
+    @GetMapping("/publicacoes")
+    String publications() {
+        return "publicacoes";
+    }
+
     @GetMapping("/ui/scenarios")
     String scenarios(Caller caller, Model model) {
         model.addAttribute("publicScenarios", catalog.list());

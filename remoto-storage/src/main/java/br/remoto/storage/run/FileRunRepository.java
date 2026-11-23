@@ -150,9 +150,20 @@ public final class FileRunRepository implements RunRepository {
         });
     }
 
+    /** Vazio se a execução não existe, ou deixou de existir enquanto era lida (apagada). */
     private Optional<RunManifest> readManifest(Path runDir) {
         Path file = runDir.resolve(MANIFEST);
-        return Files.isRegularFile(file) ? Optional.of(json.read(file, RunManifest.class)) : Optional.empty();
+        if (!Files.isRegularFile(file)) {
+            return Optional.empty();
+        }
+        try {
+            return Optional.of(json.read(file, RunManifest.class));
+        } catch (UncheckedIOException e) {
+            if (e.getCause() instanceof java.nio.file.NoSuchFileException) {
+                return Optional.empty();
+            }
+            throw e;
+        }
     }
 
     @Override

@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ReMoto</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css">
+  <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
+  <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
+  <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
+  <meta name="theme-color" content="#1f5f99">
   <link rel="stylesheet" th:href="@{/css/app.css}">
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js" defer></script>
@@ -13,14 +17,14 @@
 </head>
 <body class="app">
 <header class="topo">
-  <div class="marca">
+  <a th:href="@{/}" class="marca marca-link">
+    <img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="30" height="30">
     <strong>ReMoto</strong>
     <span class="sub">simulador de núcleos motores da medula espinhal</span>
-  </div>
-  <div class="conta">
-    <a th:href="@{/api/me/export}" class="botao secundario" download
-       title="Baixa num .zip tudo o que está nesta sessão: cenários e simulações">Baixar sessão</a>
-  </div>
+  </a>
+  <nav class="conta">
+    <a th:href="@{/publicacoes}" class="botao secundario pequeno">Publicações</a>
+  </nav>
 </header>
 
 <script th:inline="javascript">
@@ -66,6 +70,8 @@
       </ol>
       <p class="notas">Não há login: cenários e simulações ficam nesta sessão do navegador. Use
         <strong>Exportar</strong> para guardá-los e <strong>Importar…</strong> para trazê-los de volta.</p>
+      <p class="notas">Os modelos e o simulador estão descritos nas
+        <a th:href="@{/publicacoes}">publicações sobre o ReMoto</a>.</p>
     </div>
 
     <section id="detalhe" class="cartao" hidden>

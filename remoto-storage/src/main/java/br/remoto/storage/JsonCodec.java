@@ -29,12 +29,9 @@ public final class JsonCodec {
         return mapper.readValue(content, type);
     }
 
+    /** Lê e converte; a leitura tolera a troca de um arquivo regravado ({@link StorageFiles#readAllBytes}). */
     public <T> T read(Path file, Class<T> type) {
-        try (InputStream in = Files.newInputStream(file)) {
-            return mapper.readValue(in, type);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return mapper.readValue(StorageFiles.readAllBytes(file), type);
     }
 
     public void writeAtomically(Path file, Object value) {

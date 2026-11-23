@@ -132,7 +132,7 @@ reinício do servidor deixou para trás (`remoto.retention.session-hours`).
 
 Para guardar o trabalho, a pessoa **exporta**: cada cenário em JSON (o mesmo arquivo que a CLI
 roda), todos os cenários num .zip, uma simulação inteira num .zip (configuração, manifesto e
-todos os resultados em CSV) ou a sessão inteira num .zip. Na próxima visita, ela **importa** os
+todos os resultados em CSV). Na próxima visita, ela **importa** os
 .json, ou o .zip com eles, para "Meus cenários". A importação confere cada cenário como o editor
 e a fila conferem (formato, duração, passos, motor e a configuração do modelo), recusa arquivos
 de mais de 5 MB e importa até 100 cenários de uma vez; os recusados aparecem com o nome do
@@ -162,7 +162,7 @@ data/
 | Edição em duas abas | ETag = SHA-256 do arquivo; `PUT` com `If-Match` desatualizado → `412` |
 | Isolamento | todo acesso passa pelo `UserId` do `Caller`; outra sessão recebe `404` |
 | Recuperação após queda | ao subir, execuções `QUEUED`/`RUNNING` viram `FAILED` ("interrompida") |
-| Levar os dados | `.zip` da área da sessão (`/api/me/export`), ou cada cenário e simulação |
+| Levar os dados | exportar cada cenário (ou todos num `.zip`) e cada simulação; pela API, também a área inteira (`/api/me/export`) |
 | Limpeza | fim da sessão; tarefa diária para áreas abandonadas e execuções antigas não fixadas |
 
 ### Várias sessões simulando ao mesmo tempo

@@ -53,6 +53,7 @@ body {
   font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+a { color: var(--primaria); }
 
 /* ---- topo ------------------------------------------------------------------------------------ */
 .topo {
@@ -69,7 +70,9 @@ code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
   border-bottom: 1px solid var(--borda);
   background: var(--cartao);
 }
-.marca { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.marca { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.logo { display: block; flex: none; }
+.marca-link { display: inline-flex; align-items: center; gap: 8px; color: inherit; text-decoration: none; }
 .marca strong { font-size: 1.25rem; letter-spacing: -.01em; }
 .marca .sub { color: var(--suave); font-size: .9rem; }
 .conta { display: flex; gap: 8px; align-items: center; }
@@ -267,8 +270,20 @@ label.botao { cursor: pointer; }
 .grafico { width: 100%; margin-top: 12px; overflow-x: auto; }
 .uplot, .u-title { color: var(--texto); }
 
+/* ---- páginas de texto (publicações) ------------------------------------------------------------ */
+.pagina-texto { max-width: 860px; margin: 24px auto 48px; padding: 0 16px; }
+.pagina-texto h1 { font-size: 1.5rem; margin: 0 0 8px; }
+.pagina-texto h2 { margin-top: 24px; }
+.publicacoes { padding-left: 22px; display: flex; flex-direction: column; gap: 14px; }
+.publicacoes li > span, .titulo-publicacao { display: block; }
+.titulo-publicacao { font-weight: 600; color: var(--primaria); text-decoration: none; }
+.titulo-publicacao:hover { text-decoration: underline; }
+.autores { color: var(--texto); }
+.revista { color: var(--suave); font-size: .9rem; }
+.resumo { color: var(--suave); font-size: .9rem; margin-top: 2px; }
+.links-publicacoes a { color: var(--primaria); }
+
 /* ---- página de erro e avisos ------------------------------------------------------------------- */
-.marca-link { color: inherit; text-decoration: none; }
 .pagina-erro { max-width: 640px; margin: 48px auto; padding: 0 16px; }
 .pagina-erro h1 { font-size: 1.4rem; margin: 0 0 8px; }
 .codigo-erro { margin: 0 0 4px; color: var(--suave); font-size: .85rem; font-weight: 600; }

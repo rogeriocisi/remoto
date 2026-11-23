@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Publicações – ReMoto</title>
+  <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
+  <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
+  <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
+  <meta name="theme-color" content="#1f5f99">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="topo">
+  <a th:href="@{/}" class="marca marca-link">
+    <img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="30" height="30">
+    <strong>ReMoto</strong>
+    <span class="sub">simulador de núcleos motores da medula espinhal</span>
+  </a>
+  <nav class="conta">
+    <a th:href="@{/}" class="botao pequeno">Abrir o simulador</a>
+  </nav>
+</header>
+
+<main class="pagina-texto">
+  <section class="cartao">
+    <h1>Publicações</h1>
+    <p>Os artigos abaixo descrevem o ReMoto e os modelos que ele simula: os núcleos motores da
+      medula espinhal, os interneurônios, os nervos e os músculos. Se usar o ReMoto num trabalho,
+      cite-os.</p>
+
+    <ol class="publicacoes">
+      <li>
+        <a class="titulo-publicacao" href="https://doi.org/10.1007/s10827-008-0092-8">Simulation system of
+          spinal cord motor nuclei and associated nerves and muscles, in a Web-based architecture</a>
+        <span class="autores">Cisi, R. R. L.; Kohn, A. F.</span>
+        <span class="revista"><em>Journal of Computational Neuroscience</em>, v. 25, n. 3, p. 520–542, 2008.</span>
+        <span class="resumo">O sistema de simulação: núcleos motores, interneurônios, nervos e músculos,
+          numa arquitetura web.</span>
+      </li>
+      <li>
+        <a class="titulo-publicacao" href="https://doi.org/10.1007/s10827-012-0398-4">Models of passive and
+          active dendrite motoneuron pools and their differences in muscle force control</a>
+        <span class="autores">Elias, L. A.; Chaud, V. M.; Kohn, A. F.</span>
+        <span class="revista"><em>Journal of Computational Neuroscience</em>, v. 33, n. 3, p. 515–531, 2012.</span>
+        <span class="resumo">Populações de motoneurônios com dendritos passivos e ativos, e o que muda no
+          controle da força muscular.</span>
+      </li>
+      <li>
+        <a class="titulo-publicacao" href="https://doi.org/10.1016/j.neucom.2012.06.038">Individual and
+          collective properties of computationally efficient motoneuron models of types S and F with active
+          dendrites</a>
+        <span class="autores">Elias, L. A.; Kohn, A. F.</span>
+        <span class="revista"><em>Neurocomputing</em>, v. 99, p. 521–533, 2013.</span>
+        <span class="resumo">Modelos de motoneurônios S e F com dendritos ativos, eficientes para
+          simulação, isolados e em população.</span>
+      </li>
+      <li>
+        <a class="titulo-publicacao" href="https://doi.org/10.1152/jn.00073.2013">Influences of
+          premotoneuronal command statistics on the scaling of motor output variability during isometric
+          plantarflexion</a>
+        <span class="autores">Watanabe, R. N. et al.</span>
+        <span class="revista"><em>Journal of Neurophysiology</em>, v. 110, n. 11, p. 2592–2606, 2013.</span>
+        <span class="resumo">Como a estatística do comando descendente afeta a variabilidade da força na
+          flexão plantar isométrica.</span>
+      </li>
+      <li>
+        <a class="titulo-publicacao" href="https://doi.org/10.1371/journal.pcbi.1003944">Spinal mechanisms
+          may provide a combination of intermittent and continuous control of human posture: predictions from a
+          biologically based neuromusculoskeletal model</a>
+        <span class="autores">Elias, L. A.; Watanabe, R. N.; Kohn, A. F.</span>
+        <span class="revista"><em>PLoS Computational Biology</em>, v. 10, n. 11, e1003944, 2014.</span>
+        <span class="resumo">O controle da postura ereta previsto por um modelo neuromusculoesquelético de
+          base biológica.</span>
+      </li>
+      <li>
+        <a class="titulo-publicacao" href="https://doi.org/10.1523/JNEUROSCI.1950-15.2015">Fast oscillatory
+          commands from the motor cortex can be decoded by the spinal cord for force control</a>
+        <span class="autores">Watanabe, R. N.; Kohn, A. F.</span>
+        <span class="revista"><em>Journal of Neuroscience</em>, v. 35, n. 40, p. 13687–13697, 2015.</span>
+        <span class="resumo">Comandos oscilatórios rápidos do córtex motor decodificados pela medula no
+          controle da força.</span>
+      </li>
+    </ol>
+
+    <h2>Como citar e onde encontrar</h2>
+    <ul class="links-publicacoes">
+      <li><a href="https://github.com/rogeriocisi/remoto/blob/master/ref.bib">Referências em BibTeX</a>
+        (o arquivo <code>ref.bib</code> do repositório)</li>
+      <li><a href="https://github.com/rogeriocisi/remoto">Código-fonte do ReMoto</a>, com licença MIT</li>
+      <li><a href="https://modeldb.science/117810">O modelo no ModelDB</a> (Cisi e Kohn, 2008)</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

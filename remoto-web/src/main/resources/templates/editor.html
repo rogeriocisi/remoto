@@ -4,12 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="|Editar: ${scenario.name} – ReMoto|">Editar – ReMoto</title>
+  <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
+  <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
+  <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
+  <meta name="theme-color" content="#1f5f99">
   <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <header class="topo">
   <div class="marca">
-    <a th:href="@{/}" class="discreto">← ReMoto</a>
+    <a th:href="@{/}" class="marca-link discreto" title="Voltar à página inicial">
+      <img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="26" height="26">← ReMoto</a>
     <strong th:text="${scenario.name}">cenário</strong>
   </div>
   <form th:action="@{/editor/{id}/run(id=${scenario.id})}" method="post" class="inline">

@@ -4,12 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="|Erro ${status} – ReMoto|">Erro – ReMoto</title>
+  <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
+  <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
+  <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
+  <meta name="theme-color" content="#1f5f99">
   <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
 <header class="topo">
   <div class="marca">
-    <a th:href="@{/}" class="marca-link"><strong>ReMoto</strong></a>
+    <a th:href="@{/}" class="marca-link"><img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="30" height="30">
+      <strong>ReMoto</strong></a>
     <span class="sub">simulador de núcleos motores da medula espinhal</span>
   </div>
 </header>
