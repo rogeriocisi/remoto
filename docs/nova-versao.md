@@ -5,7 +5,7 @@ modelos numéricos foram portados para o `remoto-core`, com saídas idênticas b
 original; do legado fica só o banco original em `legacy-db/`, lido sem o HSQLDB. O site JSP e o
 código original continuam no histórico e no repositório pai.
 
-> **Estado:** a infraestrutura (sessões sem login, fila, armazenamento, API, interface, CLI, CI)
+> **Estado:** a infraestrutura (áreas sem login, fila, armazenamento, API, interface, CLI, CI)
 > funciona e tem testes. Os **modelos originais do ReMoto rodam na nova plataforma** (motor
 > `legacy`, ver [Motor original](#motor-original-legacy)), portados para o `remoto-core`, sem
 > banco de dados em nenhuma etapa, com resultados reprodutíveis e conferidos contra o código e o
@@ -22,7 +22,7 @@ código original continuam no histórico e no repositório pai.
 | Interface | Thymeleaf + htmx 2 + uPlot (gráficos interativos) |
 | Figuras | JFreeChart 1.5 (PNG para artigos) |
 | Persistência | Arquivos: JSON (cenários, manifestos) e CSV.gz (resultados) — **sem banco** |
-| Execução | Fila justa por sessão, limite por endereço de origem + pool de threads de plataforma (CPU-bound) |
+| Execução | Fila justa por área, limite por endereço de origem + pool de threads de plataforma (CPU-bound) |
 | Progresso | Server-Sent Events |
 | Entrega | um JAR executável (servidor web embutido) rodando como serviço systemd; CI no GitHub Actions |
 
@@ -34,7 +34,7 @@ ferramenta para instalar e manter.
 
 ```
 remoto-core          cenário, modelos do ReMoto, motor "legacy", leitura do banco antigo (Java puro, sem dependências)
-remoto-storage       repositórios em arquivo: cenários, execuções e a área de cada sessão
+remoto-storage       repositórios em arquivo: cenários, execuções e a área de cada navegador
 remoto-web           aplicação Spring Boot sem login (API REST + páginas), com o editor de cenários
 remoto-cli           execução sem servidor: remoto run / validate / export-legacy
 scenarios/           cenários públicos versionados no Git (o antigo usuário "guest")
@@ -109,9 +109,11 @@ curl -s http://localhost:8080/actuator/health
 ```
 
 - **Atualizar:** substitua `/opt/remoto/remoto-web.jar` e rode `sudo systemctl restart remoto`.
-  Execuções em andamento são canceladas e as que estavam na fila ficam marcadas como interrompidas.
-- **Backup:** não há o que guardar: as áreas de sessão são temporárias, e os cenários públicos
-  estão no Git. Quem usa o site guarda o próprio trabalho exportando.
+  Execuções em andamento são canceladas e as que estavam na fila ficam marcadas como
+  interrompidas; os cenários e as simulações terminadas de cada área continuam lá.
+- **Backup:** opcional. As áreas ficam em `/var/lib/remoto/sessions` e duram até 30 dias sem uso;
+  copiar essa pasta preserva o trabalho de quem está usando o site (numa troca de máquina, por
+  exemplo). Os cenários públicos estão no Git, e o que é para durar cada pessoa guarda exportando.
 - **HTTPS:** coloque nginx ou Apache na frente (porta 443 → 8080) e descomente
   `SERVER_FORWARD_HEADERS_STRATEGY=native` no `remoto.env`. Sem isso, o limite por endereço de
   origem vê todo mundo com o endereço do proxy.
@@ -128,28 +130,32 @@ Não há contas nem login. Cada navegador ganha uma área própria, identificada
 HTTPS), que dura **30 dias** e se renova a cada visita; tudo o que a pessoa faz (cópias de
 cenários, edições, simulações) fica nessa área. Por isso cenários e simulações sobrevivem a
 reinícios e quedas do servidor e a fechar o navegador. A área só é apagada depois de 30 dias sem
-uso, pela tarefa diária de limpeza (`remoto.retention.area-days`), ou quando a pessoa pede
-(`DELETE /api/me`). Como só ler não muda a data dos arquivos, cada área marca o último uso num
+uso, pela tarefa diária de limpeza, ou quando a pessoa pede (`DELETE /api/me`). O prazo é um só,
+`remoto.retention.area-days` (padrão 30): vale para a limpeza, para o cookie e para o aviso da
+página. Como só ler não muda a data dos arquivos, cada área marca o último uso num
 arquivo oculto (`.ultimo-uso`), no máximo uma vez por hora. O id também fica na sessão, para quem
 bloqueia cookies continuar com a mesma área enquanto ela durar. Um cookie adulterado não alcança
 outra pasta: o `UserId` só aceita o formato que ele mesmo gera.
 
-Para guardar o trabalho por mais tempo, ou levá-lo a outro computador ou navegador, a pessoa **exporta**: cada cenário em JSON (o mesmo arquivo que a CLI
-roda), todos os cenários num .zip, uma simulação inteira num .zip (configuração, manifesto e
-todos os resultados em CSV). Na próxima visita, ela **importa** os
-.json, ou o .zip com eles, para "Meus cenários". A importação confere cada cenário como o editor
-e a fila conferem (formato, duração, passos, motor e a configuração do modelo), recusa arquivos
-de mais de 5 MB e importa até 100 cenários de uma vez; os recusados aparecem com o nome do
-arquivo e o motivo. O site não guarda nenhum dado pessoal.
+Para guardar o trabalho por mais tempo, ou levá-lo a outro computador ou navegador, a pessoa
+**exporta**: cada cenário em JSON (o mesmo arquivo que a CLI roda), todos os cenários num .zip,
+uma simulação inteira num .zip (configuração, manifesto e todos os resultados em CSV). Lá, ou
+depois do prazo, ela **importa** os .json, ou o .zip com eles, para "Meus cenários". A importação
+confere cada cenário como o editor e a fila conferem (formato, duração, passos, motor e a
+configuração do modelo), recusa arquivos de mais de 5 MB e importa até 100 cenários de uma vez;
+os recusados aparecem com o nome do arquivo e o motivo. O site não guarda nenhum dado pessoal: o
+cookie leva só o id aleatório da área.
 
-O `UserId` nunca vem de texto digitado, então é sempre seguro como nome de pasta. Ids de
-cenários e execuções são ULIDs validados (`Ids.requireSafe`) contra path traversal.
+O `UserId` chega pelo cookie, que pode ser alterado no navegador, mas só é aceito no formato que
+o servidor gera; por isso é sempre seguro como nome de pasta. Ids de cenários e execuções são
+ULIDs validados (`Ids.requireSafe`) contra path traversal.
 
 ### Layout dos arquivos
 
 ```
 data/
-└── sessions/<userId>/
+└── sessions/<userId>/         uma pasta por área (navegador)
+    ├── .ultimo-uso            data do último uso, para a limpeza
     ├── scenarios/<ulid>.json
     └── runs/<ulid>/
         ├── manifest.json      status, seed, versão do motor, hash da configuração, datas
@@ -162,24 +168,25 @@ data/
 | Garantia | Como |
 |---|---|
 | Atomicidade | grava em arquivo temporário e renomeia (`StorageFiles.writeAtomically`) |
-| Concorrência entre sessões | uma trava por área (`UserLocks`); áreas diferentes gravam em paralelo |
+| Concorrência entre áreas | uma trava por área (`UserLocks`); áreas diferentes gravam em paralelo |
 | Edição em duas abas | ETag = SHA-256 do arquivo; `PUT` com `If-Match` desatualizado → `412` |
-| Isolamento | todo acesso passa pelo `UserId` do `Caller`; outra sessão recebe `404` |
-| Recuperação após queda | ao subir, execuções `QUEUED`/`RUNNING` viram `FAILED` ("interrompida") |
+| Isolamento | todo acesso passa pelo `UserId` do `Caller`; outro navegador recebe `404` |
+| Recuperação após queda | ao subir, execuções `QUEUED`/`RUNNING` viram `FAILED` ("interrompida"); as áreas continuam acessíveis pelo cookie |
 | Levar os dados | exportar cada cenário (ou todos num `.zip`) e cada simulação; pela API, também a área inteira (`/api/me/export`) |
 | Limpeza | tarefa diária: áreas sem uso há 30 dias e execuções antigas não fixadas |
 
-### Várias sessões simulando ao mesmo tempo
+### Várias pessoas simulando ao mesmo tempo
 
 - Até `remoto.simulation.slots` simulações em paralelo (padrão: núcleos da CPU); cada uma ocupa
   uma thread porque o trabalho é de CPU. Com menos slots que núcleos, cada simulação do motor
   original usa `threads-per-run` threads (padrão: núcleos ÷ slots); o resultado não muda.
-- **Fila justa** (`FairQueue`): uma fila por sessão, despachada em rodízio. Uma varredura de 50
-  execuções de uma sessão não bloqueia a simulação única de outra.
-- Cotas por sessão: `max-active-per-user` (padrão 2) e `max-queued-per-user` (padrão 20 → `429`).
-- Sem login, abrir outra sessão é fácil, então há também `max-per-origin` (padrão 20), que soma
-  as simulações rodando ou na fila de todas as sessões do mesmo endereço, e `max-queued-total`
-  (padrão 200), o teto da fila do servidor; os dois respondem `429` e aceitam 0 para desligar.
+- **Fila justa** (`FairQueue`): uma fila por área, despachada em rodízio. Uma varredura de 50
+  execuções de uma área não bloqueia a simulação única de outra.
+- Cotas por área: `max-active-per-user` (padrão 2) e `max-queued-per-user` (padrão 20 → `429`).
+- Sem login, abrir outra área é fácil (outro navegador, uma janela anônima), então há também
+  `max-per-origin` (padrão 20), que soma as simulações rodando ou na fila de todas as áreas do
+  mesmo endereço, e `max-queued-total` (padrão 200), o teto da fila do servidor; os dois
+  respondem `429` e aceitam 0 para desligar.
   Uma sala com todos atrás do mesmo endereço (NAT) divide o limite por origem: aumente-o se for
   o caso.
 - Limite real: **uma instância do servidor**. Para várias máquinas seria preciso fila
@@ -208,16 +215,16 @@ estreitas, as duas colunas ficam uma embaixo da outra.
 
 | Método | Caminho | Descrição |
 |---|---|---|
-| GET | `/api/me` | a área da sessão (id e espaço ocupado) |
-| GET | `/api/me/export` | a área inteira da sessão (.zip) |
-| DELETE | `/api/me` | apaga a área e encerra a sessão |
+| GET | `/api/me` | a área do navegador (id e espaço ocupado) |
+| GET | `/api/me/export` | a área inteira (.zip) |
+| DELETE | `/api/me` | cancela as simulações, apaga a área e o cookie |
 | GET | `/api/scenarios/public` | cenários públicos |
-| POST | `/api/scenarios/public/{id}/copy` | copia um cenário público para a sessão |
+| POST | `/api/scenarios/public/{id}/copy` | copia um cenário público para a área |
 | GET | `/api/scenarios/public/{id}/export` | baixa um cenário público (.json) |
 | GET / POST | `/api/scenarios` | meus cenários / criar |
 | GET / PUT / DELETE | `/api/scenarios/{id}` | ler (com `ETag`) / substituir (`If-Match`) / apagar |
 | GET | `/api/scenarios/{id}/export` | baixa o cenário (.json, sem o id) |
-| GET | `/api/scenarios/export` | baixa todos os cenários da sessão (.zip, um .json cada) |
+| GET | `/api/scenarios/export` | baixa todos os cenários da área (.zip, um .json cada) |
 | POST | `/api/scenarios/import` | importa arquivos `files` (.json ou .zip), multipart; devolve os criados e os recusados |
 | POST | `/api/runs` | executa: `{"scenario": {...}}` ou `{"scenarioId"}`, `{"publicScenarioId"}` |
 | GET | `/api/runs`, `/api/runs/{id}` | minhas execuções / detalhe com nomes dos resultados |
@@ -226,7 +233,7 @@ estreitas, as duas colunas ficam uma embaixo da outra.
 | PUT | `/api/runs/{id}/pinned` | fixa (`true`) para escapar da retenção |
 | GET | `/api/runs/{id}/config` | configuração exata usada |
 | GET | `/api/runs/{id}/export.zip` | a execução inteira: manifesto, configuração e resultados em CSV |
-| POST | `/api/runs/import` | importa um .zip exportado (`file`, multipart) como execução nova da sessão |
+| POST | `/api/runs/import` | importa um .zip exportado (`file`, multipart) como execução nova da área |
 | GET | `/api/runs/{id}/results/{nome}.csv` | resultado em CSV |
 | GET | `/api/runs/{id}/results/{nome}.png` | figura em PNG |
 | GET | `/api/runs/{id}/menu` | menus da tela de resultados para a execução (motor original) |

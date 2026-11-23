@@ -4,10 +4,10 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
- * Identificador da área de uma sessão do navegador, usado como nome de diretório.
+ * Identificador da área de um navegador, usado como nome de diretório.
  *
- * <p>Não há contas: cada sessão ganha um id aleatório, que nunca vem de algo que o usuário
- * digita. Por isso é sempre seguro em caminhos.
+ * <p>Não há contas: cada navegador ganha um id aleatório, que volta num cookie. Como o cookie
+ * pode ser alterado, só vale o formato gerado aqui; por isso o id é sempre seguro em caminhos.
  */
 public record UserId(String value) {
 
@@ -19,7 +19,7 @@ public record UserId(String value) {
         }
     }
 
-    /** Área nova, para uma sessão que acabou de começar. */
+    /** Área nova, para um navegador que chega sem área. */
     public static UserId newSession() {
         return new UserId("g-" + UUID.randomUUID().toString().replace("-", ""));
     }

@@ -2,6 +2,7 @@ package br.remoto.web.security;
 
 import br.remoto.storage.UserId;
 import br.remoto.storage.area.AreaRepository;
+import br.remoto.web.config.RemotoProperties;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,9 +21,11 @@ import java.util.Optional;
 
 /**
  * Dá a cada navegador uma área própria. Não há login: a área é identificada por um id aleatório
- * num cookie ({@value #COOKIE}) que dura {@link #COOKIE_AGE} e se renova a cada visita, de modo
- * que cenários e simulações sobrevivem a reinícios do servidor e a fechar o navegador. A área só é
- * apagada depois de um tempo sem uso (limpeza diária) ou quando a pessoa pede.
+ * num cookie ({@value #COOKIE}) que se renova a cada visita, de modo que cenários e simulações
+ * sobrevivem a reinícios do servidor e a fechar o navegador. A área só é apagada depois de um tempo
+ * sem uso (limpeza diária) ou quando a pessoa pede. O cookie dura esse mesmo tempo
+ * ({@code remoto.retention.area-days}): se durasse menos, a área ficaria no disco sem ninguém
+ * conseguir abri-la.
  *
  * <p>O id também fica na sessão, para quem bloqueia cookies continuar com a mesma área enquanto a
  * sessão durar. A origem é o endereço remoto da requisição; atrás de um proxy reverso, ative
@@ -33,12 +36,13 @@ public class CallerResolver implements HandlerMethodArgumentResolver {
 
     public static final String COOKIE = "remoto-area";
     public static final String AREA_ATTRIBUTE = "remoto.areaId";
-    public static final Duration COOKIE_AGE = Duration.ofDays(30);
 
     private final AreaRepository areas;
+    private final Duration cookieAge;
 
-    CallerResolver(AreaRepository areas) {
+    CallerResolver(AreaRepository areas, RemotoProperties props) {
         this.areas = areas;
+        this.cookieAge = Duration.ofDays(props.retention().areaDays());
     }
 
     @Override
@@ -60,7 +64,7 @@ public class CallerResolver implements HandlerMethodArgumentResolver {
             session.setAttribute(AREA_ATTRIBUTE, id.value());
         }
         if (response != null && !response.isCommitted()) {
-            response.addHeader(HttpHeaders.SET_COOKIE, cookie(id.value(), COOKIE_AGE, request.isSecure()).toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie(id.value(), cookieAge, request.isSecure()).toString());
         }
         areas.touch(id);
         return new Caller(id, request.getRemoteAddr());

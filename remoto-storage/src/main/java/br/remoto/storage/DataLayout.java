@@ -12,7 +12,8 @@ import java.nio.file.Path;
  * &lt;cenários públicos&gt;/&lt;id&gt;.json      (versionados no Git, só leitura)
  * </pre>
  *
- * Não há contas: cada sessão do navegador tem uma área, apagada quando a sessão termina.
+ * Não há contas: cada navegador tem uma área, apagada depois de um tempo sem uso (a pasta
+ * {@code sessions} guarda o nome de quando a área durava só a sessão).
  */
 public final class DataLayout {
 
