@@ -16,9 +16,13 @@ spring:
       max-request-size: 500MB
 
 server:
+  # A 8080 costuma estar ocupada por outro serviço na máquina; o padrão aqui é a 8081, que é
+  # também a porta em que o serviço escuta em produção — assim o endereço é o mesmo nos dois
+  # lugares. Sobreponível por SERVER_PORT (ver deploy/remoto.env.example).
+  port: 8081
   servlet:
     # o simulador fica em <domínio>/simulator; na raiz do domínio está o site descritivo (docs/).
-    # Vale também em desenvolvimento (http://localhost:8080/simulator/), para que os caminhos sejam
+    # Vale também em desenvolvimento (http://localhost:8081/simulator/), para que os caminhos sejam
     # os mesmos nos dois lugares. Sobreponível por SERVER_SERVLET_CONTEXT_PATH.
     context-path: /simulator
     session:

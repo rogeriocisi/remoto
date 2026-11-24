@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
 # Sobe o ReMoto (versao nova) em modo desenvolvimento.
-# Uso: scripts/start.sh [porta]      (padrao: 8080)
+# Uso: scripts/start.sh [porta]      (padrao: 8081)
 # Procura um JDK 25+ (JAVA_HOME, java do PATH ou pastas comuns) e roda o remoto-web
 # com o perfil "dev" (usuarios de teste em application-dev.yml).
 set -eu
 
-PORT="${1:-8080}"
+PORT="${1:-8081}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Versao principal de um JDK, lida do arquivo "release" (0 se nao der para ler).

@@ -26,7 +26,7 @@ exemplo.org {
 	# casa o prefixo e não reescreve nada. A porta é a SERVER_PORT do remoto.env.
 	redir /simulator /simulator/ 301
 	@simulador path /simulator/*
-	reverse_proxy @simulador 127.0.0.1:8080
+	reverse_proxy @simulador 127.0.0.1:8081
 }
 
 # Se o simulador já morou num subdomínio só dele, fica o redirecionamento para o endereço novo,

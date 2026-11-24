@@ -1,9 +1,9 @@
 # Sobe o ReMoto (versao nova) em modo desenvolvimento.
-# Uso: .\scripts\start.ps1 [-Port 8080]
+# Uso: .\scripts\start.ps1 [-Port 8081]
 # Procura um JDK 25+ (JAVA_HOME ou pastas comuns) e roda o remoto-web com o perfil "dev"
 # (usuarios de teste em application-dev.yml).
 # Se o Windows bloquear scripts: powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
-param([int]$Port = 8080)
+param([int]$Port = 8081)
 
 function Get-JdkMajor([string]$JdkHome) {
     if (-not $JdkHome) { return 0 }

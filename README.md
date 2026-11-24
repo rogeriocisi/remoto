@@ -71,7 +71,7 @@ JDK 25. Maven is downloaded automatically by the Maven Wrapper (`./mvnw`, or `mv
 
 ### Run locally
 
-Use the start script for your shell. It finds a JDK 25 (from `JAVA_HOME`, the `PATH` or the usual install folders), so it works even if your default Java is older. An optional argument sets the port (default 8080).
+Use the start script for your shell. It finds a JDK 25 (from `JAVA_HOME`, the `PATH` or the usual install folders), so it works even if your default Java is older. An optional argument sets the port (default 8081, the same port the service listens on in production, because 8080 is often already taken by something else).
 
 | Shell | Command |
 |---|---|
@@ -87,7 +87,7 @@ Without the scripts, the equivalent command is below. Keep the quotes, because P
 ./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
-Then open http://localhost:8080/simulator/ (or http://localhost:8080/simulator/pt/ for Portuguese). There is no login. The simulator lives under `/simulator` in development too, because that is where it is served in production, with the descriptive site at the root of the domain.
+Then open http://localhost:8081/simulator/ (or http://localhost:8081/simulator/pt/ for Portuguese). The port comes from `application.yml` (`server.port`, overridable by `SERVER_PORT`), so it is 8081 with or without the start scripts. There is no login. The simulator lives under `/simulator` in development too, because that is where it is served in production, with the descriptive site at the root of the domain.
 
 ### Command line
 
@@ -141,7 +141,7 @@ The address is a secret rather than a variable so that it stays masked in the pu
 | `DEPLOY_SCENARIOS_DIR` | `/opt/remoto/scenarios` |
 | `DEPLOY_JAR_PATH` | `/opt/remoto/remoto-web.jar` |
 | `DEPLOY_SERVICE` | `remoto` |
-| `DEPLOY_HEALTH_URL` | `http://127.0.0.1:8080/simulator/actuator/health` — the port is the `SERVER_PORT` of `remoto.env`, so set this variable if the service does not listen on 8080 |
+| `DEPLOY_HEALTH_URL` | `http://127.0.0.1:8081/simulator/actuator/health` — the port is the `SERVER_PORT` of `remoto.env` (8081 by default), so set this variable if the service does not listen on 8081 |
 
 #### On the server, once
 

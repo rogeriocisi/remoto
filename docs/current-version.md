@@ -47,7 +47,8 @@ Requires JDK 25. Maven is downloaded by the wrapper.
 
 The simplest way to bring the site up in development mode is the start script for your shell. It
 looks for a JDK 25 (in `JAVA_HOME`, in the `PATH` or in the usual install folders), so it works
-even if the machine's default Java is older. The optional argument is the port (8080 by default):
+even if the machine's default Java is older. The optional argument is the port (8081 by default, the
+same port the service listens on in production, because 8080 is often already taken):
 
 | Shell | Command |
 |---|---|
@@ -66,7 +67,7 @@ The equivalent commands, without the scripts:
 
 # server in development mode (templates re-read on every request)
 ./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
-# → http://localhost:8080/simulator/  (and /simulator/pt/ for Portuguese)
+# → http://localhost:8081/simulator/  (and /simulator/pt/ for Portuguese)
 
 # CLI
 ./mvnw -pl remoto-cli -am package -DskipTests
@@ -108,7 +109,7 @@ sudo systemctl enable --now remoto
 # 5. Follow it
 systemctl status remoto
 journalctl -u remoto -f
-curl -s http://localhost:8080/simulator/actuator/health
+curl -s http://localhost:8081/simulator/actuator/health
 ```
 
 The app runs with `context-path` `/simulator` (`application.yml`, overridable by
@@ -118,7 +119,7 @@ site, which sits at the root. What puts each thing on its own path is the revers
 path rewriting, and what live progress (SSE) needs — `proxy_buffering off` and a generous
 `proxy_read_timeout`; `deploy/Caddyfile.example` is the same thing for Caddy, which streams and
 accepts any body size without being told to. In both, the port is the `SERVER_PORT` of
-`remoto.env`, and the actuator is kept off the public address — the deployment's health check
+`remoto.env` (8081, the default of `application.yml`), and the actuator is kept off the public address — the deployment's health check
 asks for it on the machine itself.
 
 - **Updating:** it is automatic. Every push to `master` that passes the tests sends the site, the

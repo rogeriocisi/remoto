@@ -1,12 +1,12 @@
 @echo off
 rem Sobe o ReMoto (versao nova) em modo desenvolvimento.
-rem Uso: scripts\start.cmd [porta]      (padrao: 8080)
+rem Uso: scripts\start.cmd [porta]      (padrao: 8081)
 rem Procura um JDK 25+ (JAVA_HOME ou pastas comuns) e roda o remoto-web com o perfil "dev"
 rem (usuarios de teste em application-dev.yml).
 setlocal EnableExtensions EnableDelayedExpansion
 
 set "PORT=%~1"
-if "%PORT%"=="" set "PORT=8080"
+if "%PORT%"=="" set "PORT=8081"
 set "ROOT=%~dp0.."
 set "JDK="
 

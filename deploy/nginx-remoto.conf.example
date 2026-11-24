@@ -4,7 +4,7 @@
 #
 #   /            o site descritivo — os arquivos de docs/, estáticos, que o deploy espelha
 #                em /var/www/remoto (/, /pt/, /guide/, /guide/pt/)
-#   /simulator/  o simulador — o Spring Boot do remoto-web, na porta 8080
+#   /simulator/  o simulador — o Spring Boot do remoto-web, na porta 8081
 #
 # O repositório não sabe em que domínio é servido: os endereços das páginas são relativos e o
 # e-mail de contato sai do próprio domínio (docs/assets/site.js). Este arquivo, no servidor, é o
@@ -45,7 +45,7 @@ server {
     # O app roda com context-path /simulator (application.yml), então o caminho segue inteiro:
     # proxy_pass sem caminho nenhum, para o nginx não reescrever nada.
     location /simulator/ {
-        proxy_pass http://127.0.0.1:8080;
+        proxy_pass http://127.0.0.1:8081;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
