@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - MN pool with Renshaw cells",
-  "description" : "Inibição recorrente: 800 motoneurônios S do sóleo, movidos por 400 axônios descendentes (processo gama de ordem 10, intervalo médio de 12 ms), excitam 350 células de Renshaw (conectividade de 6%, sinapse com depressão de 5%), que os inibem de volta (4%); as duas vias enfraquecem com a distância na coluna (fatores 0,01 e 0,22 da tela Miscellaneous). Convertido do exemplo MNPoolWithRenshawCells do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "Recurrent inhibition: 800 S motoneurons of the soleus, driven by 400 descending axons (gamma process of order 10, mean interval of 12 ms), excite 350 Renshaw cells (6% connectivity, synapse with 5% depression), which inhibit them back (4%); both pathways weaken with the distance along the column (factors 0.01 and 0.22 of the Miscellaneous screen). Converted from the MNPoolWithRenshawCells example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 5000.0,

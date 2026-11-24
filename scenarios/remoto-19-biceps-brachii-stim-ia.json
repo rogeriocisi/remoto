@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Biceps Brachii - Stim Ia",
-  "description" : "Estimulação repetitiva de aferentes Ia durante uma contração. O nome vem do músculo estudado (bíceps braquial); a simulação usa o núcleo SOL do modelo, aqui com 400 S, 200 FR e 200 FF e 320 aferentes Ia. Uma via descendente de 400 axônios (Poisson, intervalo médio de 10 ms) mantém a contração, e o nervo recebe pulsos de 10 mA a 5 Hz de 1 s até o fim, em 30 s.",
+  "description" : "Repetitive stimulation of Ia afferents during a contraction. The name comes from the muscle that was studied (biceps brachii); the simulation uses the SOL nucleus of the model, here with 400 S, 200 FR and 200 FF and 320 Ia afferents. A descending pathway of 400 axons (Poisson, mean interval of 10 ms) sustains the contraction, and the nerve receives 10 mA pulses at 5 Hz from 1 s to the end, at 30 s.",
   "schemaVersion" : 1,
   "seed" : 19,
   "durationMs" : 30000.0,

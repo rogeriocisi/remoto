@@ -25,9 +25,10 @@ import java.util.Random;
  */
 final class ProjectFrExamples {
 
-    private static final String SOURCE = "Convertido do exemplo %s do projectFR, a versão em Fortran do ReMoto"
-            + " (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os"
-            + " parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.";
+    private static final String SOURCE = "Converted from the %s example of projectFR, the Fortran version of ReMoto"
+            + " (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the"
+            + " example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the"
+            + " original database.";
 
     private ProjectFrExamples() {
     }
@@ -73,12 +74,12 @@ final class ProjectFrExamples {
         c.nerveSignal("PTN", "constant", 200, 300, 60);
         return example(c, "projectfr-antidromic-stimulation", "AntidromicSimulationofMNandRC",
                 "projectFR - Antidromic stimulation of MN and RC", 600, 0.05,
-                "Estimulação antidrômica de motoneurônios e células de Renshaw: pulsos de 20 mA no nervo tibial"
-                        + " posterior, a 60 Hz de 100 a 300 ms, com a frequência somada de 60 Hz de 200 a 300 ms,"
-                        + " em 5 motoneurônios S do sóleo ligados a 2 células de Renshaw, com conectividade de 100% nos"
-                        + " dois sentidos e a sinapse dos motoneurônios nas células de Renshaw com depressão. Os"
-                        + " disparos antidrômicos ativam as células de Renshaw, que inibem os motoneurônios. Sem"
-                        + " comando descendente nem aferentes; as células de Renshaw têm o disparo espontâneo de 7 Hz.");
+                "Antidromic stimulation of motoneurons and Renshaw cells: 20 mA pulses on the posterior tibial"
+                        + " nerve, at 60 Hz from 100 to 300 ms, with 60 Hz added to the frequency from 200 to 300 ms,"
+                        + " on 5 S motoneurons of the soleus connected to 2 Renshaw cells, with 100% connectivity both"
+                        + " ways and the synapse of the motoneurons on the Renshaw cells with depression. The"
+                        + " antidromic spikes activate the Renshaw cells, which inhibit the motoneurons. No descending"
+                        + " command and no afferents; the Renshaw cells have the spontaneous firing of 7 Hz.");
     }
 
     private static ScenarioEdit.Example forceVariability(Scenario base) {
@@ -88,13 +89,14 @@ final class ProjectFrExamples {
         c.rateTract("CM_ext", 140, 4, 16000);
         return example(c, "projectfr-force-variability", "ForceVariability",
                 "projectFR - Force variability", 16000, 0.05,
-                "Variabilidade da força isométrica do tríceps sural: os motoneurônios do sóleo, do gastrocnêmio"
-                        + " medial e do lateral recebem 400 axônios descendentes com disparos num processo gama de"
-                        + " ordem 4, a 140 disparos/s, e o tornozelo fica isométrico. É uma das combinações do exemplo,"
-                        + " que roda em lote 9 taxas (de 95 a 250/s, com ordens de 7 a 1) e 5 conjuntos de velocidades"
-                        + " de condução, e grava a força e o torque de cada uma. Para varrer a taxa aqui: remoto sweep"
-                        + " --protocol force --tract CM_ext --values 10.5,9.1,8,7.1,6.5,5.9,5.4,5,4 (o intervalo médio"
-                        + " em ms; a ordem gama fica fixa). As velocidades de condução não foram convertidas.");
+                "Variability of the isometric force of the triceps surae: the motoneurons of the soleus, of the"
+                        + " medial gastrocnemius and of the lateral one receive 400 descending axons firing in a gamma"
+                        + " process of order 4, at 140 spikes/s, and the ankle stays isometric. It is one of the"
+                        + " combinations of the example, which runs 9 rates in a batch (from 95 to 250/s, with orders"
+                        + " from 7 to 1) and 5 sets of conduction velocities, and records the force and the torque of"
+                        + " each. To sweep the rate here: remoto sweep --protocol force --tract CM_ext --values"
+                        + " 10.5,9.1,8,7.1,6.5,5.9,5.4,5,4 (the mean interval in ms; the gamma order stays fixed). The"
+                        + " conduction velocities were not converted.");
     }
 
     private static ScenarioEdit.Example hReflexMWave(Scenario base) {
@@ -103,12 +105,12 @@ final class ProjectFrExamples {
         c.nerve("PTN", 5, 50, 12, 5);
         return example(c, "projectfr-h-reflex-m-wave", "H-ReflexM-WaveCurve",
                 "projectFR - H-reflex and M-wave curve", 50, 0.05,
-                "Reflexo H e onda M do sóleo: um pulso de 1 ms no nervo tibial posterior em 5 ms excita os"
-                        + " axônios motores (onda M) e os aferentes Ia do sóleo e do gastrocnêmio lateral, que excitam"
-                        + " os motoneurônios (reflexo H, cerca de 30 ms depois). Com 12 mA, o pulso passa do limiar de"
-                        + " parte dos aferentes e de quase nenhum axônio motor: há reflexo H e quase nenhuma onda M."
-                        + " O exemplo repete a simulação para 35 intensidades, de 9 a 25 mA, e desenha a curva de"
-                        + " recrutamento; aqui: remoto sweep --protocol hm --range 9:25:0.5.");
+                "H reflex and M wave of the soleus: a 1 ms pulse on the posterior tibial nerve at 5 ms excites the"
+                        + " motor axons (M wave) and the Ia afferents of the soleus and of the lateral gastrocnemius,"
+                        + " which excite the motoneurons (H reflex, about 30 ms later). At 12 mA, the pulse passes the"
+                        + " threshold of part of the afferents and of almost no motor axon: there is an H reflex and"
+                        + " almost no M wave. The example repeats the simulation for 35 intensities, from 9 to 25 mA,"
+                        + " and draws the recruitment curve; here: remoto sweep --protocol hm --range 9:25:0.5.");
     }
 
     private static ScenarioEdit.Example ankleImpedance(Scenario base) {
@@ -120,12 +122,12 @@ final class ProjectFrExamples {
         c.settings.put("jointAngleSignal", series(multisine(), 0, 2000));
         return example(c, "projectfr-ankle-impedance", "ImpedanceAnkle",
                 "projectFR - Ankle impedance", 2000, 0.05,
-                "Impedância do tornozelo: o ângulo é imposto como uma soma de 200 senoides de 0,25 a 50 Hz,"
-                        + " cada uma com 0,004 rad de amplitude e fase sorteada (aqui, com a semente 1), e os quatro"
-                        + " músculos do tornozelo (sóleo, gastrocnêmios e tibial anterior), com o modelo de Hill,"
-                        + " respondem; o torque contra o ângulo dá a impedância. Como no exemplo, em que o comando"
-                        + " descendente e os aferentes estão desligados no programa, os músculos ficam passivos:"
-                        + " para a impedância com contração, ligue o trato CM_ext em Descending Commands.");
+                "Ankle impedance: the angle is imposed as a sum of 200 sinusoids from 0.25 to 50 Hz, each with an"
+                        + " amplitude of 0.004 rad and a drawn phase (here, with seed 1), and the four ankle muscles"
+                        + " (soleus, gastrocnemii and tibialis anterior), with the Hill model, respond; the torque"
+                        + " against the angle gives the impedance. As in the example, where the descending command and"
+                        + " the afferents are turned off in the program, the muscles stay passive: for the impedance"
+                        + " with contraction, turn the CM_ext tract on in Descending Commands.");
     }
 
     private static ScenarioEdit.Example renshawInjectedCurrent(Scenario base) {
@@ -134,8 +136,8 @@ final class ProjectFrExamples {
         c.injectedCurrent("IN_ext", "RC", "S", 5);
         return example(c, "projectfr-renshaw-injected-current", "InjectedCurrentRenshawCellPool",
                 "projectFR - Renshaw cells with injected current", 100, 0.05,
-                "Um núcleo de 350 células de Renshaw sem motoneurônios, com uma corrente constante de 5 nA"
-                        + " injetada no soma de cada uma, além do disparo espontâneo de 7 Hz.");
+                "A pool of 350 Renshaw cells without motoneurons, with a constant current of 5 nA injected into the"
+                        + " soma of each one, besides the spontaneous firing of 7 Hz.");
     }
 
     private static ScenarioEdit.Example isometricClosedLoop(Scenario base) {
@@ -149,10 +151,11 @@ final class ProjectFrExamples {
         c.settings.put("gammaStatic", 32.0);
         return example(c, "projectfr-isometric-closed-loop", "IsometricClosedLoop",
                 "projectFR - Closed loop with Ia feedback", 5000, 0.05,
-                "O sóleo em malha fechada: 400 axônios descendentes (processo gama de ordem 10, intervalo médio"
-                        + " de 12 ms) e os aferentes Ia do sóleo, movidos pelo fuso, excitam os motoneurônios, com o"
-                        + " músculo de Hill. Apesar do nome do exemplo, o tornozelo segue uma senoide de 0,1 rad"
-                        + " (5,7°) a 1 Hz, imposta, e o fusimotor dinâmico e o estático ficam em 32 disparos/s.");
+                "The soleus in closed loop: 400 descending axons (gamma process of order 10, mean interval of"
+                        + " 12 ms) and the Ia afferents of the soleus, driven by the spindle, excite the motoneurons,"
+                        + " with the Hill muscle. Despite the name of the example, the ankle follows an imposed"
+                        + " sinusoid of 0.1 rad (5.7°) at 1 Hz, and the dynamic and static fusimotor drives stay at"
+                        + " 32 spikes/s.");
     }
 
     private static ScenarioEdit.Example mnPoolRenshaw(Scenario base) {
@@ -164,10 +167,10 @@ final class ProjectFrExamples {
         c.dynamics("SOL", "IN_ext", "MN S-IN RC", "D", 200, 5);
         return example(c, "projectfr-mn-pool-renshaw", "MNPoolWithRenshawCells",
                 "projectFR - MN pool with Renshaw cells", 5000, 0.05,
-                "Inibição recorrente: 800 motoneurônios S do sóleo, movidos por 400 axônios descendentes"
-                        + " (processo gama de ordem 10, intervalo médio de 12 ms), excitam 350 células de Renshaw"
-                        + " (conectividade de 6%, sinapse com depressão de 5%), que os inibem de volta (4%); as duas"
-                        + " vias enfraquecem com a distância na coluna (fatores 0,01 e 0,22 da tela Miscellaneous).");
+                "Recurrent inhibition: 800 S motoneurons of the soleus, driven by 400 descending axons (gamma"
+                        + " process of order 10, mean interval of 12 ms), excite 350 Renshaw cells (6% connectivity,"
+                        + " synapse with 5% depression), which inhibit them back (4%); both pathways weaken with the"
+                        + " distance along the column (factors 0.01 and 0.22 of the Miscellaneous screen).");
     }
 
     private static ScenarioEdit.Example motorUnitPoolEmg(Scenario base) {
@@ -176,9 +179,9 @@ final class ProjectFrExamples {
         c.injectedCurrent("SOL", "S", "D", 20);
         return example(c, "projectfr-motor-unit-pool-emg", "MotorUnitPoolEMG",
                 "projectFR - Motor-unit pool EMG", 5000, 0.05,
-                "O EMG de um núcleo de 800 unidades motoras S do sóleo sem entrada sináptica: cada motoneurônio"
-                        + " recebe uma corrente constante de 20 nA no dendrito, e os disparos dão a força e o EMG"
-                        + " (modelo de Hermite-Rodriguez).");
+                "The EMG of a pool of 800 S motor units of the soleus with no synaptic input: each motoneuron"
+                        + " receives a constant current of 20 nA in the dendrite, and the spikes give the force and"
+                        + " the EMG (Hermite-Rodriguez model).");
     }
 
     private static ScenarioEdit.Example descendingCommand(Scenario base) {
@@ -187,9 +190,9 @@ final class ProjectFrExamples {
         c.rateTract("CM_ext", 60, 10, 1000);
         return example(c, "projectfr-descending-command", "MotorUnitWithDescendingCommand",
                 "projectFR - Motor-unit pool with descending command", 1000, 0.05,
-                "Os 900 motoneurônios do sóleo movidos por 400 axônios descendentes a 60 disparos/s (processo gama"
-                        + " de ordem 10): o EMG do núcleo, a força e os disparos. O exemplo desenha também o EMG de"
-                        + " cada uma das 20 primeiras unidades.");
+                "The 900 motoneurons of the soleus driven by 400 descending axons at 60 spikes/s (gamma process of"
+                        + " order 10): the EMG of the pool, the force and the spikes. The example also draws the EMG"
+                        + " of each of the first 20 units.");
     }
 
     private static ScenarioEdit.Example nodeAxons(Scenario base) {
@@ -200,13 +203,13 @@ final class ProjectFrExamples {
         c.settings.put("nerveStimulus", Map.of("PTN", Map.of("thresholdModel", "node")));
         return example(c, "projectfr-node-axons", "MotorUnitWithNodeAxonsAndDescendingCommand",
                 "projectFR - Motor units with node-of-Ranvier axons", 100, 0.005,
-                "Três motoneurônios S do sóleo, movidos por 400 axônios descendentes a 185 disparos/s (processo"
-                        + " gama de ordem 2), com pulsos de 1 ms a 10 Hz no nervo tibial posterior, com passo de"
-                        + " 0,005 ms. No exemplo, o axônio é uma cadeia de 50 nós de Ranvier; aqui, cada axônio tem um"
-                        + " nó de Ranvier no ponto do estímulo (o limiar Node of Ranvier, com o modelo de Howells et"
-                        + " al., 2012), e a condução até a medula e o músculo continua um atraso. O pulso é de 20 mA,"
-                        + " acima dos limiares dos três axônios (de 12,4 a 18 mA); o exemplo usa 10 numa escala de"
-                        + " limiares diferente.");
+                "Three S motoneurons of the soleus, driven by 400 descending axons at 185 spikes/s (gamma process"
+                        + " of order 2), with 1 ms pulses at 10 Hz on the posterior tibial nerve, with a step of"
+                        + " 0.005 ms. In the example, the axon is a chain of 50 nodes of Ranvier; here, each axon has"
+                        + " one node of Ranvier at the stimulus point (the Node of Ranvier threshold, with the model"
+                        + " of Howells et al., 2012), and conduction to the spinal cord and to the muscle is still a"
+                        + " delay. The pulse is 20 mA, above the thresholds of the three axons (from 12.4 to 18 mA);"
+                        + " the example uses 10 on a different threshold scale.");
     }
 
     private static ScenarioEdit.Example hillMuscle(Scenario base) {
@@ -218,10 +221,10 @@ final class ProjectFrExamples {
         c.settings.put("jointAngleSignal", signal("sine", 0, 1000, Math.toDegrees(0.1), 1, 0));
         return example(c, "projectfr-hill-muscle", "MuscleHillExample",
                 "projectFR - Hill muscle with imposed angle", 1000, 0.05,
-                "O músculo de Hill do sóleo, ativado por 800 motoneurônios S movidos por 400 axônios descendentes"
-                        + " (processo gama de ordem 10, intervalo médio de 12 ms), com o tornozelo seguindo uma"
-                        + " senoide de 0,1 rad (5,7°) a 1 Hz: a força, o comprimento e a velocidade do músculo. Sem"
-                        + " aferentes.");
+                "The Hill muscle of the soleus, activated by 800 S motoneurons driven by 400 descending axons"
+                        + " (gamma process of order 10, mean interval of 12 ms), with the ankle following a sinusoid"
+                        + " of 0.1 rad (5.7°) at 1 Hz: the force, the length and the velocity of the muscle. No"
+                        + " afferents.");
     }
 
     private static ScenarioEdit.Example muscleSpindle(Scenario base) {
@@ -237,13 +240,13 @@ final class ProjectFrExamples {
         c.settings.put("gammaStatic", 10.0);
         return example(c, "projectfr-muscle-spindle", "MuscleSpindleExample",
                 "projectFR - Muscle spindle", 20000, 0.05,
-                "O fuso muscular do tibial anterior num estiramento senoidal lento, a 0,25 Hz, com o fusimotor"
-                        + " dinâmico e o estático em 10 disparos/s: a taxa da aferência Ia contra o tempo, o"
-                        + " comprimento e a velocidade. No exemplo, o fuso está sozinho e recebe o comprimento do"
-                        + " fascículo (de 0,99 a 1,0 do ótimo); aqui, o comprimento vem do tornozelo: o ângulo inicial"
-                        + " de 3,6° e uma senoide imposta de 0,54° dão ao fascículo do tibial anterior, com o músculo de"
-                        + " Hill sem contração, de 0,99 a 1,0 do ótimo, e os 280 aferentes Ia disparam pela taxa do"
-                        + " fuso.");
+                "The muscle spindle of the tibialis anterior on a slow sinusoidal stretch, at 0.25 Hz, with the"
+                        + " dynamic and static fusimotor drives at 10 spikes/s: the rate of the Ia afference against"
+                        + " time, the length and the velocity. In the example, the spindle is on its own and receives"
+                        + " the length of the fascicle (from 0.99 to 1.0 of the optimum); here, the length comes from"
+                        + " the ankle: the initial angle of 3.6° and an imposed sinusoid of 0.54° give the fascicle of"
+                        + " the tibialis anterior, with the Hill muscle and no contraction, from 0.99 to 1.0 of the"
+                        + " optimum, and the 280 Ia afferents fire at the rate of the spindle.");
     }
 
     private static ScenarioEdit.Example neuralTract(Scenario base) {
@@ -252,9 +255,9 @@ final class ProjectFrExamples {
         c.gammaTract("CM_ext", 12, 1);
         return example(c, "projectfr-neural-tract", "NeuralTractExample",
                 "projectFR - Neural tract", 10000, 0.05,
-                "Um trato descendente sozinho: 400 axônios com disparos num processo gama de ordem 1 (intervalos"
-                        + " exponenciais) a 83,3 disparos/s, sem motoneurônios. Os disparos e os intervalos estão nos"
-                        + " resultados do trato.");
+                "A descending tract on its own: 400 axons firing in a gamma process of order 1 (exponential"
+                        + " intervals) at 83.3 spikes/s, with no motoneurons. The spikes and the intervals are in the"
+                        + " results of the tract.");
     }
 
     private static ScenarioEdit.Example neuralTractUnit(Scenario base) {
@@ -263,9 +266,9 @@ final class ProjectFrExamples {
         c.gammaTract("CM_ext", 4, 1);
         return example(c, "projectfr-neural-tract-unit", "NeuralTractUnitExample",
                 "projectFR - Single neural tract unit", 10000, 0.05,
-                "Um único axônio descendente com intervalo médio de 4 ms (250 disparos/s) num processo gama de"
-                        + " ordem 1: o exemplo calcula a média, o desvio-padrão e o coeficiente de variação dos"
-                        + " intervalos, que estão no histograma de intervalos dos resultados do trato.");
+                "A single descending axon with a mean interval of 4 ms (250 spikes/s) in a gamma process of"
+                        + " order 1: the example computes the mean, the standard deviation and the coefficient of"
+                        + " variation of the intervals, which are in the interval histogram of the tract's results.");
     }
 
     private static ScenarioEdit.Example posturalControl(Scenario base) {
@@ -306,19 +309,19 @@ final class ProjectFrExamples {
         c.settings.put("gammaStatic", 42.9);
         return example(c, "projectfr-postural-control", "PosturalControl",
                 "projectFR - Postural control", 12000, 0.05,
-                "Controle da postura ereta: o corpo é um pêndulo invertido sobre o tornozelo, controlado pelo"
-                        + " sóleo, pelos gastrocnêmios e pelo tibial anterior, com músculos de Hill, aferentes Ia, II"
-                        + " e Ib e interneurônios do grupo II, Ia recíprocos e Ib dos extensores, e 400 axônios"
-                        + " descendentes a 50 disparos/s (processo gama de ordem 25), com as conectividades e as"
-                        + " condutâncias das sinapses dos aferentes e dos interneurônios do exemplo. O fusimotor"
-                        + " dinâmico fica em"
-                        + " 37,1 e o estático em 42,9 disparos/s, o meio das faixas que o exemplo sorteia a cada"
-                        + " tentativa (de 36 a 38,2 e de 42,4 a 43,4) para o tríceps sural; aqui, o tibial anterior"
-                        + " recebe os mesmos valores (no exemplo, zero). O exemplo repete até 100 tentativas de 12 s,"
-                        + " parando cada uma numa queda (ângulo acima de 12° ou abaixo de −5°), e grava o tempo até"
-                        + " cair; aqui, uma tentativa. Com estes valores, o corpo fica parado no primeiro segundo e"
-                        + " cai para trás (o ângulo passa de −5° em cerca de 1,3 s). Para várias: remoto sweep"
-                        + " --param settings.gammaDynamic --values ... --measure \"max(articulacao-angulo)\".");
+                "Control of upright stance: the body is an inverted pendulum over the ankle, controlled by the"
+                        + " soleus, the gastrocnemii and the tibialis anterior, with Hill muscles, Ia, II and Ib"
+                        + " afferents and group II, reciprocal Ia and Ib interneurons of the extensors, and 400"
+                        + " descending axons at 50 spikes/s (gamma process of order 25), with the connectivities and"
+                        + " the conductances of the synapses of the afferents and of the interneurons of the example."
+                        + " The dynamic fusimotor drive stays at 37.1 and the static one at 42.9 spikes/s, the middle"
+                        + " of the ranges the example draws from at every trial (from 36 to 38.2 and from 42.4 to"
+                        + " 43.4) for the triceps surae; here, the tibialis anterior gets the same values (in the"
+                        + " example, zero). The example repeats up to 100 trials of 12 s, stopping each one at a fall"
+                        + " (angle above 12° or below −5°), and records the time to fall; here, one trial. With these"
+                        + " values, the body stays still in the first second and falls backwards (the angle passes"
+                        + " −5° at about 1.3 s). For several: remoto sweep --param settings.gammaDynamic --values ..."
+                        + " --measure \"max(articulacao-angulo)\".");
     }
 
     private static ScenarioEdit.Example reciprocalInhibition(Scenario base) {
@@ -334,11 +337,12 @@ final class ProjectFrExamples {
         c.nerve("CPN", 1001, 1100, 19, 1);
         return example(c, "projectfr-reciprocal-inhibition", "reciprocalInhibition",
                 "projectFR - Reciprocal inhibition", 1100, 0.05,
-                "Inibição recíproca: um pulso de 13 mA no nervo tibial posterior em 2 ms e outro de 19 mA no"
-                        + " fibular comum em 1001 ms. Os aferentes Ia do sóleo e do gastrocnêmio lateral excitam os"
-                        + " motoneurônios do sóleo; os do tibial anterior excitam 350 interneurônios Ia recíprocos,"
-                        + " que inibem os motoneurônios do sóleo. O EMG do sóleo, os disparos dos interneurônios e o"
-                        + " potencial de um motoneurônio mostram as duas respostas.");
+                "Reciprocal inhibition: a 13 mA pulse on the posterior tibial nerve at 2 ms and a 19 mA one on the"
+                        + " common peroneal nerve at 1001 ms. The Ia afferents of the soleus and of the lateral"
+                        + " gastrocnemius excite the motoneurons of the soleus; those of the tibialis anterior excite"
+                        + " 350 reciprocal Ia interneurons, which inhibit the motoneurons of the soleus. The EMG of"
+                        + " the soleus, the spikes of the interneurons and the potential of one motoneuron show the"
+                        + " two responses.");
     }
 
     // ------------------------------------------------------------------ sinais

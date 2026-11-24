@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "IsometricTaskAM",
-  "description" : "Contração isométrica do tríceps sural (os motoneurônios do sóleo (SOL: 800 S, 50 FR, 50 FF), do gastrocnêmio medial (MG: 300 S, 150 FR, 150 FF) e do lateral (LG: 130 S, 65 FR, 65 FF)) com os aferentes Ia dos três músculos (400, 160 e 160): 400 axônios descendentes com intervalo médio de 15 ms e um ruído sináptico excitatório. Apesar do nome, o comando não é modulado. Com o tornozelo isométrico e o músculo padrão, o fuso não é integrado, e os aferentes Ia não disparam. 8 s. No banco, os axônios disparavam num processo gama cuja ordem não foi gravada, e o trato só disparava em t = 0; aqui eles usam Poisson, com o mesmo intervalo médio.",
+  "description" : "Isometric contraction of the triceps surae (the motoneurons of the soleus (SOL: 800 S, 50 FR, 50 FF), of the medial gastrocnemius (MG: 300 S, 150 FR, 150 FF) and of the lateral one (LG: 130 S, 65 FR, 65 FF)) with the Ia afferents of the three muscles (400, 160 and 160): 400 descending axons with a mean interval of 15 ms and an excitatory synaptic noise. Despite the name, the command is not modulated. With the isometric ankle and the default muscle, the spindle is not integrated, and the Ia afferents do not fire. 8 s. In the database the axons fired in a gamma process whose order was not recorded, and the tract only fired at t = 0; here they use Poisson, with the same mean interval.",
   "schemaVersion" : 1,
   "seed" : 39,
   "durationMs" : 8000.0,

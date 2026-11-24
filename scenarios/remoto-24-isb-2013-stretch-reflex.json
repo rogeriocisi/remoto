@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "ISB_2013 - Stretch Reflex",
-  "description" : "Os quatro músculos do tornozelo, com seus motoneurônios (SOL: 800 S, 50 FR, 50 FF; MG: 300 S, 150 FR, 150 FF; LG: 130 S, 65 FR, 65 FF; TA: 250 S, 50 FR, 50 FF) e os aferentes Ia do sóleo e dos gastrocnêmios (400, 160 e 160), que excitam os motoneurônios dos três. O tríceps sural recebe 400 axônios descendentes com intervalo médio de 12 ms; o tibial anterior não recebe comando. Tornozelo isométrico, 30 s. No banco, os axônios disparavam num processo gama cuja ordem não foi gravada, e o trato só disparava em t = 0; aqui eles usam Poisson, com o mesmo intervalo médio.",
+  "description" : "The four ankle muscles, with their motoneurons (SOL: 800 S, 50 FR, 50 FF; MG: 300 S, 150 FR, 150 FF; LG: 130 S, 65 FR, 65 FF; TA: 250 S, 50 FR, 50 FF) and the Ia afferents of the soleus and of the gastrocnemii (400, 160 and 160), which excite the motoneurons of the three. The triceps surae receives 400 descending axons with a mean interval of 12 ms; the tibialis anterior receives no command. Isometric ankle, 30 s. In the database the axons fired in a gamma process whose order was not recorded, and the tract only fired at t = 0; here they use Poisson, with the same mean interval.",
   "schemaVersion" : 1,
   "seed" : 24,
   "durationMs" : 30000.0,

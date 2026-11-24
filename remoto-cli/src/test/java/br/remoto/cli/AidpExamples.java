@@ -24,11 +24,11 @@ import java.util.Map;
  */
 final class AidpExamples {
 
-    private static final String SOURCE = "Convertido da tarefa de %s do ReMoto_AIDP, a versão em Fortran do ReMoto"
-            + " para doenças desmielinizantes (M. C. de Oliveira, R. N. Watanabe e A. F. Kohn,"
-            + " github.com/oliveiramarina/ReMoto_AIDP): o desenho do experimento é o do programa de lá e as"
-            + " velocidades de condução são as do %s, e os parâmetros dos modelos são os do ReMoto em Java, sobre a"
-            + " configuração 24 do banco original.";
+    private static final String SOURCE = "Converted from the %s task of ReMoto_AIDP, the Fortran version of ReMoto"
+            + " for demyelinating diseases (M. C. de Oliveira, R. N. Watanabe and A. F. Kohn,"
+            + " github.com/oliveiramarina/ReMoto_AIDP): the design of the experiment is that of the program there"
+            + " and the conduction velocities are those of %s, and the model parameters are those of ReMoto in Java,"
+            + " on top of configuration 24 of the original database.";
 
     /** O que o {@code conf*_S<n>.rmto} de lá muda: as faixas de velocidade e o bloqueio. */
     private record Subject(String file, String name, String conf, double[] slow, double[] fast,
@@ -39,19 +39,19 @@ final class AidpExamples {
     private static final List<Subject> SUBJECTS = List.of(
             new Subject("s0", "S0, healthy", "confForceTask_S0.rmto / confPositionTask_S0.rmto",
                     new double[] {44, 51}, new double[] {51, 52}, new double[] {52, 53}, 0,
-                    "O sujeito saudável (S0): os axônios motores conduzem de 44 a 53 m/s, do mais lento (as"
-                            + " unidades S) ao mais rápido (as FF)."),
+                    "The healthy subject (S0): the motor axons conduct from 44 to 53 m/s, from the slowest (the S"
+                            + " units) to the fastest (the FF ones)."),
             new Subject("s1", "S1, demyelinated", "confForceTask_S1.rmto / confPositionTask_S1.rmto",
                     new double[] {5, 51}, new double[] {51, 52}, new double[] {52, 40}, 0,
-                    "A desmielinização moderada (S1): a faixa dos axônios motores desce para 5 a 51 m/s nas"
-                            + " unidades S e cai de 52 para 40 m/s nas FF, de modo que os axônios mais grossos"
-                            + " passam a ser os mais lentos. Os axônios sensoriais ficam como no S0."),
+                    "Moderate demyelination (S1): the range of the motor axons drops to 5 to 51 m/s in the S units"
+                            + " and falls from 52 to 40 m/s in the FF ones, so that the thickest axons become the"
+                            + " slowest. The sensory axons stay as in S0."),
             new Subject("s2", "S2, demyelinated with conduction block",
                     "confForceTask_S2.rmto / confPositionTask_S2.rmto",
                     new double[] {5, 51}, new double[] {51, 52}, new double[] {52, 40}, 0.65,
-                    "A desmielinização grave (S2): as faixas de velocidade são as do S1 e, além delas, 65% dos"
-                            + " axônios de cada núcleo motor, a contar do mais lento, têm a condução bloqueada e não"
-                            + " levam disparo nenhum à placa motora."));
+                    "Severe demyelination (S2): the velocity ranges are those of S1 and, on top of them, 65% of the"
+                            + " axons of each motor nucleus, counting from the slowest, have their conduction"
+                            + " blocked and carry no spike at all to the end-plate."));
 
     /** Os músculos de cada tarefa e os seus aferentes Ia, com as quantidades do exemplo. */
     private static final String[] TRICEPS = {
@@ -96,13 +96,13 @@ final class AidpExamples {
         c.settings.put("gammaDynamic", 25.0);
         c.settings.put("gammaStatic", 25.0);
         block(c, s, "SOL", "MG", "LG");
-        return example(c, "aidp-force-task-" + s.file(), "força", s,
+        return example(c, "aidp-force-task-" + s.file(), "force", s,
                 "ReMoto_AIDP - Force task (" + s.name() + ")",
-                "Tarefa de força: o sóleo e os dois gastrocnêmios, com músculos de Hill e o tornozelo isométrico"
-                        + " a 0°, são movidos por 400 axônios descendentes com 40 disparos/s nos primeiros 2 s e 250"
-                        + " disparos/s depois, e os aferentes Ia dos três músculos respondem ao fuso, com o"
-                        + " fusimotor dinâmico e o estático em 25 disparos/s. A força do tríceps sural e o torque do"
-                        + " tornozelo nos 10 s de contração são o que o exemplo mede. " + s.text());
+                "Force task: the soleus and the two gastrocnemii, with Hill muscles and the ankle isometric at 0°,"
+                        + " are driven by 400 descending axons with 40 spikes/s in the first 2 s and 250 spikes/s"
+                        + " afterwards, and the Ia afferents of the three muscles respond to the spindle, with the"
+                        + " dynamic and static fusimotor drives at 25 spikes/s. The force of the triceps surae and"
+                        + " the ankle torque over the 10 s of contraction are what the example measures. " + s.text());
     }
 
     /**
@@ -124,14 +124,14 @@ final class AidpExamples {
         c.settings.put("gammaDynamic", 50.0);
         c.settings.put("gammaStatic", 48.0);
         block(c, s, "SOL", "MG", "LG", "TA");
-        return example(c, "aidp-position-task-" + s.file(), "posição", s,
+        return example(c, "aidp-position-task-" + s.file(), "position", s,
                 "ReMoto_AIDP - Position task (" + s.name() + ")",
-                "Tarefa de posição: o pé, livre para girar em torno do tornozelo a partir de 5° e carregado com"
-                        + " 10% do torque voluntário máximo, é controlado pelo sóleo, pelos gastrocnêmios e pelo"
-                        + " tibial anterior, com músculos de Hill e os aferentes Ia dos quatro. Os 400 axônios"
-                        + " descendentes têm 40 disparos/s nos primeiros 2 s e 72,5 depois, num processo gama de"
-                        + " ordem 7, e o fusimotor dinâmico fica em 50 e o estático em 48 disparos/s. O ângulo do"
-                        + " tornozelo e a sua variabilidade são o que o exemplo mede. " + s.text());
+                "Position task: the foot, free to rotate about the ankle from 5° on and loaded with 10% of the"
+                        + " maximum voluntary torque, is controlled by the soleus, the gastrocnemii and the tibialis"
+                        + " anterior, with Hill muscles and the Ia afferents of all four. The 400 descending axons"
+                        + " have 40 spikes/s in the first 2 s and 72.5 afterwards, in a gamma process of order 7, and"
+                        + " the dynamic fusimotor drive stays at 50 and the static one at 48 spikes/s. The ankle"
+                        + " angle and its variability are what the example measures. " + s.text());
     }
 
     // ------------------------------------------------------------------ o que muda de um sujeito para outro

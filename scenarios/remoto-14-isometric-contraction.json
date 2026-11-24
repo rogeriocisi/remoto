@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Isometric contraction",
-  "description" : "Contração isométrica do tríceps sural. Os motoneurônios do sóleo (SOL: 800 S, 50 FR, 50 FF), do gastrocnêmio medial (MG: 300 S, 150 FR, 150 FF) e do gastrocnêmio lateral (LG: 130 S, 65 FR, 65 FF) recebem 400 axônios descendentes com disparos de Poisson, intervalo médio de 11 ms. Sem aferentes nem interneurônios; tornozelo isométrico. Veja a força, o EMG e o torque de cada músculo e os disparos dos motoneurônios.",
+  "description" : "Isometric contraction of the triceps surae. The motoneurons of the soleus (SOL: 800 S, 50 FR, 50 FF), of the medial gastrocnemius (MG: 300 S, 150 FR, 150 FF) and of the lateral gastrocnemius (LG: 130 S, 65 FR, 65 FF) receive 400 descending axons with Poisson firing, mean interval of 11 ms. No afferents and no interneurons; isometric ankle. Look at the force, the EMG and the torque of each muscle and at the motoneuron spikes.",
   "schemaVersion" : 1,
   "seed" : 14,
   "durationMs" : 5000.0,

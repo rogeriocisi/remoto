@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Modelo completo",
-  "description" : "Todos os elementos do modelo ligados ao mesmo tempo, para explorar a tela de resultados. Os quatro músculos do tornozelo (SOL, MG, LG e TA), com motoneurônios S, FR e FF; os aferentes Ia, II e Ib de cada músculo, com fuso muscular e órgão tendinoso de Golgi; os interneurônios Ia recíprocos, Ib e do grupo II e as células de Renshaw, dos extensores e dos flexores; os seis tratos descendentes (CM_ext, CM_flex, RBE_ext, RBE_flex, RBI_ext e RBI_flex), com disparos de Poisson; músculo de Hill e tornozelo em pêndulo invertido (postura ereta); e um pulso de 12 mA no nervo tibial posterior em 1 s. Parte da configuração 24 do ReMoto original. As taxas dos tratos e o pulso foram escolhidos para mostrar todos os elementos e não reproduzem um experimento publicado. São 2 s simulados, que levam alguns minutos.",
+  "description" : "Every element of the model turned on at the same time, to explore the results screen. The four ankle muscles (SOL, MG, LG and TA), with S, FR and FF motoneurons; the Ia, II and Ib afferents of each muscle, with muscle spindle and Golgi tendon organ; the reciprocal Ia, Ib and group II interneurons and the Renshaw cells, of the extensors and of the flexors; the six descending tracts (CM_ext, CM_flex, RBE_ext, RBE_flex, RBI_ext and RBI_flex), with Poisson firing; the Hill muscle and the ankle as an inverted pendulum (upright stance); and a 12 mA pulse on the posterior tibial nerve at 1 s. It starts from configuration 24 of the original ReMoto. The rates of the tracts and the pulse were chosen to show every element and do not reproduce a published experiment. 2 s simulated, which take a few minutes.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 2000.0,

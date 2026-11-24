@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "IdentSOL",
-  "description" : "O sóleo (800 S, 50 FR, 50 FF) recebe 400 axônios descendentes com intervalo médio de 12 ms; o gastrocnêmio lateral tem um único motoneurônio S. Tornozelo isométrico, 1,5 s. No banco, os axônios disparavam num processo gama cuja ordem não foi gravada, e o trato só disparava em t = 0; aqui eles usam Poisson, com o mesmo intervalo médio.",
+  "description" : "The soleus (800 S, 50 FR, 50 FF) receives 400 descending axons with a mean interval of 12 ms; the lateral gastrocnemius has a single S motoneuron. Isometric ankle, 1.5 s. In the database the axons fired in a gamma process whose order was not recorded, and the tract only fired at t = 0; here they use Poisson, with the same mean interval.",
   "schemaVersion" : 1,
   "seed" : 38,
   "durationMs" : 1500.0,

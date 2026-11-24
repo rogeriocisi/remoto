@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Neuroscience Meeting 2012",
-  "description" : "Reflexo H do sóleo e inibição recíproca (descrição original: \"H-reflex and T-reflex with and without reciprocal inhibition.\"). Um pulso de 50 mA no nervo tibial posterior (PTN), em 100 ms, ativa os 400 aferentes Ia e os 900 motoneurônios do SOL. Um pulso no nervo fibular comum (CPN), em 97 ms, ativaria os 280 aferentes Ia do tibial anterior, que inibem o SOL pelos 350 interneurônios Ia recíprocos; como gravado, esse pulso tem intensidade 0 (sem inibição recíproca): aumente-a em Stimulation > Nerve Stimulation para comparar. 200 ms.",
+  "description" : "H reflex of the soleus and reciprocal inhibition (original description: \"H-reflex and T-reflex with and without reciprocal inhibition.\"). A 50 mA pulse on the posterior tibial nerve (PTN), at 100 ms, activates the 400 Ia afferents and the 900 motoneurons of the SOL. A pulse on the common peroneal nerve (CPN), at 97 ms, would activate the 280 Ia afferents of the tibialis anterior, which inhibit the SOL through the 350 reciprocal Ia interneurons; as recorded, that pulse has intensity 0 (no reciprocal inhibition): raise it in Stimulation > Nerve Stimulation to compare. 200 ms.",
   "schemaVersion" : 1,
   "seed" : 18,
   "durationMs" : 200.0,

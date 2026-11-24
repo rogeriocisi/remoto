@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "AMmodRenshaw",
-  "description" : "O sóleo (800 S, 50 FR, 50 FF) recebe 400 axônios descendentes com intervalo médio de 15 ms e um ruído sináptico excitatório; a partir de 3 s, a taxa dos axônios ganha uma senoide de 20 Hz, com amplitude de 20 disparos/s. Apesar do nome, as células de Renshaw estão desligadas. Tornozelo isométrico, 15 s. No banco, os axônios disparavam num processo gama cuja ordem não foi gravada, e o trato só disparava em t = 0; aqui eles usam Poisson, com o mesmo intervalo médio.",
+  "description" : "The soleus (800 S, 50 FR, 50 FF) receives 400 descending axons with a mean interval of 15 ms and an excitatory synaptic noise; from 3 s on, the rate of the axons gains a 20 Hz sinusoid, with an amplitude of 20 spikes/s. Despite the name, the Renshaw cells are off. Isometric ankle, 15 s. In the database the axons fired in a gamma process whose order was not recorded, and the tract only fired at t = 0; here they use Poisson, with the same mean interval.",
   "schemaVersion" : 1,
   "seed" : 41,
   "durationMs" : 15000.0,

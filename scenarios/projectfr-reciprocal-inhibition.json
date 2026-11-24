@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Reciprocal inhibition",
-  "description" : "Inibição recíproca: um pulso de 13 mA no nervo tibial posterior em 2 ms e outro de 19 mA no fibular comum em 1001 ms. Os aferentes Ia do sóleo e do gastrocnêmio lateral excitam os motoneurônios do sóleo; os do tibial anterior excitam 350 interneurônios Ia recíprocos, que inibem os motoneurônios do sóleo. O EMG do sóleo, os disparos dos interneurônios e o potencial de um motoneurônio mostram as duas respostas. Convertido do exemplo reciprocalInhibition do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "Reciprocal inhibition: a 13 mA pulse on the posterior tibial nerve at 2 ms and a 19 mA one on the common peroneal nerve at 1001 ms. The Ia afferents of the soleus and of the lateral gastrocnemius excite the motoneurons of the soleus; those of the tibialis anterior excite 350 reciprocal Ia interneurons, which inhibit the motoneurons of the soleus. The EMG of the soleus, the spikes of the interneurons and the potential of one motoneuron show the two responses. Converted from the reciprocalInhibition example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 1100.0,

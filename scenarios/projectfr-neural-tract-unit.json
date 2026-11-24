@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Single neural tract unit",
-  "description" : "Um único axônio descendente com intervalo médio de 4 ms (250 disparos/s) num processo gama de ordem 1: o exemplo calcula a média, o desvio-padrão e o coeficiente de variação dos intervalos, que estão no histograma de intervalos dos resultados do trato. Convertido do exemplo NeuralTractUnitExample do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "A single descending axon with a mean interval of 4 ms (250 spikes/s) in a gamma process of order 1: the example computes the mean, the standard deviation and the coefficient of variation of the intervals, which are in the interval histogram of the tract's results. Converted from the NeuralTractUnitExample example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 10000.0,

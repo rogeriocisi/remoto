@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Neural tract",
-  "description" : "Um trato descendente sozinho: 400 axônios com disparos num processo gama de ordem 1 (intervalos exponenciais) a 83,3 disparos/s, sem motoneurônios. Os disparos e os intervalos estão nos resultados do trato. Convertido do exemplo NeuralTractExample do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "A descending tract on its own: 400 axons firing in a gamma process of order 1 (exponential intervals) at 83.3 spikes/s, with no motoneurons. The spikes and the intervals are in the results of the tract. Converted from the NeuralTractExample example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 10000.0,

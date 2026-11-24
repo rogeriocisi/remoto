@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Closed loop with Ia feedback",
-  "description" : "O sóleo em malha fechada: 400 axônios descendentes (processo gama de ordem 10, intervalo médio de 12 ms) e os aferentes Ia do sóleo, movidos pelo fuso, excitam os motoneurônios, com o músculo de Hill. Apesar do nome do exemplo, o tornozelo segue uma senoide de 0,1 rad (5,7°) a 1 Hz, imposta, e o fusimotor dinâmico e o estático ficam em 32 disparos/s. Convertido do exemplo IsometricClosedLoop do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "The soleus in closed loop: 400 descending axons (gamma process of order 10, mean interval of 12 ms) and the Ia afferents of the soleus, driven by the spindle, excite the motoneurons, with the Hill muscle. Despite the name of the example, the ankle follows an imposed sinusoid of 0.1 rad (5.7°) at 1 Hz, and the dynamic and static fusimotor drives stay at 32 spikes/s. Converted from the IsometricClosedLoop example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 5000.0,

@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Identification SOL_MG",
-  "description" : "A configuração 34 com 1,5 s: como a senoide do comando só começa em 2 s, aqui o comando é constante (400 axônios com intervalo médio de 17 ms e um ruído sináptico excitatório). Tornozelo isométrico. No banco, os axônios disparavam num processo gama cuja ordem não foi gravada, e o trato só disparava em t = 0; aqui eles usam Poisson, com o mesmo intervalo médio.",
+  "description" : "Configuration 34 with 1.5 s: since the sinusoid of the command only starts at 2 s, here the command is constant (400 axons with a mean interval of 17 ms and an excitatory synaptic noise). Isometric ankle. In the database the axons fired in a gamma process whose order was not recorded, and the tract only fired at t = 0; here they use Poisson, with the same mean interval.",
   "schemaVersion" : 1,
   "seed" : 36,
   "durationMs" : 1500.0,

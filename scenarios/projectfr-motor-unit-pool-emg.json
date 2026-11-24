@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Motor-unit pool EMG",
-  "description" : "O EMG de um núcleo de 800 unidades motoras S do sóleo sem entrada sináptica: cada motoneurônio recebe uma corrente constante de 20 nA no dendrito, e os disparos dão a força e o EMG (modelo de Hermite-Rodriguez). Convertido do exemplo MotorUnitPoolEMG do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "The EMG of a pool of 800 S motor units of the soleus with no synaptic input: each motoneuron receives a constant current of 20 nA in the dendrite, and the spikes give the force and the EMG (Hermite-Rodriguez model). Converted from the MotorUnitPoolEMG example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 5000.0,

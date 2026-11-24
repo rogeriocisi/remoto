@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Ankle impedance",
-  "description" : "Impedância do tornozelo: o ângulo é imposto como uma soma de 200 senoides de 0,25 a 50 Hz, cada uma com 0,004 rad de amplitude e fase sorteada (aqui, com a semente 1), e os quatro músculos do tornozelo (sóleo, gastrocnêmios e tibial anterior), com o modelo de Hill, respondem; o torque contra o ângulo dá a impedância. Como no exemplo, em que o comando descendente e os aferentes estão desligados no programa, os músculos ficam passivos: para a impedância com contração, ligue o trato CM_ext em Descending Commands. Convertido do exemplo ImpedanceAnkle do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "Ankle impedance: the angle is imposed as a sum of 200 sinusoids from 0.25 to 50 Hz, each with an amplitude of 0.004 rad and a drawn phase (here, with seed 1), and the four ankle muscles (soleus, gastrocnemii and tibialis anterior), with the Hill model, respond; the torque against the angle gives the impedance. As in the example, where the descending command and the afferents are turned off in the program, the muscles stay passive: for the impedance with contraction, turn the CM_ext tract on in Descending Commands. Converted from the ImpedanceAnkle example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 2000.0,

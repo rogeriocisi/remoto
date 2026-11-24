@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Renshaw cells with injected current",
-  "description" : "Um núcleo de 350 células de Renshaw sem motoneurônios, com uma corrente constante de 5 nA injetada no soma de cada uma, além do disparo espontâneo de 7 Hz. Convertido do exemplo InjectedCurrentRenshawCellPool do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "A pool of 350 Renshaw cells without motoneurons, with a constant current of 5 nA injected into the soma of each one, besides the spontaneous firing of 7 Hz. Converted from the InjectedCurrentRenshawCellPool example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 100.0,

@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Identification_SOL_MG",
-  "description" : "Resposta do tríceps sural a um comando oscilatório: os motoneurônios do sóleo (SOL: 800 S, 50 FR, 50 FF), do gastrocnêmio medial (MG: 300 S, 150 FR, 150 FF) e do lateral (LG: 130 S, 65 FR, 65 FF) recebem 400 axônios descendentes com intervalo médio de 17 ms e um ruído sináptico excitatório; de 2 s a 15 s, a taxa dos axônios ganha uma senoide de 20 Hz, com amplitude de 20 disparos/s. Tornozelo isométrico, 15 s. No banco, os axônios disparavam num processo gama cuja ordem não foi gravada, e o trato só disparava em t = 0; aqui eles usam Poisson, com o mesmo intervalo médio.",
+  "description" : "Response of the triceps surae to an oscillatory command: the motoneurons of the soleus (SOL: 800 S, 50 FR, 50 FF), of the medial gastrocnemius (MG: 300 S, 150 FR, 150 FF) and of the lateral one (LG: 130 S, 65 FR, 65 FF) receive 400 descending axons with a mean interval of 17 ms and an excitatory synaptic noise; from 2 s to 15 s, the rate of the axons gains a 20 Hz sinusoid, with an amplitude of 20 spikes/s. Isometric ankle, 15 s. In the database the axons fired in a gamma process whose order was not recorded, and the tract only fired at t = 0; here they use Poisson, with the same mean interval.",
   "schemaVersion" : 1,
   "seed" : 34,
   "durationMs" : 15000.0,

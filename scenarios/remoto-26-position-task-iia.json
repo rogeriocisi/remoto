@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Position Task - IIa",
-  "description" : "Como a tarefa de posição (25), com aferentes do grupo II no sóleo e nos gastrocnêmios (500, 200 e 200). Os interneurônios do grupo II estão desligados: os aferentes II disparam, mas não chegam aos motoneurônios. O pé se move contra uma carga de 15% do torque voluntário máximo (tornozelo em tarefa de posição). O banco não gravava o modelo de articulação; este foi escolhido aqui pelo nome da configuração, porque com o tornozelo isométrico o fuso não é integrado e os aferentes não disparam. 30 s. No banco, os axônios disparavam num processo gama cuja ordem não foi gravada, e o trato só disparava em t = 0; aqui eles usam Poisson, com o mesmo intervalo médio.",
+  "description" : "Like the position task (25), with group II afferents in the soleus and in the gastrocnemii (500, 200 and 200). The group II interneurons are off: the II afferents fire, but do not reach the motoneurons. The foot moves against a load of 15% of the maximum voluntary torque (ankle in position task). The database did not store the joint model; this one was chosen here from the name of the configuration, because with the isometric ankle the spindle is not integrated and the afferents do not fire. 30 s. In the database the axons fired in a gamma process whose order was not recorded, and the tract only fired at t = 0; here they use Poisson, with the same mean interval.",
   "schemaVersion" : 1,
   "seed" : 26,
   "durationMs" : 30000.0,

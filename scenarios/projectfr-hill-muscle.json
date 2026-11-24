@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Hill muscle with imposed angle",
-  "description" : "O músculo de Hill do sóleo, ativado por 800 motoneurônios S movidos por 400 axônios descendentes (processo gama de ordem 10, intervalo médio de 12 ms), com o tornozelo seguindo uma senoide de 0,1 rad (5,7°) a 1 Hz: a força, o comprimento e a velocidade do músculo. Sem aferentes. Convertido do exemplo MuscleHillExample do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "The Hill muscle of the soleus, activated by 800 S motoneurons driven by 400 descending axons (gamma process of order 10, mean interval of 12 ms), with the ankle following a sinusoid of 0.1 rad (5.7°) at 1 Hz: the force, the length and the velocity of the muscle. No afferents. Converted from the MuscleHillExample example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 1000.0,

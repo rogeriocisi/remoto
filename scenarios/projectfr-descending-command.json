@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "projectFR - Motor-unit pool with descending command",
-  "description" : "Os 900 motoneurônios do sóleo movidos por 400 axônios descendentes a 60 disparos/s (processo gama de ordem 10): o EMG do núcleo, a força e os disparos. O exemplo desenha também o EMG de cada uma das 20 primeiras unidades. Convertido do exemplo MotorUnitWithDescendingCommand do projectFR, a versão em Fortran do ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.",
+  "description" : "The 900 motoneurons of the soleus driven by 400 descending axons at 60 spikes/s (gamma process of order 10): the EMG of the pool, the force and the spikes. The example also draws the EMG of each of the first 20 units. Converted from the MotorUnitWithDescendingCommand example of projectFR, the Fortran version of ReMoto (R. N. Watanabe, github.com/rnwatanabe/projectFR): the design of the experiment is that of the example, and the model parameters are those of ReMoto in Java, on top of configuration 24 of the original database.",
   "schemaVersion" : 1,
   "seed" : 1,
   "durationMs" : 1000.0,

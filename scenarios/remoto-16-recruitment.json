@@ -1,7 +1,7 @@
 {
   "id" : null,
   "name" : "Recruitment",
-  "description" : "Recrutamento das unidades motoras do tríceps sural (SOL, MG e LG, com as mesmas populações da contração isométrica). O intervalo médio dos 400 axônios descendentes (Poisson) cai em rampa de 20 ms para 4 ms nos primeiros 16 s e fica em 4 ms até o fim, em 20 s: com o comando crescendo, mais motoneurônios são recrutados e os ativos disparam mais rápido. Sem aferentes nem interneurônios; tornozelo isométrico.",
+  "description" : "Recruitment of the motor units of the triceps surae (SOL, MG and LG, with the same pools as the isometric contraction). The mean interval of the 400 descending axons (Poisson) falls as a ramp from 20 ms to 4 ms over the first 16 s and stays at 4 ms to the end, at 20 s: as the command grows, more motoneurons are recruited and the active ones fire faster. No afferents and no interneurons; isometric ankle.",
   "schemaVersion" : 1,
   "seed" : 16,
   "durationMs" : 20000.0,
