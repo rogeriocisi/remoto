@@ -4,6 +4,8 @@
 
 **Website:** <https://remoto.psigama.com/>
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24488862.svg)](https://doi.org/10.5281/zenodo.24488862)
+
 ReMoto is a neuronal simulation system for studying the spinal cord networks responsible for muscle control. These networks are driven by descending commands, afferent feedback and electrical nerve stimulation. The simulator can be used to investigate phenomena at several levels of organization, from the neuronal membrane to whole-muscle behavior such as force generation. This is possible because each element (neurons, synapses, muscle fibers) has its own mathematical model, usually involving voltage- or neurotransmitter-dependent ionic channels.
 
 ReMoto is useful for interpreting results of neurophysiological experiments in humans, proposing and testing hypotheses about neuronal dynamics and network processing, validating experimental protocols, and teaching neurophysiology.
@@ -129,6 +131,9 @@ ReMoto is released under the [MIT License](LICENSE).
 To report problems or ask questions, open an issue in this repository.
 
 ## How to cite
+
+To cite the software itself, use its DOI: [10.5281/zenodo.24488862](https://doi.org/10.5281/zenodo.24488862). That is the concept
+DOI, which always resolves to the latest version; each release also gets its own DOI.
 
 If you use ReMoto, please cite the following papers:
 

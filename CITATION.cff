@@ -21,6 +21,12 @@ authors:
     given-names: Marina Cardoso de
   - family-names: Watanabe
     given-names: Renato Naville
+doi: 10.5281/zenodo.24488863
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24488862
+    description: >-
+      The concept DOI, which always resolves to the latest version.
 repository-code: https://github.com/rogeriocisi/remoto
 url: https://remoto.psigama.com/
 license: MIT
