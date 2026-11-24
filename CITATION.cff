@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+title: ReMoto
+abstract: >-
+  Simulator of the spinal cord networks that control human muscles: motoneuron
+  pools, interneurons, afferents, muscles and proprioceptors of the ankle, from
+  membrane conductances to joint torque.
+type: software
+message: >-
+  If you use ReMoto, please cite the paper below. To cite this version of the
+  software itself, use the record this repository is archived in.
+authors:
+  - family-names: Cisi
+    given-names: Rogerio R. L.
+  - family-names: Kohn
+    given-names: André Fábio
+  - family-names: Chaud
+    given-names: Vitor Martins
+  - family-names: Elias
+    given-names: Leonardo Abdala
+  - family-names: Oliveira
+    given-names: Marina Cardoso de
+  - family-names: Watanabe
+    given-names: Renato Naville
+repository-code: https://github.com/rogeriocisi/remoto
+url: https://remoto.psigama.com/
+license: MIT
+version: 3.0.0
+preferred-citation:
+  type: article
+  title: >-
+    Simulation system of spinal cord motor nuclei and associated nerves and
+    muscles, in a Web-based architecture
+  authors:
+    - family-names: Cisi
+      given-names: Rogerio R. L.
+    - family-names: Kohn
+      given-names: André Fábio
+  journal: Journal of Computational Neuroscience
+  volume: 25
+  issue: 3
+  start: 520
+  end: 542
+  year: 2008
