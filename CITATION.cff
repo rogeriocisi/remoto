@@ -11,16 +11,16 @@ message: >-
 authors:
   - family-names: Cisi
     given-names: Rogerio R. L.
-  - family-names: Kohn
-    given-names: André Fábio
-  - family-names: Chaud
-    given-names: Vitor Martins
   - family-names: Elias
     given-names: Leonardo Abdala
-  - family-names: Oliveira
-    given-names: Marina Cardoso de
   - family-names: Watanabe
     given-names: Renato Naville
+  - family-names: Chaud
+    given-names: Vitor Martins
+  - family-names: Oliveira
+    given-names: Marina Cardoso de
+  - family-names: Kohn
+    given-names: André Fábio
 doi: 10.5281/zenodo.24488862
 identifiers:
   - type: doi
