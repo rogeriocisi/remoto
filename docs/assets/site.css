@@ -257,6 +257,14 @@ pre.term .c { color: #8fa0b1; }
 .refs span { display: block; font-size: .93rem; color: var(--ink-2); }
 .links { list-style: none; padding: 0; margin: 1.6rem 0 0; display: flex; flex-wrap: wrap; gap: .7rem; }
 
+/* people: nome, papel e perfis */
+.people { list-style: none; margin: 1.8rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 0 2.5rem; max-width: 60rem; }
+.people li { padding: .9rem 0; border-top: 1px solid var(--rule); break-inside: avoid; }
+.people b { display: block; font-size: 1.02rem; }
+.people > li > span { display: block; font-size: .93rem; line-height: 1.5; color: var(--ink-2); }
+.people .pf { margin-top: .25rem; font: 500 .72rem/1.6 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.people .pf i { font-style: normal; color: var(--rule); margin: 0 .45rem; }
+
 footer {
   margin-top: clamp(4rem, 9vw, 7rem);
   background: var(--slate); color: #cfd6dd;
