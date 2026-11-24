@@ -58,6 +58,7 @@
       <a href="#scenarios">Scenarios</a>
       <a href="#publications">Publications</a>
       <a href="#learning">Learn</a>
+      <a href="#downloads">Downloads</a>
       <a href="#credits">Credits</a>
       <span class="lang" role="group" aria-label="Language">
         <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i
@@ -83,7 +84,8 @@
         membrane conductances up to joint torque. It runs in a browser or on the command line, and every run can be
         repeated exactly.</p>
       <p class="cta rise d3">
-        <a class="btn primary" href="https://github.com/rogeriocisi/remoto">Get the code</a>
+        <a class="btn primary" href="https://remoto.psigama.com/">Open the simulator</a>
+        <a class="btn" href="https://github.com/rogeriocisi/remoto">Get the code</a>
         <a class="btn" href="#run">Run it locally</a>
         <a class="btn" href="#publications">Publications</a>
       </p>
@@ -672,8 +674,15 @@
       <div class="sec-body">
         <h2>Clone, start, simulate</h2>
         <div class="prose">
-          <p class="lead">You need JDK 25. Maven is downloaded by the wrapper included in the repository.</p>
+          <p class="lead">The public demo runs version 3 with nothing to install. To run it on your own machine
+            you need JDK 25; Maven is downloaded by the wrapper included in the repository.</p>
         </div>
+        <ul class="links">
+          <li><a class="btn primary" href="https://remoto.psigama.com/">Open the demo</a></li>
+        </ul>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">The demo is a small machine shared by every visitor:
+          simulations go into a round-robin queue, with limits per browser, and each workspace lasts 30 days. To run
+          without a queue, change the code or simulate for longer, start ReMoto on your own machine.</p>
 
         <div class="cols">
           <div>
@@ -1189,8 +1198,76 @@
       </div>
     </section>
 
+    <section class="sec" id="downloads">
+      <div class="sec-no"><b>8</b>Downloads</div>
+      <div class="sec-body">
+        <h2>Version 3 and the legacy packages</h2>
+        <div class="prose">
+          <p class="lead">Version 3 lives on GitHub: clone the repository or download the source as a zip. The
+            packages published by the LEB site are still online, for anyone who needs to reproduce work done with
+            them.</p>
+        </div>
+        <ul class="links">
+          <li><a class="btn primary" href="https://github.com/rogeriocisi/remoto">Version 3 repository</a></li>
+          <li><a class="btn" href="https://github.com/rogeriocisi/remoto/archive/refs/heads/master.zip">Source as
+              zip</a></li>
+        </ul>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">The version 3 code is under the <a
+            href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>. The packages below were
+          published by the LEB site under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a> and
+          are hosted there, not here.</p>
+
+        <div class="tbl-wrap" style="max-width:50rem">
+          <table>
+            <caption><b>Table 4</b>The packages published by the legacy site, still online at
+              remoto.leb.usp.br.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Version</th>
+                <th scope="col">What it is</th>
+                <th scope="col" class="num">Size</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2f1_021211_usr.zip">ReMoto 2.1</a></th>
+                <td>Source code, the last stable version of the legacy site (2 December 2011)</td>
+                <td class="num">12 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/ReMoto%202.0%20Setup.exe">ReMoto 2.0 Setup</a></th>
+                <td>End-user installer for Windows, with the required technologies embedded</td>
+                <td class="num">16 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2b2src_28052012L.zip">ReMoto 2.2 beta</a>
+                </th>
+                <td>Source code of the test version (13 June 2012)</td>
+                <td class="num">21 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2src_050711_usr.zip">ReMoto 2.0</a></th>
+                <td>Source code (5 July 2011)</td>
+                <td class="num">11 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto1_1_5_2008.zip">ReMoto 1.1.5</a></th>
+                <td>Source code of the 2008 final version, the one of the Cisi and Kohn paper</td>
+                <td class="num">4 MB</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <section class="sec" id="credits">
-      <div class="sec-no"><b>8</b>Credits</div>
+      <div class="sec-no"><b>9</b>Credits</div>
       <div class="sec-body">
         <h2>Who developed ReMoto</h2>
         <div class="prose">
@@ -1264,7 +1341,8 @@
       </div>
       <div>
         <h2>Project</h2>
-        <p><a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
+        <p><a href="https://remoto.psigama.com/">Online simulator</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
           <a href="https://github.com/rogeriocisi/remoto/issues">Questions and bug reports</a><br>
           <a href="https://github.com/rnwatanabe/remoto">Legacy version (parent repository)</a>
         </p>

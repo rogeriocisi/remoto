@@ -58,6 +58,7 @@
       <a href="#scenarios">Cenários</a>
       <a href="#publications">Publicações</a>
       <a href="#learning">Aprender</a>
+      <a href="#downloads">Downloads</a>
       <a href="#credits">Créditos</a>
       <span class="lang" role="group" aria-label="Idioma">
         <a class="keep" href="../" hreflang="en" data-lang="en" lang="en">EN</a><i aria-hidden="true">&middot;</i><a
@@ -84,7 +85,8 @@
         tornozelo, modelados das condutâncias da membrana até o torque na articulação. Roda no navegador ou na linha de
         comando, e toda simulação pode ser repetida exatamente.</p>
       <p class="cta rise d3">
-        <a class="btn primary" href="https://github.com/rogeriocisi/remoto">Baixar o código</a>
+        <a class="btn primary" href="https://remoto.psigama.com/">Abrir o simulador</a>
+        <a class="btn" href="https://github.com/rogeriocisi/remoto">Baixar o código</a>
         <a class="btn" href="#run">Rodar na sua máquina</a>
         <a class="btn" href="#publications">Publicações</a>
       </p>
@@ -681,8 +683,16 @@
       <div class="sec-body">
         <h2>Clonar, subir, simular</h2>
         <div class="prose">
-          <p class="lead">É preciso o JDK 25. O Maven é baixado pelo wrapper que vem no repositório.</p>
+          <p class="lead">A demonstração pública roda a versão 3 sem instalar nada. Para rodar na sua máquina é
+            preciso o JDK 25; o Maven é baixado pelo wrapper que vem no repositório.</p>
         </div>
+        <ul class="links">
+          <li><a class="btn primary" href="https://remoto.psigama.com/">Abrir a demonstração</a></li>
+        </ul>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">A demonstração é uma máquina pequena dividida por
+          todos os visitantes: as simulações entram numa fila em rodízio, com limites por navegador, e a área de
+          trabalho de cada um dura 30 dias. Para rodar sem fila, mexer no código ou simular por mais tempo, suba o
+          ReMoto na sua máquina.</p>
 
         <div class="cols">
           <div>
@@ -1241,8 +1251,74 @@
       </div>
     </section>
 
+    <section class="sec" id="downloads">
+      <div class="sec-no"><b>8</b>Downloads</div>
+      <div class="sec-body">
+        <h2>A versão 3 e os pacotes antigos</h2>
+        <div class="prose">
+          <p class="lead">A versão 3 vive no GitHub: clone o repositório ou baixe o código em zip. Os pacotes que o
+            site do LEB publicou continuam no ar, para quem precisa reproduzir um trabalho feito com eles.</p>
+        </div>
+        <ul class="links">
+          <li><a class="btn primary" href="https://github.com/rogeriocisi/remoto">Repositório da versão 3</a></li>
+          <li><a class="btn"
+              href="https://github.com/rogeriocisi/remoto/archive/refs/heads/master.zip">Código em zip</a></li>
+        </ul>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">O código da versão 3 está sob a <a
+            href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">licença MIT</a>. Os pacotes abaixo foram
+          publicados pelo site do LEB sob a <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a> e estão
+          hospedados lá, não aqui.</p>
+
+        <div class="tbl-wrap" style="max-width:50rem">
+          <table>
+            <caption><b>Tabela 4</b>Os pacotes publicados pelo site antigo, ainda no ar em remoto.leb.usp.br.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Versão</th>
+                <th scope="col">O que é</th>
+                <th scope="col" class="num">Tamanho</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2f1_021211_usr.zip">ReMoto 2.1</a></th>
+                <td>Código-fonte, a última versão estável do site antigo (2 de dezembro de 2011)</td>
+                <td class="num">12 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/ReMoto%202.0%20Setup.exe">ReMoto 2.0 Setup</a></th>
+                <td>Instalador para o usuário final, em Windows, com as tecnologias embutidas</td>
+                <td class="num">16 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2b2src_28052012L.zip">ReMoto 2.2 beta</a>
+                </th>
+                <td>Código-fonte da versão de teste (13 de junho de 2012)</td>
+                <td class="num">21 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2src_050711_usr.zip">ReMoto 2.0</a></th>
+                <td>Código-fonte (5 de julho de 2011)</td>
+                <td class="num">11 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto1_1_5_2008.zip">ReMoto 1.1.5</a></th>
+                <td>Código-fonte da versão final de 2008, a do artigo de Cisi e Kohn</td>
+                <td class="num">4 MB</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <section class="sec" id="credits">
-      <div class="sec-no"><b>8</b>Créditos</div>
+      <div class="sec-no"><b>9</b>Créditos</div>
       <div class="sec-body">
         <h2>Quem desenvolveu o ReMoto</h2>
         <div class="prose">
@@ -1317,7 +1393,8 @@
       </div>
       <div>
         <h2>Projeto</h2>
-        <p><a href="https://github.com/rogeriocisi/remoto">Código-fonte</a><br>
+        <p><a href="https://remoto.psigama.com/">Simulador online</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Código-fonte</a><br>
           <a href="https://github.com/rogeriocisi/remoto/issues">Dúvidas e relatos de problemas</a><br>
           <a href="https://github.com/rnwatanabe/remoto">Versão legada (repositório pai)</a>
         </p>
