@@ -4,6 +4,7 @@ on:
   push:
     branches: [master, "modernizacao/**"]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,3 +18,99 @@ jobs:
           cache: maven
       - name: Compilar e testar (core, storage, web, cli)
         run: ./mvnw -B verify
+      - name: Conferir a regra do e-mail do site
+        run: node scripts/site-domain-test.mjs
+
+  # Todo push no master que passa nos testes vai para produção: o site estático e o simulador.
+  # Onde é "produção" não está no repositório — vem dos Secrets e Variables do GitHub (README,
+  # seção "Deployment"). Sem eles configurados, este job não envia nada e não falha.
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    env:
+      REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
+      REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+      REMOTE_PORT: ${{ vars.DEPLOY_PORT || '22' }}
+      SITE_DIR: ${{ vars.DEPLOY_SITE_DIR || '/var/www/remoto' }}
+      SCENARIOS_DIR: ${{ vars.DEPLOY_SCENARIOS_DIR || '/opt/remoto/scenarios' }}
+      JAR_PATH: ${{ vars.DEPLOY_JAR_PATH || '/opt/remoto/remoto-web.jar' }}
+      SERVICE: ${{ vars.DEPLOY_SERVICE || 'remoto' }}
+      HEALTH_URL: ${{ vars.DEPLOY_HEALTH_URL || 'http://127.0.0.1:8080/simulator/actuator/health' }}
+    steps:
+      - name: Conferir se o deploy está configurado
+        id: config
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          if [ -n "$REMOTE_HOST" ] && [ -n "$REMOTE_USER" ] && [ -n "$KEY" ] && [ -n "$KNOWN_HOSTS" ]; then
+            echo "pronto=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pronto=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deploy não configurado (faltam Secrets DEPLOY_*): nada foi enviado. Ver o README, seção Deployment."
+          fi
+
+      - uses: actions/checkout@v5
+        if: steps.config.outputs.pronto == 'true'
+
+      - uses: actions/setup-java@v5
+        if: steps.config.outputs.pronto == 'true'
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Gerar o JAR
+        if: steps.config.outputs.pronto == 'true'
+        run: ./mvnw -B -pl remoto-web -am package -DskipTests
+
+      - name: Guardar o JAR desta versão
+        if: steps.config.outputs.pronto == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: remoto-web-jar
+          path: remoto-web/target/remoto-web-*.jar
+          if-no-files-found: error
+
+      - name: Preparar o acesso ao servidor
+        if: steps.config.outputs.pronto == 'true'
+        env:
+          KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_deploy ~/.ssh/known_hosts
+
+      # O site e os cenários públicos passam a ser exatamente o que está no commit: o --delete
+      # apaga no servidor o que saiu do repositório. São pastas só do deploy (nada escrito à mão).
+      - name: Enviar o site e os cenários públicos
+        if: steps.config.outputs.pronto == 'true'
+        run: |
+          ssh_cmd="ssh -i ~/.ssh/id_deploy -p $REMOTE_PORT"
+          rsync -az --delete -e "$ssh_cmd" docs/ "$REMOTE_USER@$REMOTE_HOST:$SITE_DIR/"
+          rsync -az --delete -e "$ssh_cmd" scenarios/ "$REMOTE_USER@$REMOTE_HOST:$SCENARIOS_DIR/"
+
+      # O reinício cancela as simulações em andamento e marca como interrompidas as que estavam na
+      # fila; os cenários e as simulações terminadas de cada área continuam lá.
+      - name: Trocar o JAR e reiniciar o serviço
+        if: steps.config.outputs.pronto == 'true'
+        run: |
+          jar=$(ls remoto-web/target/remoto-web-*.jar | head -1)
+          scp -i ~/.ssh/id_deploy -P "$REMOTE_PORT" "$jar" "$REMOTE_USER@$REMOTE_HOST:/tmp/remoto-web.jar"
+          ssh -i ~/.ssh/id_deploy -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
+            "install -m 644 /tmp/remoto-web.jar '$JAR_PATH' && rm -f /tmp/remoto-web.jar && sudo systemctl restart '$SERVICE'"
+
+      - name: Conferir se o simulador voltou
+        if: steps.config.outputs.pronto == 'true'
+        run: |
+          ssh -i ~/.ssh/id_deploy -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
+            "for i in \$(seq 1 20); do curl -fsS '$HEALTH_URL' && exit 0; sleep 3; done; echo 'o serviço não respondeu UP'; exit 1"

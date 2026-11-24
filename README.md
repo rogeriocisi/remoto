@@ -2,7 +2,7 @@
 
 # ReMoto
 
-**Website:** <https://remoto.psigama.com/>
+**Website:** <https://rogeriocisi.github.io/remoto/>
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24488862.svg)](https://doi.org/10.5281/zenodo.24488862)
 
@@ -24,7 +24,7 @@ This repository contains the new version of ReMoto. Of the legacy version, only 
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
 | Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine), plus the features of the Fortran versions as options, off by default |
 | Users | Local accounts stored in HSQLDB | No login: each browser has its own area, kept by a 30-day cookie; scenarios are exported and imported as files |
-| Language | English only | English and Portuguese, chosen by the browser language and switchable on every page |
+| Language | English only | English and Portuguese, chosen by the browser language and switchable on every page; the simulator serves any language declared in `remoto.languages`, from the same pages |
 | Status | Unmaintained; depends on software without security updates | Maintained and tested; the original models give bit-for-bit identical results, checked against the original code and database |
 
 ### Repository layout
@@ -35,15 +35,15 @@ remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
 remoto-web/           web application (Spring Boot, no login), including the scenario editor
 remoto-cli/           command-line runner for scripts and clusters, and export of old configurations
 scenarios/            public scenarios (JSON)
-deploy/            systemd service and configuration template
-docs/              project website (index.html, served by GitHub Pages) and documentation of the new version (in Portuguese)
+deploy/            systemd service, configuration template and the nginx example
+docs/              project website (`/`, `/pt/`, `/guide/`, `/guide/pt/`), served from the root of the domain and mirrored on GitHub Pages, and documentation of the new version (in Portuguese)
 legacy-db/         original HSQLDB database (text script), read by export-legacy without HSQLDB
 ref.bib            BibTeX references
 ```
 
 ## New version
 
-Detailed documentation, including the REST API and the data layout, is in [docs/nova-versao.md](docs/nova-versao.md) (in Portuguese).
+Detailed documentation, including the REST API and the data layout, is in [docs/current-version.md](docs/current-version.md).
 
 ### Features
 
@@ -87,23 +87,84 @@ Without the scripts, the equivalent command is below. Keep the quotes, because P
 ./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
-Then open http://localhost:8080. There is no login.
+Then open http://localhost:8080/simulator/ (or http://localhost:8080/simulator/pt/ for Portuguese). There is no login. The simulator lives under `/simulator` in development too, because that is where it is served in production, with the descriptive site at the root of the domain.
 
 ### Command line
 
 ```bash
 ./mvnw -pl remoto-cli -am package -DskipTests
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 --threads 4 -o results/soleus
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar sweep scenarios/remoto-17-default-soleus-contraction.json --protocol hm --range 5:40:1 -o results/hm-curve
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar validate scenarios/*.json
-java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list
+java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar run scenarios/remoto-17-default-soleus-contraction.json --duration-ms 500 --threads 4 -o results/soleus
+java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar sweep scenarios/remoto-17-default-soleus-contraction.json --protocol hm --range 5:40:1 -o results/hm-curve
+java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar validate scenarios/*.json
+java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar export-legacy --db legacy-db/remoto --list
 ```
 
 `sweep` runs a scenario once for each value of a parameter and writes one row of measures per run to `sweep.csv`: `--protocol hm` is the H-reflex and M-wave recruitment curve (stimulus intensity), `--protocol force` the force variability (ISI mean of a descending tract), and `--param` with `--measure` any other batch (see `sweep --help`). `export-legacy` converts configurations from the old HSQLDB database file into JSON scenarios (it reads the file directly; HSQLDB is not needed). `--threads` sets how many threads update the neurons (default: CPU cores); the results are identical, bit for bit, with any value.
 
 ### Deployment
 
-The web application is a single executable JAR with an embedded web server, installed as a systemd service on Linux. There are no accounts to manage: no login, passwords or identity providers. The service file and the configuration template are in [deploy/](deploy/); the step-by-step guide is in the "Instalação no servidor" section of [docs/nova-versao.md](docs/nova-versao.md).
+The site and the simulator are one system on one domain: the descriptive pages of [docs/](docs/) are static files served from the root, and the simulator is a single executable JAR with an embedded web server, installed as a systemd service and served at `/simulator` behind nginx. There are no accounts to manage: no login, passwords or identity providers.
+
+| Address | What |
+|---|---|
+| `/`, `/pt/` | the project description, in English and Portuguese |
+| `/guide/`, `/guide/pt/` | the quick guide |
+| `/simulator/`, `/simulator/pt/` | the simulator itself |
+
+The pages redirect to the reader's language on the first visit, and the language selector of every page keeps the choice.
+
+**The deployment domain is not in this repository.** Addresses inside the pages are relative, the contact e-mail is built from the host the page is served from — `remoto@<domain>`, see [docs/assets/site.js](docs/assets/site.js) — and where to deploy comes from this repository's GitHub settings, below.
+
+#### Every push to `master` deploys
+
+A push to `master` that passes the tests deploys the whole system. The `deploy` job of [.github/workflows/ci.yml](.github/workflows/ci.yml) builds the JAR, keeps it as a workflow artifact (so a rollback needs no rebuild), mirrors `docs/` and `scenarios/` to the server with `rsync --delete`, installs the JAR, restarts the service and waits for its health endpoint to answer. It can also be started by hand, with "Run workflow" on the Actions tab.
+
+Two things worth knowing: anyone who can push to `master` can deploy, so protect the branch if that is not what you want; and the restart cancels running simulations and marks queued ones as interrupted, while stored scenarios and finished simulations are kept. Until the secrets below exist, the job deploys nothing and does not fail the build, so forks and clones keep working.
+
+#### Secrets (Settings → Secrets and variables → Actions)
+
+The address and the user are secrets rather than variables so that they stay masked in the public run logs.
+
+| Secret | What |
+|---|---|
+| `DEPLOY_HOST` | the server, by name or address |
+| `DEPLOY_USER` | the deploy user on it |
+| `DEPLOY_SSH_KEY` | that user's private key, whole, **with no passphrase** (the workflow has no way to type one) — `ssh-keygen -t ed25519 -f deploy_key -N ""`, with the public half in its `authorized_keys` |
+| `DEPLOY_KNOWN_HOSTS` | the server's host key, so the connection is verified — `ssh-keyscan your-server` |
+
+#### Variables (same page, Variables tab), all optional
+
+| Variable | Default |
+|---|---|
+| `DEPLOY_PORT` | `22` |
+| `DEPLOY_SITE_DIR` | `/var/www/remoto` |
+| `DEPLOY_SCENARIOS_DIR` | `/opt/remoto/scenarios` |
+| `DEPLOY_JAR_PATH` | `/opt/remoto/remoto-web.jar` |
+| `DEPLOY_SERVICE` | `remoto` |
+| `DEPLOY_HEALTH_URL` | `http://127.0.0.1:8080/simulator/actuator/health` |
+
+#### On the server, once
+
+```bash
+# the deploy user, and rsync, which the deployment needs on both ends
+sudo useradd --system --create-home --shell /bin/bash deploy
+sudo apt install rsync
+sudo install -d -o deploy -g deploy -m 755 /var/www/remoto /opt/remoto /opt/remoto/scenarios
+
+# the public half of DEPLOY_SSH_KEY
+sudo install -d -o deploy -g deploy -m 700 ~deploy/.ssh
+sudo -u deploy tee ~deploy/.ssh/authorized_keys < deploy_key.pub
+
+# restarting the service is the only thing the deploy user may do as root
+echo 'deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart remoto' \
+  | sudo install -m 440 /dev/stdin /etc/sudoers.d/remoto-deploy
+```
+
+The files it writes are read by the `remoto` user that runs the service (mode 644 under `/opt/remoto`) and by nginx (`/var/www/remoto`). The service itself — the `remoto` user, `/etc/remoto/remoto.env`, the systemd unit — and the reverse proxy are set up once, as described in the "Installing on the server" section of [docs/current-version.md](docs/current-version.md), with [deploy/nginx-remoto.conf.example](deploy/nginx-remoto.conf.example) for nginx.
+
+#### Adding a language
+
+A complete `messages_<tag>.properties` in `remoto-web/src/main/resources`, and the tag in `remoto.languages` (`REMOTO_LANGUAGES=en,pt,es`). The simulator's pages are the same in every language — only the texts change — and its entry points follow the list: `/simulator/`, `/simulator/pt/`, `/simulator/es/`. `MessagesTest` fails while a key is missing from any of the files. The descriptive pages in `docs/` are one document per language, so a new language there means a new document (`/es/`, `/guide/es/`).
 
 ### Roadmap
 
