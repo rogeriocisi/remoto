@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found · ReMoto</title>
+  <meta name="robots" content="noindex">
+  <!-- Esta página é servida no lugar de qualquer endereço que não existe, em qualquer
+       profundidade (/a/b/c), então os endereços relativos não servem. A raiz do site é "/" no
+       servidor e "/<repositório>/" no espelho do GitHub Pages; o script abaixo descobre qual é
+       antes de carregar o resto, e sem JavaScript vale "/". -->
+  <script>
+    (function () {
+      var base = '/';
+      if (/\.github\.io$/i.test(location.hostname)) {
+        var first = location.pathname.split('/')[1];
+        if (first) base = '/' + first + '/';
+      }
+      document.write('<base href="' + base + '">');
+    })();
+  </script>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+
+<body>
+  <header class="top">
+    <a class="brand" href="./">
+      <img src="assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Site">
+      <a class="sim keep" href="simulator/">Simulator</a>
+      <a class="gh" href="https://github.com/rogeriocisi/remoto">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="nao-encontrada">
+    <section lang="en">
+      <p class="codigo">404</p>
+      <h1>This page does not exist.</h1>
+      <p>The address may be mistyped, or the page may have moved. These are the pages of the site:</p>
+      <ul>
+        <li><a href="./">ReMoto</a>: what the simulator is, the model, scenarios, publications and versions</li>
+        <li><a href="guide/">Quick guide</a>: running a scenario, reading the results, editing parameters</li>
+        <li><a href="simulator/">The simulator</a></li>
+      </ul>
+    </section>
+    <section lang="pt-BR">
+      <h1>Esta página não existe.</h1>
+      <p>O endereço pode ter sido digitado errado, ou a página pode ter mudado de lugar. Estas são as
+        páginas do site:</p>
+      <ul>
+        <li><a href="pt/">ReMoto</a>: o que é o simulador, o modelo, os cenários, as publicações e as versões</li>
+        <li><a href="guide/pt/">Guia rápido</a>: rodar um cenário, ler os resultados, editar parâmetros</li>
+        <li><a href="simulator/pt/">O simulador</a></li>
+      </ul>
+    </section>
+  </main>
+</body>
+
+</html>

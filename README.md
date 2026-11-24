@@ -142,6 +142,9 @@ The address is a secret rather than a variable so that it stays masked in the pu
 | `DEPLOY_JAR_PATH` | `/opt/remoto/remoto-web.jar` |
 | `DEPLOY_SERVICE` | `remoto` |
 | `DEPLOY_HEALTH_URL` | `http://127.0.0.1:8081/simulator/actuator/health` — the port is the `SERVER_PORT` of `remoto.env` (8081 by default), so set this variable if the service does not listen on 8081 |
+| `SITE_URL` | empty — the public address of the site, such as `https://example.org/`. Link previews (`og:image`, `og:url`) need an absolute address, so the deployment adds them to the pages only when this is set; the GitHub Pages mirror also uses it to send the *Simulator* buttons to the server, since the mirror has only the static pages |
+
+The `pages` job publishes the same `docs/` to GitHub Pages; for it to run, *Settings → Pages → Source* must be **GitHub Actions**.
 
 #### On the server, once
 

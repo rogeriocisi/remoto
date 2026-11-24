@@ -63,6 +63,22 @@ em { font-style: italic; }
 .top nav a.sim { color: var(--paper); background: var(--blue); padding: .5rem .75rem; border-radius: 2px; border: 0; }
 .top nav a.sim:hover { background: var(--blue-deep); color: var(--paper); }
 @media (max-width: 700px) { .top nav a:not(.gh):not(.sim):not(.keep) { display: none; } }
+/* num celular estreito, o "Rodar"/"Run" sai (o botão Simulador leva ao mesmo lugar) e o espaço
+   aperta, para o botão GitHub caber inteiro sem rolar a barra */
+@media (max-width: 440px) {
+  .top { gap: .6rem; padding-inline: .75rem; }
+  .top nav { gap: .55rem; }
+  .top nav a[href="#run"] { display: none; }
+  .top nav a.sim, .top nav a.gh { padding: .45rem .55rem; }
+  .brand { font-size: 1.05rem; gap: .4rem; }
+}
+
+/* ---- página não encontrada (404.html) ---- */
+.nao-encontrada { max-width: 38rem; margin: 0 auto; padding: clamp(3rem, 12vh, 7rem) clamp(1rem, 4vw, 2.5rem); }
+.nao-encontrada h1 { font: 700 clamp(1.8rem, 5vw, 2.6rem)/1.15 var(--display); margin: 0 0 .6em; }
+.nao-encontrada .codigo { font: 500 .78rem/1 var(--mono); letter-spacing: .12em; color: var(--ink-3); margin-bottom: 1.2rem; }
+.nao-encontrada ul { padding-left: 1.1rem; }
+.nao-encontrada [lang="pt-BR"] { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--rule); }
 
 /* ---- hero ---- */
 .hero {

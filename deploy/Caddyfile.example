@@ -18,6 +18,15 @@ exemplo.org {
 	root * /var/www/remoto
 	file_server
 
+	# compressão das páginas, do CSS e do JavaScript (a página inicial cai de 117 KB para ~30 KB)
+	encode zstd gzip
+
+	# endereço que não existe no site: a página 404.html, com o status 404
+	handle_errors 404 {
+		rewrite * /404.html
+		file_server
+	}
+
 	# o actuator é interno: fica acessível na máquina (é o que o deploy consulta), não de fora
 	@interno path /simulator/actuator /simulator/actuator/*
 	respond @interno 404
