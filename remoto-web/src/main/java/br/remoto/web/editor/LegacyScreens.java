@@ -324,9 +324,13 @@ public final class LegacyScreens {
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.integer("Index of MNs that will have signals stored (1)", null, "indexStoreVm1"),
                         Field.integer("Index of MNs that will have signals stored (2)", null, "indexStoreVm2")));
+        Part block = new Part("Conduction block (not in the original site)", Layout.MATRIX,
+                (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.MN),
+                item -> ((NeuronVO) item).getType(),
+                List.of(Field.number("Blocked fraction of the pool", null, "blockedAxons")));
         return new LegacyScreen("motoneuron", "Parameters of the alpha motoneurons",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
-                List.of(electrotonic, geometry, stored),
+                List.of(electrotonic, geometry, stored, block),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setListNeuronTypes(items.get(0));
@@ -334,7 +338,13 @@ public final class LegacyScreens {
                 },
                 List.of("Columns \"from\"/\"to\": values for the first and the last motoneuron of each type.",
                         "Signals stored (membrane potentials, conductances, injected current) appear in the results;"
-                                + " by default, the first and the middle motoneuron of each type."));
+                                + " by default, the first and the middle motoneuron of each type.",
+                        "Blocked fraction of the pool: a fraction from 0 (none, as in the original) to 1 of the"
+                                + " motor axons of the pool, counted from the slowest one, whose conduction is"
+                                + " blocked: the spike of the soma never reaches the end-plate and the motor unit"
+                                + " makes no force. The value is the same for the three types, since it is a"
+                                + " fraction of the whole pool. It is the conduction block of the Fortran version"
+                                + " for demyelinating diseases (de Oliveira, Watanabe and Kohn, 2022)."));
     }
 
     /** interneuron.jsp / NeuronAction (task=IN). */
@@ -741,12 +751,16 @@ public final class LegacyScreens {
     private static LegacyScreen joint() {
         Part part = confPart(null, List.of(
                 Field.number("Ankle initial angle", "deg", "jointAngle"),
-                Field.number("Knee angle", "deg", "kneeAngle")));
+                Field.number("Knee angle", "deg", "kneeAngle"),
+                Field.number("Load of the position task (fraction of the MVC)", null, "percentageOfMVC")));
         Part imposed = signalPart("Imposed ankle angle (added to the initial angle)",
                 conf -> List.of(conf.getJointAngleSignal()));
         return new LegacyScreen("joint", "Joint Parameters", List.of(), List.of(part, imposed),
                 (conf, sel, items) -> { },
                 List.of("The joint model is chosen in Biomechanical Elements.",
+                        "Load of the position task: with the joint model \"Position Task\", the fraction of the"
+                                + " maximum voluntary torque (79 N·m) that the pedal opposes to the foot; it does"
+                                + " nothing in the other joint models.",
                         "Imposed ankle angle: with the joint model \"Imposed angle (perturbation)\", the ankle"
                                 + " follows the initial angle plus this signal, in degrees (a ramp-and-hold stretch,"
                                 + " a sine, steps...), and the muscle lengths follow it. The spindles only respond"

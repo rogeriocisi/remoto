@@ -20,7 +20,7 @@ This repository contains the new version of ReMoto. Of the legacy version, only 
 |---|---|---|
 | Location | [rnwatanabe/remoto](https://github.com/rnwatanabe/remoto); here only `legacy-db/` (the original database, as a text file) | `remoto-*/` Maven modules, `scenarios/` |
 | Stack | Java 8, Struts 1, JSP, Java applets, Apache Tomcat 7, HSQLDB | Java 25, Spring Boot 4, Thymeleaf + htmx + uPlot, file storage (no database), a single executable JAR (no Docker) |
-| Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine), plus the features of the Fortran version as options, off by default |
+| Simulation models | All published models | The same published models, ported to `remoto-core` with bit-for-bit identical results (`legacy` engine), plus the features of the Fortran versions as options, off by default |
 | Users | Local accounts stored in HSQLDB | No login: each browser has its own area, kept by a 30-day cookie; scenarios are exported and imported as files |
 | Language | English only | English and Portuguese, chosen by the browser language and switchable on every page |
 | Status | Unmaintained; depends on software without security updates | Maintained and tested; the original models give bit-for-bit identical results, checked against the original code and database |
@@ -48,10 +48,10 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 - **No login, no database:** each browser gets its own area for scenarios, runs and results, identified by a 30-day cookie, so the work survives server restarts and closing the browser; an area is deleted after 30 days without use. To keep your work longer, or take it to another browser or computer, export scenarios as JSON (one file each, or all in a ZIP) and import them there; runs can be downloaded as a ZIP with every result in CSV. No personal data is stored.
 - **In two languages:** the pages, the messages and the charts come in English or Portuguese, picked from the browser language (`Accept-Language`) and switchable from the header on any page, which is remembered for a year. The editor screens and the results menus keep the English labels of the original site, the ones the papers cite.
 - **Fair simulation queue:** several people can run simulations at the same time; a large batch from one browser does not block the others, and limits per address and for the whole queue keep one visitor from taking over the server.
-- **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Sixteen more experiments from the old database (isometric contraction, recruitment, H-reflex with reciprocal inhibition, nerve stimulation during a contraction, position tasks with Ia, II and Ib afferents, oscillatory commands, Renshaw inhibition), a scenario with every model element turned on and an ankle stretch reflex with an imposed joint angle are also public, as are sixteen scenarios converted from the examples of the Fortran version (`scenarios/projectfr-*.json`: the design of each experiment, with the model parameters of the Java ReMoto). Tests check that each converted scenario gives exactly the same results as the original database configuration. Results include muscle force, motoneuron spikes, joint torque and EMG (raw, and filtered with noise as on the old results page).
+- **The original models:** the public scenarios of the old site ("Default - Soleus contraction", "ISB_2013 - Stretch Reflex", "JN - Watanabe and Kohn (2015)") run the same numerical code as before. Sixteen more experiments from the old database (isometric contraction, recruitment, H-reflex with reciprocal inhibition, nerve stimulation during a contraction, position tasks with Ia, II and Ib afferents, oscillatory commands, Renshaw inhibition), a scenario with every model element turned on and an ankle stretch reflex with an imposed joint angle are also public, as are sixteen scenarios converted from the examples of the Fortran version (`scenarios/projectfr-*.json`: the design of each experiment, with the model parameters of the Java ReMoto) and six converted from the force and position tasks of [ReMoto_AIDP](https://github.com/oliveiramarina/ReMoto_AIDP), the Fortran version for demyelinating diseases (`scenarios/aidp-*.json`: the healthy subject S0 and the demyelinated S1 and S2 of each task, which differ in the conduction velocities of the motor axons and, in S2, in a conduction block). Tests check that each converted scenario gives exactly the same results as the original database configuration. Results include muscle force, motoneuron spikes, joint torque and EMG (raw, and filtered with noise as on the old results page).
 - **Scenario editor modeled on the original site:** copy a public scenario and edit it through the same menu, screens, fields and limits as the old editor: structure (descending commands, neural elements), neural parameters (synapses, kinetics, synaptic dynamics, conductances, motoneurons, interneurons, sensory fibers), proprioceptors (muscle spindle, GTO), biomechanics (joint and muscle models, musculotendon, muscle units, EMG, miscellaneous), stimulation (nerve, injected current) and run settings. Changes are saved exactly as the original `ConfigurationDAO` saved them, now without a database; settings the old DAO did not store (model choices, spindle gains, joint angles) are kept with the scenario.
 - **Results screen modeled on the original site:** the same menus and graphics as the old results page: muscle, tendon, spindle, GTO and joint signals, spike rasters, instantaneous firing rate, interspike intervals and histograms for motoneurons, afferents, tracts and interneurons, membrane potentials, conductances and injected current of the stored neurons, neuron and motor-unit properties, EMG with the old filters and options, statistics and FFT, multiple subplots, and CSV/PNG downloads.
-- **Features from the Fortran version:** the Fortran version of ReMoto ([projectFR](https://github.com/rnwatanabe/projectFR), by R. N. Watanabe) had features the Java code did not. They are now here, implemented from the papers and off by default, so that scenarios without them give the original results: an imposed ankle angle (a perturbation), a time-varying fusimotor drive, nerve stimulation with a chosen pulse width and a current, leaky-charge or node-of-Ranvier threshold (the human axon model of Bostock, with the parameters of Howells et al., 2012), the gamma order of afferent firing, synaptic weights that fall with distance in any pathway, and tract commands that follow any rate series. Only the integrate-and-fire motoneuron was left out.
+- **Features from the Fortran versions:** the Fortran version of ReMoto ([projectFR](https://github.com/rnwatanabe/projectFR), by R. N. Watanabe) had features the Java code did not. They are now here, implemented from the papers and off by default, so that scenarios without them give the original results: an imposed ankle angle (a perturbation), a time-varying fusimotor drive, nerve stimulation with a chosen pulse width and a current, leaky-charge or node-of-Ranvier threshold (the human axon model of Bostock, with the parameters of Howells et al., 2012), the gamma order of afferent firing, synaptic weights that fall with distance in any pathway, and tract commands that follow any rate series. Only the integrate-and-fire motoneuron was left out. From [ReMoto_AIDP](https://github.com/oliveiramarina/ReMoto_AIDP), the Fortran version adapted to demyelinating diseases (M. C. de Oliveira, R. N. Watanabe and A. F. Kohn, 2022), came the conduction block of a fraction of a motor nucleus, counted from the slowest axon: the blocked motoneurons still fire at the soma, but no spike reaches the end-plate.
 - **Batch protocols:** `remoto sweep` runs a scenario once for each value of a parameter and writes the measures of every run to a table, with ready protocols for the H-reflex and M-wave recruitment curve and for force variability (see [Command line](#command-line)).
 - **The papers:** the publications page lists the journal papers, conference proceedings and book chapter from the old site, each with its DOI.
 - **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
@@ -112,7 +112,7 @@ The web application is a single executable JAR with an embedded web server, inst
 5. ~~Port the models to `remoto-core`, checked against the reference outputs, and drop the original model code and HSQLDB.~~ Done.
 6. ~~Results screen with everything the old one had.~~ Done.
 7. ~~English and Portuguese, in the application and on the project site.~~ Done.
-8. ~~The features of the Fortran version (projectFR), and parameter sweeps on the command line.~~ Done, except the integrate-and-fire motoneuron.
+8. ~~The features of the Fortran versions (projectFR and ReMoto_AIDP), and parameter sweeps on the command line.~~ Done, except the integrate-and-fire motoneuron.
 9. Parameter sweeps in the web application, a Python client and NWB export.
 
 ## Legacy version
@@ -138,6 +138,7 @@ If you use ReMoto, please cite the following papers:
 - WATANABE, R. N. et al. Influences of premotoneuronal command statistics on the scaling of motor output variability during isometric plantarflexion. *Journal of Neurophysiology*, v. 110, n. 11, p. 2592–2606, 2013.
 - ELIAS, L. A.; WATANABE, R. N.; KOHN, A. F. Spinal mechanisms may provide a combination of intermittent and continuous control of human posture: predictions from a biologically based neuromusculoskeletal model. *PLoS Computational Biology*, v. 10, n. 11, p. e1003944, 2014.
 - WATANABE, R. N.; KOHN, A. F. Fast oscillatory commands from the motor cortex can be decoded by the spinal cord for force control. *Journal of Neuroscience*, v. 35, n. 40, p. 13687–13697, 2015.
+- OLIVEIRA, M. C.; WATANABE, R. N.; KOHN, A. F. Electrophysiological and functional signs of Guillain–Barré syndrome predicted by a multiscale neuromuscular computational model. *Journal of Neural Engineering*, v. 19, n. 5, p. 056022, 2022.
 
 The BibTeX entries are in [ref.bib](ref.bib) and below:
 
@@ -199,5 +200,16 @@ The BibTeX entries are in [ref.bib](ref.bib) and below:
   number = {40},
   pages = {13687--13697},
   year = {2015}
+}
+
+@article{Oliveira2022,
+  author = {Oliveira, Marina Cardoso de and Watanabe, Renato Naville and Kohn, Andr{\'{e}} Fabio},
+  title = {Electrophysiological and functional signs of Guillain-Barr{\'{e}} syndrome predicted by a multiscale neuromuscular computational model},
+  journal = {Journal of Neural Engineering},
+  volume = {19},
+  number = {5},
+  pages = {056022},
+  doi = {10.1088/1741-2552/ac91f8},
+  year = {2022}
 }
 ```

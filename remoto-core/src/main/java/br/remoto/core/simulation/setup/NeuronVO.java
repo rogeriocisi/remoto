@@ -33,6 +33,10 @@ public class NeuronVO extends NeuronProperties implements Comparable
 	// stored by the original DAO (in the scenario settings, "tractSeries")
 	protected double[] rateSeries;
 
+	// Motoneurons: the fraction of the axons of the pool whose conduction is blocked, counted from the
+	// slowest one (in the scenario settings, "axonConductionBlock"); 0 = none, as in the original
+	protected double blockedAxons;
+
 	// Pool properties
 	protected int quantity;
 
@@ -371,6 +375,14 @@ public class NeuronVO extends NeuronProperties implements Comparable
 		if( gammaOrder < 0 )
 			throw new IllegalArgumentException("the gamma order must be 0 (the original) or positive");
 		this.gammaOrder = gammaOrder;
+	}
+	public double getBlockedAxons() {
+		return blockedAxons;
+	}
+	public void setBlockedAxons(double blockedAxons) {
+		if( blockedAxons < 0 || blockedAxons > 1 )
+			throw new IllegalArgumentException("the blocked fraction goes from 0 (none) to 1 (the whole pool)");
+		this.blockedAxons = blockedAxons;
 	}
 	public void setStd(double std) {
 		this.std = std;

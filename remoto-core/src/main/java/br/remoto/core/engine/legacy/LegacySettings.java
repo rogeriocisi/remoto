@@ -83,6 +83,23 @@ public final class LegacySettings {
      */
     public static final String TRACT_SERIES = "tractSeries";
 
+    /**
+     * O bloqueio de condução dos axônios motores, que o original não tinha: "núcleo" → a fração do
+     * núcleo bloqueada (de 0 a 1), contada do axônio mais lento para o mais rápido. É o bloqueio da
+     * versão em Fortran para doenças desmielinizantes (M. C. de Oliveira, R. N. Watanabe e A. F.
+     * Kohn, 2022); sem valor, nenhum axônio é bloqueado.
+     */
+    public static final String AXON_CONDUCTION_BLOCK = "axonConductionBlock";
+
+    /**
+     * A carga da tarefa de posição (a fração do torque voluntário máximo que o pedal opõe ao pé),
+     * que o site antigo não deixava mudar. Só é gravada quando sai do valor do original, 0,15.
+     */
+    public static final String PERCENTAGE_OF_MVC = "percentageOfMVC";
+
+    /** A carga da tarefa de posição do original, posta pelo {@code ConfigurationAssembler}. */
+    private static final double ORIGINAL_PERCENTAGE_OF_MVC = 0.15;
+
     private static final List<String> SIGNAL_FIELDS =
             List.of("tini", "tfin", "amp", "freq", "width", "delay", "modFreq", "modFactor");
 
@@ -148,6 +165,17 @@ public final class LegacySettings {
                 if (o instanceof NeuronVO neu && ReMoto.TR.equals(neu.getCategory())
                         && series.get(neu.getCdNucleus() + ":" + neu.getType()) != null) {
                     neu.setRateSeriesPoints(points(series.get(neu.getCdNucleus() + ":" + neu.getType()), TRACT_SERIES));
+                }
+            }
+        }
+        if (settings.get(PERCENTAGE_OF_MVC) != null) {
+            conf.setpercentageOfMVC(((Number) number(settings.get(PERCENTAGE_OF_MVC))).doubleValue());
+        }
+        if (settings.get(AXON_CONDUCTION_BLOCK) instanceof Map<?, ?> blocks) {
+            for (Object o : conf.getNeuronTypes()) {
+                if (o instanceof NeuronVO neu && ReMoto.MN.equals(neu.getCategory())
+                        && blocks.get(neu.getCdNucleus()) != null) {
+                    neu.setBlockedAxons(((Number) number(blocks.get(neu.getCdNucleus()))).doubleValue());
                 }
             }
         }
@@ -236,6 +264,18 @@ public final class LegacySettings {
         }
         if (!series.isEmpty()) {
             settings.put(TRACT_SERIES, series);
+        }
+        if (conf.getpercentageOfMVC() != ORIGINAL_PERCENTAGE_OF_MVC) {
+            settings.put(PERCENTAGE_OF_MVC, conf.getpercentageOfMVC());
+        }
+        Map<String, Object> blocks = new LinkedHashMap<>();
+        for (Object o : conf.getNeuronTypes()) {
+            if (o instanceof NeuronVO neu && ReMoto.MN.equals(neu.getCategory()) && neu.getBlockedAxons() > 0) {
+                blocks.put(neu.getCdNucleus(), neu.getBlockedAxons());
+            }
+        }
+        if (!blocks.isEmpty()) {
+            settings.put(AXON_CONDUCTION_BLOCK, blocks);
         }
         Map<String, Object> decays = new java.util.TreeMap<>();
         if (conf.getSynapseTypes() != null) {

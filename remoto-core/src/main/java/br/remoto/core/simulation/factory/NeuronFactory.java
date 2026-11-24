@@ -152,6 +152,15 @@ public class NeuronFactory
 					((Motoneuron)neu).setAxonThreshold( axonThreshold );
 				}
 
+				// Conduction block of the slowest axons of the pool (scenario settings
+				// "axonConductionBlock"), as in the demyelinating version of the Fortran ReMoto: the
+				// velocity 0 becomes the minimum of 0.01 m/s, a latency of tens of seconds, so the spike
+				// of the soma never reaches the terminal and the motor unit makes no force.
+				int poolSize = referenceS.getQuantity() + referenceFR.getQuantity() + referenceFF.getQuantity();
+
+				if( indexCategory <= (int)( poolSize * reference.getBlockedAxons() ) )
+					axonVelocity = 0;
+
 				((Motoneuron)neu).setAxonConductionVelocity( axonVelocity );
 				((Motoneuron)neu).setLatencies( axonVelocity, stimulusSpinalDistance, stimulusEndPlateDistance );
 

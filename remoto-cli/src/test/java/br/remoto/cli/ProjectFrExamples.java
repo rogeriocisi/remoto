@@ -1,7 +1,5 @@
 package br.remoto.cli;
 
-import br.remoto.core.engine.legacy.LegacyConfig;
-import br.remoto.core.engine.legacy.LegacyJson;
 import br.remoto.core.scenario.Scenario;
 import br.remoto.storage.JsonCodec;
 
@@ -27,10 +25,6 @@ import java.util.Random;
  */
 final class ProjectFrExamples {
 
-    /** Um cenário e o nome do arquivo. */
-    record Example(String file, Scenario scenario) {
-    }
-
     private static final String SOURCE = "Convertido do exemplo %s do projectFR, a versão em Fortran do ReMoto"
             + " (R. N. Watanabe, github.com/rnwatanabe/projectFR): o desenho do experimento é o do exemplo, e os"
             + " parâmetros dos modelos são os do ReMoto em Java, sobre a configuração 24 do banco original.";
@@ -38,10 +32,16 @@ final class ProjectFrExamples {
     private ProjectFrExamples() {
     }
 
-    static List<Example> build(Path scenariosDir) {
+    /** O cenário do exemplo, com a fonte somada à descrição. */
+    private static ScenarioEdit.Example example(ScenarioEdit c, String file, String folder, String name,
+            double durationMs, double stepMs, String text) {
+        return c.example(file, name, durationMs, stepMs, text + " " + String.format(SOURCE, folder));
+    }
+
+    static List<ScenarioEdit.Example> build(Path scenariosDir) {
         Scenario base = new JsonCodec().read(scenariosDir.resolve("remoto-24-isb-2013-stretch-reflex.json"),
                 Scenario.class);
-        List<Example> examples = new ArrayList<>();
+        List<ScenarioEdit.Example> examples = new ArrayList<>();
         examples.add(antidromic(base));
         examples.add(forceVariability(base));
         examples.add(hReflexMWave(base));
@@ -63,15 +63,15 @@ final class ProjectFrExamples {
 
     // ------------------------------------------------------------------ os exemplos
 
-    private static Example antidromic(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example antidromic(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=5", "IN_ext:RC=2");
         c.synapse("IN_ext", "SOL", "IN RC-MN S", "CONNECTIVITY", 100);
         c.synapse("SOL", "IN_ext", "MN S-IN RC", "CONNECTIVITY", 100);
         c.dynamics("SOL", "IN_ext", "MN S-IN RC", "D", 200, 50);
         c.nerve("PTN", 100, 300, 20, 60);
         c.nerveSignal("PTN", "constant", 200, 300, 60);
-        return c.example("projectfr-antidromic-stimulation", "AntidromicSimulationofMNandRC",
+        return example(c, "projectfr-antidromic-stimulation", "AntidromicSimulationofMNandRC",
                 "projectFR - Antidromic stimulation of MN and RC", 600, 0.05,
                 "Estimulação antidrômica de motoneurônios e células de Renshaw: pulsos de 20 mA no nervo tibial"
                         + " posterior, a 60 Hz de 100 a 300 ms, com a frequência somada de 60 Hz de 200 a 300 ms,"
@@ -81,12 +81,12 @@ final class ProjectFrExamples {
                         + " comando descendente nem aferentes; as células de Renshaw têm o disparo espontâneo de 7 Hz.");
     }
 
-    private static Example forceVariability(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example forceVariability(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "SOL:FR=50", "SOL:FF=50", "MG:S=300", "MG:FR=150", "MG:FF=150",
                 "LG:S=130", "LG:FR=65", "LG:FF=65", "DT:CM_ext=400");
         c.rateTract("CM_ext", 140, 4, 16000);
-        return c.example("projectfr-force-variability", "ForceVariability",
+        return example(c, "projectfr-force-variability", "ForceVariability",
                 "projectFR - Force variability", 16000, 0.05,
                 "Variabilidade da força isométrica do tríceps sural: os motoneurônios do sóleo, do gastrocnêmio"
                         + " medial e do lateral recebem 400 axônios descendentes com disparos num processo gama de"
@@ -97,11 +97,11 @@ final class ProjectFrExamples {
                         + " em ms; a ordem gama fica fixa). As velocidades de condução não foram convertidas.");
     }
 
-    private static Example hReflexMWave(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example hReflexMWave(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "SOL:FR=50", "SOL:FF=50", "SOL:Ia=400", "LG:Ia=160");
         c.nerve("PTN", 5, 50, 12, 5);
-        return c.example("projectfr-h-reflex-m-wave", "H-ReflexM-WaveCurve",
+        return example(c, "projectfr-h-reflex-m-wave", "H-ReflexM-WaveCurve",
                 "projectFR - H-reflex and M-wave curve", 50, 0.05,
                 "Reflexo H e onda M do sóleo: um pulso de 1 ms no nervo tibial posterior em 5 ms excita os"
                         + " axônios motores (onda M) e os aferentes Ia do sóleo e do gastrocnêmio lateral, que excitam"
@@ -111,14 +111,14 @@ final class ProjectFrExamples {
                         + " recrutamento; aqui: remoto sweep --protocol hm --range 9:25:0.5.");
     }
 
-    private static Example ankleImpedance(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example ankleImpedance(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "SOL:FR=50", "SOL:FF=50", "MG:S=300", "MG:FR=150", "MG:FF=150",
                 "LG:S=130", "LG:FR=65", "LG:FF=65", "TA:S=250", "TA:FR=50", "TA:FF=50");
         c.settings.put("cdJointModel", "imposed");
         c.settings.put("cdMuscleModel", "hill");
         c.settings.put("jointAngleSignal", series(multisine(), 0, 2000));
-        return c.example("projectfr-ankle-impedance", "ImpedanceAnkle",
+        return example(c, "projectfr-ankle-impedance", "ImpedanceAnkle",
                 "projectFR - Ankle impedance", 2000, 0.05,
                 "Impedância do tornozelo: o ângulo é imposto como uma soma de 200 senoides de 0,25 a 50 Hz,"
                         + " cada uma com 0,004 rad de amplitude e fase sorteada (aqui, com a semente 1), e os quatro"
@@ -128,18 +128,18 @@ final class ProjectFrExamples {
                         + " para a impedância com contração, ligue o trato CM_ext em Descending Commands.");
     }
 
-    private static Example renshawInjectedCurrent(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example renshawInjectedCurrent(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("IN_ext:RC=350");
         c.injectedCurrent("IN_ext", "RC", "S", 5);
-        return c.example("projectfr-renshaw-injected-current", "InjectedCurrentRenshawCellPool",
+        return example(c, "projectfr-renshaw-injected-current", "InjectedCurrentRenshawCellPool",
                 "projectFR - Renshaw cells with injected current", 100, 0.05,
                 "Um núcleo de 350 células de Renshaw sem motoneurônios, com uma corrente constante de 5 nA"
                         + " injetada no soma de cada uma, além do disparo espontâneo de 7 Hz.");
     }
 
-    private static Example isometricClosedLoop(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example isometricClosedLoop(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "SOL:FR=50", "SOL:FF=50", "SOL:Ia=400", "DT:CM_ext=400");
         c.gammaTract("CM_ext", 12, 10);
         c.settings.put("cdJointModel", "imposed");
@@ -147,7 +147,7 @@ final class ProjectFrExamples {
         c.settings.put("jointAngleSignal", signal("sine", 0, 5000, Math.toDegrees(0.1), 1, 0));
         c.settings.put("gammaDynamic", 32.0);
         c.settings.put("gammaStatic", 32.0);
-        return c.example("projectfr-isometric-closed-loop", "IsometricClosedLoop",
+        return example(c, "projectfr-isometric-closed-loop", "IsometricClosedLoop",
                 "projectFR - Closed loop with Ia feedback", 5000, 0.05,
                 "O sóleo em malha fechada: 400 axônios descendentes (processo gama de ordem 10, intervalo médio"
                         + " de 12 ms) e os aferentes Ia do sóleo, movidos pelo fuso, excitam os motoneurônios, com o"
@@ -155,14 +155,14 @@ final class ProjectFrExamples {
                         + " (5,7°) a 1 Hz, imposta, e o fusimotor dinâmico e o estático ficam em 32 disparos/s.");
     }
 
-    private static Example mnPoolRenshaw(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example mnPoolRenshaw(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "IN_ext:RC=350", "DT:CM_ext=400");
         c.gammaTract("CM_ext", 12, 10);
         c.synapse("IN_ext", "SOL", "IN RC-MN S", "CONNECTIVITY", 4);
         c.synapse("SOL", "IN_ext", "MN S-IN RC", "CONNECTIVITY", 6);
         c.dynamics("SOL", "IN_ext", "MN S-IN RC", "D", 200, 5);
-        return c.example("projectfr-mn-pool-renshaw", "MNPoolWithRenshawCells",
+        return example(c, "projectfr-mn-pool-renshaw", "MNPoolWithRenshawCells",
                 "projectFR - MN pool with Renshaw cells", 5000, 0.05,
                 "Inibição recorrente: 800 motoneurônios S do sóleo, movidos por 400 axônios descendentes"
                         + " (processo gama de ordem 10, intervalo médio de 12 ms), excitam 350 células de Renshaw"
@@ -170,35 +170,35 @@ final class ProjectFrExamples {
                         + " vias enfraquecem com a distância na coluna (fatores 0,01 e 0,22 da tela Miscellaneous).");
     }
 
-    private static Example motorUnitPoolEmg(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example motorUnitPoolEmg(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800");
         c.injectedCurrent("SOL", "S", "D", 20);
-        return c.example("projectfr-motor-unit-pool-emg", "MotorUnitPoolEMG",
+        return example(c, "projectfr-motor-unit-pool-emg", "MotorUnitPoolEMG",
                 "projectFR - Motor-unit pool EMG", 5000, 0.05,
                 "O EMG de um núcleo de 800 unidades motoras S do sóleo sem entrada sináptica: cada motoneurônio"
                         + " recebe uma corrente constante de 20 nA no dendrito, e os disparos dão a força e o EMG"
                         + " (modelo de Hermite-Rodriguez).");
     }
 
-    private static Example descendingCommand(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example descendingCommand(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "SOL:FR=50", "SOL:FF=50", "DT:CM_ext=400");
         c.rateTract("CM_ext", 60, 10, 1000);
-        return c.example("projectfr-descending-command", "MotorUnitWithDescendingCommand",
+        return example(c, "projectfr-descending-command", "MotorUnitWithDescendingCommand",
                 "projectFR - Motor-unit pool with descending command", 1000, 0.05,
                 "Os 900 motoneurônios do sóleo movidos por 400 axônios descendentes a 60 disparos/s (processo gama"
                         + " de ordem 10): o EMG do núcleo, a força e os disparos. O exemplo desenha também o EMG de"
                         + " cada uma das 20 primeiras unidades.");
     }
 
-    private static Example nodeAxons(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example nodeAxons(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=3", "DT:CM_ext=400");
         c.rateTract("CM_ext", 185, 2, 100);
         c.nerve("PTN", 0, 100, 20, 10);
         c.settings.put("nerveStimulus", Map.of("PTN", Map.of("thresholdModel", "node")));
-        return c.example("projectfr-node-axons", "MotorUnitWithNodeAxonsAndDescendingCommand",
+        return example(c, "projectfr-node-axons", "MotorUnitWithNodeAxonsAndDescendingCommand",
                 "projectFR - Motor units with node-of-Ranvier axons", 100, 0.005,
                 "Três motoneurônios S do sóleo, movidos por 400 axônios descendentes a 185 disparos/s (processo"
                         + " gama de ordem 2), com pulsos de 1 ms a 10 Hz no nervo tibial posterior, com passo de"
@@ -209,14 +209,14 @@ final class ProjectFrExamples {
                         + " limiares diferente.");
     }
 
-    private static Example hillMuscle(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example hillMuscle(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "DT:CM_ext=400");
         c.gammaTract("CM_ext", 12, 10);
         c.settings.put("cdJointModel", "imposed");
         c.settings.put("cdMuscleModel", "hill");
         c.settings.put("jointAngleSignal", signal("sine", 0, 1000, Math.toDegrees(0.1), 1, 0));
-        return c.example("projectfr-hill-muscle", "MuscleHillExample",
+        return example(c, "projectfr-hill-muscle", "MuscleHillExample",
                 "projectFR - Hill muscle with imposed angle", 1000, 0.05,
                 "O músculo de Hill do sóleo, ativado por 800 motoneurônios S movidos por 400 axônios descendentes"
                         + " (processo gama de ordem 10, intervalo médio de 12 ms), com o tornozelo seguindo uma"
@@ -224,8 +224,8 @@ final class ProjectFrExamples {
                         + " aferentes.");
     }
 
-    private static Example muscleSpindle(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example muscleSpindle(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         // o músculo de Hill precisa de unidades motoras; sem comando, elas não disparam
         c.active("TA:S=250", "TA:FR=50", "TA:FF=50", "TA:Ia=280");
         c.settings.put("cdJointModel", "imposed");
@@ -235,7 +235,7 @@ final class ProjectFrExamples {
         c.settings.put("jointAngleSignal", signal("sine", 0, 20000, SPINDLE_ANGLE_DEG, 0.25, -1000));
         c.settings.put("gammaDynamic", 10.0);
         c.settings.put("gammaStatic", 10.0);
-        return c.example("projectfr-muscle-spindle", "MuscleSpindleExample",
+        return example(c, "projectfr-muscle-spindle", "MuscleSpindleExample",
                 "projectFR - Muscle spindle", 20000, 0.05,
                 "O fuso muscular do tibial anterior num estiramento senoidal lento, a 0,25 Hz, com o fusimotor"
                         + " dinâmico e o estático em 10 disparos/s: a taxa da aferência Ia contra o tempo, o"
@@ -246,30 +246,30 @@ final class ProjectFrExamples {
                         + " fuso.");
     }
 
-    private static Example neuralTract(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example neuralTract(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("DT:CM_ext=400");
         c.gammaTract("CM_ext", 12, 1);
-        return c.example("projectfr-neural-tract", "NeuralTractExample",
+        return example(c, "projectfr-neural-tract", "NeuralTractExample",
                 "projectFR - Neural tract", 10000, 0.05,
                 "Um trato descendente sozinho: 400 axônios com disparos num processo gama de ordem 1 (intervalos"
                         + " exponenciais) a 83,3 disparos/s, sem motoneurônios. Os disparos e os intervalos estão nos"
                         + " resultados do trato.");
     }
 
-    private static Example neuralTractUnit(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example neuralTractUnit(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("DT:CM_ext=1");
         c.gammaTract("CM_ext", 4, 1);
-        return c.example("projectfr-neural-tract-unit", "NeuralTractUnitExample",
+        return example(c, "projectfr-neural-tract-unit", "NeuralTractUnitExample",
                 "projectFR - Single neural tract unit", 10000, 0.05,
                 "Um único axônio descendente com intervalo médio de 4 ms (250 disparos/s) num processo gama de"
                         + " ordem 1: o exemplo calcula a média, o desvio-padrão e o coeficiente de variação dos"
                         + " intervalos, que estão no histograma de intervalos dos resultados do trato.");
     }
 
-    private static Example posturalControl(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example posturalControl(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "SOL:FR=50", "SOL:FF=50", "MG:S=300", "MG:FR=150", "MG:FF=150",
                 "LG:S=130", "LG:FR=65", "LG:FF=65", "TA:S=250", "TA:FR=50", "TA:FF=50",
                 "SOL:Ia=400", "MG:Ia=160", "LG:Ia=160", "TA:Ia=280",
@@ -304,7 +304,7 @@ final class ProjectFrExamples {
         c.settings.put("cdMuscleModel", "hill");
         c.settings.put("gammaDynamic", 37.1);
         c.settings.put("gammaStatic", 42.9);
-        return c.example("projectfr-postural-control", "PosturalControl",
+        return example(c, "projectfr-postural-control", "PosturalControl",
                 "projectFR - Postural control", 12000, 0.05,
                 "Controle da postura ereta: o corpo é um pêndulo invertido sobre o tornozelo, controlado pelo"
                         + " sóleo, pelos gastrocnêmios e pelo tibial anterior, com músculos de Hill, aferentes Ia, II"
@@ -321,8 +321,8 @@ final class ProjectFrExamples {
                         + " --param settings.gammaDynamic --values ... --measure \"max(articulacao-angulo)\".");
     }
 
-    private static Example reciprocalInhibition(Scenario base) {
-        Config c = new Config(base);
+    private static ScenarioEdit.Example reciprocalInhibition(Scenario base) {
+        ScenarioEdit c = new ScenarioEdit(base);
         c.active("SOL:S=800", "SOL:FR=50", "SOL:FF=50", "SOL:Ia=400", "LG:Ia=160", "TA:Ia=280", "IN_ext:IaIn=350");
         c.synapse("TA", "IN_ext", "AF Ia-IN IaIn", "CONNECTIVITY", 100);
         c.synapse("TA", "IN_ext", "AF Ia-IN IaIn", "GMAX", 600);
@@ -332,7 +332,7 @@ final class ProjectFrExamples {
         }
         c.nerve("PTN", 2, 1100, 13, 1);
         c.nerve("CPN", 1001, 1100, 19, 1);
-        return c.example("projectfr-reciprocal-inhibition", "reciprocalInhibition",
+        return example(c, "projectfr-reciprocal-inhibition", "reciprocalInhibition",
                 "projectFR - Reciprocal inhibition", 1100, 0.05,
                 "Inibição recíproca: um pulso de 13 mA no nervo tibial posterior em 2 ms e outro de 19 mA no"
                         + " fibular comum em 1001 ms. Os aferentes Ia do sóleo e do gastrocnêmio lateral excitam os"
@@ -395,143 +395,5 @@ final class ProjectFrExamples {
         }
         s.put("points", points);
         return s;
-    }
-
-    // ------------------------------------------------------------------ as tabelas
-
-    /** A configuração 24 sendo mudada: as tabelas (cópias) e o settings. */
-    private static final class Config {
-
-        private final Scenario base;
-        private final LegacyConfig config;
-        private final Map<String, LegacyConfig.Table> tables = new LinkedHashMap<>();
-        final Map<String, Object> settings = new LinkedHashMap<>();
-        private final Map<String, Integer> tractStd = new LinkedHashMap<>();
-
-        Config(Scenario base) {
-            this.base = base;
-            this.config = LegacyJson.toConfig(base.legacy());
-            config.tables().forEach((name, t) -> {
-                List<List<Object>> rows = new ArrayList<>();
-                t.rows().forEach(r -> rows.add(new ArrayList<>(r)));
-                tables.put(name, new LegacyConfig.Table(t.columns(), rows));
-            });
-        }
-
-        /** Só estes tipos de neurônio ficam ativos ("núcleo:tipo=quantidade"); os outros, desligados. */
-        void active(String... types) {
-            set("NEURON_TYPE", Map.of(), "ACTIVE", 0);
-            for (String spec : types) {
-                String[] nt = spec.split("[:=]");
-                Map<String, Object> key = Map.of("CD_NUCLEUS", nt[0], "CD_NEURON_TYPE", nt[1]);
-                set("NEURON_TYPE", key, "ACTIVE", 1);
-                set("NEURON_TYPE", key, "QUANTITY", Integer.parseInt(nt[2]));
-            }
-        }
-
-        /**
-         * O trato com intervalos num processo gama (a ordem no settings, como o editor grava). O
-         * intervalo médio é inteiro, como na coluna MEAN do banco original.
-         */
-        void gammaTract(String type, int isiMs, int order) {
-            Map<String, Object> key = Map.of("CD_NUCLEUS", "DT", "CD_NEURON_TYPE", type);
-            set("NEURON_TYPE", key, "DISTRIBUTION", "Gm");
-            set("NEURON_TYPE", key, "MEAN", isiMs);
-            tractStd.put("DT:" + type, order);
-        }
-
-        /**
-         * O trato num processo gama com a taxa exata ({@code rateHz} disparos/s), que um intervalo
-         * médio inteiro não dá: o intervalo médio 0 e um sinal constante com o alvo "rate", de 0 ao fim.
-         */
-        void rateTract(String type, double rateHz, int order, double durationMs) {
-            gammaTract(type, 0, order);
-            Map<String, Object> key = Map.of("CD_NUCLEUS", "DT", "CD_NEURON_TYPE", type);
-            set("DESCENDING_COMMANDS", key, "CD_SIGNAL", "constant");
-            set("DESCENDING_COMMANDS", key, "MOD_TYPE", "rate");
-            set("DESCENDING_COMMANDS", key, "TINI", 0);
-            set("DESCENDING_COMMANDS", key, "TFIN", durationMs);
-            set("DESCENDING_COMMANDS", key, "AMP", rateHz);
-        }
-
-        void synapse(String pre, String nucleus, String type, String column, Object value) {
-            set("CONDUCTANCE_TYPE", Map.of("CD_NUCLEUS_PRE", pre, "CD_NUCLEUS", nucleus, "CD_CONDUCTANCE_TYPE", type),
-                    column, value);
-        }
-
-        void dynamics(String pre, String nucleus, String type, String kind, double tau, double variationPercent) {
-            Map<String, Object> key = Map.of("CD_NUCLEUS_PRE", pre, "CD_NUCLEUS", nucleus, "CD_CONDUCTANCE_TYPE", type);
-            set("SYNAPTIC_DYNAMICS", key, "DYNAMIC_TYPE", kind);
-            set("SYNAPTIC_DYNAMICS", key, "TAU", tau);
-            set("SYNAPTIC_DYNAMICS", key, "VARIATION", variationPercent);
-        }
-
-        /** O nervo ativo, com pulsos de {@code start} a {@code stop} (ms), intensidade (mA) e frequência (Hz). */
-        void nerve(String nerve, double start, double stop, double peak, double frequency) {
-            Map<String, Object> key = Map.of("CD_NERVE", nerve);
-            set("NERVE", key, "ACTIVE", 1);
-            set("NERVE", key, "START", start);
-            set("NERVE", key, "STOP", stop);
-            set("NERVE", key, "PEAK", peak);
-            set("NERVE", key, "FREQUENCY", frequency);
-        }
-
-        /** O sinal somado à frequência dos pulsos do nervo. */
-        void nerveSignal(String nerve, String shape, double tini, double tfin, double amp) {
-            Map<String, Object> key = Map.of("CD_NERVE", nerve);
-            set("NERVE", key, "CD_SIGNAL", shape);
-            set("NERVE", key, "TINI", tini);
-            set("NERVE", key, "TFIN", tfin);
-            set("NERVE", key, "AMP", amp);
-        }
-
-        void injectedCurrent(String nucleus, String type, String compartment, double nA) {
-            Map<String, Object> key = Map.of("CD_NUCLEUS", nucleus, "CD_NEURON_TYPE", type);
-            set("INJECTED_CURRENT", key, "ACTIVE", 1);
-            set("INJECTED_CURRENT", key, "IMAX", nA);
-            set("INJECTED_CURRENT", key, "COMPARTMENT", compartment);
-            set("INJECTED_CURRENT", key, "CD_SIGNAL", "none");
-        }
-
-        Example example(String file, String folder, String name, double durationMs, double stepMs, String text) {
-            Map<String, Object> key = Map.of();
-            set("CONFIGURATION", key, "NM_CONFIGURATION", name);
-            set("CONFIGURATION", key, "DS_CONFIGURATION", "");
-            set("CONFIGURATION", key, "TFIN", durationMs);
-            set("CONFIGURATION", key, "STEP", stepMs);
-            Map<String, Object> all = new LinkedHashMap<>(settings);
-            if (!tractStd.isEmpty()) {
-                all.put("tractStd", new LinkedHashMap<>(tractStd));
-            }
-            LegacyConfig changed = new LegacyConfig(config.format(), config.idConfiguration(), tables,
-                    all.isEmpty() ? null : all);
-            String description = text + " " + String.format(SOURCE, folder);
-            Scenario scenario = new Scenario(null, name, description, base.schemaVersion(), 1, durationMs, stepMs,
-                    Scenario.ENGINE_LEGACY, LegacyJson.toMap(changed));
-            return new Example(file + ".json", scenario);
-        }
-
-        /** Muda a coluna em todas as linhas da tabela que batem com as chaves; pelo menos uma tem de bater. */
-        private void set(String table, Map<String, Object> keys, String column, Object value) {
-            LegacyConfig.Table t = tables.get(table);
-            int c = t.columns().indexOf(column);
-            if (c < 0) {
-                throw new IllegalArgumentException(table + " não tem a coluna " + column);
-            }
-            int matched = 0;
-            for (List<Object> row : t.rows()) {
-                boolean match = true;
-                for (Map.Entry<String, Object> k : keys.entrySet()) {
-                    match &= String.valueOf(row.get(t.columns().indexOf(k.getKey()))).equals(String.valueOf(k.getValue()));
-                }
-                if (match) {
-                    row.set(c, value);
-                    matched++;
-                }
-            }
-            if (matched == 0) {
-                throw new IllegalArgumentException("nenhuma linha de " + table + " com " + keys);
-            }
-        }
     }
 }

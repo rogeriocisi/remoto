@@ -480,7 +480,7 @@
           <p class="lead">ReMoto was developed over more than a decade at the Biomedical Engineering Laboratory of the
             University of S&atilde;o Paulo. Its website depended on Java applets and on server software that no longer
             receives security updates. Version 3 keeps the models, replaces everything around them, and adds the
-            features of the Fortran version as options.</p>
+            features of the Fortran versions as options.</p>
         </div>
 
         <div class="tbl-wrap">
@@ -560,12 +560,14 @@
               database can be converted to scenarios without installing it.</p>
           </li>
           <li>
-            <h3>What came from the Fortran version</h3>
+            <h3>What came from the Fortran versions</h3>
             <p>From the Fortran version of ReMoto (<a href="https://github.com/rnwatanabe/projectFR">projectFR</a>, by
               R. N. Watanabe) came the imposed ankle angle, the time-varying fusimotor drive, the stimulus pulse and
               threshold with a node of Ranvier, the gamma order of the afferents, connections that weaken with distance,
-              tract commands as rate series and the batch protocols. They were implemented from the papers and are off
-              by default.</p>
+              tract commands as rate series and the batch protocols. From <a
+                href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, the version for demyelinating
+              diseases (de Oliveira, Watanabe and Kohn, 2022), came the conduction block of a fraction of a motor
+              nucleus. They were implemented from the papers and are off by default.</p>
           </li>
           <li>
             <h3>Shared fairly in a classroom</h3>
@@ -626,7 +628,7 @@
             <li><b>Gamma-process tracts.</b> The original site never saved the order of the gamma process, so stored
               configurations with gamma tracts fired only at time zero. The public scenarios that had them now use
               Poisson tracts with the same mean interval, and the editor saves the order.</li>
-            <li><b>New features, off by default.</b> The features that came from the Fortran version act only when a
+            <li><b>New features, off by default.</b> The features that came from the Fortran versions act only when a
               scenario chooses them. Without them, the outputs stay those of the original, and the same tests check
               it.</li>
           </ul>
@@ -733,14 +735,16 @@
     <section class="sec" id="scenarios">
       <div class="sec-no"><b>5</b>Scenarios</div>
       <div class="sec-body">
-        <h2>Thirty-seven scenarios ready to run</h2>
+        <h2>Forty-three scenarios ready to run</h2>
         <div class="prose">
           <p class="lead">A scenario is one JSON file with the whole configuration, the duration, the time step and the
             seed. The first three were the public scenarios of the old site; the next sixteen were recovered from
-            its database; the next two start from scenario 24 and were built to show features; and the last
-            sixteen convert the examples of the Fortran version (<a
-              href="https://github.com/rnwatanabe/projectFR">projectFR</a>): the design of each experiment, with the
-            model parameters of the Java ReMoto.</p>
+            its database; the next two start from scenario 24 and were built to show features; sixteen convert the
+            examples of the Fortran version (<a href="https://github.com/rnwatanabe/projectFR">projectFR</a>); and the
+            last six convert the force and position tasks of <a
+              href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, the Fortran version for
+            demyelinating diseases, with its healthy subject (S0) and its two demyelinated ones (S1 and S2). Each one
+            has the design of the experiment, with the model parameters of the Java ReMoto.</p>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -1054,6 +1058,58 @@
                     href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-reciprocal-inhibition.json">projectfr-reciprocal-inhibition</a>
                 </td>
               </tr>
+              <tr>
+                <th>ReMoto_AIDP – Force task (S0, healthy)</th>
+                <td>Isometric triceps surae driven from 40 to 250 spikes/s at 2 s, with motor axons conducting at 44
+                  to 53 m/s</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-force-task-s0.json">aidp-force-task-s0</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Force task (S1, demyelinated)</th>
+                <td>The same task with the demyelinated conduction velocities: 5 to 51 m/s in the S units and 52 down
+                  to 40 m/s in the FF</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-force-task-s1.json">aidp-force-task-s1</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Force task (S2, with conduction block)</th>
+                <td>The S1 velocities and a conduction block of 65% of each motor nucleus: the soleus force falls to
+                  about a third</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-force-task-s2.json">aidp-force-task-s2</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Position task (S0, healthy)</th>
+                <td>The foot free to rotate from 5° against 10% of the maximum voluntary torque, with the four muscles
+                  and their Ia afferents</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-position-task-s0.json">aidp-position-task-s0</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Position task (S1, demyelinated)</th>
+                <td>The same task with the demyelinated conduction velocities</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-position-task-s1.json">aidp-position-task-s1</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Position task (S2, with conduction block)</th>
+                <td>The S1 velocities and the block of 65%: the foot no longer holds the plantarflexed position</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-position-task-s2.json">aidp-position-task-s2</a>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -1192,7 +1248,9 @@
             <dt>Demyelinating diseases</dt>
             <dd><a href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, by Marina Cardoso de Oliveira,
               adapts the Fortran version to the study of demyelinating diseases (Oliveira, Watanabe and Kohn, 2022),
-              with the position task and the twitch model of Raikova and Aladjov (2002).</dd>
+              with the position task and the twitch model of Raikova and Aladjov (2002). Its force and position tasks,
+              with the healthy and the two demyelinated subjects, are six of the scenarios here, and its conduction
+              block is an option of version 3.</dd>
           </div>
         </dl>
       </div>

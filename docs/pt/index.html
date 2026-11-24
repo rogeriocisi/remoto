@@ -483,7 +483,7 @@
           <p class="lead">O ReMoto foi desenvolvido ao longo de mais de uma década no Laboratório de Engenharia
             Biomédica da Universidade de São Paulo. O site dele dependia de applets Java e de software de servidor que
             não recebe mais atualizações de segurança. A versão 3 mantém os modelos e troca tudo em volta deles, e
-            acrescenta, como opção, os recursos da versão em Fortran.</p>
+            acrescenta, como opção, os recursos das versões em Fortran.</p>
         </div>
 
         <div class="tbl-wrap">
@@ -566,12 +566,14 @@
               O banco de dados original pode ser convertido em cenários sem instalá-lo.</p>
           </li>
           <li>
-            <h3>O que veio da versão em Fortran</h3>
+            <h3>O que veio das versões em Fortran</h3>
             <p>Da versão em Fortran do ReMoto (<a href="https://github.com/rnwatanabe/projectFR">projectFR</a>, de
               R. N. Watanabe) vieram o ângulo imposto ao tornozelo, o fusimotor variando no tempo, o pulso e o limiar do
               estímulo com um nó de Ranvier, a ordem gama dos aferentes, as conexões que enfraquecem com a distância, o
-              comando dos tratos como série de taxas e os protocolos em lote. Foram implementados a partir dos artigos e
-              ficam desligados por padrão.</p>
+              comando dos tratos como série de taxas e os protocolos em lote. Do <a
+                href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, a versão para doenças
+              desmielinizantes (Oliveira, Watanabe e Kohn, 2022), veio o bloqueio de condução de uma fração do núcleo
+              motor. Foram implementados a partir dos artigos e ficam desligados por padrão.</p>
           </li>
           <li>
             <h3>Dividido com justiça numa sala de aula</h3>
@@ -635,7 +637,7 @@
             <li><b>Tratos com processo gama.</b> O site original nunca gravava a ordem do processo gama, então as
               configurações guardadas com tratos gama disparavam só no instante zero. Os cenários públicos que os tinham
               agora usam tratos de Poisson com o mesmo intervalo médio, e o editor grava a ordem.</li>
-            <li><b>Recursos novos, desligados por padrão.</b> Os recursos que vieram da versão em Fortran só agem
+            <li><b>Recursos novos, desligados por padrão.</b> Os recursos que vieram das versões em Fortran só agem
               quando um cenário os escolhe. Sem eles, as saídas continuam as do original, e os mesmos testes conferem
               isso.</li>
           </ul>
@@ -742,14 +744,16 @@
     <section class="sec" id="scenarios">
       <div class="sec-no"><b>5</b>Cenários</div>
       <div class="sec-body">
-        <h2>Trinta e sete cenários prontos para rodar</h2>
+        <h2>Quarenta e três cenários prontos para rodar</h2>
         <div class="prose">
           <p class="lead">Um cenário é um arquivo JSON com a configuração inteira, a duração, o passo de integração e a
             seed. Os três primeiros eram os cenários públicos do site antigo; os dezesseis seguintes foram recuperados
-            do banco de dados dele; os dois seguintes partem do 24 e foram montados para mostrar recursos; e os
-            dezesseis últimos convertem os exemplos da versão em Fortran (<a
-              href="https://github.com/rnwatanabe/projectFR">projectFR</a>): o desenho de cada experimento, com os
-            parâmetros dos modelos do ReMoto em Java.</p>
+            do banco de dados dele; os dois seguintes partem do 24 e foram montados para mostrar recursos; dezesseis
+            convertem os exemplos da versão em Fortran (<a
+              href="https://github.com/rnwatanabe/projectFR">projectFR</a>); e os seis últimos convertem as tarefas de
+            força e de posição do <a href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, a versão em
+            Fortran para doenças desmielinizantes, com o sujeito saudável (S0) e os dois desmielinizados (S1 e S2).
+            Cada um tem o desenho do experimento, com os parâmetros dos modelos do ReMoto em Java.</p>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -1064,6 +1068,58 @@
                     href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/projectfr-reciprocal-inhibition.json">projectfr-reciprocal-inhibition</a>
                 </td>
               </tr>
+              <tr>
+                <th>ReMoto_AIDP – Force task (S0, healthy)</th>
+                <td>Tríceps sural isométrico, com o comando descendente subindo de 40 para 250 disparos/s em 2 s e os
+                  axônios motores conduzindo de 44 a 53 m/s</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-force-task-s0.json">aidp-force-task-s0</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Force task (S1, demyelinated)</th>
+                <td>A mesma tarefa com as velocidades de condução desmielinizadas: de 5 a 51 m/s nas unidades S e de
+                  52 a 40 m/s nas FF</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-force-task-s1.json">aidp-force-task-s1</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Force task (S2, with conduction block)</th>
+                <td>As velocidades do S1 e o bloqueio de condução de 65% de cada núcleo motor: a força do sóleo cai a
+                  cerca de um terço</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-force-task-s2.json">aidp-force-task-s2</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Position task (S0, healthy)</th>
+                <td>O pé livre para girar a partir de 5° contra 10% do torque voluntário máximo, com os quatro
+                  músculos e os seus aferentes Ia</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-position-task-s0.json">aidp-position-task-s0</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Position task (S1, demyelinated)</th>
+                <td>A mesma tarefa com as velocidades de condução desmielinizadas</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-position-task-s1.json">aidp-position-task-s1</a>
+                </td>
+              </tr>
+              <tr>
+                <th>ReMoto_AIDP – Position task (S2, with conduction block)</th>
+                <td>As velocidades do S1 e o bloqueio de 65%: o pé não sustenta mais a flexão plantar</td>
+                <td class="num">12 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/aidp-position-task-s2.json">aidp-position-task-s2</a>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -1245,7 +1301,9 @@
             <dt>Doenças desmielinizantes</dt>
             <dd>O <a href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, de Marina Cardoso de
               Oliveira, adapta a versão em Fortran ao estudo de doenças desmielinizantes (Oliveira, Watanabe e Kohn,
-              2022), com a tarefa de posição e o abalo de Raikova e Aladjov (2002).</dd>
+              2022), com a tarefa de posição e o abalo de Raikova e Aladjov (2002). As tarefas de força e de posição
+              dele, com o sujeito saudável e os dois desmielinizados, são seis dos cenários daqui, e o bloqueio de
+              condução é uma opção da versão 3.</dd>
           </div>
         </dl>
       </div>

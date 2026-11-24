@@ -29,7 +29,7 @@ class ProjectFrExamplesTest {
     void osArquivosSaoOQueOGeradorProduz() throws Exception {
         String out = System.getProperty("remoto.gerar.cenarios");
         JsonCodec json = new JsonCodec();
-        for (ProjectFrExamples.Example e : ProjectFrExamples.build(SCENARIOS)) {
+        for (ScenarioEdit.Example e : ProjectFrExamples.build(SCENARIOS)) {
             String generated = new String(json.toBytes(e.scenario()), StandardCharsets.UTF_8);
             if (out != null) {
                 Files.writeString(Path.of(out).resolve(e.file()), generated);
@@ -47,7 +47,7 @@ class ProjectFrExamplesTest {
     @Test
     void todosValidamERodam() {
         Set<String> files = new HashSet<>();
-        for (ProjectFrExamples.Example e : ProjectFrExamples.build(SCENARIOS)) {
+        for (ScenarioEdit.Example e : ProjectFrExamples.build(SCENARIOS)) {
             assertThat(files.add(e.file())).as(e.file()).isTrue();
             assertThat(ScenarioValidator.validate(e.scenario())).as(e.file()).isEmpty();
             Scenario shortRun = e.scenario().withDuration(5);

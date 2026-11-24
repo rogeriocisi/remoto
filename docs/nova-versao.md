@@ -425,6 +425,8 @@ antigo**:
 | Estímulo e aferentes | Por corrente, a duração do pulso não muda quem dispara; por carga, o pulso de 1 ms recruta quase os mesmos axônios e o de 0,2 ms, nenhum; cada duração precisa da intensidade da curva de Lapicque (`LeakyChargeTest`); a ordem gama escolhida muda a regularidade dos aferentes, e 0 é a do original (`NerveAndAfferentOptionsTest`, `AfferentFiberTest`) |
 | Nó de Ranvier | Parado, o nó fica no repouso da tabela 1 de Howells et al. (2012); o limiar da configuração vale para um pulso de 1 ms; a constante intensidade-duração sai do modelo, de cerca de 0,4 ms no motor e 0,5 ms no sensitivo; há refratariedade (`AxonNodeTest`); no motor, o pulso de 1 ms recruta quase os mesmos axônios que o limiar de corrente, e o de 0,2 ms, nenhum (`NerveAndAfferentOptionsTest`) |
 | Exemplos do projectFR | Os 16 `projectfr-*.json` são o que o gerador produz, e cada um valida e roda (`ProjectFrExamplesTest`) |
+| Tarefas do ReMoto_AIDP | Os 6 `aidp-*.json` são o que o gerador produz, e cada um valida e roda (`AidpExamplesTest`) |
+| Bloqueio de condução | Com 10% do núcleo bloqueado, os 90 motoneurônios mais lentos disparam no soma mas não levam disparo ao terminal, e os mais rápidos levam; com o núcleo todo bloqueado, o sóleo não faz força; a fração fica no `settings` e volta ao reabrir, e fora de [0, 1] é recusada (`AxonConductionBlockTest`) |
 | Série de taxas | A forma "series" interpola os pontos, faz degraus e vale 0 fora da janela; os 100 axônios do CM_ext seguem 0 Hz, um degrau para 200 Hz e uma rampa de volta (cerca de 2000 disparos no platô e 1000 na rampa); a série fica no `settings` (`ModulationTest`, `TractSeriesTest`) |
 | Protocolos em lote | O parâmetro muda uma célula de tabela, o `settings`, a seed ou a duração; as medidas; na curva H/M da configuração 17, sem corrente nenhum motoneurônio dispara na janela da onda M e, com 40 mA, todos; na variabilidade da força, o intervalo maior dá força menor (`SweepTest`); o `remoto sweep` grava uma linha por simulação (`RemotoCliTest`) |
 | Decaimento com a distância | Com decaimento nas sinapses do trato CM_ext no sóleo, a parte do trato na condutância de cada motoneurônio cai e fica maior no meio do núcleo que nas pontas; o valor fica no `settings` e volta ao reabrir (`SynapseDistanceDecayTest`) |
@@ -522,6 +524,12 @@ linha), e o `LegacyDatabase` o lê direto, sem o HSQLDB.
 | `projectfr-neural-tract-unit` | *NeuralTractUnitExample*: Um axônio descendente com intervalos de 4 ms e a estatística deles | 10 s |
 | `projectfr-postural-control` | *PosturalControl*: Postura ereta com os quatro músculos, aferentes Ia, II e Ib e interneurônios; o corpo cai em cerca de 1,3 s | 12 s |
 | `projectfr-reciprocal-inhibition` | *reciprocalInhibition*: Inibição recíproca do sóleo por um pulso no nervo fibular comum | 1,1 s |
+| `aidp-force-task-s0` | *ForceTask*, S0: Tríceps sural isométrico, com o comando descendente subindo de 40 para 250 disparos/s em 2 s e os axônios motores de 44 a 53 m/s | 12 s |
+| `aidp-force-task-s1` | *ForceTask*, S1: A mesma tarefa com as velocidades desmielinizadas (de 5 a 51 m/s nas unidades S, de 52 a 40 m/s nas FF) | 12 s |
+| `aidp-force-task-s2` | *ForceTask*, S2: As velocidades do S1 e o bloqueio de condução de 65% de cada núcleo motor | 12 s |
+| `aidp-position-task-s0` | *PositionTask*, S0: O pé livre para girar a partir de 5°, contra 10% do torque voluntário máximo, com os quatro músculos e os aferentes Ia | 12 s |
+| `aidp-position-task-s1` | *PositionTask*, S1: A mesma tarefa com as velocidades desmielinizadas | 12 s |
+| `aidp-position-task-s2` | *PositionTask*, S2: As velocidades do S1 e o bloqueio de 65% | 12 s |
 
 Os três primeiros são os públicos do site antigo (usuário `guest`). Os seguintes são
 configurações de outros usuários do banco, publicadas com uma descrição escrita a partir do que
@@ -553,6 +561,34 @@ inteira) usam o intervalo 0 e um sinal constante com o alvo *rate*. Os arquivos 
 (`ProjectFrExamples`, nos testes do `remoto-cli`); o `ProjectFrExamplesTest` confere que os arquivos
 são o que ele produz e roda cada um, e `-Dremoto.gerar.cenarios=<pasta>` os grava de novo. O
 projectFR é GPL-3: dos exemplos vêm o desenho dos experimentos e alguns valores, não código.
+
+Os 6 `aidp-*` convertem as tarefas de força e de posição do
+[ReMoto_AIDP](https://github.com/oliveiramarina/ReMoto_AIDP), a versão em Fortran adaptada a doenças
+desmielinizantes (M. C. de Oliveira, R. N. Watanabe e A. F. Kohn, 2022; o último commit é de
+setembro de 2022, e o projectFR parou em dezembro de 2019). Cada tarefa tem os três sujeitos de lá,
+que nos arquivos `confForceTask_S*.rmto` e `confPositionTask_S*.rmto` diferem só nas faixas de
+velocidade de condução dos axônios motores e, no S2, no bloqueio: o S0 saudável conduz de 44 a
+53 m/s (as unidades S de 44 a 51, as FR de 51 a 52, as FF de 52 a 53); no S1 e no S2 a faixa das S
+desce para 5 a 51 m/s e a das FF cai de 52 para 40, de modo que os axônios mais grossos passam a
+ser os mais lentos; e o S2 bloqueia 65% de cada núcleo, a contar do mais lento. Na tarefa de força,
+o tríceps sural fica isométrico e os 400 axônios descendentes vão de 40 para 250 disparos/s em 2 s;
+na de posição, o pé gira livre a partir de 5° contra 10% do torque voluntário máximo, o tibial
+anterior entra, e o comando vai de 40 para 72,5 disparos/s. Nos 2,5 s iniciais, a força do sóleo no
+fim da simulação cai de 3221 N (S0) para 1853 N (S1) e 1176 N (S2), e o ângulo do tornozelo da
+tarefa de posição passa de −1,7° (S0) a +0,9° (S2): o pé não sustenta mais a flexão plantar.
+
+O que não tem equivalente está na descrição de cada cenário. O ReMoto_AIDP sorteia a velocidade de
+cada axônio de uma gaussiana truncada na faixa, com média e desvio próprios (`meanvel`, `stdvel`);
+aqui a velocidade segue a rampa do original de uma ponta à outra da faixa, porque o coeficiente de
+variação do ReMoto em Java (`axonVelocitySTD`, da tela *Miscellaneous*) é o mesmo para os axônios
+motores e para os sensoriais, e o ReMoto_AIDP não desmieliniza os sensoriais. A ordem do processo
+gama do comando, que lá é 10 no primeiro par de segundos e 1 (força) ou 7 (posição) depois, fica na
+do trecho que o experimento mede. O abalo de Raikova como ativação do músculo de Hill não existe
+aqui (o de Raikova é outro modelo de músculo, sem a mecânica de Hill), e o torque voluntário máximo
+da tarefa de posição é o do ReMoto em Java, 79 N·m, e não os 12 N·m de lá; a fração, 10%, é a do
+experimento. Os arquivos saem de um gerador (`AidpExamples`, nos testes do `remoto-cli`), com o
+mesmo `AidpExamplesTest` e a mesma opção `-Dremoto.gerar.cenarios=<pasta>`. O ReMoto_AIDP é GPL-3:
+das tarefas vêm o desenho dos experimentos e as faixas de velocidade, não código.
 
 **Tratos com processo gama.** O processo gama dos tratos descendentes usa como ordem o `std` do
 `NeuronVO`, que o `ConfigurationDAO` original não gravava: ele gravava na coluna `STD` o campo
@@ -660,7 +696,7 @@ gaussiano, o desvio-padrão do intervalo. O DAO original gravava na coluna `STD`
 (`order`, que nada lê), e o Std se perdia ao gravar, deixando os tratos gama mudos depois de
 t = 0. As tabelas continuam iguais às do DAO; sem `tractStd`, vale o do DAO (0).
 
-Sete recursos que o site antigo não tinha (e o ReMoto em Fortran tem; ver o item 13 dos
+Os recursos que o site antigo não tinha (e as versões em Fortran têm; ver o item 13 dos
 [Próximos passos](#próximos-passos)) também ficam no `settings`, e sem eles tudo é como no
 original:
 
@@ -706,6 +742,19 @@ original:
   pontos, interpolados, do primeiro ao último (dois pontos no mesmo tempo fazem um degrau). Com o
   alvo *rate*, o valor soma à taxa do intervalo médio; com o intervalo médio 0, é a própria taxa
   de cada axônio, em disparos/s. No editor, os pontos são escritos como "0 20; 1000 40".
+- **Bloqueio de condução dos axônios motores** (a parte *Conduction block* da tela de
+  motoneurônios, `axonConductionBlock`: "núcleo" → a fração bloqueada, de 0 a 1): a fração do
+  núcleo, a contar do axônio mais lento, cuja condução é bloqueada. O motoneurônio continua
+  disparando no soma, mas a velocidade vira 0 e o atraso até a placa motora passa a ser o do mínimo
+  de 0,01 m/s (dezenas de segundos), de modo que nenhum disparo chega ao terminal e a unidade motora
+  não faz força; na tabela de propriedades dos motoneurônios, a velocidade sai 0. É o bloqueio do
+  [ReMoto_AIDP](https://github.com/oliveiramarina/ReMoto_AIDP) (Oliveira, Watanabe e Kohn, 2022),
+  que lá põe a velocidade dos bloqueados em zero. Vale só para os núcleos motores, e a ordem é a do
+  índice no núcleo, em que as unidades S vêm primeiro.
+- **Carga da tarefa de posição** (o campo *Load of the position task* da tela *Joint*,
+  `percentageOfMVC`): a fração do torque voluntário máximo (79 N·m) que o pedal opõe ao pé, no
+  modelo de articulação *Position Task*. O `ConfigurationAssembler` original a fixava em 0,15, e só
+  é gravada quando sai desse valor.
 - **Decaimento com a distância** (a coluna *Distance decay* da tela *Synaptic Parameters*,
   `synapseDistanceDecay`: "núcleoPré>núcleo:tipo" → dec, em mm²): cada sinapse do tipo ganha o
   peso `dec / (dec + d²)`, sendo *d* a distância entre as duas células na coluna caudal-rostral, e
@@ -874,14 +923,27 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
     idioma do navegador e com seletor em toda página; ver [Dois idiomas](#dois-idiomas).
 12. **Ordens do processo gama dos trabalhos originais.** Se as ordens usadas nas publicações
     forem recuperadas, os cenários com tratos gama podem voltar a ser gama, com o `tractStd`.
-13. **O que a versão em Fortran tem e esta não.** O [projectFR](https://github.com/rnwatanabe/projectFR)
+13. **O que as versões em Fortran têm e esta não.** O [projectFR](https://github.com/rnwatanabe/projectFR)
     (R. N. Watanabe, último commit em dezembro de 2019) é uma versão do ReMoto em Fortran. O
     núcleo dos modelos coincide com o desta versão (músculo de Hill do *Virtual Muscle* com
     fibras I e II, SOCDS com saturação, fuso de Mileusnic, OTG de Lin e Crago, EMG de
     Hermite-Rodriguez com atenuação e alargamento, sinapses com dinâmica, tratos gama, colisão
     antidrômica, interneurônios, pêndulo invertido); aqui há a mais o dendrito ativo com a PIC
     (lá ele é passivo), os músculos de Raikova e de momentos, o fuso de Prochazka e a tarefa de
-    posição. O que faltava aqui:
+    posição.
+
+    O [ReMoto_AIDP](https://github.com/oliveiramarina/ReMoto_AIDP) (M. C. de Oliveira, com R. N.
+    Watanabe e A. F. Kohn, último commit em setembro de 2022) parte do projectFR e o adapta ao
+    estudo de doenças desmielinizantes (Oliveira, Watanabe e Kohn, 2022, *Journal of Neural
+    Engineering* 19:056022). Ele leva ao Fortran justamente três coisas que esta versão já tinha
+    — a tarefa de posição (`jointAnklePositionTask.f90`, com a mesma inércia do pé, (4/3)·m·d², do
+    `PositionTaskAnkle.java`), o abalo de Raikova e Aladjov (2002) como modelo de ativação e a
+    correção da força-velocidade do músculo de Hill, em que o projectFR havia perdido a
+    multiplicação do numerador pela velocidade e a unidade dela — e acrescenta duas coisas que não
+    havia aqui: a velocidade de condução de cada axônio sorteada de uma gaussiana truncada (aqui a
+    distribuição pelo núcleo é a rampa do original, com um coeficiente de variação opcional) e o
+    bloqueio de condução de uma fração do núcleo motor. As tarefas de força e de posição de lá, com
+    os três sujeitos, são os cenários `aidp-*`. O que faltava aqui:
     - [x] **Ângulo do tornozelo imposto**: o ângulo segue uma trajetória dada (perturbação), e
       o comprimento dos músculos e os fusos acompanham (o exemplo *ImpedanceAnkle* de lá).
       Feito: o modelo de articulação *Imposed angle* e o sinal da tela *Joint*; exemplo no
@@ -911,9 +973,19 @@ dVs/dt. A resistência de entrada dos motoneurônios usa sempre os dois comparti
     - [x] **Comando dos tratos como série de taxas qualquer**, além das formas prontas
       (senoide, AM, rampa...). Feito: a modulação *series* da tela *Descending Commands*.
 
-    Os que mudam o modelo ficam no `settings` (ver *Campos que o DAO original não gravava*, no
-    Editor), e sem eles as simulações são as mesmas de antes. Falta um:
-    - [ ] **Motoneurônio integra-e-dispara** (sem canais iônicos), para simulações rápidas.
+    - [x] **Bloqueio de condução** de uma fração dos axônios motores do núcleo, a contar do mais
+      lento (o ReMoto_AIDP põe a velocidade dos bloqueados em zero, e o sujeito S2 das tarefas
+      bloqueia 65%). Feito: a parte *Conduction block* da tela de motoneurônios
+      (`axonConductionBlock`), com os cenários `aidp-force-task-s2` e `aidp-position-task-s2`.
 
-    O projectFR é GPL-3 e esta versão é MIT: os itens devem ser implementados a partir dos
-    artigos e das equações, sem copiar o código, ou com a licença combinada com o autor.
+    Os que mudam o modelo ficam no `settings` (ver *Campos que o DAO original não gravava*, no
+    Editor), e sem eles as simulações são as mesmas de antes. Faltam dois:
+    - [ ] **Motoneurônio integra-e-dispara** (sem canais iônicos), para simulações rápidas.
+    - [ ] **Velocidade de condução sorteada de uma gaussiana truncada** por tipo de unidade, como
+      no ReMoto_AIDP. O `axonVelocitySTD` da tela *Miscellaneous* já põe ruído gaussiano sobre a
+      rampa, mas é um coeficiente de variação único para os axônios motores e os sensoriais, e o
+      ReMoto_AIDP usa média e desvio próprios para cada núcleo e não desmieliniza os sensoriais.
+
+    O projectFR e o ReMoto_AIDP são GPL-3 e esta versão é MIT: os itens devem ser implementados a
+    partir dos artigos e das equações, sem copiar o código, ou com a licença combinada com os
+    autores.
