@@ -95,13 +95,15 @@
         <div class="prose">
           <p class="lead">Não é preciso instalar nada, nem criar conta: o ReMoto roda no navegador. Abra a
             <a href="../../simulator/pt/">demonstração pública</a> ou, na sua máquina,
-            <code>http://localhost:8081/simulator/</code> depois de <a href="../../pt/#run">subir o servidor</a>.</p>
+            <code>http://localhost:8081/simulator/</code> depois de <a href="../../pt/#run">subir o servidor</a>.
+          </p>
           <p>A tela tem duas colunas. À esquerda, em cima, <b>Minhas simulações</b>, com o que você já rodou; embaixo,
-            os <b>Cenários</b>, em duas abas: <i>Públicos</i>, os 37 que vêm com o simulador, e <i>Meus cenários</i>,
+            os <b>Cenários</b>, em duas abas: <i>Públicos</i>, os 43 que vêm com o simulador, e <i>Meus cenários</i>,
             as suas cópias. A busca filtra por nome, id ou descrição. À direita fica a simulação aberta.</p>
           <p>Cada cartão de cenário traz o nome, a duração simulada, o id e as primeiras linhas da descrição &mdash; um
             clique mostra o resto, que diz o que aquele cenário simula e de onde ele veio. Os botões são <b>Rodar</b>,
-            <b>Editar</b>, <b>Copiar</b> e <b>Exportar</b>.</p>
+            <b>Editar</b>, <b>Copiar</b> e <b>Exportar</b>.
+          </p>
           <p>Para começar, três boas portas de entrada: <i>Default &ndash; Soleus contraction</i>, o cenário padrão do
             site antigo; <i>projectFR &ndash; H-reflex and M-wave curve</i>, que em 50 ms simulados mostra a onda M e o
             reflexo H; e <i>Modelo completo</i>, com todos os elementos ligados, para passear pela tela de
@@ -196,7 +198,8 @@
         <div class="prose">
           <p class="lead">Os cenários públicos são de todos e só de leitura. O <b>Editar</b> de um deles cria uma cópia
             em <i>Meus cenários</i> e abre o editor nela; o <b>Copiar</b> só faz a cópia. Nos seus cenários, o
-            <b>Editar</b> abre o editor direto.</p>
+            <b>Editar</b> abre o editor direto.
+          </p>
           <p>O editor é o do site antigo: o mesmo menu à esquerda, as mesmas telas, os mesmos rótulos, unidades e
             limites. Cada tela se grava sozinha, no botão <b>Salvar</b>; o <b>Rodar este cenário</b>, no alto, volta
             para a página principal com a simulação já começando.</p>
@@ -222,13 +225,18 @@
                 <td><i>Scenario</i>: nome, descrição e a semente dos números aleatórios</td>
               </tr>
               <tr>
+                <th scope="row">Simulation</th>
+                <td><i>Duration and Time Step</i>: a duração e o passo de integração</td>
+              </tr>
+              <tr>
                 <th scope="row">Structure</th>
                 <td><i>Descending Commands</i>, <i>Neural Elements</i></td>
               </tr>
               <tr>
                 <th scope="row">Neural Parameters</th>
                 <td><i>Synapses</i>, <i>Kinetic Properties</i>, <i>Synaptic Dynamics</i>, <i>Conductances</i>,
-                  <i>Motoneurons</i>, <i>Interneurons</i>, <i>Sensory Fibers</i></td>
+                  <i>Motoneurons</i>, <i>Interneurons</i>, <i>Sensory Fibers</i>
+                </td>
               </tr>
               <tr>
                 <th scope="row">Proprioceptors</th>
@@ -242,10 +250,6 @@
               <tr>
                 <th scope="row">Stimulation</th>
                 <td><i>Nerve Stimulation</i>, <i>Injected Current</i></td>
-              </tr>
-              <tr>
-                <th scope="row">Simulation</th>
-                <td><i>Duration and Time Step</i>: a duração e o passo de integração</td>
               </tr>
             </tbody>
           </table>
@@ -285,7 +289,8 @@
             <p>Os aferentes só disparam se houver quem os mova: o fuso e o órgão tendinoso de Golgi, em
               <i>Proprioceptors</i>, com o músculo de Hill e um modelo de articulação que mude o comprimento
               (<i>Biomechanical Elements</i> e <i>Joint</i>). Com o tornozelo isométrico e o músculo padrão, o fuso não
-              é integrado.</p>
+              é integrado.
+            </p>
           </li>
           <li>
             <h3>As sinapses</h3>
@@ -297,7 +302,8 @@
             <h3>Duração, passo e semente</h3>
             <p>Em <i>Simulation &rarr; Duration and Time Step</i>, quanto tempo simular e com que passo; em
               <i>Scenario</i>, a semente. Comece com uma duração curta: o tempo de relógio cresce com ela e com o
-              número de neurônios.</p>
+              número de neurônios.
+            </p>
           </li>
           <li>
             <h3>Rodar e olhar</h3>
@@ -328,12 +334,14 @@
           <div>
             <dt>Todos os seus</dt>
             <dd><b>Exportar tudo</b>, na aba <i>Meus cenários</i>, dá um .zip com um JSON para cada um; o
-              <b>Importar…</b> ao lado aceita de volta os dois formatos.</dd>
+              <b>Importar…</b> ao lado aceita de volta os dois formatos.
+            </dd>
           </div>
           <div>
             <dt>Uma simulação</dt>
             <dd><b>Exportar (ZIP)</b> leva o manifesto, a configuração e os resultados em CSV. O <b>Importar…</b> de
-              <i>Minhas simulações</i> traz esse .zip de volta, conferindo o manifesto pelo hash.</dd>
+              <i>Minhas simulações</i> traz esse .zip de volta, conferindo o manifesto pelo hash.
+            </dd>
           </div>
         </dl>
       </div>
@@ -362,7 +370,8 @@
             instalação num servidor &mdash; está no <a href="https://github.com/rogeriocisi/remoto#readme">README</a>
             e na <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">documentação
               completa</a> (as duas em inglês). Os modelos estão descritos nas
-            <a href="../../pt/#publications">publicações</a>.</p>
+            <a href="../../pt/#publications">publicações</a>.
+          </p>
         </div>
       </div>
     </section>

@@ -58,8 +58,8 @@
       <a href="#keep">Keep it</a>
       <a href="#cli">Command line</a>
       <span class="lang" role="group" aria-label="Language">
-        <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i aria-hidden="true">&middot;</i><a
-          class="keep" href="pt/" hreflang="pt-BR" data-lang="pt" lang="pt-BR">PT</a>
+        <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i
+          aria-hidden="true">&middot;</i><a class="keep" href="pt/" hreflang="pt-BR" data-lang="pt" lang="pt-BR">PT</a>
       </span>
       <a class="gh" href="../simulator/">Open</a>
     </nav>
@@ -95,9 +95,10 @@
         <div class="prose">
           <p class="lead">Nothing to install and no account to create: ReMoto runs in the browser. Open the
             <a href="../simulator/">public demo</a>, or <code>http://localhost:8081/simulator/</code> on your own
-            machine after <a href="../#run">starting the server</a>.</p>
+            machine after <a href="../#run">starting the server</a>.
+          </p>
           <p>The page has two columns. On the left, <b>My simulations</b> at the top, with what you have already run,
-            and the <b>Scenarios</b> below, in two tabs: <i>Public</i>, the 37 that ship with the simulator, and <i>My
+            and the <b>Scenarios</b> below, in two tabs: <i>Public</i>, the 43 that ship with the simulator, and <i>My
               scenarios</i>, your own copies. The search box filters by name, id or description. The right column holds
             the simulation you have open.</p>
           <p>Each scenario card shows the name, the simulated duration, the id and the first lines of the description
@@ -106,7 +107,8 @@
           <p>Three good ways in: <i>Default &ndash; Soleus contraction</i>, the default scenario of the legacy site;
             <i>projectFR &ndash; H-reflex and M-wave curve</i>, which shows the M wave and the H reflex in 50 ms of
             simulated time; and <i>Modelo completo</i>, with every element switched on, to walk around the results
-            screen.</p>
+            screen.
+          </p>
         </div>
         <figure class="shot">
           <img src="../assets/guia/inicio-en.jpg" width="800" height="573"
@@ -184,7 +186,8 @@
             <dd><b>Download CSV</b> gives the numbers behind the plot (the "file" option of the legacy site) and
               <b>Download PNG</b> the figure. <b>Export (ZIP)</b>, at the top, takes the whole simulation: the manifest
               with the seed and the engine version, the configuration and every result in CSV. <b>Configuration
-                (JSON)</b> shows the exact scenario that was run.</dd>
+                (JSON)</b> shows the exact scenario that was run.
+            </dd>
           </div>
         </dl>
       </div>
@@ -229,7 +232,8 @@
               <tr>
                 <th scope="row">Neural Parameters</th>
                 <td><i>Synapses</i>, <i>Kinetic Properties</i>, <i>Synaptic Dynamics</i>, <i>Conductances</i>,
-                  <i>Motoneurons</i>, <i>Interneurons</i>, <i>Sensory Fibers</i></td>
+                  <i>Motoneurons</i>, <i>Interneurons</i>, <i>Sensory Fibers</i>
+                </td>
               </tr>
               <tr>
                 <th scope="row">Proprioceptors</th>
@@ -238,7 +242,8 @@
               <tr>
                 <th scope="row">Biomechanical</th>
                 <td><i>Biomechanical Elements</i> (the joint and muscle models), <i>Joint</i>, <i>Muscle Units</i>,
-                  <i>Musculotendon</i>, <i>Electromyogram</i>, <i>Miscellaneous</i></td>
+                  <i>Musculotendon</i>, <i>Electromyogram</i>, <i>Miscellaneous</i>
+                </td>
               </tr>
               <tr>
                 <th scope="row">Stimulation</th>
@@ -286,7 +291,8 @@
             <p>Afferents only fire if something drives them: the spindle and the Golgi tendon organ, under
               <i>Proprioceptors</i>, with the Hill muscle and a joint model that changes the length
               (<i>Biomechanical Elements</i> and <i>Joint</i>). With an isometric ankle and the default muscle, the
-              spindle is not integrated.</p>
+              spindle is not integrated.
+            </p>
           </li>
           <li>
             <h3>The synapses</h3>
@@ -298,7 +304,8 @@
             <h3>Duration, step and seed</h3>
             <p>Under <i>Simulation &rarr; Duration and Time Step</i>, how long to simulate and with which step; under
               <i>Scenario</i>, the seed. Start with a short duration: wall-clock time grows with it and with the number
-              of neurons.</p>
+              of neurons.
+            </p>
           </li>
           <li>
             <h3>Run and look</h3>
@@ -329,7 +336,8 @@
           <div>
             <dt>All of yours</dt>
             <dd><b>Export all</b>, on the <i>My scenarios</i> tab, gives a .zip with one JSON per scenario;
-              <b>Import…</b> beside it takes both formats back.</dd>
+              <b>Import…</b> beside it takes both formats back.
+            </dd>
           </div>
           <div>
             <dt>One simulation</dt>
@@ -362,7 +370,8 @@
           <p>What this guide leaves out &mdash; build instructions, the REST API, the scenario format and installing on
             a server &mdash; is in the <a href="https://github.com/rogeriocisi/remoto#readme">README</a> and in the
             <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">full
-              documentation</a>. The models are described in the <a href="../#publications">papers</a>.</p>
+              documentation</a>. The models are described in the <a href="../#publications">papers</a>.
+          </p>
         </div>
       </div>
     </section>
