@@ -69,21 +69,23 @@ class ThirdLanguageIntegrationTest {
     }
 
     /**
-     * Com três idiomas, o seletor mostra dois alternativos — ele é uma lista, não "o outro dos
-     * dois". As chaves que o pacote novo não traduz saem do padrão, em inglês.
+     * Com três idiomas, o seletor mostra os três, com o atual marcado — ele é uma lista, não "o
+     * outro dos dois". As chaves que o pacote novo não traduz saem do padrão, em inglês.
      */
     @Test
-    void oSeletorMostraOsOutrosDoisIdiomas() throws Exception {
+    void oSeletorMostraOsTresIdiomas() throws Exception {
         String page = mvc.perform(get("/xx")).andReturn().getResponse().getContentAsString();
 
         int links = page.split("class=\"botao secundario pequeno idioma\"", -1).length - 1;
-        assertThat(links).as("links do seletor de idioma").isEqualTo(2);
+        assertThat(links).as("links do seletor de idioma").isEqualTo(3);
         assertThat(page)
                 .contains("hreflang=\"en\"")
                 .contains("hreflang=\"pt\"")
+                .contains("hreflang=\"xx\"")
+                .contains("aria-current=\"page\"") // o idioma atual
                 // o rótulo de cada idioma e, nas chaves sem tradução, o texto do pacote padrão
                 .contains(">EN<")
                 .contains(">PT<")
-                .contains("Publications");
+                .contains("Homepage");
     }
 }

@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
  * o endereço desta mesma página em cada um deles. Vem pelo modelo porque o Thymeleaf 3.1 não
  * alcança mais a requisição.
  *
- * <p>São sempre as mesmas páginas em todos os idiomas, então o endereço do outro idioma é:
+ * <p>O seletor lista todos os idiomas declarados, com o atual marcado (como o "EN · PT" do site),
+ * e são sempre as mesmas páginas em todos eles, então o endereço de cada um é:
  *
  * <ul>
  *   <li>nas <b>portas de entrada</b> (a raiz da aplicação e {@code /<código>}), a porta do outro
@@ -37,8 +38,11 @@ public class LangLinks {
         this.locales = locales;
     }
 
-    /** Um idioma no seletor: etiqueta, rótulo, título e o endereço desta página nele. */
-    public record Alternative(String tag, String label, String title, String url) {
+    /**
+     * Um idioma no seletor: etiqueta, rótulo, título, o endereço desta página nele e se é o atual.
+     * O seletor mostra todos, com o atual marcado, como o "EN · PT" do site.
+     */
+    public record Choice(String tag, String label, String title, String url, boolean current) {
     }
 
     /** A porta de entrada de um idioma, para o {@code canonical} e os {@code hreflang}. */
@@ -50,22 +54,21 @@ public class LangLinks {
         Locale current = LocaleContextHolder.getLocale();
         boolean entryPage = isEntryPage(request, current);
 
-        List<Alternative> alternatives = new ArrayList<>();
+        List<Choice> choices = new ArrayList<>();
         List<Entry> entries = new ArrayList<>();
         for (Locale locale : locales.supported()) {
             entries.add(new Entry(locale.toLanguageTag(), entryUrl(request, locale)));
-            if (!locale.getLanguage().equals(current.getLanguage())) {
-                String url = entryPage ? entryUrl(request, locale) : switchUrl(request, locale);
-                alternatives.add(new Alternative(locale.toLanguageTag(),
-                        Messages.msg("lang.name." + locale.getLanguage()),
-                        Messages.msg("lang.switch." + locale.getLanguage()),
-                        url));
-            }
+            boolean isCurrent = locale.getLanguage().equals(current.getLanguage());
+            choices.add(new Choice(locale.toLanguageTag(),
+                    Messages.msg("lang.name." + locale.getLanguage()),
+                    isCurrent ? Messages.msg("lang.current") : Messages.msg("lang.switch." + locale.getLanguage()),
+                    entryPage ? entryUrl(request, locale) : switchUrl(request, locale),
+                    isCurrent));
         }
 
         Map<String, Object> model = new LinkedHashMap<>();
         model.put("lang", current.getLanguage());
-        model.put("langAlternatives", alternatives);
+        model.put("langChoices", choices);
         model.put("langEntries", entries);
         model.put("langEntry", entryUrl(request, current));
         model.put("langDefaultEntry", entryUrl(request, locales.defaultLocale()));

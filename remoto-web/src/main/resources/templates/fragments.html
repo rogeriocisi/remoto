@@ -2,11 +2,12 @@
 <html th:lang="#{lang.htmlTag}" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- seletor de idioma: esta mesma página em cada um dos outros idiomas declarados em
-     remoto.languages (um link com dois idiomas, dois com três; ver LangLinks) -->
-<th:block th:fragment="idioma"><a th:each="alt : ${langAlternatives}" th:href="${alt.url}"
-   th:hreflang="${alt.tag}" class="botao secundario pequeno idioma" rel="alternate"
-   th:title="${alt.title}" th:text="${alt.label}">EN</a></th:block>
+<!-- seletor de idioma: esta mesma página em cada idioma declarado em remoto.languages, com o
+     atual marcado, como o "EN · PT" do site (ver LangLinks) -->
+<th:block th:fragment="idioma"><a th:each="c : ${langChoices}" th:href="${c.url}"
+   th:hreflang="${c.tag}" class="botao secundario pequeno idioma" rel="alternate"
+   th:attr="aria-current=${c.current} ? 'page' : null"
+   th:title="${c.title}" th:text="${c.label}">EN</a></th:block>
 
 <!-- duração simulada: em s a partir de 1 s, senão em ms (separador decimal do idioma) -->
 <th:block th:fragment="duracao(ms)"><th:block

@@ -50,7 +50,7 @@ class LanguageIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("lang=\"pt-BR\"")))
                 .andExpect(content().string(containsString("Nenhuma simulação aberta")))
-                .andExpect(content().string(containsString("Publicações")));
+                .andExpect(content().string(containsString("Página inicial"))); // o menu, no idioma
 
         mvc.perform(get("/").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US,en;q=0.9"))
                 .andExpect(content().string(containsString("lang=\"en\"")))
@@ -88,8 +88,8 @@ class LanguageIntegrationTest {
                 .andExpect(content().string(containsString("Nenhuma simulação aberta")));
         // e o seletor leva de volta ao inglês, na mesma página, mantendo os outros parâmetros
         // (a query vai na própria URL: com .param() o MockMvc não preenche a query string)
-        mvc.perform(get("/publicacoes?x=1").cookie(chosen))
-                .andExpect(content().string(containsString("/publicacoes?x=1&amp;lang=en")));
+        mvc.perform(get("/nao-existe?x=1").cookie(chosen))
+                .andExpect(content().string(containsString("/nao-existe?x=1&amp;lang=en")));
 
         // um cookie com qualquer outra coisa não quebra nada: vale o navegador
         mvc.perform(get("/").cookie(new Cookie("remoto-lang", "../etc")).header(HttpHeaders.ACCEPT_LANGUAGE, "pt-BR"))
@@ -121,7 +121,7 @@ class LanguageIntegrationTest {
         mvc.perform(get("/").header(HttpHeaders.ACCEPT_LANGUAGE, "pt-BR"))
                 .andExpect(content().string(containsString("Versão 4.0")))
                 .andExpect(content().string(not(containsString("project.version"))));
-        mvc.perform(get("/publicacoes").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US"))
+        mvc.perform(get("/").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US"))
                 .andExpect(content().string(containsString("Version 4.0")));
     }
 

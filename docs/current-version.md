@@ -279,7 +279,7 @@ The date format of simulations (day/month or month/day) and the decimal separato
   Translating them would put the interface out of step with the literature.
 - The **names and descriptions of the scenarios**, which come from the old database and the files
   in `scenarios/`, and the names of the results (`forca-SOL`, `disparos-SOL`).
-- The **bibliographic data** of the publications page (titles, authors, venues).
+- The **bibliographic data** of the publications section of the site (titles, authors, venues).
 
 ### The version
 

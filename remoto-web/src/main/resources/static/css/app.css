@@ -140,8 +140,10 @@ button:focus-visible, .botao:focus-visible, .linha-execucao:focus-visible, .aba:
 button.secundario, .botao.secundario { background: transparent; color: var(--primaria); }
 button.secundario:hover, .botao.secundario:hover { background: var(--primaria-clara); filter: none; }
 .pequeno { padding: 2px 9px; font-size: .85rem; }
-/* seletor de idioma: só "PT" ou "EN", centrado e sempre da mesma largura */
+/* seletor de idioma: um botão por idioma, centrado e sempre da mesma largura */
 .idioma { min-width: 2.9em; justify-content: center; letter-spacing: .03em; }
+/* o idioma atual fica marcado, como o "EN · PT" do site */
+.idioma[aria-current] { color: var(--texto); border-color: var(--suave); font-weight: 600; }
 .perigo.secundario { color: var(--erro); border-color: var(--borda); }
 .perigo.secundario:hover { background: var(--erro-clara); }
 .icone { padding: 3px; width: 28px; height: 28px; justify-content: center; border-color: var(--borda); }
@@ -273,20 +275,8 @@ label.botao { cursor: pointer; }
 .grafico { width: 100%; margin-top: 12px; overflow-x: auto; }
 .uplot, .u-title { color: var(--texto); }
 
-/* ---- páginas de texto (publicações) ------------------------------------------------------------ */
-.pagina-texto { max-width: 860px; margin: 24px auto 48px; padding: 0 16px; }
-.pagina-texto h1 { font-size: 1.5rem; margin: 0 0 8px; }
-.pagina-texto h2 { margin-top: 24px; }
-.publicacoes { padding-left: 22px; display: flex; flex-direction: column; gap: 14px; }
-.publicacoes li > span, .titulo-publicacao { display: block; }
-.titulo-publicacao { font-weight: 600; color: var(--primaria); text-decoration: none; }
-.titulo-publicacao:hover { text-decoration: underline; }
-/* trabalho sem DOI: o título não é link, então não vai na cor de link */
-span.titulo-publicacao { color: var(--texto); }
-.autores { color: var(--texto); }
-.revista { color: var(--suave); font-size: .9rem; }
+/* ---- resumo de um resultado na tela de resultados (results.js) ---- */
 .resumo { color: var(--suave); font-size: .9rem; margin-top: 2px; }
-.links-publicacoes a { color: var(--primaria); }
 
 /* ---- página de erro e avisos ------------------------------------------------------------------- */
 .pagina-erro { max-width: 640px; margin: 48px auto; padding: 0 16px; }

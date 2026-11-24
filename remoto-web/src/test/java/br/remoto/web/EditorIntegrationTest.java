@@ -88,11 +88,7 @@ class EditorIntegrationTest {
     }
 
     @Test
-    void paginaDePublicacoesEIconeDoSite() throws Exception {
-        mvc.perform(get("/publicacoes").header("Accept-Language", "pt-BR"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("Publicações")))
-                .andExpect(content().string(containsString("https://doi.org/10.1007/s10827-008-0092-8")));
+    void iconesDoSite() throws Exception {
         mvc.perform(get("/favicon.ico")).andExpect(status().isOk());
         mvc.perform(get("/img/remoto-icon.svg")).andExpect(status().isOk());
     }

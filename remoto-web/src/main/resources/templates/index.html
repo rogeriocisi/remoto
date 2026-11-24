@@ -29,11 +29,12 @@
     <span class="sub" th:text="#{app.tagline}">simulador de núcleos motores da medula espinhal</span>
     <span class="versao" th:if="${appVersion}" th:text="#{app.version(${appVersion})}">Versão 3.0</span>
   </a>
+  <!-- o mesmo menu do site, na mesma ordem: idiomas, o outro lado do domínio e o GitHub. As
+       publicações ficam só no site, que é onde mora a documentação do projeto. -->
   <nav class="conta">
-    <a th:href="@{/publicacoes}" class="botao secundario pequeno" th:text="#{nav.publications}">Publicações</a>
-    <a th:href="#{nav.site.url}" class="botao secundario pequeno" th:text="#{nav.site}">Sobre o projeto</a>
-    <a th:href="#{nav.repository.url}" class="botao secundario pequeno" target="_blank" rel="noopener" th:text="#{nav.repository}">GitHub</a>
     <th:block th:replace="~{fragments :: idioma}"></th:block>
+    <a th:href="#{nav.site.url}" class="botao secundario pequeno" th:text="#{nav.site}">Página inicial</a>
+    <a th:href="#{nav.repository.url}" class="botao secundario pequeno" target="_blank" rel="noopener" th:text="#{nav.repository}">GitHub</a>
   </nav>
 </header>
 
@@ -76,7 +77,7 @@
         <li th:utext="#{index.welcome.step3}">Para rever uma simulação, clique na linha dela.</li>
       </ol>
       <p class="notas" th:utext="#{index.welcome.storage(${areaDays})}">Não há login.</p>
-      <p class="notas" th:utext="#{index.welcome.papers(@{/publicacoes})}">Publicações sobre o ReMoto.</p>
+      <p class="notas" th:utext="#{index.welcome.papers(#{nav.publications.url})}">Publicações sobre o ReMoto.</p>
     </div>
 
     <section id="detalhe" class="cartao" hidden>
