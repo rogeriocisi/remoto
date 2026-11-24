@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ReMoto 3 quick guide</title>
+  <meta name="description"
+    content="Quick guide to ReMoto version 3: pick a scenario, run it, read the results screen, change parameters in the editor, keep your work and run on the command line.">
+  <meta name="theme-color" content="#1f5f99">
+  <meta property="og:title" content="ReMoto 3 quick guide">
+  <meta property="og:description"
+    content="From the scenario you pick to the plot you download: the whole path through the simulator, in seven steps.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://rogeriocisi.github.io/remoto/guide/">
+  <meta property="og:locale" content="en">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <link rel="canonical" href="https://rogeriocisi.github.io/remoto/guide/">
+  <link rel="alternate" hreflang="en" href="https://rogeriocisi.github.io/remoto/guide/">
+  <link rel="alternate" hreflang="pt-BR" href="https://rogeriocisi.github.io/remoto/pt/guia/">
+  <link rel="icon" href="../favicon.ico" sizes="any">
+  <link rel="icon" href="../assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+
+<body id="top">
+  <a class="skip" href="#start">Skip to content</a>
+
+  <header class="top">
+    <a class="brand" href="../" aria-label="ReMoto, project site">
+      <img src="../assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="#start">Start</a>
+      <a href="#run">Run</a>
+      <a href="#results">Results</a>
+      <a href="#editor">Editor</a>
+      <a href="#build">Your own</a>
+      <a href="#keep">Keep it</a>
+      <a href="#cli">Command line</a>
+      <span class="lang" role="group" aria-label="Language">
+        <a class="keep" href="./" hreflang="en" aria-current="page">EN</a><i aria-hidden="true">&middot;</i><a
+          class="keep" href="../pt/guia/" hreflang="pt-BR" lang="pt-BR">PT</a>
+      </span>
+      <a class="gh" href="https://remoto.psigama.com/">Open</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Quick guide &middot; </span><span>Version 3</span>
+      </p>
+      <h1>From the scenario you pick to the <span class="hl">plot you download</span>.</h1>
+      <p class="lede">The whole path through the simulator, in seven steps: run a ready-made scenario, read the results
+        screen, change parameters in the editor, build your own simulation and take your work with you. It replaces the
+        quick guide of the legacy site, written for the Java applet version.</p>
+      <p class="cta">
+        <a class="btn primary" href="https://remoto.psigama.com/">Open the simulator</a>
+        <a class="btn" href="../">Project site</a>
+        <a class="btn" href="https://github.com/rogeriocisi/remoto#readme">README</a>
+      </p>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="start">
+      <div class="sec-no"><b>1</b>Start</div>
+      <div class="sec-body">
+        <h2>Open the simulator and pick a scenario</h2>
+        <div class="prose">
+          <p class="lead">Nothing to install and no account to create: ReMoto runs in the browser. Open the
+            <a href="https://remoto.psigama.com/">public demo</a>, or <code>http://localhost:8080</code> on your own
+            machine after <a href="../#run">starting the server</a>.</p>
+          <p>The page has two columns. On the left, <b>My simulations</b> at the top, with what you have already run,
+            and the <b>Scenarios</b> below, in two tabs: <i>Public</i>, the 37 that ship with the simulator, and <i>My
+              scenarios</i>, your own copies. The search box filters by name, id or description. The right column holds
+            the simulation you have open.</p>
+          <p>Each scenario card shows the name, the simulated duration, the id and the first lines of the description
+            &mdash; one click shows the rest, which says what that scenario simulates and where it came from. The
+            buttons are <b>Run</b>, <b>Edit</b>, <b>Copy</b> and <b>Export</b>.</p>
+          <p>Three good ways in: <i>Default &ndash; Soleus contraction</i>, the default scenario of the legacy site;
+            <i>projectFR &ndash; H-reflex and M-wave curve</i>, which shows the M wave and the H reflex in 50 ms of
+            simulated time; and <i>Modelo completo</i>, with every element switched on, to walk around the results
+            screen.</p>
+        </div>
+        <figure class="shot">
+          <img src="../assets/guia/inicio-en.jpg" width="800" height="573"
+            alt="The ReMoto home screen: My simulations and the scenario list on the left, the instructions panel on the right.">
+          <figcaption><b>Figure 1</b>The home screen. Simulations and scenarios on the left; the open simulation on the
+            right &mdash; none yet, here.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sec" id="run">
+      <div class="sec-no"><b>2</b>Run</div>
+      <div class="sec-body">
+        <h2>Click Run and watch it go</h2>
+        <div class="prose">
+          <p class="lead">The card's <b>Run</b> button opens the simulation in the right column and shows the progress
+            live. It also appears under <i>My simulations</i>, with its state and run time.</p>
+          <p>The models are detailed, and therefore slow: one simulated second takes 17 to 30 seconds on a four-core
+            machine, and the scenarios range from 50 ms to 30 s of simulated time &mdash; the card says which. On the
+            public demo, a small machine shared by every visitor, simulations go into a round-robin queue; on your own
+            machine there is no queue.</p>
+          <p>The <b>&times;</b> on the row cancels a running simulation or deletes a finished one. You can close the
+            browser: the simulation keeps going on the server, and the row will be there when you come back.</p>
+          <p>Every simulation records the exact scenario, the random seed and the engine version. The same scenario with
+            the same seed gives the same results, bit for bit, with any number of threads.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="results">
+      <div class="sec-no"><b>3</b>Results</div>
+      <div class="sec-body">
+        <h2>The results screen you already know</h2>
+        <div class="prose">
+          <p class="lead">Once the simulation ends, the right column becomes the results screen of the legacy site: the
+            same menus, names and axes. Choose what you want to see and click <b>Plot</b>.</p>
+        </div>
+        <figure class="shot">
+          <img src="../assets/guia/resultados-en.jpg" width="800" height="573"
+            alt="The results screen: the Type, Muscle and Graphic menus, the EMG options and the soleus EMG plot, with the M wave and the H reflex.">
+          <figcaption><b>Figure 2</b>The soleus EMG in the H-reflex scenario: the M wave, just after the pulse, and the
+            H reflex about 30 ms later.</figcaption>
+        </figure>
+        <dl class="sheet">
+          <div>
+            <dt>Type</dt>
+            <dd><i>Biomechanical Elements</i> (force, EMG, lengths, torque, motor units), <i>Neural Elements</i>
+              (motoneurons, afferents, tracts and interneurons), <i>Properties</i>, <i>Summary</i> and the ready-made
+              layouts, such as <i>Spikes MNs</i>, <i>Forces</i> and <i>General</i>.</dd>
+          </div>
+          <div>
+            <dt>Graphic</dt>
+            <dd>The plot itself: 37 biomechanical ones (from the twitch to the joint torque) and 18 per neuron (raster,
+              instantaneous firing rate, interspike-interval histogram, soma and dendrite potentials, conductances,
+              phase plane). The menus beside it choose the muscle, the nucleus and the neuron.</dd>
+          </div>
+          <div>
+            <dt>EMG</dt>
+            <dd>When the plot is the EMG, the options of the old screen appear: sampling, a 1st/2nd or 3rd/3rd order
+              filter, cut-offs, noise and attenuation. With the default options it is the EMG the engine recorded;
+              change any of them and it is rebuilt from the raw signal.</dd>
+          </div>
+          <div>
+            <dt>Analysis</dt>
+            <dd>Statistics of what is plotted (points, mean, variance, standard deviation, CV, minimum and maximum,
+              with the mean &plusmn; SD lines) and the FFT, with the periodic-signal option and the choice of axes.</dd>
+          </div>
+          <div>
+            <dt>Advanced</dt>
+            <dd>Under <i>Advanced Graphic Settings</i>, up to eight subplots in one figure, overlay (<i>Hold On</i>),
+              axis limits, title, labels, legend, colour, height and font.</dd>
+          </div>
+          <div>
+            <dt>Download</dt>
+            <dd><b>Download CSV</b> gives the numbers behind the plot (the "file" option of the legacy site) and
+              <b>Download PNG</b> the figure. <b>Export (ZIP)</b>, at the top, takes the whole simulation: the manifest
+              with the seed and the engine version, the configuration and every result in CSV. <b>Configuration
+                (JSON)</b> shows the exact scenario that was run.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="sec" id="editor">
+      <div class="sec-no"><b>4</b>Editor</div>
+      <div class="sec-body">
+        <h2>Changing parameters: Edit opens your own copy</h2>
+        <div class="prose">
+          <p class="lead">Public scenarios belong to everyone and are read-only. <b>Edit</b> on one of them creates a
+            copy under <i>My scenarios</i> and opens the editor on it; <b>Copy</b> only makes the copy. On your own
+            scenarios, <b>Edit</b> opens the editor directly.</p>
+          <p>The editor is the one from the legacy site: the same menu on the left, the same screens, labels, units and
+            limits. Each screen saves on its own <b>Save</b> button; <b>Run this scenario</b>, at the top, goes back to
+            the main page with the simulation already starting.</p>
+        </div>
+        <figure class="shot">
+          <img src="../assets/guia/editor-en.jpg" width="800" height="581"
+            alt="The scenario editor on the Descending Commands screen: the table of descending tracts, with axons, distribution and mean interval, and the screen menu on the left.">
+          <figcaption><b>Figure 3</b>The editor, on the <i>Descending Commands</i> screen. On the left, the menu with
+            every screen of the legacy site.</figcaption>
+        </figure>
+        <div class="tbl-wrap" style="max-width:50rem">
+          <table>
+            <caption><b>Table 1</b>The editor screens, by menu group.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Group</th>
+                <th scope="col">Screens</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">&mdash;</th>
+                <td><i>Scenario</i>: name, description and the random seed</td>
+              </tr>
+              <tr>
+                <th scope="row">Structure</th>
+                <td><i>Descending Commands</i>, <i>Neural Elements</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Neural Parameters</th>
+                <td><i>Synapses</i>, <i>Kinetic Properties</i>, <i>Synaptic Dynamics</i>, <i>Conductances</i>,
+                  <i>Motoneurons</i>, <i>Interneurons</i>, <i>Sensory Fibers</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Proprioceptors</th>
+                <td><i>Muscle Spindle</i>, <i>Golgi Tendon Organ</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Biomechanical</th>
+                <td><i>Biomechanical Elements</i> (the joint and muscle models), <i>Joint</i>, <i>Muscle Units</i>,
+                  <i>Musculotendon</i>, <i>Electromyogram</i>, <i>Miscellaneous</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Stimulation</th>
+                <td><i>Nerve Stimulation</i>, <i>Injected Current</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Simulation</th>
+                <td><i>Duration and Time Step</i>: how long to simulate, and the integration step</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="prose">
+          <p style="margin-top:1.4rem">Field labels stay in English in both languages, as in the original, so that the
+            material written for it and the papers still apply. The limits are the old ones too: at most a thousand
+            neurons per type in each nucleus, a minimum interspike interval, a minimum time step and the minimum
+            refractory periods.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="build">
+      <div class="sec-no"><b>5</b>Your own</div>
+      <div class="sec-body">
+        <h2>Building your own, starting from a scenario</h2>
+        <div class="prose">
+          <p class="lead">The shortest path is to copy the scenario closest to what you want and change it. The order
+            below is the one of the old guide, brought up to today's screens.</p>
+        </div>
+        <ol class="feat">
+          <li>
+            <h3>The nuclei and how many neurons</h3>
+            <p>Under <i>Structure &rarr; Neural Elements</i>, choose the muscles (SOL, MG, LG and TA) and how many
+              motoneurons of each type (S, FR, FF), afferents and interneurons take part. Anything left at zero is not
+              created and costs no time.</p>
+          </li>
+          <li>
+            <h3>What drives the system</h3>
+            <p>Under <i>Descending Commands</i>, switch the tracts on and choose the number of axons, the distribution
+              (Poisson, gamma or Gaussian), the mean interval and the modulation. Under <i>Stimulation</i>, the pulse on
+              the tibial or common peroneal nerve, or a current injected into chosen neurons.</p>
+          </li>
+          <li>
+            <h3>The feedback</h3>
+            <p>Afferents only fire if something drives them: the spindle and the Golgi tendon organ, under
+              <i>Proprioceptors</i>, with the Hill muscle and a joint model that changes the length
+              (<i>Biomechanical Elements</i> and <i>Joint</i>). With an isometric ankle and the default muscle, the
+              spindle is not integrated.</p>
+          </li>
+          <li>
+            <h3>The synapses</h3>
+            <p>Under <i>Neural Parameters</i>, the conductance, reversal potential, delay and connectivity of each
+              pathway, short-term depression or facilitation, and, if you want, a weight that falls with the distance
+              between the cells.</p>
+          </li>
+          <li>
+            <h3>Duration, step and seed</h3>
+            <p>Under <i>Simulation &rarr; Duration and Time Step</i>, how long to simulate and with which step; under
+              <i>Scenario</i>, the seed. Start with a short duration: wall-clock time grows with it and with the number
+              of neurons.</p>
+          </li>
+          <li>
+            <h3>Run and look</h3>
+            <p><b>Save</b> on every screen you change, then <b>Run this scenario</b>. If nothing happens where you
+              expected it, check whether the element is active: almost everything starts switched off, and the features
+              that came from the Fortran version only act when a scenario chooses them.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="keep">
+      <div class="sec-no"><b>6</b>Keep it</div>
+      <div class="sec-body">
+        <h2>No login: keep your work and take it with you</h2>
+        <div class="prose">
+          <p class="lead">There is no account and no database. Each browser gets a workspace of its own, identified by
+            a 30-day cookie: the work survives closing the browser and server restarts, and is deleted after 30 days
+            without use. No personal data is stored.</p>
+          <p>To keep it longer, or take it to another computer, use the export buttons:</p>
+        </div>
+        <dl class="sheet">
+          <div>
+            <dt>One scenario</dt>
+            <dd><b>Export</b> on the card downloads the scenario as JSON: the whole configuration, the duration, the
+              step and the seed, in a text file that also runs on the command line.</dd>
+          </div>
+          <div>
+            <dt>All of yours</dt>
+            <dd><b>Export all</b>, on the <i>My scenarios</i> tab, gives a .zip with one JSON per scenario;
+              <b>Import…</b> beside it takes both formats back.</dd>
+          </div>
+          <div>
+            <dt>One simulation</dt>
+            <dd><b>Export (ZIP)</b> takes the manifest, the configuration and the results in CSV. The <b>Import…</b>
+              under <i>My simulations</i> brings that .zip back, checking the manifest against its hash.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="sec" id="cli">
+      <div class="sec-no"><b>7</b>Command line</div>
+      <div class="sec-body">
+        <h2>Outside the browser, with the same file</h2>
+        <div class="prose">
+          <p class="lead">The JSON you export runs unchanged and with no server, writing every result to CSV. It is the
+            way to go for long simulations, parameter sweeps and a cluster.</p>
+        </div>
+        <pre class="term"><span class="p">$</span> java -jar remoto-cli.jar run my-scenario.json \
+    --duration-ms 500 --threads 4 -o results/
+
+<span class="p">$</span> java -jar remoto-cli.jar sweep my-scenario.json \
+    --protocol hm --range 5:40:1 -o results/hm-curve</pre>
+        <div class="prose">
+          <p style="margin-top:1.1rem">The output folder gets the frozen scenario, a manifest with the seed and the
+            engine version, and one CSV per result. <code>sweep</code> runs a batch protocol &mdash; in the example, the
+            H-reflex and M-wave curve from 5 to 40 mA &mdash; and writes one row of measurements per simulation. There
+            are also <code>validate</code>, which checks scenario files, and <code>export-legacy</code>, which converts
+            configurations from the original database.</p>
+          <p>What this guide leaves out &mdash; build instructions, the REST API, the scenario format and installing on
+            a server &mdash; is in the <a href="https://github.com/rogeriocisi/remoto#readme">README</a> and in the
+            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">full documentation</a> (in
+            Portuguese). The models are described in the <a href="../#publications">papers</a>.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="../"><img src="../assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>A simulator of spinal cord motor nuclei and their nerves and muscles, developed at the Biomedical
+          Engineering Laboratory (LEB) of the University of S&atilde;o Paulo.</p>
+      </div>
+      <div>
+        <h2>Project</h2>
+        <p><a href="https://remoto.psigama.com/">Online simulator</a><br>
+          <a href="../">Project site</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
+          <a href="https://github.com/rogeriocisi/remoto/issues">Questions and bug reports</a>
+        </p>
+      </div>
+      <div>
+        <h2>License</h2>
+        <p>Released under the <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi and the ReMoto contributors.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
