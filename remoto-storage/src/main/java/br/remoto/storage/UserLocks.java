@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 /**
  * Uma trava por usuário: gravações do mesmo usuário são serializadas, usuários diferentes
- * gravam em paralelo. Vale para uma única instância do servidor (ver docs/nova-versao.md).
+ * gravam em paralelo. Vale para uma única instância do servidor (ver docs/current-version.md).
  */
 public final class UserLocks {
 

@@ -65,7 +65,7 @@ class LegacyEngineTest {
 
     /**
      * Configurações publicadas com os tratos gama como Poisson: a ordem do processo gama não foi
-     * gravada no banco, e o trato só disparava em t = 0 (ver docs/nova-versao.md).
+     * gravada no banco, e o trato só disparava em t = 0 (ver docs/current-version.md).
      */
     private static final Set<Integer> GAMMA_AS_POISSON = Set.of(24, 25, 26, 27, 28, 32, 34, 35, 36, 38, 39, 41, 42, 44);
 

@@ -1,6 +1,6 @@
 # /etc/systemd/system/remoto.service
 # Nova versão do ReMoto como serviço do sistema (Linux), sem Docker.
-# Passo a passo: docs/nova-versao.md, seção "Instalação no servidor".
+# Passo a passo: docs/current-version.md, seção "Installing on the server".
 
 [Unit]
 Description=ReMoto - simulador de núcleos motores da medula espinhal
