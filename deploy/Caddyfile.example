@@ -1,0 +1,42 @@
+# /etc/caddy/Caddyfile — a mesma coisa que o nginx-remoto.conf.example faz, para quem usa Caddy.
+#
+# Um domínio, duas coisas:
+#
+#   /            o site descritivo — os arquivos de docs/, estáticos, que o deploy espelha
+#                em /var/www/remoto (DEPLOY_SITE_DIR)
+#   /simulator/  o simulador — o Spring Boot do remoto-web
+#
+# O repositório não sabe em que domínio é servido: os endereços das páginas são relativos e o
+# e-mail de contato sai do próprio domínio (docs/assets/site.js). Este arquivo, no servidor, é o
+# único lugar em que o domínio aparece — e por isso está aqui como exemplo, com um nome qualquer.
+#
+# Instalação e variáveis do deploy automático: README.md, seção "Deployment".
+#
+#   caddy validate --config /etc/caddy/Caddyfile && systemctl reload caddy
+
+exemplo.org {
+	root * /var/www/remoto
+	file_server
+
+	# o actuator é interno: fica acessível na máquina (é o que o deploy consulta), não de fora
+	@interno path /simulator/actuator /simulator/actuator/*
+	respond @interno 404
+
+	# O app roda com context-path /simulator, então o caminho segue inteiro: o reverse_proxy
+	# casa o prefixo e não reescreve nada. A porta é a SERVER_PORT do remoto.env.
+	redir /simulator /simulator/ 301
+	@simulador path /simulator/*
+	reverse_proxy @simulador 127.0.0.1:8080
+}
+
+# Se o simulador já morou num subdomínio só dele, fica o redirecionamento para o endereço novo,
+# e nenhum link antigo quebra.
+app.exemplo.org {
+	redir https://exemplo.org/simulator{uri} 301
+}
+
+# O Caddy repassa sem bufferizar, que é o que o progresso ao vivo (SSE) precisa, e não limita o
+# tamanho do corpo, que é o que a importação de cenários e de simulações precisa. Ele também
+# manda X-Forwarded-For e X-Forwarded-Proto, então vale descomentar
+# SERVER_FORWARD_HEADERS_STRATEGY=native no /etc/remoto/remoto.env para o app enxergar o endereço
+# de quem acessa (o limite de simulações por origem) e o endereço público.

@@ -111,8 +111,10 @@ jobs:
           ssh -i ~/.ssh/id_deploy -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
             "install -m 644 /tmp/remoto-web.jar '$JAR_PATH' && rm -f /tmp/remoto-web.jar && sudo systemctl restart '$SERVICE'"
 
+      # Exige o UP no corpo, e não só um curl que não falhou: um 3xx (uma tela de login de outra
+      # aplicação na mesma máquina, por exemplo) não é erro para o curl e passaria por saúde.
       - name: Conferir se o simulador voltou
         if: steps.config.outputs.pronto == 'true'
         run: |
           ssh -i ~/.ssh/id_deploy -p "$REMOTE_PORT" "$REMOTE_USER@$REMOTE_HOST" \
-            "for i in \$(seq 1 20); do curl -fsS '$HEALTH_URL' && exit 0; sleep 3; done; echo 'o serviço não respondeu UP'; exit 1"
+            "for i in \$(seq 1 20); do curl -fsS --max-time 10 '$HEALTH_URL' | grep -q '\"status\":\"UP\"' && exit 0; sleep 3; done; echo 'o simulador não respondeu UP em $HEALTH_URL'; exit 1"

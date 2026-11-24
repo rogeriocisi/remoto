@@ -83,7 +83,8 @@ the machine's default Java is older than 25, point `JAVA_HOME` at the JDK 25 fir
 ## Installing on the server (Linux, no Docker)
 
 The supporting files are in `deploy/`: the systemd unit (`remoto.service`), the configuration
-template (`remoto.env.example`) and the nginx example (`nginx-remoto.conf.example`).
+template (`remoto.env.example`) and the reverse-proxy examples (`nginx-remoto.conf.example` and
+`Caddyfile.example`).
 
 ```bash
 # 1. JDK 25 (Temurin, Corretto or the distribution's package)
@@ -112,10 +113,13 @@ curl -s http://localhost:8080/simulator/actuator/health
 
 The app runs with `context-path` `/simulator` (`application.yml`, overridable by
 `SERVER_SERVLET_CONTEXT_PATH`), because on the domain it shares the place with the descriptive
-site, which sits at the root. What puts each thing on its own path is nginx:
+site, which sits at the root. What puts each thing on its own path is the reverse proxy:
 `deploy/nginx-remoto.conf.example` has the static root, the `proxy_pass` of `/simulator/` with no
 path rewriting, and what live progress (SSE) needs — `proxy_buffering off` and a generous
-`proxy_read_timeout`.
+`proxy_read_timeout`; `deploy/Caddyfile.example` is the same thing for Caddy, which streams and
+accepts any body size without being told to. In both, the port is the `SERVER_PORT` of
+`remoto.env`, and the actuator is kept off the public address — the deployment's health check
+asks for it on the machine itself.
 
 - **Updating:** it is automatic. Every push to `master` that passes the tests sends the site, the
   public scenarios and the new JAR to the server and restarts the service (the `deploy` job of
@@ -128,7 +132,7 @@ path rewriting, and what live progress (SSE) needs — `proxy_buffering off` and
   without use; copying that folder preserves the work of whoever is using the site (when moving to
   another machine, for example). The public scenarios are in Git, and what is meant to last each
   person keeps by exporting.
-- **HTTPS:** nginx (or Apache) in front takes care of 443; uncomment
+- **HTTPS:** the proxy in front (nginx, Caddy or Apache) takes care of 443; uncomment
   `SERVER_FORWARD_HEADERS_STRATEGY=native` in `remoto.env`. Without it, the per-origin limit sees
   everyone with the proxy's address.
 - **New public scenarios:** copy the JSON to `/opt/remoto/scenarios/`; no restart needed.

@@ -35,7 +35,7 @@ remoto-storage/       file-based persistence (JSON scenarios, CSV.gz results)
 remoto-web/           web application (Spring Boot, no login), including the scenario editor
 remoto-cli/           command-line runner for scripts and clusters, and export of old configurations
 scenarios/            public scenarios (JSON)
-deploy/            systemd service, configuration template and the nginx example
+deploy/            systemd service, configuration template and the reverse-proxy examples (nginx, Caddy)
 docs/              project website (`/`, `/pt/`, `/guide/`, `/guide/pt/`), served from the root of the domain and mirrored on GitHub Pages, and documentation of the new version (in Portuguese)
 legacy-db/         original HSQLDB database (text script), read by export-legacy without HSQLDB
 ref.bib            BibTeX references
@@ -103,7 +103,7 @@ java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar export-legacy --db leg
 
 ### Deployment
 
-The site and the simulator are one system on one domain: the descriptive pages of [docs/](docs/) are static files served from the root, and the simulator is a single executable JAR with an embedded web server, installed as a systemd service and served at `/simulator` behind nginx. There are no accounts to manage: no login, passwords or identity providers.
+The site and the simulator are one system on one domain: the descriptive pages of [docs/](docs/) are static files served from the root, and the simulator is a single executable JAR with an embedded web server, installed as a systemd service and served at `/simulator` behind a reverse proxy (nginx or Caddy). There are no accounts to manage: no login, passwords or identity providers.
 
 | Address | What |
 |---|---|
@@ -141,7 +141,7 @@ The address is a secret rather than a variable so that it stays masked in the pu
 | `DEPLOY_SCENARIOS_DIR` | `/opt/remoto/scenarios` |
 | `DEPLOY_JAR_PATH` | `/opt/remoto/remoto-web.jar` |
 | `DEPLOY_SERVICE` | `remoto` |
-| `DEPLOY_HEALTH_URL` | `http://127.0.0.1:8080/simulator/actuator/health` |
+| `DEPLOY_HEALTH_URL` | `http://127.0.0.1:8080/simulator/actuator/health` — the port is the `SERVER_PORT` of `remoto.env`, so set this variable if the service does not listen on 8080 |
 
 #### On the server, once
 
@@ -160,7 +160,7 @@ echo 'deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart remoto' \
   | sudo install -m 440 /dev/stdin /etc/sudoers.d/remoto-deploy
 ```
 
-The files it writes are read by the `remoto` user that runs the service (mode 644 under `/opt/remoto`) and by nginx (`/var/www/remoto`). The service itself — the `remoto` user, `/etc/remoto/remoto.env`, the systemd unit — and the reverse proxy are set up once, as described in the "Installing on the server" section of [docs/current-version.md](docs/current-version.md), with [deploy/nginx-remoto.conf.example](deploy/nginx-remoto.conf.example) for nginx.
+The files it writes are read by the `remoto` user that runs the service (mode 644 under `/opt/remoto`) and by the reverse proxy (`/var/www/remoto`). The service itself — the `remoto` user, `/etc/remoto/remoto.env`, the systemd unit — and the reverse proxy are set up once, as described in the "Installing on the server" section of [docs/current-version.md](docs/current-version.md), with [deploy/nginx-remoto.conf.example](deploy/nginx-remoto.conf.example) or [deploy/Caddyfile.example](deploy/Caddyfile.example) for the proxy.
 
 #### Adding a language
 
