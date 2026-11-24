@@ -20,7 +20,7 @@
 
   <groupId>br.remoto</groupId>
   <artifactId>remoto-parent</artifactId>
-  <version>3.0.1-SNAPSHOT</version>
+  <version>4.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>ReMoto</name>
   <description>Simulador de núcleos motores da medula espinhal (nova versão, sem banco de dados)</description>

@@ -21,7 +21,7 @@ As duas pastas têm de se chamar `s17-full` e `s17-frozen`, dentro de uma mesma 
 Motor atual, com o CLI do repositório:
 
 ```powershell
-& "C:\Program Files\Java\jdk-25.0.2\bin\java.exe" -jar remoto-cli\target\remoto-cli-3.0.0-SNAPSHOT.jar run scenarios\remoto-17-default-soleus-contraction.json --threads 4 -o C:\rodadas\s17-full
+& "C:\Program Files\Java\jdk-25.0.2\bin\java.exe" -jar remoto-cli\target\remoto-cli-4.0.0-SNAPSHOT.jar run scenarios\remoto-17-default-soleus-contraction.json --threads 4 -o C:\rodadas\s17-full
 ```
 
 Com o defeito de 2016: aplique o patch **numa cópia do repositório**, não na pasta de trabalho
@@ -37,7 +37,7 @@ git apply paper\scripts\synapse-2016-switch.patch
 ```
 
 ```powershell
-& "C:\Program Files\Java\jdk-25.0.2\bin\java.exe" "-Dremoto.frozenStep=0.05" -jar remoto-cli\target\remoto-cli-3.0.0-SNAPSHOT.jar run scenarios\remoto-17-default-soleus-contraction.json --threads 4 -o C:\rodadas\s17-frozen
+& "C:\Program Files\Java\jdk-25.0.2\bin\java.exe" "-Dremoto.frozenStep=0.05" -jar remoto-cli\target\remoto-cli-4.0.0-SNAPSHOT.jar run scenarios\remoto-17-default-soleus-contraction.json --threads 4 -o C:\rodadas\s17-frozen
 ```
 
 Confira que as rodadas são as do artigo (a resposta esperada é `identical: 49 outputs`):

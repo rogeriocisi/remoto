@@ -41,7 +41,7 @@
 \begin{document}
 
 % TODO(authors): choose the final title and the version name ("3.0" is the version
-% of the Maven artifacts, 3.0.0-SNAPSHOT; it is not used in the text below).
+% of the Maven artifacts, 4.0.0-SNAPSHOT; it is not used in the text below).
 \title[ReMoto: a reproducible reimplementation]{ReMoto revisited: porting a Web-based simulator of spinal motor nuclei to a reproducible platform with bit-for-bit verification}
 
 % TODO(authors): complete the author list, order, ORCIDs, affiliations and the
@@ -87,7 +87,7 @@ This paper describes a new version of ReMoto, 3.0, that keeps the published mode
 % TODO(authors): the release dates above come from the Downloads page of the project site,
 % read on 2026-11-23, which also lists a 2.2 beta (June 2012) and a standalone 2.0 for
 % Windows. Confirm them, and confirm that the new version should be numbered 3.0 (it is
-% 3.0.0-SNAPSHOT in the Maven modules).
+% 4.0.0-SNAPSHOT in the Maven modules).
 We set one requirement for the port: the new code had to give the same numbers as the old one, bit for bit, in every output, and every exception had to be deliberate, tested and recorded. This is stricter than the statistical comparison used when a model is moved between simulators \citep{Gutzen2018,Trensch2018}, and it was possible here because the language stayed the same. It turned the original program into the specification of the new one, in the way characterization tests are used on legacy software \citep{Feathers2004}. The requirement had a scientific return as well: holding the outputs fixed while the code was taken apart exposed two defects in the inherited code, one of which had changed the dynamics of every synapse since 2016.
 
 The contributions are (i) a description of the new architecture, in which a simulation is fully determined by a scenario file, a seed and an engine version; (ii) the method used to port a legacy simulator with bit-for-bit equivalence, including the behavior of the database that the old code relied on without stating it; (iii) a parallel update of the neurons whose results do not depend on the number of threads; and (iv) the analysis of the two defects and of their effect on the simulated motor output.
@@ -212,7 +212,7 @@ The scenario, its seed and the engine version together determine every output bi
 
 The Web application is a single executable file with an embedded server, installed as an operating-system service; it needs only a Java runtime and a folder to write in. There are no accounts. Each browser gets a private area identified by a random identifier kept in a cookie, and that area holds copies of scenarios, edited scenarios and runs. The site stores no personal data. To keep work for longer or to move it elsewhere, users export scenarios as JSON files and runs as archives with the manifest, the scenario and every result as CSV, and import them again later; a scenario exported from the site is the same file that the command-line runner executes.
 
-% TODO(authors): the limits below are the defaults documented in docs/nova-versao.md on
+% TODO(authors): the limits below are the defaults documented in docs/current-version.md on
 % 2026-11-22 (area kept by a 30-day cookie; at most 2 running and 20 queued runs per
 % area, 20 per network address, 200 in the whole queue). The site was still changing on
 % that day: confirm them, or drop the numbers, before submission.
@@ -431,7 +431,7 @@ Phase-plane plot & Showed the injected current of each Runge-Kutta stage, a debu
 
 \subsection{Performance}\label{sec:performance}
 
-% TODO(authors): Table 5 repeats the figures documented in docs/nova-versao.md ("1 s
+% TODO(authors): Table 5 repeats the figures documented in docs/current-version.md ("1 s
 % simulated, machine with 4 physical cores"); they were not re-measured for this draft.
 % Give the processor, memory, operating system, Java version, number of repetitions and
 % the scenario versions used (configurations 24 and 42 later had their gamma tracts
@@ -561,13 +561,13 @@ The scenarios used in this paper are distributed with the source code. The outpu
 
 \bmhead{Code availability}
 
-The source code of version 3.0, the public scenarios, the original database as a text file and the automated tests are available at \url{https://github.com/rogeriocisi/remoto} under the MIT license. The original system remains available in the parent repository, \url{https://github.com/rnwatanabe/remoto}, and the model of \citet{Cisi2008} has an entry in ModelDB (accession 117810).
+The source code of version 4.0, the public scenarios, the original database as a text file and the automated tests are available at \url{https://github.com/rogeriocisi/remoto} under the MIT license. The original system remains available in the parent repository, \url{https://github.com/rnwatanabe/remoto}, and the model of \citet{Cisi2008} has an entry in ModelDB (accession 117810).
 % TODO(authors): tag the release that the paper describes, archive it with a DOI (for
 % example on Zenodo), give the tag, the commit and the DOI here, and update the ModelDB
 % entry, which still points at the old Web application.
 \TODO{authors: release tag, commit and DOI}
 
-% Licence: settled by the first author on 2026-11-23 -- version 3.0 is MIT, as the sentence
+% Licence: settled by the first author on 2026-11-23 -- version 4.0 is MIT, as the sentence
 % above states and as the LICENSE file of the repository says. Note for whoever edits this
 % later: the Downloads page of the project site still announces the old Web application as
 % GPL v3 or later, so a reader may ask; the parent repository carries no licence file.

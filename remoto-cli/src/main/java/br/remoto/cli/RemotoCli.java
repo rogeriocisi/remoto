@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Command(name = "remoto",
         mixinStandardHelpOptions = true,
-        version = "ReMoto 3.0.0-SNAPSHOT",
+        version = "ReMoto 4.0.0-SNAPSHOT",
         description = "Executa cenários do ReMoto sem servidor (mesmo JSON do site).",
         subcommands = {RunCommand.class, SweepCommand.class, ValidateCommand.class, ExportLegacyCommand.class})
 public final class RemotoCli implements Runnable {

@@ -2,7 +2,7 @@
 // Gera a figura de abertura da GitHub Pages a partir de uma execução do cenário
 // "Default - Soleus contraction". Só usa o Node (18 ou mais novo), sem dependências.
 //
-//   java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar run \
+//   java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar run \
 //        scenarios/remoto-17-default-soleus-contraction.json --threads 4 -o resultados/soleus
 //   node scripts/pages-figure.mjs resultados/soleus
 //
