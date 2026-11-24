@@ -161,11 +161,19 @@
           li.hidden = !match;
           if (match) visible++;
         });
-        // grupo sem nenhum cenário à mostra some; havendo resultado, abre para ele aparecer
+        // grupo sem nenhum cenário à mostra some; havendo resultado, abre para ele aparecer.
+        // Os grupos nascem fechados, então o que a busca abriu ela mesma fecha quando o texto
+        // sai — sem mexer no que a pessoa abriu com a mão.
         p.querySelectorAll('.grupo').forEach((g) => {
           const achou = [...g.querySelectorAll('.cenario')].some((li) => !li.hidden);
           g.hidden = !achou;
-          if (q && achou) g.open = true;
+          if (q && achou && !g.open) {
+            g.open = true;
+            g.dataset.abertoPelaBusca = '';
+          } else if (!q && 'abertoPelaBusca' in g.dataset) {
+            g.open = false;
+            delete g.dataset.abertoPelaBusca;
+          }
         });
         const none = p.querySelector('.sem-resultado');
         if (none) none.hidden = !q || visible > 0;

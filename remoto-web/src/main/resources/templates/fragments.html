@@ -29,9 +29,10 @@
 
     <div class="painel-aba" data-painel="publicos" role="tabpanel">
       <!-- Os cenários públicos vêm reunidos por tema (ScenarioGroups): são 43, e quem procura um
-           fenômeno quer ver juntos os que tratam dele, venham de onde vierem. Cada grupo abre e
-           fecha; a busca procura em todos e esconde o grupo que ficar sem nenhum. -->
-      <details th:each="g : ${publicGroups}" class="grupo" th:data-grupo="${g.key}" open>
+           fenômeno quer ver juntos os que tratam dele, venham de onde vierem. Os grupos começam
+           fechados, para a lista inteira caber na tela; a busca procura em todos, abre os que têm
+           resultado e esconde os que ficarem sem nenhum. -->
+      <details th:each="g : ${publicGroups}" class="grupo" th:data-grupo="${g.key}">
         <summary>
           <th:block th:text="${g.label}">tema</th:block>
           <span class="contagem" th:text="${#lists.size(g.scenarios)}">0</span>
