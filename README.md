@@ -123,12 +123,11 @@ Two things worth knowing: anyone who can push to `master` can deploy, so protect
 
 #### Secrets (Settings → Secrets and variables → Actions)
 
-The address and the user are secrets rather than variables so that they stay masked in the public run logs.
+The address is a secret rather than a variable so that it stays masked in the public run logs. The user is not: it is a common word, and masking it would hide `deploy` from the whole log, step names and error messages included.
 
 | Secret | What |
 |---|---|
 | `DEPLOY_HOST` | the server, by name or address |
-| `DEPLOY_USER` | the deploy user on it |
 | `DEPLOY_SSH_KEY` | that user's private key, whole, **with no passphrase** (the workflow has no way to type one) — `ssh-keygen -t ed25519 -f deploy_key -N ""`, with the public half in its `authorized_keys` |
 | `DEPLOY_KNOWN_HOSTS` | the server's host key, so the connection is verified — `ssh-keyscan your-server` |
 
@@ -136,6 +135,7 @@ The address and the user are secrets rather than variables so that they stay mas
 
 | Variable | Default |
 |---|---|
+| `DEPLOY_USER` | `deploy` |
 | `DEPLOY_PORT` | `22` |
 | `DEPLOY_SITE_DIR` | `/var/www/remoto` |
 | `DEPLOY_SCENARIOS_DIR` | `/opt/remoto/scenarios` |

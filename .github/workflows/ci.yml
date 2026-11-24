@@ -36,7 +36,9 @@ jobs:
       cancel-in-progress: false
     env:
       REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
-      REMOTE_USER: ${{ secrets.DEPLOY_USER }}
+      # o usuário é Variable, e não Secret: sendo uma palavra comum, mascará-lo esconderia
+      # "deploy" de todo o log, inclusive de nomes de passo e de mensagens de erro
+      REMOTE_USER: ${{ vars.DEPLOY_USER || 'deploy' }}
       REMOTE_PORT: ${{ vars.DEPLOY_PORT || '22' }}
       SITE_DIR: ${{ vars.DEPLOY_SITE_DIR || '/var/www/remoto' }}
       SCENARIOS_DIR: ${{ vars.DEPLOY_SCENARIOS_DIR || '/opt/remoto/scenarios' }}
@@ -50,7 +52,7 @@ jobs:
           KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
-          if [ -n "$REMOTE_HOST" ] && [ -n "$REMOTE_USER" ] && [ -n "$KEY" ] && [ -n "$KNOWN_HOSTS" ]; then
+          if [ -n "$REMOTE_HOST" ] && [ -n "$KEY" ] && [ -n "$KNOWN_HOSTS" ]; then
             echo "pronto=true" >> "$GITHUB_OUTPUT"
           else
             echo "pronto=false" >> "$GITHUB_OUTPUT"
