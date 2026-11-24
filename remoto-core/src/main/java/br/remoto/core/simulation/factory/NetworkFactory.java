@@ -100,17 +100,16 @@ public class NetworkFactory
 					if( conf.isStoreSignals() == true )
 					{
 					    // Store membrane potential for the marked indexes
-				    	// # of signals per neuron = 7
+				    	// The signal store grows on demand (the original reserved it whole, 7 signals per
+				    	// step for the entire run, before the simulation started)
 					    if( neu.getCategory().equals(ReMoto.MN) &&
 						    ( index + 1 == reference.getIndexStoreVm1() || index + 1 == reference.getIndexStoreVm2() ) )
 					    {
 						    ((Motoneuron)neu).setStoredSignals(true);
-					    	((Motoneuron)neu).getSignalStore().ensureCapacity( (int)( conf.getTFin()/conf.getStep() * 7 ) );
 					    }
 					    else if( neu.getCategory().equals(ReMoto.IN) && index + 1 == reference.getIndexStoreVm1() )
 					    {
 					    	((Interneuron)neu).setStoredSignals(true);
-					    	((Interneuron)neu).getSignalStore().ensureCapacity( (int)( conf.getTFin()/conf.getStep() * 7 ) );
 					    }
 					}
 

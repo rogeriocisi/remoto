@@ -60,7 +60,7 @@ class ResultsController {
                 o.neuron(), o.graphic(), o.spec(), o.emgFilter(), o.fcLow(), o.fcHigh(), o.emgNoise(),
                 o.emgAttenuation(), o.emgDecimation(), o.analysis(), o.fftPoints(), o.periodic(), o.xmin(), o.xmax(),
                 o.ymin(), o.ymax(), o.fftXmin(), o.fftXmax(), o.fftYmin(), o.fftYmax(), 200_000));
-        String file = (o.graphic() + "-" + o.nucleus() + "-" + o.neuron()).replaceAll("[^A-Za-z0-9_-]", "_");
+        String file = fileName(o).replaceAll("[^A-Za-z0-9_-]", "_");
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file + ".csv\"")
                 .contentType(MediaType.parseMediaType("text/csv;charset=UTF-8"))
@@ -86,6 +86,19 @@ class ResultsController {
                     periodic != null && periodic, xmin, xmax, ymin, ymax, fftXmin, fftXmax, fftYmin, fftYmax,
                     maxPoints == null ? 0 : maxPoints);
         }
+    }
+
+    /**
+     * O nome do arquivo baixado: o da tabela, nas telas de tabela (que não têm gráfico escolhido —
+     * o nome saía com o gráfico padrão, "spikeTimes"), e o do gráfico nas outras.
+     */
+    static String fileName(ResultViews.Options o) {
+        String neuron = "todos".equals(o.neuron()) ? "all" : o.neuron();
+        return switch (o.type()) {
+            case "summary" -> "summary";
+            case "properties" -> "properties-" + o.element() + "-" + o.nucleus();
+            default -> o.graphic() + "-" + o.nucleus() + "-" + neuron;
+        };
     }
 
     static String csv(ResultViews.View v) {

@@ -151,7 +151,9 @@
           <span th:class="|status ${r.status}|" th:text="${r.statusLabel}">concluída</span>
           <small th:if="${r.percent != null}" th:text="|${r.percent}%|">50%</small>
         </td>
-        <td class="sem-quebra" th:text="${r.created}">00/00 00:00</td>
+        <!-- o servidor escreve a hora no fuso dele; a página troca pela hora de quem olha (app.js) -->
+        <td class="sem-quebra"><time class="hora-local" th:datetime="${r.createdIso}"
+                                    th:text="${r.created}">00/00 00:00</time></td>
         <td class="sem-quebra" th:text="${r.elapsed}">1 min 05 s</td>
         <td class="acoes">
           <a th:unless="${r.active}" th:href="@{/api/runs/{id}/export.zip(id=${r.runId})}"

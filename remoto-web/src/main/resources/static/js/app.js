@@ -96,6 +96,7 @@
     field('id').textContent = runId;
     field('nome').textContent = T('simulation');
     field('links').replaceChildren();
+    field('erro').hidden = true;
     clearCharts();
     if (source) source.close();
     fetch(`${API}/runs/${runId}`).then((r) => r.ok ? r.json() : null).then((view) => {
@@ -120,6 +121,7 @@
         if (p.status === 'DONE') {
           loadResults(runId).catch(() => notify(T('loadResultsFailed')));
         }
+        if (p.status === 'FAILED') showFailure(runId);
       }
     });
     source.onerror = () => {
@@ -189,9 +191,38 @@
     filter();
   }
 
+  // ---- por que a simulação falhou: o texto do manifesto, com o caso da memória explicado ----
+  function showFailure(runId) {
+    fetch(`${API}/runs/${runId}`).then((r) => r.ok ? r.json() : null).then((view) => {
+      const error = view && view.run && view.run.error;
+      if (!error || current !== runId) return;
+      const box = field('erro');
+      if (error.startsWith('memory:')) {
+        const n = /about (\d+) MB.*allows (\d+) MB/.exec(error);
+        box.textContent = n ? T('failed.memory', n[1], n[2]) : T('failed.memoryShort');
+      } else {
+        box.textContent = T('failed.reason', error);
+      }
+      box.hidden = false;
+    }).catch(() => {});
+  }
+
+  // ---- a hora de criação: o servidor a escreve no fuso dele; aqui vira a hora de quem olha ----
+  function localTimes(root) {
+    const format = { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    root.querySelectorAll('time.hora-local[datetime]').forEach((el) => {
+      const date = new Date(el.getAttribute('datetime'));
+      if (Number.isNaN(date.getTime())) return;
+      el.textContent = date.toLocaleString(window.ReMotoLang || undefined, format).replace(',', '');
+    });
+  }
+
   document.body.addEventListener('htmx:afterSwap', (event) => {
     if (event.detail.target.id === 'cenarios') setupScenarios(event.detail.target);
-    if (event.detail.target.id === 'execucoes') markSelected();
+    if (event.detail.target.id === 'execucoes') {
+      markSelected();
+      localTimes(event.detail.target);
+    }
   });
 
   // ?run=<id>: o editor manda para cá depois de "Rodar este cenário"

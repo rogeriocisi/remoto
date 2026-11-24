@@ -40,7 +40,8 @@ public record RemotoProperties(
             @DefaultValue("20") int maxQueuedPerUser,
             @DefaultValue("20") int maxPerOrigin,
             @DefaultValue("200") int maxQueuedTotal,
-            @DefaultValue("0") int threadsPerRun) {
+            @DefaultValue("0") int threadsPerRun,
+            @DefaultValue("0.8") double memoryFraction) {
 
         public int effectiveSlots() {
             return slots > 0 ? slots : Runtime.getRuntime().availableProcessors();

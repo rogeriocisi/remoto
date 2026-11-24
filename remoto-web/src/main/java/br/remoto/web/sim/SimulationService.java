@@ -58,6 +58,7 @@ public class SimulationService implements DisposableBean {
     private final int maxPerOrigin;
     private final int maxQueuedTotal;
     private final ExecutorService workers;
+    private final MemoryGuard memory;
 
     private final Object lock = new Object();
     private final FairQueue<Job> queue = new FairQueue<>();
@@ -68,8 +69,15 @@ public class SimulationService implements DisposableBean {
     record Job(UserId owner, String origin, String runId, Scenario scenario, SimulationEngine engine, AtomicBoolean cancelled) {
     }
 
+    @org.springframework.beans.factory.annotation.Autowired
     public SimulationService(RunRepository runs, Engines engines, ProgressHub progressHub,
                              RemotoProperties props) {
+        this(runs, engines, progressHub, props, MemoryGuard.ofJvm(props.simulation().memoryFraction()));
+    }
+
+    SimulationService(RunRepository runs, Engines engines, ProgressHub progressHub,
+                      RemotoProperties props, MemoryGuard memory) {
+        this.memory = memory;
         this.runs = runs;
         this.engines = engines;
         this.progressHub = progressHub;
@@ -83,6 +91,12 @@ public class SimulationService implements DisposableBean {
         log.info("Fila de simulações: {} em paralelo; por sessão, até {} ativas e {} na fila; "
                 + "por origem, até {} (0 = sem limite); no total, até {} na fila (0 = sem limite)",
                 slots, maxActivePerUser, maxQueuedPerUser, maxPerOrigin, maxQueuedTotal);
+        if (memory.enabled()) {
+            log.info("Vigia de memória: uma simulação é interrompida se for passar de {} MB de heap",
+                    memory.limitBytes() / (1024 * 1024));
+        } else {
+            log.info("Vigia de memória desligado");
+        }
     }
 
     /**
@@ -168,12 +182,14 @@ public class SimulationService implements DisposableBean {
             runJob(job);
         } catch (RuntimeException e) {
             log.error("Erro inesperado na execução {}", job.runId(), e);
-            try {
-                // não deixar a execução presa em QUEUED/RUNNING
-                finish(job, RunStatus.FAILED, "erro interno: " + e.getMessage());
-            } catch (RuntimeException again) {
-                log.error("Não foi possível marcar a execução {} como FAILED", job.runId(), again);
-            }
+            fail(job, "erro interno: " + e.getMessage());
+        } catch (OutOfMemoryError e) {
+            // O vigia de memória para a simulação antes disto; se mesmo assim faltar memória (na
+            // montagem da rede, por exemplo, antes do primeiro aviso de progresso), a execução
+            // termina como falha e a thread continua servindo a fila. O que a simulação ocupava
+            // já não tem referência aqui, e a próxima coleta devolve.
+            log.error("Faltou memória na execução {}", job.runId());
+            fail(job, MemoryGuard.PREFIX + " the server ran out of memory");
         } finally {
             jobs.remove(job.runId());
             synchronized (lock) {
@@ -181,6 +197,15 @@ public class SimulationService implements DisposableBean {
                 active.computeIfPresent(job.owner(), (u, n) -> n > 1 ? n - 1 : null);
                 dispatch();
             }
+        }
+    }
+
+    /** Não deixa a execução presa em QUEUED/RUNNING. */
+    private void fail(Job job, String error) {
+        try {
+            finish(job, RunStatus.FAILED, error);
+        } catch (RuntimeException | OutOfMemoryError again) {
+            log.error("Não foi possível marcar a execução {} como FAILED", job.runId(), again);
         }
     }
 
@@ -197,15 +222,29 @@ public class SimulationService implements DisposableBean {
         progressHub.publish(job.runId(), RunStatus.RUNNING, 0);
 
         ResultSink sink = new CsvGzResultSink(runs.resultsDir(job.owner(), job.runId()));
+        MemoryGuard.Watch watch = memory.watch();
+        java.util.concurrent.atomic.AtomicReference<MemoryGuard.Verdict> outOfMemory =
+                new java.util.concurrent.atomic.AtomicReference<>();
         RunContext context = new RunContext() {
             @Override
             public void progress(double fraction) {
                 progressHub.publish(job.runId(), RunStatus.RUNNING, fraction);
+                if (outOfMemory.get() == null) {
+                    boolean alone;
+                    synchronized (lock) {
+                        alone = running <= 1;
+                    }
+                    MemoryGuard.Verdict verdict = watch.check(fraction, alone);
+                    if (verdict != null) {
+                        outOfMemory.set(verdict);
+                    }
+                }
             }
 
             @Override
             public boolean isCancelled() {
-                return job.cancelled().get();
+                // sem memória para continuar, o motor para pelo mesmo caminho do cancelamento
+                return job.cancelled().get() || outOfMemory.get() != null;
             }
 
             @Override
@@ -220,7 +259,13 @@ public class SimulationService implements DisposableBean {
             finish(job, RunStatus.DONE, null);
             log.info("Execução {} concluída em {} ms", job.runId(), (System.nanoTime() - start) / 1_000_000);
         } catch (SimulationCancelledException e) {
-            finish(job, RunStatus.CANCELED, null);
+            MemoryGuard.Verdict verdict = outOfMemory.get();
+            if (verdict != null && !job.cancelled().get()) {
+                log.warn("Execução {} interrompida por memória: {}", job.runId(), verdict.message());
+                finish(job, RunStatus.FAILED, verdict.message());
+            } else {
+                finish(job, RunStatus.CANCELED, null);
+            }
         } catch (RuntimeException e) {
             log.warn("Execução {} falhou: {}", job.runId(), e.toString());
             finish(job, RunStatus.FAILED, e.getMessage());

@@ -339,9 +339,10 @@
     if (slot.chart) { slot.chart.destroy(); slot.chart = null; }
     slot.div.replaceChildren();
     const views = slot.views.filter((x) => x && x.series);
-    if (views.length === 0 || views.every((x) => x.series.length === 0)) {
+    // sem série, ou com séries sem ponto nenhum: só o aviso (a tela é em inglês, como a original)
+    if (views.length === 0 || views.every((x) => x.series.every((s) => s.x.length === 0))) {
       const msg = slot.views[0] && slot.views[0].message;
-      slot.div.append(el('p', { class: 'vazio', text: presetTitle ? `${presetTitle}: ${msg || 'sem dados'}` : (msg || 'Sem dados.') }));
+      slot.div.append(el('p', { class: 'vazio', text: presetTitle ? `${presetTitle}: ${msg || 'no data'}` : (msg || 'No data.') }));
       return;
     }
     const first = views[0];
@@ -379,9 +380,30 @@
     if (adv) {
       const num = (x) => (x != null && String(x).trim() !== '' ? Number(String(x).replace(',', '.')) : null);
       const [x0, x1, y0, y1] = [num(v.xmin), num(v.xmax), num(v.ymin), num(v.ymax)];
-      if (x0 != null && x1 != null) scales.x.range = [x0, x1];
-      if (y0 != null && y1 != null) scales.y.range = [y0, y1];
+      if (x0 != null && x1 != null && x0 < x1) scales.x.range = [x0, x1];
+      if (y0 != null && y1 != null && y0 < y1) scales.y.range = [y0, y1];
     }
+    // Um ponto só (a propriedade de um único neurônio), ou todos na mesma abscissa: no modo de
+    // dispersão o uPlot não abre o eixo sozinho, e com mínimo igual ao máximo ele entra em laço ao
+    // calcular as divisões — a aba inteira trava. O eixo então é aberto aqui, em volta do valor.
+    const extent = (i) => {
+      let min = Infinity;
+      let max = -Infinity;
+      for (const d of data) {
+        if (!d) continue;
+        for (const value of d[i]) {
+          if (value == null || !Number.isFinite(value)) continue;
+          if (value < min) min = value;
+          if (value > max) max = value;
+        }
+      }
+      return min <= max ? [min, max] : null;
+    };
+    const around = (e) => { const pad = Math.abs(e[0]) * 0.05 || 1; return [e[0] - pad, e[1] + pad]; };
+    const ex = extent(0);
+    const ey = extent(1);
+    if (!scales.x.range && ex && ex[0] === ex[1]) scales.x.range = around(ex);
+    if (!scales.y.range && ey && ey[0] === ey[1]) scales.y.range = around(ey);
     const opts = {
       mode: 2,
       title,
@@ -423,7 +445,7 @@
     table.append(body);
     box.append(el('h4', { text: view.title }), el('div', { class: 'tabela-rolavel' }, table));
     if (view.table.rows.length > limit) {
-      aviso.textContent = `Mostrando ${limit} de ${view.table.rows.length} linhas; o CSV tem todas.`;
+      aviso.textContent = `Showing ${limit} of ${view.table.rows.length} rows; the CSV has all of them.`;
     }
     state.tableParams = view.title === 'Summary' ? new URLSearchParams({ type: 'summary' }) : query(values());
   }
@@ -443,7 +465,7 @@
     const slot = state.subplots[state.current] || state.subplots[0];
     if (!slot || !slot.chart) return;
     const canvas = slot.chart.ctx.canvas;
-    const a = el('a', { href: canvas.toDataURL('image/png'), download: 'grafico.png' });
+    const a = el('a', { href: canvas.toDataURL('image/png'), download: 'chart.png' });
     document.body.append(a);
     a.click();
     a.remove();

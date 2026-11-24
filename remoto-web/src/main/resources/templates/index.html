@@ -9,15 +9,19 @@
   <link rel="canonical" th:href="${langEntry}">
   <link th:each="e : ${langEntries}" rel="alternate" th:hreflang="${e.tag}" th:href="${e.url}">
   <link rel="alternate" hreflang="x-default" th:href="${langDefaultEntry}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css">
+  <!-- integrity: o navegador só usa o arquivo da CDN se ele for exatamente o desta versão -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css"
+        integrity="sha384-IfV0B7MIOYuO95kO9G5ySKPz/85zqFNOAs8iy4tkK5zd9izhJAB8b7lHrwYqqmYE" crossorigin="anonymous">
   <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
   <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
   <link rel="apple-touch-icon" th:href="@{/img/apple-touch-icon.png}">
   <meta name="theme-color" content="#1f5f99">
   <link rel="stylesheet" th:href="@{/css/app.css}">
   <script th:src="@{/js/i18n.js}"></script>
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" defer
+          integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.iife.min.js" defer
+          integrity="sha384-Gx3t0zdBAuQOuvvmaLZj7HKEiSgWTAs+VdtNY7wt19QDPTDQjFIwAuXDj0zeN00c" crossorigin="anonymous"></script>
   <script th:src="@{/js/results.js}" defer></script>
   <script th:src="@{/js/app.js}" defer></script>
 </head>
@@ -91,6 +95,7 @@
           <progress max="100" value="0"></progress>
         </div>
       </div>
+      <p data-campo="erro" class="erro" hidden></p>
       <div data-campo="links" class="links"></div>
       <div data-campo="resultados" class="resultados" hidden></div>
       <div data-campo="graficos"></div>

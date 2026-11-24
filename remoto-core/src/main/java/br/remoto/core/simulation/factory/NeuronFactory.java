@@ -216,8 +216,9 @@ public class NeuronFactory
 				neu.setGKs( slowPotassium( gKQVO ) );
 			}
 
-			// Ensure an estimated initial capacity for the spike train
-		    neu.ensureCapacity( (int)( conf.getTFin() ) );
+			// The spike trains grow on demand. The original reserved one entry per millisecond of
+			// simulation for every neuron (a firing rate of 1000 spikes/s): in a 30 s scenario with
+			// thousands of neurons that was hundreds of megabytes before the first step.
 
 		    // Create synapses
 			ConductanceVO gExc = conf.getMarcovType(neu.getCdNucleus(), neu.getType(), ReMoto.excitatory);

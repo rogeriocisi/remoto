@@ -42,7 +42,7 @@ import java.util.NoSuchElementException;
 class PageController {
 
     record RunRow(String runId, String scenarioName, RunStatus status, String statusLabel, Integer percent,
-                  String created, String elapsed, boolean active) {
+                  String created, String createdIso, String elapsed, boolean active) {
     }
 
     /**
@@ -214,7 +214,8 @@ class PageController {
     private RunRow row(RunManifest m) {
         Integer percent = simulations.liveProgress(m.runId()).map(f -> (int) Math.round(f * 100)).orElse(null);
         return new RunRow(m.runId(), m.scenarioName(), m.status(), label(m.status()), percent,
-                created().format(m.createdAt()), elapsed(m), simulations.isActive(m.runId()));
+                created().format(m.createdAt()), m.createdAt().toString(), elapsed(m),
+                simulations.isActive(m.runId()));
     }
 
     static String label(RunStatus status) {

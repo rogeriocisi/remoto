@@ -447,6 +447,11 @@ public class Simulation implements Serializable, Runnable
 	public int getPercentageInt() {
 		return percentageInt;
 	}
+
+	/** The fraction of the steps already done, between 0 and 1 (finer than the integer percentage). */
+	public double getProgress() {
+		return totSteps > 0 ? Math.min(1.0, (double) iteration / (double) totSteps) : 0;
+	}
 	public void setPercentageInt(int percentage) {
 		this.percentageInt = percentage;
 	}

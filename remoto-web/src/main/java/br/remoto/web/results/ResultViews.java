@@ -543,7 +543,8 @@ public final class ResultViews {
             int c = t.column("nucleo");
             rows = rows.stream().filter(r -> c < r.size() && r.get(c).equals(o.nucleus())).toList();
         }
-        return new View(title, "", "", "tabela", List.of(), null, new Table(t.columns(), rows), rows.size(), null);
+        return new View(title, "", "", "tabela", List.of(), null,
+                new Table(TableLabels.english(t.columns()), rows), rows.size(), null);
     }
 
     // ---- seleção de neurônios ------------------------------------------------------------------

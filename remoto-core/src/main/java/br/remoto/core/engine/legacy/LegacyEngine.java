@@ -88,7 +88,7 @@ public final class LegacyEngine implements SimulationEngine {
         AtomicBoolean finished = new AtomicBoolean();
         Thread watcher = Thread.ofVirtual().name("progresso-" + cdSimulation).start(() -> {
             while (!finished.get()) {
-                context.progress(Math.min(0.99, sim.getPercentageInt() / 100.0));
+                context.progress(Math.min(0.99, sim.getProgress()));
                 if (context.isCancelled()) {
                     sim.finishSimulation();
                 }
