@@ -71,9 +71,14 @@ public final class LegacyScreens {
         return Optional.ofNullable(SCREENS.get(id));
     }
 
-    /** Menu lateral do site antigo (template.dwt), com as telas já disponíveis marcadas. */
+    /**
+     * Menu lateral do site antigo (template.dwt), com as telas já disponíveis marcadas. A duração
+     * e o passo vêm primeiro (no original ficavam no fim): são o que mais se muda, e a duração é o
+     * que decide se uma simulação cabe na memória do servidor.
+     */
     public static List<MenuGroup> menu() {
         return List.of(
+                group("Simulation", "start", "Duration and Time Step"),
                 group("Structure", "input", "Descending Commands", "network", "Neural Elements"),
                 group("Neural Parameters", "synapse", "Synapses", "markov", "Kinetic Properties",
                         "dynamics", "Synaptic Dynamics", "conductance", "Conductances",
@@ -82,8 +87,7 @@ public final class LegacyScreens {
                 group("Biomechanical Elements", "biomechanicalElements", "Biomechanical Elements"),
                 group("Biomechanical Parameters", "joint", "Joint", "motorunit", "Muscle Units",
                         "musculotendon", "Musculotendon", "emg", "Electromyogram", "miscellaneous", "Miscellaneous"),
-                group("Stimulation", "stimulation", "Nerve Stimulation", "injectedCurrent", "Injected Current"),
-                group("Simulation", "start", "Duration and Time Step"));
+                group("Stimulation", "stimulation", "Nerve Stimulation", "injectedCurrent", "Injected Current"));
     }
 
     private static MenuGroup group(String title, String... idsAndTitles) {

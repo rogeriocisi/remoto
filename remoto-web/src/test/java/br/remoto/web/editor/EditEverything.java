@@ -35,7 +35,12 @@ final class EditEverything {
     static List<String> edit(LegacyEditor editor) {
         List<String> errors = new ArrayList<>();
         int k = 0;
-        for (LegacyScreens.MenuGroup group : LegacyScreens.menu()) {
+        // As referências foram geradas percorrendo o menu do site original, em que "Simulation"
+        // era o último grupo; a tela passou a mostrá-lo primeiro, mas a edição aqui segue a ordem
+        // de lá, porque o fator de cada campo depende da posição dele no percurso.
+        List<LegacyScreens.MenuGroup> original = new ArrayList<>(LegacyScreens.menu());
+        original.sort(java.util.Comparator.comparing(g -> g.title().equals("Simulation")));
+        for (LegacyScreens.MenuGroup group : original) {
             for (LegacyScreens.MenuItem item : group.items()) {
                 ScreenView first = editor.view(item.id(), Map.of());
                 List<Map<String, String>> selections = new ArrayList<>();
