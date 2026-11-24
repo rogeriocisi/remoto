@@ -5,3 +5,5 @@ deploy/** text eol=lf
 *.ps1 text eol=crlf
 # o patch do artigo tem de sair byte a byte como entrou, senao nao aplica
 paper/scripts/*.patch -text
+# os pacotes das versoes antigas sao binarios: byte a byte, sem conversao de fim de linha
+docs/downloads/** -text
