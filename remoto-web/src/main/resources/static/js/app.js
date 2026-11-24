@@ -161,6 +161,12 @@
           li.hidden = !match;
           if (match) visible++;
         });
+        // grupo sem nenhum cenário à mostra some; havendo resultado, abre para ele aparecer
+        p.querySelectorAll('.grupo').forEach((g) => {
+          const achou = [...g.querySelectorAll('.cenario')].some((li) => !li.hidden);
+          g.hidden = !achou;
+          if (q && achou) g.open = true;
+        });
         const none = p.querySelector('.sem-resultado');
         if (none) none.hidden = !q || visible > 0;
       });

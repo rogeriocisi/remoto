@@ -1,5 +1,6 @@
 package br.remoto.web.ui;
 
+import br.remoto.core.scenario.Scenario;
 import br.remoto.storage.run.RunManifest;
 import br.remoto.storage.run.RunRepository;
 import br.remoto.storage.run.RunStatus;
@@ -114,7 +115,10 @@ class PageController {
 
     @GetMapping("/ui/scenarios")
     String scenarios(Caller caller, Model model) {
-        model.addAttribute("publicScenarios", catalog.list());
+        List<Scenario> publicScenarios = catalog.list();
+        model.addAttribute("publicScenarios", publicScenarios);
+        // a lista pública sai reunida por tema; a contagem da aba continua sendo o total
+        model.addAttribute("publicGroups", ScenarioGroups.of(publicScenarios));
         model.addAttribute("mine", scenarios.list(caller.id()));
         return "fragments :: scenarios";
     }

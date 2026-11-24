@@ -224,6 +224,29 @@ label.botao { cursor: pointer; }
   background: var(--cartao);
   color: var(--texto);
 }
+/* ---- os cenários públicos, reunidos por tema (ScenarioGroups) ---- */
+.grupo + .grupo { margin-top: 14px; }
+.grupo > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+  color: var(--suave);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--borda);
+  margin-bottom: 8px;
+}
+.grupo > summary:hover { color: var(--texto); }
+.grupo[open] > summary { color: var(--texto); }
+/* o marcador fica no fim da linha, junto da contagem */
+.grupo > summary::marker { content: ""; }
+.grupo > summary::after { content: "▾"; margin-left: auto; font-size: .9rem; }
+.grupo:not([open]) > summary::after { content: "▸"; }
+
 .lista-cenarios { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .cenario {
   border: 1px solid var(--borda);

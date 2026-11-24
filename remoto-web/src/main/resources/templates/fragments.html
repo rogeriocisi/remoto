@@ -28,37 +28,46 @@
            th:aria-label="#{scenarios.search.aria}">
 
     <div class="painel-aba" data-painel="publicos" role="tabpanel">
-      <ul class="lista-cenarios">
-        <li th:each="s : ${publicScenarios}" class="cenario"
-            th:data-busca="${#strings.toLowerCase(s.name + ' ' + s.id + ' ' + s.description)}">
-          <div class="cenario-topo">
-            <strong th:text="${s.name}">nome</strong>
-            <span class="meta"><th:block th:replace="~{fragments :: duracao(${s.durationMs})}"></th:block></span>
-          </div>
-          <code class="id-cenario" th:text="${s.id}">id</code>
-          <p class="descricao" th:text="${s.description}" th:title="#{scenario.description.title}">descrição</p>
-          <div class="acoes">
-            <form th:hx-post="@{/ui/runs}" hx-target="#execucoes">
-              <input type="hidden" name="publicScenarioId" th:value="${s.id}">
-              <button type="submit" class="pequeno" th:title="#{scenario.run.title}"
-                      th:text="#{scenario.run}">Rodar</button>
-            </form>
-            <!-- formulário comum (sem htmx): o servidor cria a cópia e redireciona para o editor dela -->
-            <form th:action="@{/ui/scenarios/edit-copy}" method="post">
-              <input type="hidden" name="publicScenarioId" th:value="${s.id}">
-              <button type="submit" class="secundario pequeno" th:title="#{scenario.edit.copy.title}"
-                      th:text="#{scenario.edit}">Editar</button>
-            </form>
-            <form th:hx-post="@{/ui/scenarios/copy}" hx-target="#cenarios">
-              <input type="hidden" name="publicScenarioId" th:value="${s.id}">
-              <button type="submit" class="secundario pequeno" th:title="#{scenario.copy.title}"
-                      th:text="#{scenario.copy}">Copiar</button>
-            </form>
-            <a th:href="@{/api/scenarios/public/{id}/export(id=${s.id})}" class="botao secundario pequeno" download
-               th:title="#{scenario.export.title}" th:text="#{scenario.export}">Exportar</a>
-          </div>
-        </li>
-      </ul>
+      <!-- Os cenários públicos vêm reunidos por tema (ScenarioGroups): são 43, e quem procura um
+           fenômeno quer ver juntos os que tratam dele, venham de onde vierem. Cada grupo abre e
+           fecha; a busca procura em todos e esconde o grupo que ficar sem nenhum. -->
+      <details th:each="g : ${publicGroups}" class="grupo" th:data-grupo="${g.key}" open>
+        <summary>
+          <th:block th:text="${g.label}">tema</th:block>
+          <span class="contagem" th:text="${#lists.size(g.scenarios)}">0</span>
+        </summary>
+        <ul class="lista-cenarios">
+          <li th:each="s : ${g.scenarios}" class="cenario"
+              th:data-busca="${#strings.toLowerCase(s.name + ' ' + s.id + ' ' + s.description)}">
+            <div class="cenario-topo">
+              <strong th:text="${s.name}">nome</strong>
+              <span class="meta"><th:block th:replace="~{fragments :: duracao(${s.durationMs})}"></th:block></span>
+            </div>
+            <code class="id-cenario" th:text="${s.id}">id</code>
+            <p class="descricao" th:text="${s.description}" th:title="#{scenario.description.title}">descrição</p>
+            <div class="acoes">
+              <form th:hx-post="@{/ui/runs}" hx-target="#execucoes">
+                <input type="hidden" name="publicScenarioId" th:value="${s.id}">
+                <button type="submit" class="pequeno" th:title="#{scenario.run.title}"
+                        th:text="#{scenario.run}">Rodar</button>
+              </form>
+              <!-- formulário comum (sem htmx): o servidor cria a cópia e redireciona para o editor dela -->
+              <form th:action="@{/ui/scenarios/edit-copy}" method="post">
+                <input type="hidden" name="publicScenarioId" th:value="${s.id}">
+                <button type="submit" class="secundario pequeno" th:title="#{scenario.edit.copy.title}"
+                        th:text="#{scenario.edit}">Editar</button>
+              </form>
+              <form th:hx-post="@{/ui/scenarios/copy}" hx-target="#cenarios">
+                <input type="hidden" name="publicScenarioId" th:value="${s.id}">
+                <button type="submit" class="secundario pequeno" th:title="#{scenario.copy.title}"
+                        th:text="#{scenario.copy}">Copiar</button>
+              </form>
+              <a th:href="@{/api/scenarios/public/{id}/export(id=${s.id})}" class="botao secundario pequeno" download
+                 th:title="#{scenario.export.title}" th:text="#{scenario.export}">Exportar</a>
+            </div>
+          </li>
+        </ul>
+      </details>
       <p class="vazio sem-resultado" hidden th:text="#{scenarios.none.search}">Nenhum cenário com esse texto.</p>
     </div>
 
