@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html th:lang="${lang == 'pt'} ? 'pt-BR' : 'en'" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="#{lang.htmlTag}" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ReMoto</title>
+  <!-- as portas de entrada por idioma (/simulator/ e /simulator/<código>/): a mesma página, com os
+       textos de cada messages_<código>.properties -->
+  <link rel="canonical" th:href="${langEntry}">
+  <link th:each="e : ${langEntries}" rel="alternate" th:hreflang="${e.tag}" th:href="${e.url}">
+  <link rel="alternate" hreflang="x-default" th:href="${langDefaultEntry}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css">
   <link rel="icon" th:href="@{/favicon.ico}" sizes="any">
   <link rel="icon" th:href="@{/img/remoto-icon.svg}" type="image/svg+xml">
@@ -42,7 +47,7 @@
     <section class="cartao bloco-simulacoes">
       <div class="titulo-bloco">
         <h2 th:text="#{index.runs.heading}">Minhas simulações</h2>
-        <form hx-post="/ui/runs/import" hx-target="#importacao-simulacao" hx-encoding="multipart/form-data"
+        <form th:hx-post="@{/ui/runs/import}" hx-target="#importacao-simulacao" hx-encoding="multipart/form-data"
               hx-trigger="change from:find input" class="inline">
           <label class="botao secundario pequeno" th:title="#{index.runs.import.title}">
             <th:block th:text="#{index.runs.import}">Importar…</th:block>
@@ -51,13 +56,13 @@
         </form>
       </div>
       <div id="importacao-simulacao" class="mensagem"></div>
-      <div id="execucoes" hx-get="/ui/runs" hx-trigger="load, every 4s, execucoes from:body"
+      <div id="execucoes" th:hx-get="@{/ui/runs}" hx-trigger="load, every 4s, execucoes from:body"
            th:text="#{index.loading}">Carregando…</div>
     </section>
 
     <section class="cartao bloco-cenarios">
       <h2 th:text="#{index.scenarios.heading}">Cenários</h2>
-      <div id="cenarios" hx-get="/ui/scenarios" hx-trigger="load" th:text="#{index.loading}">Carregando…</div>
+      <div id="cenarios" th:hx-get="@{/ui/scenarios}" hx-trigger="load" th:text="#{index.loading}">Carregando…</div>
     </section>
   </aside>
 

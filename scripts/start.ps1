@@ -41,7 +41,7 @@ if (-not $jdk) {
 $env:JAVA_HOME = $jdk
 $root = Split-Path -Parent $PSScriptRoot
 Write-Host "[ReMoto] Usando JDK em $jdk"
-Write-Host "[ReMoto] Iniciando em http://localhost:$Port  (Ctrl+C para parar)"
+Write-Host "[ReMoto] Iniciando em http://localhost:$Port/simulator/  (Ctrl+C para parar)"
 
 Push-Location -LiteralPath $root
 try {

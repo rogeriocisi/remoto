@@ -26,6 +26,12 @@ class PageExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(PageExceptionHandler.class);
 
+    private final LangLinks langLinks;
+
+    PageExceptionHandler(LangLinks langLinks) {
+        this.langLinks = langLinks;
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     ModelAndView notFound(NoSuchElementException e, HttpServletRequest request) {
         return page(HttpStatus.NOT_FOUND, e.getMessage(), request);
@@ -51,14 +57,14 @@ class PageExceptionHandler {
         return page(HttpStatus.INTERNAL_SERVER_ERROR, null, request);
     }
 
-    private static ModelAndView page(HttpStatusCode status, String message, HttpServletRequest request) {
+    private ModelAndView page(HttpStatusCode status, String message, HttpServletRequest request) {
         boolean htmx = "true".equals(request.getHeader("HX-Request"));
         ModelAndView mv = new ModelAndView(htmx ? "fragments :: erroHtmx" : "error");
         mv.setStatus(status);
         mv.addObject("status", status.value());
         mv.addObject("message", message);
         mv.addObject("path", request.getRequestURI());
-        mv.addAllObjects(LangLinks.attributes(request)); // o seletor de idioma da página de erro
+        mv.addAllObjects(langLinks.attributes(request)); // o seletor de idioma da página de erro
         return mv;
     }
 }

@@ -26,7 +26,7 @@ if not defined JDK (
 
 set "JAVA_HOME=%JDK%"
 echo [ReMoto] Usando JDK em %JAVA_HOME%
-echo [ReMoto] Iniciando em http://localhost:%PORT%  (Ctrl+C para parar)
+echo [ReMoto] Iniciando em http://localhost:%PORT%/simulator/  (Ctrl+C para parar)
 cd /d "%ROOT%"
 call "%ROOT%\mvnw.cmd" -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev" "-Dspring-boot.run.arguments=--server.port=%PORT%"
 exit /b %ERRORLEVEL%

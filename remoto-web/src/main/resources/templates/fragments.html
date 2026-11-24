@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html th:lang="${lang == 'pt'} ? 'pt-BR' : 'en'" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="#{lang.htmlTag}" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<!-- seletor de idioma: a mesma página no outro idioma (?lang=pt / ?lang=en) -->
-<a th:fragment="idioma" th:href="${langSwitchUrl}" th:hreflang="${langOther}"
-   class="botao secundario pequeno idioma" rel="alternate"
-   th:title="#{lang.other.title}" th:text="#{lang.other}">EN</a>
+<!-- seletor de idioma: esta mesma página em cada um dos outros idiomas declarados em
+     remoto.languages (um link com dois idiomas, dois com três; ver LangLinks) -->
+<th:block th:fragment="idioma"><a th:each="alt : ${langAlternatives}" th:href="${alt.url}"
+   th:hreflang="${alt.tag}" class="botao secundario pequeno idioma" rel="alternate"
+   th:title="${alt.title}" th:text="${alt.label}">EN</a></th:block>
 
 <!-- duração simulada: em s a partir de 1 s, senão em ms (separador decimal do idioma) -->
 <th:block th:fragment="duracao(ms)"><th:block
@@ -36,7 +37,7 @@
           <code class="id-cenario" th:text="${s.id}">id</code>
           <p class="descricao" th:text="${s.description}" th:title="#{scenario.description.title}">descrição</p>
           <div class="acoes">
-            <form hx-post="/ui/runs" hx-target="#execucoes">
+            <form th:hx-post="@{/ui/runs}" hx-target="#execucoes">
               <input type="hidden" name="publicScenarioId" th:value="${s.id}">
               <button type="submit" class="pequeno" th:title="#{scenario.run.title}"
                       th:text="#{scenario.run}">Rodar</button>
@@ -47,7 +48,7 @@
               <button type="submit" class="secundario pequeno" th:title="#{scenario.edit.copy.title}"
                       th:text="#{scenario.edit}">Editar</button>
             </form>
-            <form hx-post="/ui/scenarios/copy" hx-target="#cenarios">
+            <form th:hx-post="@{/ui/scenarios/copy}" hx-target="#cenarios">
               <input type="hidden" name="publicScenarioId" th:value="${s.id}">
               <button type="submit" class="secundario pequeno" th:title="#{scenario.copy.title}"
                       th:text="#{scenario.copy}">Copiar</button>
@@ -62,7 +63,7 @@
 
     <div class="painel-aba" data-painel="meus" role="tabpanel" hidden>
       <div class="importar">
-        <form hx-post="/ui/scenarios/import" hx-target="#cenarios" hx-encoding="multipart/form-data"
+        <form th:hx-post="@{/ui/scenarios/import}" hx-target="#cenarios" hx-encoding="multipart/form-data"
               hx-trigger="change from:find input">
           <label class="botao secundario pequeno" th:title="#{scenarios.import.title}">
             <th:block th:text="#{scenarios.import}">Importar…</th:block>
@@ -90,7 +91,7 @@
           <code class="id-cenario" th:text="${s.id}">id</code>
           <p class="descricao" th:text="${s.description}" th:title="#{scenario.description.title}">descrição</p>
           <div class="acoes">
-            <form hx-post="/ui/runs" hx-target="#execucoes">
+            <form th:hx-post="@{/ui/runs}" hx-target="#execucoes">
               <input type="hidden" name="scenarioId" th:value="${s.id}">
               <button type="submit" class="pequeno" th:title="#{scenario.run.title}"
                       th:text="#{scenario.run}">Rodar</button>

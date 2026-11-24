@@ -6,6 +6,9 @@
   // textos no idioma da página (/js/i18n.js, montado a partir de messages*.properties)
   const T = (key, ...args) => (window.T ? window.T(key, ...args) : key);
 
+  // caminho base da aplicação (o context-path, p. ex. /simulator/), publicado por /js/i18n.js
+  const API = (window.ReMotoBase || '/') + 'api';
+
   const cookie = (name) => {
     const entry = document.cookie.split('; ').find((c) => c.startsWith(name + '='));
     return entry ? decodeURIComponent(entry.substring(name.length + 1)) : null;
@@ -95,7 +98,7 @@
     field('links').replaceChildren();
     clearCharts();
     if (source) source.close();
-    fetch(`/api/runs/${runId}`).then((r) => r.ok ? r.json() : null).then((view) => {
+    fetch(`${API}/runs/${runId}`).then((r) => r.ok ? r.json() : null).then((view) => {
       if (view && current === runId) field('nome').textContent = view.run.scenarioName;
     });
 
@@ -103,7 +106,7 @@
     bar.hidden = false;
     bar.value = 0;
     lastStatus = null;
-    source = new EventSource(`/api/runs/${runId}/events`);
+    source = new EventSource(`${API}/runs/${runId}/events`);
     source.addEventListener('progresso', (event) => {
       const p = JSON.parse(event.data);
       const status = field('status');
@@ -185,16 +188,16 @@
   }
 
   async function loadResults(runId) {
-    const response = await fetch(`/api/runs/${runId}`);
+    const response = await fetch(`${API}/runs/${runId}`);
     if (!response.ok) throw new Error(`erro ${response.status}`);
     const run = await response.json();
     const links = field('links');
     const graphs = field('graficos');
-    const zip = link(`/api/runs/${runId}/export.zip`, T('export.zip'));
+    const zip = link(`${API}/runs/${runId}/export.zip`, T('export.zip'));
     zip.download = '';
     zip.className = 'botao secundario pequeno';
     zip.title = T('export.zip.title');
-    const config = link(`/api/runs/${runId}/config`, T('config.json'));
+    const config = link(`${API}/runs/${runId}/config`, T('config.json'));
     config.className = 'botao secundario pequeno';
     config.target = '_blank';
     links.replaceChildren(zip, config);
@@ -205,16 +208,16 @@
       const summary = document.createElement('summary');
       summary.textContent = T('files', run.results.length);
       files.append(summary);
-      for (const name of run.results) files.append(link(`/api/runs/${runId}/results/${name}.csv`, `${name}.csv`));
+      for (const name of run.results) files.append(link(`${API}/runs/${runId}/results/${name}.csv`, `${name}.csv`));
       links.append(files);
       return;
     }
 
     for (const name of run.results) {
-      links.append(link(`/api/runs/${runId}/results/${name}.csv`, `${name}.csv`),
-                   link(`/api/runs/${runId}/results/${name}.png`, `${name}.png`));
+      links.append(link(`${API}/runs/${runId}/results/${name}.csv`, `${name}.csv`),
+                   link(`${API}/runs/${runId}/results/${name}.png`, `${name}.png`));
       // prévia reduzida no servidor; o CSV completo fica no link acima
-      const preview = await (await fetch(`/api/runs/${runId}/results/${name}/preview?max=8000`)).json();
+      const preview = await (await fetch(`${API}/runs/${runId}/results/${name}/preview?max=8000`)).json();
       const box = document.createElement('div');
       box.className = 'grafico';
       graphs.append(box);

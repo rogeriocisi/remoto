@@ -8,10 +8,13 @@ import br.remoto.storage.scenario.ScenarioRepository;
 import br.remoto.web.api.ScenarioFiles;
 import br.remoto.web.api.ScenarioSources;
 import br.remoto.web.i18n.Messages;
+import br.remoto.web.i18n.RemotoLocaleResolver;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
 import br.remoto.web.sim.QuotaExceededException;
 import br.remoto.web.sim.SimulationService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -27,6 +30,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 /**
@@ -40,6 +44,12 @@ class PageController {
                   String created, String elapsed, boolean active) {
     }
 
+    /**
+     * A rota da porta de entrada por idioma: um código de idioma e nada mais ({@code pt},
+     * {@code pt-br}). O grupo é não capturante porque o Spring não aceita captura na restrição.
+     */
+    private static final String LANGUAGE_ROUTE = "/{lang:[a-z][a-z](?:-[a-z][a-z][a-z]?[a-z]?)?}";
+
     /** O formato da data vem do idioma (dia/mês em português, mês/dia em inglês). */
     private static DateTimeFormatter created() {
         return DateTimeFormatter.ofPattern(Messages.msg("runs.created.pattern")).withZone(ZoneId.systemDefault());
@@ -51,12 +61,15 @@ class PageController {
     private final SimulationService simulations;
     private final ScenarioSources sources;
     private final ScenarioFiles files;
+    private final RemotoLocaleResolver locales;
     private final int areaDays;
 
     PageController(PublicScenarioCatalog catalog, ScenarioRepository scenarios, RunRepository runs,
                    SimulationService simulations, ScenarioSources sources, ScenarioFiles files,
+                   RemotoLocaleResolver locales,
                    @Value("${remoto.retention.area-days:30}") int areaDays) {
         this.files = files;
+        this.locales = locales;
         this.areaDays = areaDays;
         this.catalog = catalog;
         this.scenarios = scenarios;
@@ -69,6 +82,34 @@ class PageController {
     String index(Caller caller, Model model) {
         model.addAttribute("areaDays", areaDays);
         return "index";
+    }
+
+    /**
+     * A porta de entrada de um idioma: {@code /pt} (com o context-path, {@code /simulator/pt})
+     * serve esta mesma página inicial com os textos daquele idioma e guarda a escolha no cookie,
+     * de modo que o endereço seja linkável — é por ele que o site do projeto manda quem clica em
+     * "Simulador" na página em português. Não há página por idioma: o que muda são os textos, que
+     * saem de {@code messages_<código>.properties}.
+     *
+     * <p>O idioma tem de estar declarado em {@code remoto.languages}; fora dela, 404, como
+     * qualquer endereço que não existe. O padrão da rota casa somente com código de idioma
+     * ({@code pt}, {@code pt-br}), para não engolir o que está na raiz da aplicação (o
+     * {@code favicon.ico}, as pastas estáticas): não convém criar pasta estática de duas letras.
+     */
+    @GetMapping({LANGUAGE_ROUTE, LANGUAGE_ROUTE + "/"})
+    String indexInLanguage(@PathVariable String lang, Caller caller, Model model,
+                           HttpServletRequest request, HttpServletResponse response) {
+        Locale locale = locales.match(lang);
+        if (locale == null) {
+            // NoSuchElementException, e não ResponseStatusException: o tratador de "problem
+            // details" do Spring responderia a segunda em JSON, e aqui quem navega espera a
+            // página de erro do site, como em qualquer outro endereço que não existe
+            throw new NoSuchElementException(Messages.msg("route.notFound"));
+        }
+        // a página já sai neste idioma (o resolver o lê do caminho); o cookie é para que as telas
+        // internas, que não têm porta por idioma, continuem nele
+        locales.setLocale(request, response, locale);
+        return index(caller, model);
     }
 
     /** As principais publicações sobre o ReMoto, e como citá-las. */
@@ -131,7 +172,7 @@ class PageController {
     String submit(Caller caller,
                   @RequestParam(required = false) String publicScenarioId,
                   @RequestParam(required = false) String scenarioId,
-                  Model model, jakarta.servlet.http.HttpServletResponse response) {
+                  Model model, HttpServletResponse response) {
         try {
             RunManifest m = simulations.submit(caller.id(), caller.origin(), sources.resolve(caller,
                     new ScenarioSources.RunRequest(null, scenarioId, publicScenarioId)));
@@ -149,7 +190,7 @@ class PageController {
      */
     @PostMapping(path = "/ui/runs/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     String importRun(Caller caller, @RequestParam(name = "file", required = false) MultipartFile file, Model model,
-                     jakarta.servlet.http.HttpServletResponse response) {
+                     HttpServletResponse response) {
         if (file == null || file.isEmpty()) {
             model.addAttribute("importError", Messages.msg("import.noFile"));
         } else {

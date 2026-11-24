@@ -50,7 +50,7 @@ fi
 
 export JAVA_HOME="$JDK"
 echo "[ReMoto] Usando JDK em $JAVA_HOME"
-echo "[ReMoto] Iniciando em http://localhost:$PORT  (Ctrl+C para parar)"
+echo "[ReMoto] Iniciando em http://localhost:$PORT/simulator/  (Ctrl+C para parar)"
 cd "$ROOT"
 exec sh ./mvnw -pl remoto-web -am spring-boot:run \
   "-Dspring-boot.run.profiles=dev" \

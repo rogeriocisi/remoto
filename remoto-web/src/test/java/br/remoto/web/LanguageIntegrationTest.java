@@ -119,10 +119,10 @@ class LanguageIntegrationTest {
     @Test
     void oCabecalhoMostraAVersao() throws Exception {
         mvc.perform(get("/").header(HttpHeaders.ACCEPT_LANGUAGE, "pt-BR"))
-                .andExpect(content().string(containsString("Versão 3.0")))
+                .andExpect(content().string(containsString("Versão 4.0")))
                 .andExpect(content().string(not(containsString("project.version"))));
         mvc.perform(get("/publicacoes").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US"))
-                .andExpect(content().string(containsString("Version 3.0")));
+                .andExpect(content().string(containsString("Version 4.0")));
     }
 
     /** A página de erro também sai traduzida, com o seletor de idioma. */

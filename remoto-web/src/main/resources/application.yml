@@ -17,6 +17,10 @@ spring:
 
 server:
   servlet:
+    # o simulador fica em <domínio>/simulator; na raiz do domínio está o site descritivo (docs/).
+    # Vale também em desenvolvimento (http://localhost:8080/simulator/), para que os caminhos sejam
+    # os mesmos nos dois lugares. Sobreponível por SERVER_SERVLET_CONTEXT_PATH.
+    context-path: /simulator
     session:
       timeout: 12h            # a área do navegador não depende da sessão (ver remoto.retention.area-days)
   # atrás de um proxy reverso (nginx/Apache do LEB), descomente:

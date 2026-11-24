@@ -3,12 +3,24 @@ package br.remoto.web.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.util.List;
 
-/** Configurações {@code remoto.*} (application.yml ou variáveis de ambiente REMOTO_*). */
+/**
+ * Configurações {@code remoto.*} (application.yml ou variáveis de ambiente REMOTO_*).
+ *
+ * @param languages os idiomas em que as páginas saem, na ordem: o primeiro é o padrão (para quem
+ *                  não escolheu e não pede nenhum dos outros) e fica na raiz da aplicação; cada um
+ *                  dos outros ganha uma porta de entrada com o seu código ({@code /pt}), servindo
+ *                  a mesma página com os textos do seu {@code messages_<código>.properties}.
+ *                  Acrescentar um idioma é acrescentar o código aqui e o arquivo de textos
+ *                  completo — o {@code MessagesTest} falha enquanto faltar uma chave —, sem página
+ *                  nem rota nova.
+ */
 @ConfigurationProperties("remoto")
 public record RemotoProperties(
         @DefaultValue("./data") String dataDir,
         @DefaultValue("./scenarios") String publicScenariosDir,
+        @DefaultValue({"en", "pt"}) List<String> languages,
         @DefaultValue Simulation simulation,
         @DefaultValue Retention retention) {
 

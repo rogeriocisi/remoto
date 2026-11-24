@@ -8,6 +8,9 @@
   // textos no idioma da página (/js/i18n.js)
   const T = (key, ...args) => (window.T ? window.T(key, ...args) : key);
 
+  // caminho base da aplicação (o context-path, p. ex. /simulator/), publicado por /js/i18n.js
+  const API = (window.ReMotoBase || '/') + 'api';
+
   const COLORS = { red: '#d62728', blue: '#1f5f99', green: '#2ca02c', yellow: '#bcbd22', black: '#222222', cyan: '#17becf' };
   const PALETTE = ['#1f5f99', '#d62728', '#2ca02c', '#9467bd', '#ff7f0e', '#17becf', '#8c564b', '#e377c2'];
   const NUMBERS = ['fcLow', 'fcHigh', 'emgDecimation', 'fftPoints', 'xmin', 'xmax', 'ymin', 'ymax',
@@ -50,7 +53,7 @@
   // ---- montagem ----------------------------------------------------------------------------
 
   async function show(runId, root) {
-    const menu = await (await fetch(`/api/runs/${runId}/menu`)).json();
+    const menu = await (await fetch(`${API}/runs/${runId}/menu`)).json();
     if (!menu.types || menu.types.length === 0) return false;
     state = { runId, menu, root, subplots: [], current: 0 };
     root.replaceChildren();
@@ -244,7 +247,7 @@
   async function fetchView(params) {
     let r;
     try {
-      r = await fetch(`/api/runs/${state.runId}/view?${params}`);
+      r = await fetch(`${API}/runs/${state.runId}/view?${params}`);
     } catch (e) {
       return { error: T('sseOffline') };
     }
@@ -433,7 +436,7 @@
       const slot = state.subplots[state.current] || state.subplots[0];
       params = slot && slot.params ? slot.params : query(v);
     }
-    window.location.href = `/api/runs/${state.runId}/view.csv?${params}`;
+    window.location.href = `${API}/runs/${state.runId}/view.csv?${params}`;
   }
 
   function png() {

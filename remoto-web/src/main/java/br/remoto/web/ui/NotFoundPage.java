@@ -22,10 +22,17 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE) // antes do tratador de "problem details" do Spring, que responde JSON
 class NotFoundPage {
 
+    private final LangLinks langLinks;
+
+    NotFoundPage(LangLinks langLinks) {
+        this.langLinks = langLinks;
+    }
+
     @ExceptionHandler(NoResourceFoundException.class)
     ModelAndView notFound(NoResourceFoundException e, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        if (request.getRequestURI().startsWith("/api/")) {
+        // o endereço traz o context-path (/simulator/api/...), que não faz parte dos mapeamentos
+        if (request.getRequestURI().startsWith(request.getContextPath() + "/api/")) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
             response.setContentType("application/problem+json");
             response.setCharacterEncoding("UTF-8");
@@ -37,7 +44,7 @@ class NotFoundPage {
         mv.setStatus(HttpStatus.NOT_FOUND);
         mv.addObject("status", 404);
         mv.addObject("path", request.getRequestURI());
-        mv.addAllObjects(LangLinks.attributes(request)); // o seletor de idioma da página de erro
+        mv.addAllObjects(langLinks.attributes(request)); // o seletor de idioma da página de erro
         return mv;
     }
 }
