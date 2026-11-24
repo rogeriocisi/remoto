@@ -1,6 +1,6 @@
 {
   "id" : null,
-  "name" : "Reflexo de estiramento no tornozelo",
+  "name" : "Ankle stretch reflex",
   "description" : "The ankle at an imposed angle, with the Hill muscle: at 700 ms it is taken 5° into dorsiflexion in 100 ms, stays there for 100 ms and comes back in 100 ms (a trapezoid, on the Joint screen). The spindles of the triceps surae respond to the stretch, the Ia afferents excite the motoneurons of the soleus and of the gastrocnemii, and their force rises: the stretch reflex. The tibialis anterior shortens. It starts from configuration 24 of the original ReMoto (the four ankle muscles, the Ia afferents and 400 descending axons in Poisson). The fusimotor drive can also vary over time, on the Muscle Spindle screen. The perturbation was chosen to show the feature and does not reproduce a published experiment. 1.5 s simulated.",
   "schemaVersion" : 1,
   "seed" : 1,

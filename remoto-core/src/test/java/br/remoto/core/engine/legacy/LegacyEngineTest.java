@@ -291,7 +291,7 @@ class LegacyEngineTest {
     }
 
     /**
-     * O "Reflexo de estiramento no tornozelo" de scenarios/ impõe um trapézio ao ângulo. Para caber
+     * O "Ankle stretch reflex" de scenarios/ impõe um trapézio ao ângulo. Para caber
      * nos 40 ms do teste, o trapézio vai de 5 a 35 ms, com rampas de 10 ms: o ângulo sobe os 5°, fica
      * e volta, e os fusos do tríceps sural respondem.
      */
