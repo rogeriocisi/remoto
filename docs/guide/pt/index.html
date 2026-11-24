@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guia rápido do ReMoto 4</title>
+  <meta name="description"
+    content="Guia rápido do ReMoto versão 4: escolher um cenário, rodar, ler os resultados, mudar parâmetros no editor, guardar o trabalho e rodar na linha de comando.">
+  <meta name="theme-color" content="#1f5f99">
+  <meta property="og:title" content="Guia rápido do ReMoto 4">
+  <meta property="og:description"
+    content="Do cenário escolhido ao gráfico baixado: o caminho inteiro pelo simulador, em sete passos.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:locale:alternate" content="en">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="x-default" href="../">
+  <link rel="icon" href="../../favicon.ico" sizes="any">
+  <link rel="icon" href="../../assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'pt', OTHER = '../';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body id="top">
+  <a class="skip" href="#start">Ir para o conteúdo</a>
+
+  <header class="top">
+    <a class="brand" href="../../pt/" aria-label="ReMoto, site do projeto">
+      <img src="../../assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Seções">
+      <a href="#start">Começar</a>
+      <a href="#run">Rodar</a>
+      <a href="#results">Resultados</a>
+      <a href="#editor">Editor</a>
+      <a href="#build">Sua simulação</a>
+      <a href="#keep">Guardar</a>
+      <a href="#cli">Linha de comando</a>
+      <span class="lang" role="group" aria-label="Idioma">
+        <a class="keep" href="../" hreflang="en" data-lang="en" lang="en">EN</a><i aria-hidden="true">&middot;</i><a
+          class="keep" href="./" hreflang="pt-BR" data-lang="pt" aria-current="page">PT</a>
+      </span>
+      <a class="gh" href="../../simulator/pt/">Abrir</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Guia rápido &middot; </span><span>Versão 4</span>
+      </p>
+      <h1>Do cenário escolhido ao <span class="hl">gráfico baixado</span>.</h1>
+      <p class="lede">O caminho inteiro pelo simulador, em sete passos: rodar um cenário pronto, ler a tela de
+        resultados, mudar parâmetros no editor, montar a sua simulação e levar o trabalho com você. Substitui o guia
+        rápido do site antigo, escrito para a versão em applets.</p>
+      <p class="cta">
+        <a class="btn primary" href="../../simulator/pt/">Abrir o simulador</a>
+        <a class="btn" href="../../pt/">Site do projeto</a>
+        <a class="btn" href="https://github.com/rogeriocisi/remoto#readme">README</a>
+      </p>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="start">
+      <div class="sec-no"><b>1</b>Começar</div>
+      <div class="sec-body">
+        <h2>Abra o simulador e escolha um cenário</h2>
+        <div class="prose">
+          <p class="lead">Não é preciso instalar nada, nem criar conta: o ReMoto roda no navegador. Abra a
+            <a href="../../simulator/pt/">demonstração pública</a> ou, na sua máquina,
+            <code>http://localhost:8080/simulator/</code> depois de <a href="../../pt/#run">subir o servidor</a>.</p>
+          <p>A tela tem duas colunas. À esquerda, em cima, <b>Minhas simulações</b>, com o que você já rodou; embaixo,
+            os <b>Cenários</b>, em duas abas: <i>Públicos</i>, os 37 que vêm com o simulador, e <i>Meus cenários</i>,
+            as suas cópias. A busca filtra por nome, id ou descrição. À direita fica a simulação aberta.</p>
+          <p>Cada cartão de cenário traz o nome, a duração simulada, o id e as primeiras linhas da descrição &mdash; um
+            clique mostra o resto, que diz o que aquele cenário simula e de onde ele veio. Os botões são <b>Rodar</b>,
+            <b>Editar</b>, <b>Copiar</b> e <b>Exportar</b>.</p>
+          <p>Para começar, três boas portas de entrada: <i>Default &ndash; Soleus contraction</i>, o cenário padrão do
+            site antigo; <i>projectFR &ndash; H-reflex and M-wave curve</i>, que em 50 ms simulados mostra a onda M e o
+            reflexo H; e <i>Modelo completo</i>, com todos os elementos ligados, para passear pela tela de
+            resultados.</p>
+        </div>
+        <figure class="shot">
+          <img src="../../assets/guia/inicio-pt.jpg" width="800" height="573"
+            alt="A tela inicial do ReMoto: à esquerda, Minhas simulações e a lista de cenários; à direita, o painel com as instruções.">
+          <figcaption><b>Figura 1</b>A tela inicial. À esquerda, as simulações e os cenários; à direita, a simulação
+            aberta &mdash; aqui, nenhuma ainda.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sec" id="run">
+      <div class="sec-no"><b>2</b>Rodar</div>
+      <div class="sec-body">
+        <h2>Clique em Rodar e acompanhe</h2>
+        <div class="prose">
+          <p class="lead">O botão <b>Rodar</b> do cartão abre a simulação na coluna da direita e mostra o progresso ao
+            vivo. Ela também aparece em <i>Minhas simulações</i>, com o estado e o tempo de execução.</p>
+          <p>Os modelos são detalhados e, por isso, lentos: um segundo simulado leva de 17 a 30 segundos numa máquina
+            de quatro núcleos, e os cenários vão de 50 ms a 30 s simulados &mdash; a duração aparece no cartão. Na
+            demonstração pública, que é uma máquina pequena dividida por todos, as simulações entram numa fila em
+            rodízio; na sua máquina, não há fila.</p>
+          <p>O <b>&times;</b> da linha cancela a simulação em andamento ou apaga a que já terminou. Você pode fechar o
+            navegador: a simulação continua no servidor, e a linha estará lá quando você voltar.</p>
+          <p>Toda simulação guarda o cenário exato, a semente dos números aleatórios e a versão do motor. Rodar o mesmo
+            cenário com a mesma semente dá os mesmos resultados, bit a bit, com qualquer número de threads.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="results">
+      <div class="sec-no"><b>3</b>Resultados</div>
+      <div class="sec-body">
+        <h2>A tela de resultados, como você a conhece</h2>
+        <div class="prose">
+          <p class="lead">Terminada a simulação, a coluna da direita vira a tela de resultados do site antigo: os
+            mesmos menus, nomes e eixos. Escolha o que quer ver e clique em <b>Plot</b>.</p>
+        </div>
+        <figure class="shot">
+          <img src="../../assets/guia/resultados-pt.jpg" width="800" height="573"
+            alt="A tela de resultados: os menus Type, Muscle e Graphic, as opções de EMG e o gráfico do EMG do sóleo, com a onda M e o reflexo H.">
+          <figcaption><b>Figura 2</b>O EMG do sóleo no cenário do reflexo H: a onda M, logo depois do pulso, e o
+            reflexo H, cerca de 30 ms depois.</figcaption>
+        </figure>
+        <dl class="sheet">
+          <div>
+            <dt>Type</dt>
+            <dd><i>Biomechanical Elements</i> (força, EMG, comprimentos, torque, unidades motoras), <i>Neural
+                Elements</i> (motoneurônios, aferentes, tratos e interneurônios), <i>Properties</i>, <i>Summary</i> e
+              os conjuntos prontos, como <i>Spikes MNs</i>, <i>Forces</i> e <i>General</i>.</dd>
+          </div>
+          <div>
+            <dt>Graphic</dt>
+            <dd>O gráfico em si: 37 biomecânicos (do abalo ao torque na articulação) e 18 por neurônio (raster,
+              frequência instantânea, histograma de intervalos, potenciais do soma e do dendrito, condutâncias, plano
+              de fase). Os menus ao lado escolhem o músculo, o núcleo e o neurônio.</dd>
+          </div>
+          <div>
+            <dt>EMG</dt>
+            <dd>Quando o gráfico é o EMG, aparecem as opções de lá: amostragem, filtro de 1ª/2ª ou 3ª/3ª ordem, cortes,
+              ruído e atenuação. Com as opções padrão, é o EMG que o motor gravou; mudando qualquer uma, ele é refeito
+              a partir do sinal bruto.</dd>
+          </div>
+          <div>
+            <dt>Analysis</dt>
+            <dd>Estatísticas do que está no gráfico (pontos, média, variância, desvio-padrão, CV, mínimo e máximo, com
+              as linhas da média &plusmn; DP) e a FFT, com a opção de sinal periódico e a escolha dos eixos.</dd>
+          </div>
+          <div>
+            <dt>Advanced</dt>
+            <dd>Em <i>Advanced Graphic Settings</i>, até oito subgráficos na mesma figura, sobreposição (<i>Hold
+                On</i>), limites dos eixos, título, rótulos, legenda, cor, altura e fonte.</dd>
+          </div>
+          <div>
+            <dt>Baixar</dt>
+            <dd><b>Download CSV</b> dá os números do gráfico (a opção "file" do site antigo) e <b>Download PNG</b>, a
+              figura. <b>Exportar (ZIP)</b>, no alto, leva a simulação inteira: o manifesto com a semente e a versão do
+              motor, a configuração e todos os resultados em CSV. <b>Configuração (JSON)</b> mostra o cenário exato que
+              foi rodado.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="sec" id="editor">
+      <div class="sec-no"><b>4</b>Editor</div>
+      <div class="sec-body">
+        <h2>Mudar parâmetros: Editar abre uma cópia sua</h2>
+        <div class="prose">
+          <p class="lead">Os cenários públicos são de todos e só de leitura. O <b>Editar</b> de um deles cria uma cópia
+            em <i>Meus cenários</i> e abre o editor nela; o <b>Copiar</b> só faz a cópia. Nos seus cenários, o
+            <b>Editar</b> abre o editor direto.</p>
+          <p>O editor é o do site antigo: o mesmo menu à esquerda, as mesmas telas, os mesmos rótulos, unidades e
+            limites. Cada tela se grava sozinha, no botão <b>Salvar</b>; o <b>Rodar este cenário</b>, no alto, volta
+            para a página principal com a simulação já começando.</p>
+        </div>
+        <figure class="shot">
+          <img src="../../assets/guia/editor-pt.jpg" width="800" height="581"
+            alt="O editor de cenários, na tela Descending Commands: a tabela dos tratos descendentes, com axônios, distribuição e intervalo médio, e o menu das telas à esquerda.">
+          <figcaption><b>Figura 3</b>O editor, na tela <i>Descending Commands</i>. À esquerda, o menu com todas as
+            telas do site antigo.</figcaption>
+        </figure>
+        <div class="tbl-wrap" style="max-width:50rem">
+          <table>
+            <caption><b>Tabela 1</b>As telas do editor, pelos grupos do menu.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Grupo</th>
+                <th scope="col">Telas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">&mdash;</th>
+                <td><i>Scenario</i>: nome, descrição e a semente dos números aleatórios</td>
+              </tr>
+              <tr>
+                <th scope="row">Structure</th>
+                <td><i>Descending Commands</i>, <i>Neural Elements</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Neural Parameters</th>
+                <td><i>Synapses</i>, <i>Kinetic Properties</i>, <i>Synaptic Dynamics</i>, <i>Conductances</i>,
+                  <i>Motoneurons</i>, <i>Interneurons</i>, <i>Sensory Fibers</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Proprioceptors</th>
+                <td><i>Muscle Spindle</i>, <i>Golgi Tendon Organ</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Biomechanical</th>
+                <td><i>Biomechanical Elements</i> (os modelos de articulação e de músculo), <i>Joint</i>, <i>Muscle
+                    Units</i>, <i>Musculotendon</i>, <i>Electromyogram</i>, <i>Miscellaneous</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Stimulation</th>
+                <td><i>Nerve Stimulation</i>, <i>Injected Current</i></td>
+              </tr>
+              <tr>
+                <th scope="row">Simulation</th>
+                <td><i>Duration and Time Step</i>: a duração e o passo de integração</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="prose">
+          <p style="margin-top:1.4rem">Os rótulos dos campos continuam em inglês nos dois idiomas, como no original,
+            para que o material escrito para ele e os artigos continuem servindo. Os limites também são os de lá: no
+            máximo mil neurônios por tipo em cada núcleo, um intervalo mínimo entre disparos, um passo mínimo e os
+            períodos refratários mínimos.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="build">
+      <div class="sec-no"><b>5</b>Sua simulação</div>
+      <div class="sec-body">
+        <h2>Montar a sua, a partir de um cenário</h2>
+        <div class="prose">
+          <p class="lead">O caminho mais curto é copiar o cenário mais próximo do que você quer e mexer nele. A ordem
+            abaixo é a do guia antigo, atualizada para as telas de hoje.</p>
+        </div>
+        <ol class="feat">
+          <li>
+            <h3>Os núcleos e quantos neurônios</h3>
+            <p>Em <i>Structure &rarr; Neural Elements</i>, escolha os músculos (SOL, MG, LG e TA) e quantos
+              motoneurônios de cada tipo (S, FR, FF), aferentes e interneurônios entram. O que fica em zero não é
+              criado e não custa tempo.</p>
+          </li>
+          <li>
+            <h3>O que move o sistema</h3>
+            <p>Em <i>Descending Commands</i>, ative os tratos e escolha o número de axônios, a distribuição (Poisson,
+              gama ou gaussiana), o intervalo médio e a modulação. Em <i>Stimulation</i>, o pulso no nervo tibial ou
+              fibular, ou a corrente injetada em neurônios escolhidos.</p>
+          </li>
+          <li>
+            <h3>A realimentação</h3>
+            <p>Os aferentes só disparam se houver quem os mova: o fuso e o órgão tendinoso de Golgi, em
+              <i>Proprioceptors</i>, com o músculo de Hill e um modelo de articulação que mude o comprimento
+              (<i>Biomechanical Elements</i> e <i>Joint</i>). Com o tornozelo isométrico e o músculo padrão, o fuso não
+              é integrado.</p>
+          </li>
+          <li>
+            <h3>As sinapses</h3>
+            <p>Em <i>Neural Parameters</i>, a condutância, o potencial de equilíbrio, o atraso e a conectividade de
+              cada via, a depressão ou facilitação de curto prazo e, se quiser, o peso que cai com a distância entre as
+              células.</p>
+          </li>
+          <li>
+            <h3>Duração, passo e semente</h3>
+            <p>Em <i>Simulation &rarr; Duration and Time Step</i>, quanto tempo simular e com que passo; em
+              <i>Scenario</i>, a semente. Comece com uma duração curta: o tempo de relógio cresce com ela e com o
+              número de neurônios.</p>
+          </li>
+          <li>
+            <h3>Rodar e olhar</h3>
+            <p><b>Salvar</b> em cada tela que você mudar e <b>Rodar este cenário</b>. Se nada acontecer onde você
+              esperava, confira se o elemento está ativo: quase tudo começa desligado, e os recursos que vieram da
+              versão em Fortran só agem quando o cenário os escolhe.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="keep">
+      <div class="sec-no"><b>6</b>Guardar</div>
+      <div class="sec-body">
+        <h2>Sem login: guarde e leve o seu trabalho</h2>
+        <div class="prose">
+          <p class="lead">Não há conta nem banco de dados. Cada navegador ganha uma área própria, identificada por um
+            cookie de 30 dias: o trabalho sobrevive a fechar o navegador e a reinícios do servidor, e é apagado depois
+            de 30 dias sem uso. Nenhum dado pessoal é guardado.</p>
+          <p>Para guardá-lo por mais tempo, ou levá-lo a outro computador, use os botões de exportar:</p>
+        </div>
+        <dl class="sheet">
+          <div>
+            <dt>Um cenário</dt>
+            <dd><b>Exportar</b> no cartão baixa o cenário em JSON: a configuração inteira, a duração, o passo e a
+              semente, num arquivo de texto que roda também na linha de comando.</dd>
+          </div>
+          <div>
+            <dt>Todos os seus</dt>
+            <dd><b>Exportar tudo</b>, na aba <i>Meus cenários</i>, dá um .zip com um JSON para cada um; o
+              <b>Importar…</b> ao lado aceita de volta os dois formatos.</dd>
+          </div>
+          <div>
+            <dt>Uma simulação</dt>
+            <dd><b>Exportar (ZIP)</b> leva o manifesto, a configuração e os resultados em CSV. O <b>Importar…</b> de
+              <i>Minhas simulações</i> traz esse .zip de volta, conferindo o manifesto pelo hash.</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="sec" id="cli">
+      <div class="sec-no"><b>7</b>Linha de comando</div>
+      <div class="sec-body">
+        <h2>Fora do navegador, com o mesmo arquivo</h2>
+        <div class="prose">
+          <p class="lead">O JSON que você exporta roda sem alteração e sem servidor, e grava cada resultado em CSV. É o
+            caminho para simulações longas, para varreduras de parâmetro e para um cluster.</p>
+        </div>
+        <pre class="term"><span class="p">$</span> java -jar remoto-cli.jar run meu-cenario.json \
+    --duration-ms 500 --threads 4 -o resultados/
+
+<span class="p">$</span> java -jar remoto-cli.jar sweep meu-cenario.json \
+    --protocol hm --range 5:40:1 -o resultados/curva-hm</pre>
+        <div class="prose">
+          <p style="margin-top:1.1rem">A pasta de saída recebe o cenário congelado, o manifesto com a semente e a
+            versão do motor, e um CSV por resultado. O <code>sweep</code> roda um protocolo em lote &mdash; no exemplo,
+            a curva do reflexo H e da onda M de 5 a 40 mA &mdash; e grava uma linha de medidas por simulação. Há ainda
+            o <code>validate</code>, que confere arquivos de cenário, e o <code>export-legacy</code>, que converte
+            configurações do banco de dados original.</p>
+          <p>O que fica de fora deste guia &mdash; as instruções de compilação, a API REST, o formato do cenário e a
+            instalação num servidor &mdash; está no <a href="https://github.com/rogeriocisi/remoto#readme">README</a>
+            e na <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">documentação
+              completa</a> (as duas em inglês). Os modelos estão descritos nas
+            <a href="../../pt/#publications">publicações</a>.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="../../pt/"><img src="../../assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>Um simulador dos núcleos motores da medula espinhal e dos seus nervos e músculos, desenvolvido no
+          Laboratório de Engenharia Biomédica (LEB) da Universidade de São Paulo.</p>
+      </div>
+      <div>
+        <h2>Projeto</h2>
+        <p><a href="../../simulator/pt/">Simulador online</a><br>
+          <a href="../../pt/">Site do projeto</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Código-fonte</a><br>
+          <a href="https://github.com/rogeriocisi/remoto/issues">Dúvidas e relatos de problemas</a>
+        </p>
+      </div>
+      <div>
+        <h2>Licença</h2>
+        <p>Distribuído sob a <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">licença MIT</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi e os contribuidores do ReMoto.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

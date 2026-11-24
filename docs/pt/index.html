@@ -12,13 +12,13 @@
   <meta property="og:description"
     content="Simulador de código aberto das redes da medula espinhal que controlam os músculos humanos. Simulações reprodutíveis, no navegador ou na linha de comando.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://remoto.psigama.com/pt/">
   <meta property="og:locale" content="pt_BR">
   <meta property="og:locale:alternate" content="en">
-  <link rel="canonical" href="https://remoto.psigama.com/pt/">
-  <link rel="alternate" hreflang="en" href="https://remoto.psigama.com/">
-  <link rel="alternate" hreflang="pt-BR" href="https://remoto.psigama.com/pt/">
-  <link rel="alternate" hreflang="x-default" href="https://remoto.psigama.com/">
+  <!-- Endereços relativos: a página não sabe em que domínio está servida. -->
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="../">
+  <link rel="alternate" hreflang="pt-BR" href="./">
+  <link rel="alternate" hreflang="x-default" href="../">
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../assets/remoto-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
@@ -40,6 +40,8 @@
       } catch (e) { }
     })();
   </script>
+  <!-- O e-mail de contato sai do domínio onde o site está servido (ver assets/site.js). -->
+  <script src="../assets/site.js" defer></script>
 </head>
 
 <body id="top">
@@ -52,19 +54,19 @@
     </a>
     <nav aria-label="Seções">
       <a href="#model">O modelo</a>
-      <a href="#version">Versão 3</a>
+      <a href="#version">Versão 4</a>
       <a href="#validation">Conferência</a>
       <a href="#run" class="keep">Rodar</a>
       <a href="#scenarios">Cenários</a>
       <a href="#publications">Publicações</a>
       <a href="#learning">Aprender</a>
-      <a href="#downloads">Downloads</a>
+      <a href="#versions">Versões</a>
       <a href="#credits">Créditos</a>
       <span class="lang" role="group" aria-label="Idioma">
         <a class="keep" href="../" hreflang="en" data-lang="en" lang="en">EN</a><i aria-hidden="true">&middot;</i><a
           class="keep" href="./" hreflang="pt-BR" data-lang="pt" aria-current="page">PT</a>
       </span>
-      <a class="sim keep" href="https://app.remoto.psigama.com/">Simulador</a>
+      <a class="sim keep" href="../simulator/pt/">Simulador</a>
       <a class="gh" href="https://github.com/rogeriocisi/remoto">GitHub</a>
     </nav>
   </header>
@@ -78,7 +80,7 @@
         </svg>
         <span>Medula espinhal &middot; núcleos de motoneurônios &middot; músculos &middot; proprioceptores &middot;
         </span>
-        <span>Versão 3, 2026</span>
+        <span>Versão 4, 2026</span>
       </p>
       <h1 class="rise d1">Os circuitos motores da medula, simulados <span class="hl">disparo por disparo</span>.</h1>
       <p class="lede rise d2">O ReMoto é um simulador de código aberto das redes da medula espinhal que controlam os
@@ -86,7 +88,7 @@
         tornozelo, modelados das condutâncias da membrana até o torque na articulação. Roda no navegador ou na linha de
         comando, e toda simulação pode ser repetida exatamente.</p>
       <p class="cta rise d3">
-        <a class="btn primary" href="https://app.remoto.psigama.com/">Abrir o simulador</a>
+        <a class="btn primary" href="../simulator/pt/">Abrir o simulador</a>
         <a class="btn" href="https://github.com/rogeriocisi/remoto">Baixar o código</a>
         <a class="btn" href="#run">Rodar na sua máquina</a>
         <a class="btn" href="#publications">Publicações</a>
@@ -477,24 +479,24 @@
     </section>
 
     <section class="sec" id="version">
-      <div class="sec-no"><b>2</b>Versão 3</div>
+      <div class="sec-no"><b>2</b>Versão 4</div>
       <div class="sec-body">
         <h2>Os modelos publicados numa plataforma que roda hoje</h2>
         <div class="prose">
           <p class="lead">O ReMoto foi desenvolvido ao longo de mais de uma década no Laboratório de Engenharia
             Biomédica da Universidade de São Paulo. O site dele dependia de applets Java e de software de servidor que
-            não recebe mais atualizações de segurança. A versão 3 mantém os modelos e troca tudo em volta deles, e
+            não recebe mais atualizações de segurança. A versão 4 mantém os modelos e troca tudo em volta deles, e
             acrescenta, como opção, os recursos das versões em Fortran.</p>
         </div>
 
         <div class="tbl-wrap">
           <table>
-            <caption><b>Tabela 1</b>O que mudou entre o site legado e a versão 3.</caption>
+            <caption><b>Tabela 1</b>O que mudou entre o site legado e a versão 4.</caption>
             <thead>
               <tr>
                 <th></th>
                 <th>Versão legada</th>
-                <th>Versão 3</th>
+                <th>Versão 4</th>
               </tr>
             </thead>
             <tbody>
@@ -630,7 +632,7 @@
         <div class="note">
           <h3>O que difere do código legado de propósito</h3>
           <ul>
-            <li><b>Números aleatórios com seed.</b> O original sorteava de geradores sem seed. A versão 3 passa todo
+            <li><b>Números aleatórios com seed.</b> O original sorteava de geradores sem seed. A versão 4 passa todo
               sorteio por um gerador iniciado com a seed do cenário.</li>
             <li><b>Decaimento sináptico.</b> Uma mudança feita no código legado em dezembro de 2016 deixou a condutância
               sináptica congelada entre eventos. O motor volta à solução fechada usada antes dessa mudança. Resultados
@@ -686,11 +688,11 @@
       <div class="sec-body">
         <h2>Clonar, subir, simular</h2>
         <div class="prose">
-          <p class="lead">A demonstração pública roda a versão 3 sem instalar nada. Para rodar na sua máquina é
+          <p class="lead">A demonstração pública roda a versão 4 sem instalar nada. Para rodar na sua máquina é
             preciso o JDK 25; o Maven é baixado pelo wrapper que vem no repositório.</p>
         </div>
         <ul class="links">
-          <li><a class="btn primary" href="https://app.remoto.psigama.com/">Abrir a demonstração</a></li>
+          <li><a class="btn primary" href="../simulator/pt/">Abrir a demonstração</a></li>
         </ul>
         <p class="fine" style="margin-top:1.2rem;max-width:43rem">A demonstração é uma máquina pequena dividida por
           todos os visitantes: as simulações entram numa fila em rodízio, com limites por navegador, e a área de
@@ -705,7 +707,8 @@
 <span class="p">$</span> scripts/start.sh        <span class="c"># Linux, macOS, Git Bash</span>
 <span class="p">&gt;</span> scripts\start.cmd       <span class="c"># Windows, cmd</span>
 <span class="p">&gt;</span> .\scripts\start.ps1     <span class="c"># Windows, PowerShell</span></pre>
-            <p class="fine" style="margin-top:.9rem">Depois abra <code>http://localhost:8080</code>. Não há login.
+            <p class="fine" style="margin-top:.9rem">Depois abra <code>http://localhost:8080/simulator/</code>. Não há
+              login.
               Escolha
               um cenário público e clique em Rodar, ou copie-o e mude-o no editor. Os scripts de start procuram um JDK
               25
@@ -714,10 +717,10 @@
           <div>
             <h3>Na linha de comando</h3>
             <pre class="term"><span class="p">$</span> ./mvnw -pl remoto-cli -am package -DskipTests
-<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
+<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar \
     run scenarios/remoto-17-default-soleus-contraction.json \
     --duration-ms 500 --threads 4 -o results/soleus
-<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
+<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar \
     sweep scenarios/remoto-17-default-soleus-contraction.json \
     --protocol hm --range 5:40:1 -o results/hm-curve</pre>
             <p class="fine" style="margin-top:.9rem">A pasta de saída recebe o cenário congelado, um manifesto com a
@@ -735,8 +738,9 @@
             de 17 a 30 segundos em quatro núcleos (Tabela 2). A interface do simulador está disponível em português e em
             inglês; o editor e os menus de resultados mantêm os rótulos em inglês do original. As instruções de
             compilação, a API REST, o formato do cenário e o guia de instalação estão no
-            <a href="https://github.com/rogeriocisi/remoto#readme">README</a> (em inglês) e na
-            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">documentação completa</a>.
+            <a href="https://github.com/rogeriocisi/remoto#readme">README</a> e na
+            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">documentação
+              completa</a> (as duas em inglês).
           </p>
         </div>
       </div>
@@ -1270,16 +1274,16 @@
       <div class="sec-body">
         <h2>Guias, vídeo e os simuladores vizinhos</h2>
         <div class="prose">
-          <p class="lead">O guia rápido foi reescrito para a versão 3: do cenário escolhido ao gráfico baixado, em
+          <p class="lead">O guia rápido foi reescrito para a versão 4: do cenário escolhido ao gráfico baixado, em
             sete passos, com as telas de hoje. O editor e a tela de resultados mantiveram os nomes, as unidades e os
             limites do site original, então o material escrito para ele também continua valendo.</p>
         </div>
         <ul class="links">
-          <li><a class="btn primary" href="guia/">Guia rápido</a></li>
+          <li><a class="btn primary" href="../guide/pt/">Guia rápido</a></li>
           <li><a class="btn" href="https://www.youtube.com/watch?v=UMORD8hG5Jk">Tutorial em vídeo (26 min)</a></li>
           <li><a class="btn"
-              href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">Documentação da versão
-              3</a></li>
+              href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">Documentação da versão
+              atual</a></li>
         </ul>
         <p class="fine" style="margin-top:1.2rem;max-width:43rem">O vídeo, <i>Single Neuron Responses to Injected
             Currents</i>, foi feito no LEB para a versão antiga e mostra como estudar a resposta de um neurônio à
@@ -1297,7 +1301,7 @@
           <div>
             <dt>Versão em Fortran</dt>
             <dd>O <a href="https://github.com/rnwatanabe/projectFR">projectFR</a>, de Renato N. Watanabe, reescreveu o
-              ReMoto em Fortran e acrescentou os recursos que a versão 3 oferece como opção.</dd>
+              ReMoto em Fortran e acrescentou os recursos que a versão 4 oferece como opção.</dd>
           </div>
           <div>
             <dt>Doenças desmielinizantes</dt>
@@ -1305,70 +1309,100 @@
               Oliveira, adapta a versão em Fortran ao estudo de doenças desmielinizantes (Oliveira, Watanabe e Kohn,
               2022), com a tarefa de posição e o abalo de Raikova e Aladjov (2002). As tarefas de força e de posição
               dele, com o sujeito saudável e os dois desmielinizados, são seis dos cenários daqui, e o bloqueio de
-              condução é uma opção da versão 3.</dd>
+              condução é uma opção da versão 4.</dd>
           </div>
         </dl>
       </div>
     </section>
 
-    <section class="sec" id="downloads">
-      <div class="sec-no"><b>8</b>Downloads</div>
+    <section class="sec" id="versions">
+      <div class="sec-no"><b>8</b>Versões</div>
       <div class="sec-body">
-        <h2>A versão 3 e os pacotes antigos</h2>
+        <h2>Todas as versões do ReMoto</h2>
         <div class="prose">
-          <p class="lead">A versão 3 vive no GitHub: clone o repositório ou baixe o código em zip. Os pacotes que o
-            site do LEB publicou continuam no ar, para quem precisa reproduzir um trabalho feito com eles.</p>
+          <p class="lead">A versão 4 vive no GitHub: clone o repositório ou baixe o código em zip. As duas versões em
+            Fortran também, e os pacotes que o site do LEB publicou continuam no ar, para quem precisa reproduzir um
+            trabalho feito com eles.</p>
         </div>
         <ul class="links">
-          <li><a class="btn primary" href="https://github.com/rogeriocisi/remoto">Repositório da versão 3</a></li>
+          <li><a class="btn primary" href="https://github.com/rogeriocisi/remoto">Repositório da versão 4</a></li>
           <li><a class="btn"
               href="https://github.com/rogeriocisi/remoto/archive/refs/heads/master.zip">Código em zip</a></li>
         </ul>
-        <p class="fine" style="margin-top:1.2rem;max-width:43rem">O código da versão 3 está sob a <a
-            href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">licença MIT</a>. Os pacotes abaixo foram
-          publicados pelo site do LEB sob a <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a> e estão
-          hospedados lá, não aqui.</p>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">O código da versão 4 está sob a <a
+            href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">licença MIT</a>. As versões em Fortran
+          estão sob a <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a>, e os pacotes do site do LEB
+          também, hospedados lá, não aqui.</p>
 
-        <div class="tbl-wrap" style="max-width:50rem">
+        <div class="tbl-wrap" style="max-width:58rem">
           <table>
-            <caption><b>Tabela 4</b>Os pacotes publicados pelo site antigo, ainda no ar em remoto.leb.usp.br.</caption>
+            <caption><b>Tabela 4</b>As versões do ReMoto, da mais nova para a mais antiga. Cada número de versão leva
+              ao código em zip; os tamanhos são os dos pacotes fixos do site antigo.</caption>
             <thead>
               <tr>
                 <th scope="col">Versão</th>
                 <th scope="col">O que é</th>
+                <th scope="col">Repositório</th>
                 <th scope="col" class="num">Tamanho</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th scope="row"><a
-                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2f1_021211_usr.zip">ReMoto 2.1</a></th>
-                <td>Código-fonte, a última versão estável do site antigo (2 de dezembro de 2011)</td>
-                <td class="num">12 MB</td>
+                    href="https://github.com/rogeriocisi/remoto/archive/refs/heads/master.zip">ReMoto 4.0</a></th>
+                <td>Código-fonte da versão atual: Java 25, Spring Boot, sem banco de dados e sem login</td>
+                <td><a href="https://github.com/rogeriocisi/remoto">rogeriocisi/remoto</a></td>
+                <td class="num">&mdash;</td>
               </tr>
               <tr>
                 <th scope="row"><a
-                    href="http://remoto.leb.usp.br/remoto/Downloads/ReMoto%202.0%20Setup.exe">ReMoto 2.0 Setup</a></th>
-                <td>Instalador para o usuário final, em Windows, com as tecnologias embutidas</td>
-                <td class="num">16 MB</td>
+                    href="https://github.com/oliveiramarina/ReMoto_AIDP/archive/refs/heads/master.zip">ReMoto 3.1</a>
+                </th>
+                <td>Código-fonte do ReMoto_AIDP, a versão em Fortran adaptada a doenças desmielinizantes</td>
+                <td><a href="https://github.com/oliveiramarina/ReMoto_AIDP">oliveiramarina/ReMoto_AIDP</a></td>
+                <td class="num">&mdash;</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="https://github.com/rnwatanabe/projectFR/archive/refs/heads/master.zip">ReMoto 3.0</a></th>
+                <td>Código-fonte do projectFR, a versão em Fortran</td>
+                <td><a href="https://github.com/rnwatanabe/projectFR">rnwatanabe/projectFR</a></td>
+                <td class="num">&mdash;</td>
               </tr>
               <tr>
                 <th scope="row"><a
                     href="http://remoto.leb.usp.br/remoto/Downloads/remoto2b2src_28052012L.zip">ReMoto 2.2 beta</a>
                 </th>
                 <td>Código-fonte da versão de teste (13 de junho de 2012)</td>
+                <td>&mdash;</td>
                 <td class="num">21 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2f1_021211_usr.zip">ReMoto 2.1</a></th>
+                <td>Código-fonte, a última versão estável do site antigo (2 de dezembro de 2011)</td>
+                <td>&mdash;</td>
+                <td class="num">12 MB</td>
               </tr>
               <tr>
                 <th scope="row"><a
                     href="http://remoto.leb.usp.br/remoto/Downloads/remoto2src_050711_usr.zip">ReMoto 2.0</a></th>
                 <td>Código-fonte (5 de julho de 2011)</td>
+                <td>&mdash;</td>
                 <td class="num">11 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/ReMoto%202.0%20Setup.exe">ReMoto 2.0 Setup</a></th>
+                <td>Instalador para o usuário final, em Windows, com as tecnologias embutidas</td>
+                <td>&mdash;</td>
+                <td class="num">16 MB</td>
               </tr>
               <tr>
                 <th scope="row"><a
                     href="http://remoto.leb.usp.br/remoto/Downloads/remoto1_1_5_2008.zip">ReMoto 1.1.5</a></th>
                 <td>Código-fonte da versão final de 2008, a do artigo de Cisi e Kohn</td>
+                <td>&mdash;</td>
                 <td class="num">4 MB</td>
               </tr>
             </tbody>
@@ -1384,7 +1418,7 @@
         <div class="prose">
           <p class="lead">O ReMoto foi desenvolvido ao longo de mais de uma década no Laboratório de Engenharia
             Biomédica (LEB) da Escola Politécnica da Universidade de São Paulo. Os nomes e os papéis abaixo são os do
-            site original; a versão 3 é um porte mantido por Rogério R. L. Cisi.</p>
+            site original; a versão 4 é um porte mantido por Rogério R. L. Cisi.</p>
         </div>
         <ul class="people">
           <li><b>André F. Kohn</b><span>Coordenação do projeto</span>
@@ -1411,7 +1445,7 @@
           <li><b>Marina Cardoso de Oliveira</b><span>Programação</span>
             <span class="pf"><a href="http://lattes.cnpq.br/4232208760911016">CV Lattes</a></span>
           </li>
-          <li><b>Rogério R. L. Cisi</b><span>Primeira versão e versão 3: projeto e programação</span>
+          <li><b>Rogério R. L. Cisi</b><span>Primeira versão e versão 4: projeto e programação</span>
             <span class="pf"><a href="https://scholar.google.com/citations?user=a95TXg4AAAAJ">Google
                 Scholar</a><i aria-hidden="true">&middot;</i><a href="http://lattes.cnpq.br/9619964316046037">CV
                 Lattes</a></span>
@@ -1430,9 +1464,9 @@
         <dl class="sheet">
           <div>
             <dt>E-mail</dt>
-            <dd><a href="mailto:contato@psigama.com">contato@psigama.com</a> para o ReMoto versão 3, e as <a
-                href="https://github.com/rogeriocisi/remoto/issues">issues do GitHub</a> para dúvidas e relatos de
-              problemas.</dd>
+            <dd><span class="mail" hidden><a data-mail href="#">&nbsp;</a> para o ReMoto versão 4, e as </span><span
+                class="no-mail">As </span><a href="https://github.com/rogeriocisi/remoto/issues">issues do GitHub</a>
+              para dúvidas e relatos de problemas.</dd>
           </div>
         </dl>
       </div>
@@ -1450,7 +1484,7 @@
       </div>
       <div>
         <h2>Projeto</h2>
-        <p><a href="https://app.remoto.psigama.com/">Simulador online</a><br>
+        <p><a href="../simulator/pt/">Simulador online</a><br>
           <a href="https://github.com/rogeriocisi/remoto">Código-fonte</a><br>
           <a href="https://github.com/rogeriocisi/remoto/issues">Dúvidas e relatos de problemas</a><br>
           <a href="https://github.com/rnwatanabe/remoto">Versão legada (repositório pai)</a>

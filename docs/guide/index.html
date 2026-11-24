@@ -4,24 +4,41 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ReMoto 3 quick guide</title>
+  <title>ReMoto 4 quick guide</title>
   <meta name="description"
-    content="Quick guide to ReMoto version 3: pick a scenario, run it, read the results screen, change parameters in the editor, keep your work and run on the command line.">
+    content="Quick guide to ReMoto version 4: pick a scenario, run it, read the results screen, change parameters in the editor, keep your work and run on the command line.">
   <meta name="theme-color" content="#1f5f99">
-  <meta property="og:title" content="ReMoto 3 quick guide">
+  <meta property="og:title" content="ReMoto 4 quick guide">
   <meta property="og:description"
     content="From the scenario you pick to the plot you download: the whole path through the simulator, in seven steps.">
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://remoto.psigama.com/guide/">
   <meta property="og:locale" content="en">
   <meta property="og:locale:alternate" content="pt_BR">
-  <link rel="canonical" href="https://remoto.psigama.com/guide/">
-  <link rel="alternate" hreflang="en" href="https://remoto.psigama.com/guide/">
-  <link rel="alternate" hreflang="pt-BR" href="https://remoto.psigama.com/pt/guia/">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="pt/">
+  <link rel="alternate" hreflang="x-default" href="./">
   <link rel="icon" href="../favicon.ico" sizes="any">
   <link rel="icon" href="../assets/remoto-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
   <link rel="stylesheet" href="../assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'en', OTHER = 'pt/';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
 </head>
 
 <body id="top">
@@ -41,10 +58,10 @@
       <a href="#keep">Keep it</a>
       <a href="#cli">Command line</a>
       <span class="lang" role="group" aria-label="Language">
-        <a class="keep" href="./" hreflang="en" aria-current="page">EN</a><i aria-hidden="true">&middot;</i><a
-          class="keep" href="../pt/guia/" hreflang="pt-BR" lang="pt-BR">PT</a>
+        <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i aria-hidden="true">&middot;</i><a
+          class="keep" href="pt/" hreflang="pt-BR" data-lang="pt" lang="pt-BR">PT</a>
       </span>
-      <a class="gh" href="https://app.remoto.psigama.com/">Open</a>
+      <a class="gh" href="../simulator/">Open</a>
     </nav>
   </header>
 
@@ -55,14 +72,14 @@
           <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span>Quick guide &middot; </span><span>Version 3</span>
+        <span>Quick guide &middot; </span><span>Version 4</span>
       </p>
       <h1>From the scenario you pick to the <span class="hl">plot you download</span>.</h1>
       <p class="lede">The whole path through the simulator, in seven steps: run a ready-made scenario, read the results
         screen, change parameters in the editor, build your own simulation and take your work with you. It replaces the
         quick guide of the legacy site, written for the Java applet version.</p>
       <p class="cta">
-        <a class="btn primary" href="https://app.remoto.psigama.com/">Open the simulator</a>
+        <a class="btn primary" href="../simulator/">Open the simulator</a>
         <a class="btn" href="../">Project site</a>
         <a class="btn" href="https://github.com/rogeriocisi/remoto#readme">README</a>
       </p>
@@ -77,7 +94,7 @@
         <h2>Open the simulator and pick a scenario</h2>
         <div class="prose">
           <p class="lead">Nothing to install and no account to create: ReMoto runs in the browser. Open the
-            <a href="https://app.remoto.psigama.com/">public demo</a>, or <code>http://localhost:8080</code> on your own
+            <a href="../simulator/">public demo</a>, or <code>http://localhost:8080/simulator/</code> on your own
             machine after <a href="../#run">starting the server</a>.</p>
           <p>The page has two columns. On the left, <b>My simulations</b> at the top, with what you have already run,
             and the <b>Scenarios</b> below, in two tabs: <i>Public</i>, the 37 that ship with the simulator, and <i>My
@@ -344,8 +361,8 @@
             configurations from the original database.</p>
           <p>What this guide leaves out &mdash; build instructions, the REST API, the scenario format and installing on
             a server &mdash; is in the <a href="https://github.com/rogeriocisi/remoto#readme">README</a> and in the
-            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">full documentation</a> (in
-            Portuguese). The models are described in the <a href="../#publications">papers</a>.</p>
+            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">full
+              documentation</a>. The models are described in the <a href="../#publications">papers</a>.</p>
         </div>
       </div>
     </section>
@@ -362,7 +379,7 @@
       </div>
       <div>
         <h2>Project</h2>
-        <p><a href="https://app.remoto.psigama.com/">Online simulator</a><br>
+        <p><a href="../simulator/">Online simulator</a><br>
           <a href="../">Project site</a><br>
           <a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
           <a href="https://github.com/rogeriocisi/remoto/issues">Questions and bug reports</a>

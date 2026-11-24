@@ -12,13 +12,13 @@
   <meta property="og:description"
     content="Open-source simulator of the spinal cord networks that control human muscles. Reproducible runs, in a browser or on the command line.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://remoto.psigama.com/">
   <meta property="og:locale" content="en">
   <meta property="og:locale:alternate" content="pt_BR">
-  <link rel="canonical" href="https://remoto.psigama.com/">
-  <link rel="alternate" hreflang="en" href="https://remoto.psigama.com/">
-  <link rel="alternate" hreflang="pt-BR" href="https://remoto.psigama.com/pt/">
-  <link rel="alternate" hreflang="x-default" href="https://remoto.psigama.com/">
+  <!-- Endereços relativos: a página não sabe em que domínio está servida. -->
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="pt/">
+  <link rel="alternate" hreflang="x-default" href="./">
   <link rel="icon" href="favicon.ico" sizes="any">
   <link rel="icon" href="assets/remoto-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -40,6 +40,8 @@
       } catch (e) { }
     })();
   </script>
+  <!-- O e-mail de contato sai do domínio onde o site está servido (ver assets/site.js). -->
+  <script src="assets/site.js" defer></script>
 </head>
 
 <body id="top">
@@ -52,19 +54,19 @@
     </a>
     <nav aria-label="Sections">
       <a href="#model">Model</a>
-      <a href="#version">Version 3</a>
+      <a href="#version">Version 4</a>
       <a href="#validation">Validation</a>
       <a href="#run" class="keep">Run it</a>
       <a href="#scenarios">Scenarios</a>
       <a href="#publications">Publications</a>
       <a href="#learning">Learn</a>
-      <a href="#downloads">Downloads</a>
+      <a href="#versions">Versions</a>
       <a href="#credits">Credits</a>
       <span class="lang" role="group" aria-label="Language">
         <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i
           aria-hidden="true">&middot;</i><a class="keep" href="pt/" hreflang="pt-BR" data-lang="pt" lang="pt-BR">PT</a>
       </span>
-      <a class="sim keep" href="https://app.remoto.psigama.com/">Simulator</a>
+      <a class="sim keep" href="simulator/">Simulator</a>
       <a class="gh" href="https://github.com/rogeriocisi/remoto">GitHub</a>
     </nav>
   </header>
@@ -77,7 +79,7 @@
             stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         <span>Spinal cord &middot; motoneuron pools &middot; muscle &middot; proprioceptors &middot; </span>
-        <span>Version 3, 2026</span>
+        <span>Version 4, 2026</span>
       </p>
       <h1 class="rise d1">Spinal motor circuits, simulated <span class="hl">spike by spike</span>.</h1>
       <p class="lede rise d2">ReMoto is an open-source simulator of the spinal cord networks that control human muscles:
@@ -85,7 +87,7 @@
         membrane conductances up to joint torque. It runs in a browser or on the command line, and every run can be
         repeated exactly.</p>
       <p class="cta rise d3">
-        <a class="btn primary" href="https://app.remoto.psigama.com/">Open the simulator</a>
+        <a class="btn primary" href="simulator/">Open the simulator</a>
         <a class="btn" href="https://github.com/rogeriocisi/remoto">Get the code</a>
         <a class="btn" href="#run">Run it locally</a>
         <a class="btn" href="#publications">Publications</a>
@@ -474,24 +476,24 @@
     </section>
 
     <section class="sec" id="version">
-      <div class="sec-no"><b>2</b>Version 3</div>
+      <div class="sec-no"><b>2</b>Version 4</div>
       <div class="sec-body">
         <h2>The published models on a platform that runs today</h2>
         <div class="prose">
           <p class="lead">ReMoto was developed over more than a decade at the Biomedical Engineering Laboratory of the
             University of S&atilde;o Paulo. Its website depended on Java applets and on server software that no longer
-            receives security updates. Version 3 keeps the models, replaces everything around them, and adds the
+            receives security updates. Version 4 keeps the models, replaces everything around them, and adds the
             features of the Fortran versions as options.</p>
         </div>
 
         <div class="tbl-wrap">
           <table>
-            <caption><b>Table 1</b>What changed between the legacy site and version 3.</caption>
+            <caption><b>Table 1</b>What changed between the legacy site and version 4.</caption>
             <thead>
               <tr>
                 <th></th>
                 <th>Legacy version</th>
-                <th>Version 3</th>
+                <th>Version 4</th>
               </tr>
             </thead>
             <tbody>
@@ -621,7 +623,7 @@
         <div class="note">
           <h3>What deliberately differs from the legacy code</h3>
           <ul>
-            <li><b>Seeded random numbers.</b> The original drew from unseeded generators. Version 3 routes every draw
+            <li><b>Seeded random numbers.</b> The original drew from unseeded generators. Version 4 routes every draw
               through one generator started from the scenario seed.</li>
             <li><b>Synaptic decay.</b> A change made to the legacy code in December 2016 left the synaptic conductance
               frozen between events. The engine goes back to the closed-form solution used before that change. Results
@@ -677,11 +679,11 @@
       <div class="sec-body">
         <h2>Clone, start, simulate</h2>
         <div class="prose">
-          <p class="lead">The public demo runs version 3 with nothing to install. To run it on your own machine
+          <p class="lead">The public demo runs version 4 with nothing to install. To run it on your own machine
             you need JDK 25; Maven is downloaded by the wrapper included in the repository.</p>
         </div>
         <ul class="links">
-          <li><a class="btn primary" href="https://app.remoto.psigama.com/">Open the demo</a></li>
+          <li><a class="btn primary" href="simulator/">Open the demo</a></li>
         </ul>
         <p class="fine" style="margin-top:1.2rem;max-width:43rem">The demo is a small machine shared by every visitor:
           simulations go into a round-robin queue, with limits per browser, and each workspace lasts 30 days. To run
@@ -695,7 +697,8 @@
 <span class="p">$</span> scripts/start.sh        <span class="c"># Linux, macOS, Git Bash</span>
 <span class="p">&gt;</span> scripts\start.cmd       <span class="c"># Windows, cmd</span>
 <span class="p">&gt;</span> .\scripts\start.ps1     <span class="c"># Windows, PowerShell</span></pre>
-            <p class="fine" style="margin-top:.9rem">Then open <code>http://localhost:8080</code>. There is no login.
+            <p class="fine" style="margin-top:.9rem">Then open <code>http://localhost:8080/simulator/</code>. There is
+              no login.
               Pick a public scenario
               and press Run, or copy it and change it in the editor. The start scripts look for a JDK 25 even when an
               older Java is the default; an optional argument sets the port.</p>
@@ -703,10 +706,10 @@
           <div>
             <h3>On the command line</h3>
             <pre class="term"><span class="p">$</span> ./mvnw -pl remoto-cli -am package -DskipTests
-<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
+<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar \
     run scenarios/remoto-17-default-soleus-contraction.json \
     --duration-ms 500 --threads 4 -o results/soleus
-<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-3.0.0-SNAPSHOT.jar \
+<span class="p">$</span> java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar \
     sweep scenarios/remoto-17-default-soleus-contraction.json \
     --protocol hm --range 5:40:1 -o results/hm-curve</pre>
             <p class="fine" style="margin-top:.9rem">The output folder receives the frozen scenario, a manifest with the
@@ -726,8 +729,8 @@
             the REST API,
             the scenario format and the deployment guide are in the
             <a href="https://github.com/rogeriocisi/remoto#readme">README</a> and in the
-            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">full documentation</a> (in
-            Portuguese).
+            <a href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">full
+              documentation</a>.
           </p>
         </div>
       </div>
@@ -1218,15 +1221,15 @@
       <div class="sec-body">
         <h2>Guides, a video and the neighbouring simulators</h2>
         <div class="prose">
-          <p class="lead">The quick guide has been rewritten for version 3: from the scenario you pick to the plot
+          <p class="lead">The quick guide has been rewritten for version 4: from the scenario you pick to the plot
             you download, in seven steps, with today's screens. The editor and the results screen keep the names, units
             and limits of the original site, so the material written for it still applies too.</p>
         </div>
         <ul class="links">
           <li><a class="btn primary" href="guide/">Quick guide</a></li>
           <li><a class="btn" href="https://www.youtube.com/watch?v=UMORD8hG5Jk">Video tutorial (26 min)</a></li>
-          <li><a class="btn" href="https://github.com/rogeriocisi/remoto/blob/master/docs/nova-versao.md">Version 3
-              documentation</a></li>
+          <li><a class="btn" href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">Current
+              version documentation</a></li>
         </ul>
         <p class="fine" style="margin-top:1.2rem;max-width:43rem">The video, <i>Single Neuron Responses to Injected
             Currents</i>, was made at the LEB for the legacy version and walks through the response of a single neuron
@@ -1245,7 +1248,7 @@
           <div>
             <dt>Fortran version</dt>
             <dd><a href="https://github.com/rnwatanabe/projectFR">projectFR</a>, by Renato N. Watanabe, rewrote ReMoto
-              in Fortran and added the features version 3 offers as options.</dd>
+              in Fortran and added the features version 4 offers as options.</dd>
           </div>
           <div>
             <dt>Demyelinating diseases</dt>
@@ -1253,72 +1256,100 @@
               adapts the Fortran version to the study of demyelinating diseases (Oliveira, Watanabe and Kohn, 2022),
               with the position task and the twitch model of Raikova and Aladjov (2002). Its force and position tasks,
               with the healthy and the two demyelinated subjects, are six of the scenarios here, and its conduction
-              block is an option of version 3.</dd>
+              block is an option of version 4.</dd>
           </div>
         </dl>
       </div>
     </section>
 
-    <section class="sec" id="downloads">
-      <div class="sec-no"><b>8</b>Downloads</div>
+    <section class="sec" id="versions">
+      <div class="sec-no"><b>8</b>Versions</div>
       <div class="sec-body">
-        <h2>Version 3 and the legacy packages</h2>
+        <h2>Every version of ReMoto</h2>
         <div class="prose">
-          <p class="lead">Version 3 lives on GitHub: clone the repository or download the source as a zip. The
-            packages published by the LEB site are still online, for anyone who needs to reproduce work done with
-            them.</p>
+          <p class="lead">Version 4 lives on GitHub: clone the repository or download the source as a zip. So do the
+            two versions in Fortran, and the packages published by the LEB site are still online, for anyone who
+            needs to reproduce work done with them.</p>
         </div>
         <ul class="links">
-          <li><a class="btn primary" href="https://github.com/rogeriocisi/remoto">Version 3 repository</a></li>
+          <li><a class="btn primary" href="https://github.com/rogeriocisi/remoto">Version 4 repository</a></li>
           <li><a class="btn" href="https://github.com/rogeriocisi/remoto/archive/refs/heads/master.zip">Source as
               zip</a></li>
         </ul>
-        <p class="fine" style="margin-top:1.2rem;max-width:43rem">The version 3 code is under the <a
-            href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>. The packages below were
-          published by the LEB site under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a> and
-          are hosted there, not here.</p>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">The version 4 code is under the <a
+            href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>. The versions in Fortran
+          are under the <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPL v3</a>, and so are the packages of
+          the LEB site, which are hosted there, not here.</p>
 
-        <div class="tbl-wrap" style="max-width:50rem">
+        <div class="tbl-wrap" style="max-width:58rem">
           <table>
-            <caption><b>Table 4</b>The packages published by the legacy site, still online at
-              remoto.leb.usp.br.</caption>
+            <caption><b>Table 4</b>The versions of ReMoto, newest first. Each version number links to its source as a
+              zip; the sizes are those of the fixed packages of the legacy site.</caption>
             <thead>
               <tr>
                 <th scope="col">Version</th>
                 <th scope="col">What it is</th>
+                <th scope="col">Repository</th>
                 <th scope="col" class="num">Size</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th scope="row"><a
-                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2f1_021211_usr.zip">ReMoto 2.1</a></th>
-                <td>Source code, the last stable version of the legacy site (2 December 2011)</td>
-                <td class="num">12 MB</td>
+                    href="https://github.com/rogeriocisi/remoto/archive/refs/heads/master.zip">ReMoto 4.0</a></th>
+                <td>Source code of the current version: Java 25, Spring Boot, no database and no login</td>
+                <td><a href="https://github.com/rogeriocisi/remoto">rogeriocisi/remoto</a></td>
+                <td class="num">&mdash;</td>
               </tr>
               <tr>
                 <th scope="row"><a
-                    href="http://remoto.leb.usp.br/remoto/Downloads/ReMoto%202.0%20Setup.exe">ReMoto 2.0 Setup</a></th>
-                <td>End-user installer for Windows, with the required technologies embedded</td>
-                <td class="num">16 MB</td>
+                    href="https://github.com/oliveiramarina/ReMoto_AIDP/archive/refs/heads/master.zip">ReMoto 3.1</a>
+                </th>
+                <td>Source code of ReMoto_AIDP, the version in Fortran adapted to demyelinating diseases</td>
+                <td><a href="https://github.com/oliveiramarina/ReMoto_AIDP">oliveiramarina/ReMoto_AIDP</a></td>
+                <td class="num">&mdash;</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="https://github.com/rnwatanabe/projectFR/archive/refs/heads/master.zip">ReMoto 3.0</a></th>
+                <td>Source code of projectFR, the version in Fortran</td>
+                <td><a href="https://github.com/rnwatanabe/projectFR">rnwatanabe/projectFR</a></td>
+                <td class="num">&mdash;</td>
               </tr>
               <tr>
                 <th scope="row"><a
                     href="http://remoto.leb.usp.br/remoto/Downloads/remoto2b2src_28052012L.zip">ReMoto 2.2 beta</a>
                 </th>
                 <td>Source code of the test version (13 June 2012)</td>
+                <td>&mdash;</td>
                 <td class="num">21 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/remoto2f1_021211_usr.zip">ReMoto 2.1</a></th>
+                <td>Source code, the last stable version of the legacy site (2 December 2011)</td>
+                <td>&mdash;</td>
+                <td class="num">12 MB</td>
               </tr>
               <tr>
                 <th scope="row"><a
                     href="http://remoto.leb.usp.br/remoto/Downloads/remoto2src_050711_usr.zip">ReMoto 2.0</a></th>
                 <td>Source code (5 July 2011)</td>
+                <td>&mdash;</td>
                 <td class="num">11 MB</td>
+              </tr>
+              <tr>
+                <th scope="row"><a
+                    href="http://remoto.leb.usp.br/remoto/Downloads/ReMoto%202.0%20Setup.exe">ReMoto 2.0 Setup</a></th>
+                <td>End-user installer for Windows, with the required technologies embedded</td>
+                <td>&mdash;</td>
+                <td class="num">16 MB</td>
               </tr>
               <tr>
                 <th scope="row"><a
                     href="http://remoto.leb.usp.br/remoto/Downloads/remoto1_1_5_2008.zip">ReMoto 1.1.5</a></th>
                 <td>Source code of the 2008 final version, the one of the Cisi and Kohn paper</td>
+                <td>&mdash;</td>
                 <td class="num">4 MB</td>
               </tr>
             </tbody>
@@ -1334,7 +1365,7 @@
         <div class="prose">
           <p class="lead">ReMoto was developed over more than a decade at the Biomedical Engineering Laboratory (LEB)
             of the Escola Polit&eacute;cnica, University of S&atilde;o Paulo. The names and roles below are those of
-            the original site; version 3 is a port maintained by Rog&eacute;rio R. L. Cisi.</p>
+            the original site; version 4 is a port maintained by Rog&eacute;rio R. L. Cisi.</p>
         </div>
         <ul class="people">
           <li><b>Andr&eacute; F. Kohn</b><span>Project leader</span>
@@ -1360,7 +1391,7 @@
           <li><b>Marina Cardoso de Oliveira</b><span>Programming</span>
             <span class="pf"><a href="http://lattes.cnpq.br/4232208760911016">CV Lattes</a></span>
           </li>
-          <li><b>Rog&eacute;rio R. L. Cisi</b><span>First version and version 3: design and programming</span>
+          <li><b>Rog&eacute;rio R. L. Cisi</b><span>First version and version 4: design and programming</span>
             <span class="pf"><a href="https://scholar.google.com/citations?user=a95TXg4AAAAJ">Google
                 Scholar</a><i aria-hidden="true">&middot;</i><a href="http://lattes.cnpq.br/9619964316046037">CV
                 Lattes</a></span>
@@ -1379,7 +1410,7 @@
         <dl class="sheet">
           <div>
             <dt>E-mail</dt>
-            <dd><a href="mailto:contato@psigama.com">contato@psigama.com</a> for ReMoto version 3, and the <a
+            <dd><span class="mail" hidden><a data-mail href="#">&nbsp;</a> for ReMoto version 4, and the </span><a
                 href="https://github.com/rogeriocisi/remoto/issues">GitHub issues</a> for questions and bug
               reports.</dd>
           </div>
@@ -1399,7 +1430,7 @@
       </div>
       <div>
         <h2>Project</h2>
-        <p><a href="https://app.remoto.psigama.com/">Online simulator</a><br>
+        <p><a href="simulator/">Online simulator</a><br>
           <a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
           <a href="https://github.com/rogeriocisi/remoto/issues">Questions and bug reports</a><br>
           <a href="https://github.com/rnwatanabe/remoto">Legacy version (parent repository)</a>
