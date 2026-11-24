@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.file.Path;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
@@ -123,6 +124,28 @@ class LanguageIntegrationTest {
                 .andExpect(content().string(not(containsString("project.version"))));
         mvc.perform(get("/").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US"))
                 .andExpect(content().string(containsString("Version 4.0")));
+    }
+
+    /**
+     * O botão do idioma padrão troca mesmo com o cookie no outro idioma. A porta do padrão é a
+     * raiz, que não diz idioma nenhum: sem o {@code ?lang=}, o cookie continuaria valendo e o
+     * clique não sairia do lugar.
+     */
+    @Test
+    void oBotaoDoIdiomaPadraoTrocaMesmoComOCookieNoOutro() throws Exception {
+        Cookie pt = mvc.perform(get("/pt")).andReturn().getResponse().getCookie("remoto-lang");
+        assertThat(pt).isNotNull();
+        assertThat(pt.getValue()).isEqualTo("pt");
+
+        // na porta em português, o botão EN tem de pedir o inglês, e não só ir para a raiz
+        mvc.perform(get("/pt").cookie(pt))
+                .andExpect(content().string(containsString("Nenhuma simulação aberta")))
+                .andExpect(content().string(containsString("href=\"/?lang=en\"")));
+
+        // e seguir esse endereço, com o cookie em português, abre em inglês e troca o cookie
+        mvc.perform(get("/?lang=en").cookie(pt))
+                .andExpect(content().string(containsString("No simulation open")))
+                .andExpect(cookie().value("remoto-lang", "en"));
     }
 
     /** A página de erro também sai traduzida, com o seletor de idioma. */

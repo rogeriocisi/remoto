@@ -62,7 +62,7 @@ public class LangLinks {
             choices.add(new Choice(locale.toLanguageTag(),
                     Messages.msg("lang.name." + locale.getLanguage()),
                     isCurrent ? Messages.msg("lang.current") : Messages.msg("lang.switch." + locale.getLanguage()),
-                    entryPage ? entryUrl(request, locale) : switchUrl(request, locale),
+                    chosenUrl(request, locale, entryPage),
                     isCurrent));
         }
 
@@ -76,14 +76,33 @@ public class LangLinks {
     }
 
     /**
+     * O endereço que o seletor usa para um idioma.
+     *
+     * <p>Numa porta de entrada, a porta do idioma pedido — mas a do idioma padrão é a raiz da
+     * aplicação, que não diz idioma nenhum: ali o resolver voltaria a decidir pelo cookie, e quem
+     * já tivesse escolhido outro idioma clicaria sem sair do lugar. Por isso a do padrão leva o
+     * {@code ?lang=}, que é o que registra a escolha. Fora das portas, a mesma tela com
+     * {@code ?lang=}.
+     */
+    private String chosenUrl(HttpServletRequest request, Locale locale, boolean entryPage) {
+        if (!entryPage) {
+            return switchUrl(request, locale);
+        }
+        String entry = entryUrl(request, locale);
+        return isDefault(locale) ? entry + "?" + PARAM + "=" + locale.getLanguage() : entry;
+    }
+
+    private boolean isDefault(Locale locale) {
+        return locale.getLanguage().equals(locales.defaultLocale().getLanguage());
+    }
+
+    /**
      * A porta de entrada de um idioma: a raiz da aplicação, no idioma padrão, e {@code /<código>/}
      * nos outros.
      */
     public String entryUrl(HttpServletRequest request, Locale locale) {
         String base = request.getContextPath() + "/";
-        return locale.getLanguage().equals(locales.defaultLocale().getLanguage())
-                ? base
-                : base + locale.getLanguage() + "/";
+        return isDefault(locale) ? base : base + locale.getLanguage() + "/";
     }
 
     /**
