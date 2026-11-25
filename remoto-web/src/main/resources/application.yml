@@ -45,6 +45,22 @@ remoto:
     run-days: 30             # execuções terminadas e não fixadas
     area-days: 30            # áreas sem uso (o cookie que as identifica dura o mesmo)
 
+# Descrição OpenAPI da API em /api, e o Swagger UI que a mostra. Os caminhos saem sob o
+# context-path: <domínio>/simulator/v3/api-docs e <domínio>/simulator/swagger-ui.html.
+# A API não tem login (ver SecurityConfig), então o Swagger UI não expõe nada que já não
+# estivesse aberto; para desligá-lo num ambiente, use SPRINGDOC_SWAGGERUI_ENABLED=false.
+springdoc:
+  # fora as páginas Thymeleaf e o /js/i18n.js: só a API REST entra na descrição
+  paths-to-match: /api/**
+  swagger-ui:
+    # o SecurityConfig usa csrf.spa(): a UI lê o cookie XSRF-TOKEN e manda o header
+    # X-XSRF-TOKEN, sem o que todo POST/PUT/DELETE do "Try it out" levaria 403
+    csrf:
+      enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+
 management:
   endpoints:
     web:

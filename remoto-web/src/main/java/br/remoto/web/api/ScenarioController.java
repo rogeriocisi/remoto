@@ -8,6 +8,7 @@ import br.remoto.storage.scenario.ScenarioRepository;
 import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,6 +35,7 @@ import java.util.NoSuchElementException;
  * Cenários públicos (só leitura) e cenários da sessão (CRUD com ETag/If-Match), com exportação e
  * importação em arquivos (.json, ou vários num .zip).
  */
+@Tag(name = "Scenarios", description = "Public scenarios, and the scenarios of the caller's own area")
 @RestController
 @RequestMapping("/api/scenarios")
 class ScenarioController {

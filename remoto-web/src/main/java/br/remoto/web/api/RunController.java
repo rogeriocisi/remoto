@@ -9,6 +9,7 @@ import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.ProgressHub;
 import br.remoto.web.sim.SimulationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /** Execuções: enviar, acompanhar (SSE), cancelar, baixar resultados em CSV ou PNG. */
+@Tag(name = "Runs", description = "Submitting simulations, following them, and downloading their results")
 @RestController
 @RequestMapping("/api/runs")
 class RunController {

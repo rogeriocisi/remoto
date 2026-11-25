@@ -8,6 +8,7 @@ import br.remoto.web.results.ResultCatalog;
 import br.remoto.web.results.ResultMenu;
 import br.remoto.web.results.ResultViews;
 import br.remoto.web.security.Caller;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.NoSuchElementException;
  * A tela de resultados do motor original: os menus de uma execução e cada gráfico (ou tabela), em
  * JSON para a página e em CSV para baixar, como a opção "file" do site antigo.
  */
+@Tag(name = "Results", description = "The result menu of a run, and the views built from it")
 @RestController
 @RequestMapping("/api/runs/{id}")
 class ResultsController {

@@ -376,6 +376,13 @@ Every path below is relative to the application's base path, which is `/simulato
 Requests that change data require the CSRF token (the `XSRF-TOKEN` cookie → the `X-XSRF-TOKEN`
 header). Errors follow RFC 9457 (`application/problem+json`).
 
+The same API, described in OpenAPI and generated from the controllers themselves, is at
+`/simulator/v3/api-docs`, and Swagger UI shows it at `/simulator/swagger-ui.html` — with
+"Try it out", which sends the CSRF header on its own. The description comes from springdoc
+(`springdoc.*` in `application.yml`, and `OpenApiConfig`); `SPRINGDOC_APIDOCS_ENABLED=false`
+and `SPRINGDOC_SWAGGERUI_ENABLED=false` turn each of the two off. The table above is the
+summary; the OpenAPI document is the one that cannot fall out of date.
+
 ## Scenario format (schemaVersion 1)
 
 ```json

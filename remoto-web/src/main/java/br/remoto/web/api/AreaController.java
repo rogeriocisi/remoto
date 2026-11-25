@@ -3,6 +3,7 @@ package br.remoto.web.api;
 import br.remoto.storage.area.AreaRepository;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.SimulationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import br.remoto.web.security.CallerResolver;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 /** A área do navegador: quanto ocupa, todos os arquivos num .zip e apagar tudo agora. */
+@Tag(name = "Area", description = "The caller's own area: what is in it, exporting it, erasing it")
 @RestController
 @RequestMapping("/api/me")
 class AreaController {
