@@ -8,6 +8,7 @@ import br.remoto.storage.scenario.ScenarioRepository;
 import br.remoto.web.i18n.Messages;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.InvalidScenarioException;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -50,44 +51,55 @@ class ScenarioController {
         this.files = files;
     }
 
+    @Operation(summary = "List the public scenarios",
+            description = "The whole catalogue, with every scenario in full: a few megabytes of JSON.")
     @GetMapping("/public")
     List<Scenario> publicScenarios() {
         return catalog.list();
     }
 
+    @Operation(summary = "One public scenario")
     @GetMapping("/public/{id}")
     Scenario publicScenario(@PathVariable String id) {
         return catalog.find(id).orElseThrow(() -> new NoSuchElementException(Messages.msg("scenario.public.notFound")));
     }
 
+    @Operation(summary = "Download a public scenario as a .json file")
     @GetMapping("/public/{id}/export")
     ResponseEntity<byte[]> exportPublic(@PathVariable String id) {
         return download(publicScenario(id));
     }
 
     /** Copia um cenário público para a área da sessão, onde ele pode ser editado. */
+    @Operation(summary = "Copy a public scenario into the caller's area, where it can be edited")
     @PostMapping("/public/{id}/copy")
     ResponseEntity<Scenario> copyPublic(Caller caller, @PathVariable String id) {
         return created(scenarios.create(caller.id(), publicScenario(id)));
     }
 
+    @Operation(summary = "List the scenarios of the area")
     @GetMapping
     List<Scenario> mine(Caller caller) {
         return scenarios.list(caller.id());
     }
 
+    @Operation(summary = "One scenario of the area, with its ETag")
     @GetMapping("/{id}")
     ResponseEntity<Scenario> get(Caller caller, @PathVariable String id) {
         Versioned<Scenario> v = find(caller, id);
         return ResponseEntity.ok().eTag(v.etag()).body(v.value());
     }
 
+    @Operation(summary = "Create a scenario in the area",
+            description = "The scenario is validated first; 422 comes back with the list of what is wrong.")
     @PostMapping
     ResponseEntity<Scenario> create(Caller caller, @RequestBody Scenario scenario) {
         validate(scenario);
         return created(scenarios.create(caller.id(), scenario));
     }
 
+    @Operation(summary = "Replace a scenario of the area",
+            description = "Send in If-Match the ETag that came with the scenario; if it changed meanwhile, the answer is 412 and nothing is written.")
     @PutMapping("/{id}")
     ResponseEntity<Scenario> update(Caller caller, @PathVariable String id,
                                     @RequestHeader(name = HttpHeaders.IF_MATCH, required = false) String ifMatch,
@@ -98,18 +110,21 @@ class ScenarioController {
         return ResponseEntity.ok().eTag(v.etag()).body(v.value());
     }
 
+    @Operation(summary = "Delete a scenario of the area")
     @DeleteMapping("/{id}")
     ResponseEntity<Void> delete(Caller caller, @PathVariable String id) {
         return scenarios.delete(caller.id(), id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 
     /** O cenário como arquivo .json, para guardar ou rodar na CLI. */
+    @Operation(summary = "Download a scenario as a .json file, to keep or to run in the CLI")
     @GetMapping("/{id}/export")
     ResponseEntity<byte[]> export(Caller caller, @PathVariable String id) {
         return download(find(caller, id).value());
     }
 
     /** Todos os cenários da sessão num .zip, um .json cada. */
+    @Operation(summary = "Download every scenario of the area as a .zip, one .json each")
     @GetMapping(path = "/export", produces = "application/zip")
     ResponseEntity<StreamingResponseBody> exportAll(Caller caller) {
         List<Scenario> mine = scenarios.list(caller.id());
@@ -120,6 +135,8 @@ class ScenarioController {
     }
 
     /** Importa arquivos .json e .zip; devolve os cenários criados e os arquivos recusados. */
+    @Operation(summary = "Import scenarios from .json and .zip files",
+            description = "Answers with the scenarios created and with the files it refused, one reason each.")
     @PostMapping(path = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ScenarioFiles.Imported importFiles(Caller caller, @RequestParam("files") List<MultipartFile> uploads) {
         ScenarioFiles.Imported imported = files.importFiles(caller.id(), uploads);

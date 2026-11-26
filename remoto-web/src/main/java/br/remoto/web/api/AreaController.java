@@ -3,6 +3,7 @@ package br.remoto.web.api;
 import br.remoto.storage.area.AreaRepository;
 import br.remoto.web.security.Caller;
 import br.remoto.web.sim.SimulationService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,12 +33,14 @@ class AreaController {
         this.simulations = simulations;
     }
 
+    @Operation(summary = "The caller's area and how much disk it is using")
     @GetMapping
     Area area(Caller caller) {
         return new Area(caller.id().value(), areas.diskUsageBytes(caller.id()));
     }
 
     /** Cenários e execuções da sessão, como estão gravados. */
+    @Operation(summary = "Download the whole area as a .zip")
     @GetMapping(path = "/export", produces = "application/zip")
     ResponseEntity<StreamingResponseBody> export(Caller caller) {
         StreamingResponseBody body = out -> areas.exportZip(caller.id(), out);
@@ -47,6 +50,8 @@ class AreaController {
     }
 
     /** Cancela as simulações, apaga a área e a esquece neste navegador, sem esperar a limpeza. */
+    @Operation(summary = "Erase the area and forget it in this browser",
+            description = "Cancels the running simulations, deletes the scenarios and the runs, and clears the cookie. Answers at once: the files are removed in the background.")
     @DeleteMapping
     ResponseEntity<Void> delete(Caller caller, HttpServletRequest request, HttpServletResponse response) {
         simulations.cancelAll(caller.id());

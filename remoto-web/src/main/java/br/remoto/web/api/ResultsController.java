@@ -8,6 +8,7 @@ import br.remoto.web.results.ResultCatalog;
 import br.remoto.web.results.ResultMenu;
 import br.remoto.web.results.ResultViews;
 import br.remoto.web.security.Caller;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,6 +43,8 @@ class ResultsController {
      * A tela de resultados é a do motor original. Execuções antigas do motor provisório (já
      * removido) gravaram saídas com os mesmos nomes, mas ficam com os gráficos simples.
      */
+    @Operation(summary = "The result menu of a run",
+            description = "What the run has to show, as the original engine lays it out. A run of any other engine answers with an empty menu.")
     @GetMapping("/menu")
     ResultMenu.Menu menu(Caller caller, @PathVariable String id) {
         Path dir = runs.resultsDir(caller.id(), find(caller, id).runId());
@@ -50,11 +53,15 @@ class ResultsController {
         return original ? ResultMenu.build(catalog(caller, id, dir), dir) : ResultMenu.none();
     }
 
+    @Operation(summary = "One view of the results: a chart, a table or its statistics",
+            description = "The parameters are the fields of the original result screen; the ones left out keep its defaults.")
     @GetMapping("/view")
     ResultViews.View view(Caller caller, @PathVariable String id, ViewParams p) {
         return views(caller, id).view(p.options());
     }
 
+    @Operation(summary = "The same view as a CSV download",
+            description = "The same parameters as /view, with every point: the browser gets a reduced series, the file does not.")
     @GetMapping(path = "/view.csv", produces = "text/csv")
     ResponseEntity<byte[]> csv(Caller caller, @PathVariable String id, ViewParams p) {
         ResultViews.Options o = p.options();
