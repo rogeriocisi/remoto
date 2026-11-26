@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,11 +45,16 @@ class ApiWriteRateFilter extends OncePerRequestFilter {
     /** Acima disto, os baldes cheios são varridos: um balde por endereço não cresce sem fim. */
     private static final int MANY_BUCKETS = 2_000;
 
+    private static final Logger log = LoggerFactory.getLogger(ApiWriteRateFilter.class);
+
     private final int perMinute;
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
     ApiWriteRateFilter(RemotoProperties props) {
         this.perMinute = props.limits().apiWritesPerMinute();
+        log.info(perMinute > 0
+                ? "Escritas da API: até " + perMinute + " por minuto do mesmo endereço"
+                : "Escritas da API: sem limite por endereço");
     }
 
     @Override
