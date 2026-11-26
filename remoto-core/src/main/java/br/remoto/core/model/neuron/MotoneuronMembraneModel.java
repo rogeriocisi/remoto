@@ -15,7 +15,8 @@ import java.util.function.DoubleUnaryOperator;
  * <p>Fora daqui ficam os detalhes da formulação atual, como o canal de pulso do cálcio
  * ({@link MotoneuronMembrane#ca()}), que só quem conhece a implementação concreta usa.
  */
-public sealed interface MotoneuronMembraneModel extends Membrane permits MotoneuronMembrane {
+public sealed interface MotoneuronMembraneModel extends Membrane
+        permits MotoneuronMembrane, ContinuousMotoneuronMembrane {
 
     /** Integra o dendrito por um passo, a partir de {@code t}. */
     void stepDendrite(double t);
