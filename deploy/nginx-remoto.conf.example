@@ -51,6 +51,18 @@ server {
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 
+    # o actuator é interno: fica acessível na máquina (é o que o deploy consulta), não de fora
+    location /simulator/actuator {
+        return 404;
+    }
+
+    # O Tomcat também redireciona /simulator para /simulator/, mas sem o X-Forwarded-Proto
+    # (SERVER_FORWARD_HEADERS_STRATEGY) o endereço dele sairia em http, e o navegador faria uma
+    # volta a mais; aqui o redirecionamento já sai certo.
+    location = /simulator {
+        return 301 /simulator/;
+    }
+
     # ---- o simulador ----
     # O app roda com context-path /simulator (application.yml), então o caminho segue inteiro:
     # proxy_pass sem caminho nenhum, para o nginx não reescrever nada.

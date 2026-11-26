@@ -26,6 +26,11 @@ exemplo.org {
 	@interno path /simulator/actuator /simulator/actuator/*
 	respond @interno 404
 
+	# O Tomcat também redireciona /simulator para /simulator/, mas esse redirecionamento sai
+	# antes de os cabeçalhos de proxy valerem, e por isso em http: o navegador daria uma volta
+	# a mais, em texto claro. Aqui ele já sai certo.
+	redir /simulator /simulator/ 301
+
 	# O domínio inteiro vai para o serviço: ele serve o site na raiz e o simulador em
 	# /simulator/, e o caminho segue sem reescrita. A porta é a SERVER_PORT do remoto.env.
 	reverse_proxy 127.0.0.1:8081

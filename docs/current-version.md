@@ -109,7 +109,8 @@ sudo useradd --system --home-dir /var/lib/remoto --shell /usr/sbin/nologin remot
 sudo install -d -o remoto -g remoto -m 750 /var/lib/remoto
 sudo install -D -m 644 remoto-web/target/remoto-web-4.0.0-SNAPSHOT.jar /opt/remoto/remoto-web.jar
 sudo mkdir -p /opt/remoto/scenarios && sudo cp scenarios/*.json /opt/remoto/scenarios/
-sudo install -d -o remoto -g remoto -m 755 /var/www/remoto   # the pages of the site (REMOTO_SITE_DIR)
+sudo install -d -m 755 /var/www/remoto     # the pages of the site (REMOTO_SITE_DIR), readable by everyone
+sudo cp -a docs/. /var/www/remoto/         # with the automatic deployment, rsync keeps this folder in step
 sudo install -D -m 600 deploy/remoto.env.example /etc/remoto/remoto.env   # edit: port, folders, limits
 
 # 4. Service
@@ -143,6 +144,13 @@ deployment's health check asks for it on the machine itself.
   `sudo systemctl restart remoto`. Either way, running simulations are cancelled and queued ones
   are marked as interrupted; the scenarios and finished simulations of each area stay where they
   are.
+- **A server set up before the application served the site:** two things on the machine, which
+  the deployment does not touch. In `/etc/remoto/remoto.env`, `REMOTO_SITE_DIR=/var/www/remoto`
+  (the folder the deployment already mirrors), and then `sudo systemctl restart remoto`; after
+  that, `curl -s http://127.0.0.1:8081/ | head -3` answers with the site. Then the reverse proxy:
+  the examples in `deploy/` no longer have a static root, so copy the new one and reload
+  (`sudo nginx -t && sudo systemctl reload nginx`). In this order nothing goes down, because until
+  the proxy is reloaded it keeps serving the same files itself.
 - **Backup:** optional. The areas live in `/var/lib/remoto/sessions` and last up to 30 days
   without use; copying that folder preserves the work of whoever is using the site (when moving to
   another machine, for example). The public scenarios are in Git, and what is meant to last each
