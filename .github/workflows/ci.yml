@@ -23,7 +23,8 @@ jobs:
 
   # Todo push no master que passa nos testes vai para produção: o site estático e o simulador.
   # Onde é "produção" não está no repositório — vem dos Secrets e Variables do GitHub (README,
-  # seção "Deployment"). Sem eles configurados, este job não envia nada e não falha.
+  # seção "Installing on a server, and deploying"). Sem eles configurados, este job não envia nada
+  # e não falha.
   deploy:
     needs: build
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'

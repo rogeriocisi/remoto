@@ -98,7 +98,15 @@ template (`remoto.env.example`) and the reverse-proxy examples (`nginx-remoto.co
 `Caddyfile.example`).
 
 ```bash
-# 1. JDK 25 (Temurin, Corretto or the distribution's package)
+# 0. The name, before anything else: an A record for the domain pointing at this machine, since
+#    the certificate is only issued once it resolves. In the firewall, 80 and 443 are enough —
+#    the service listens on loopback (SERVER_ADDRESS in remoto.env).
+dig +short your-domain
+
+# 1. JDK 25 (Temurin, Corretto or the distribution's package). The service needs a JRE; building
+#    the JAR needs the JDK. If the machine's "java" is an older one, leave it alone and point the
+#    unit at the right binary (step 4): systemctl edit remoto, then
+#    ExecStart=/usr/lib/jvm/java-25-openjdk-amd64/bin/java $JAVA_OPTS -jar /opt/remoto/remoto-web.jar
 java -version
 
 # 2. Build the JAR (on your machine or on the server itself)
@@ -107,10 +115,11 @@ java -version
 # 3. System user, folders and files
 sudo useradd --system --home-dir /var/lib/remoto --shell /usr/sbin/nologin remoto
 sudo install -d -o remoto -g remoto -m 750 /var/lib/remoto
-sudo install -D -m 644 remoto-web/target/remoto-web-4.0.0-SNAPSHOT.jar /opt/remoto/remoto-web.jar
+sudo install -D -m 644 remoto-web/target/remoto-web-*.jar /opt/remoto/remoto-web.jar
 sudo mkdir -p /opt/remoto/scenarios && sudo cp scenarios/*.json /opt/remoto/scenarios/
 sudo install -d -m 755 /var/www/remoto     # the pages of the site (REMOTO_SITE_DIR), readable by everyone
-sudo cp -a docs/. /var/www/remoto/         # with the automatic deployment, rsync keeps this folder in step
+sudo cp -a docs/. /var/www/remoto/         # the folder belongs to whoever writes it: root by hand, and
+                                           # the deploy user once the automatic deployment mirrors it
 sudo install -D -m 600 deploy/remoto.env.example /etc/remoto/remoto.env   # edit: port, folders, limits
 
 # 4. Service
@@ -118,10 +127,18 @@ sudo cp deploy/remoto.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable --now remoto
 
-# 5. Follow it
+# 5. Follow it, and check that both halves answer
 systemctl status remoto
 journalctl -u remoto -f
-curl -s http://localhost:8081/simulator/actuator/health
+curl -s http://localhost:8081/simulator/actuator/health      # {"status":"UP"}
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8081/              # 200: the site
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8081/simulator/    # 200: the simulator
+
+# 6. The reverse proxy, from the example of your server (deploy/), with the domain changed
+sudo cp deploy/nginx-remoto.conf.example /etc/nginx/sites-available/remoto
+sudo ln -s /etc/nginx/sites-available/remoto /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d your-domain          # Caddy obtains the certificate by itself
 ```
 
 The app runs with `context-path` `/simulator` (`application.yml`, overridable by
@@ -140,7 +157,7 @@ deployment's health check asks for it on the machine itself.
 - **Updating:** it is automatic. Every push to `master` that passes the tests sends the site, the
   public scenarios and the new JAR to the server and restarts the service (the `deploy` job of
   `.github/workflows/ci.yml`; the *Secrets* and *Variables* are in the README, section
-  "Deployment"). By hand, replace `/opt/remoto/remoto-web.jar` and run
+  "Installing on a server, and deploying"). By hand, replace `/opt/remoto/remoto-web.jar` and run
   `sudo systemctl restart remoto`. Either way, running simulations are cancelled and queued ones
   are marked as interrupted; the scenarios and finished simulations of each area stay where they
   are.

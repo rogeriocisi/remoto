@@ -108,7 +108,7 @@ java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar export-legacy --db leg
 
 `sweep` runs a scenario once for each value of a parameter and writes one row of measures per run to `sweep.csv`: `--protocol hm` is the H-reflex and M-wave recruitment curve (stimulus intensity), `--protocol force` the force variability (ISI mean of a descending tract), and `--param` with `--measure` any other batch (see `sweep --help`). `export-legacy` converts configurations from the old HSQLDB database file into JSON scenarios (it reads the file directly; HSQLDB is not needed). `--threads` sets how many threads update the neurons (default: CPU cores); the results are identical, bit for bit, with any value.
 
-### Deployment
+### Installing on a server, and deploying
 
 The site and the simulator are one system on one domain, and one service serves both: a single executable JAR with an embedded web server, installed as a systemd service, which answers at `/simulator` with the simulator and at the root with the descriptive pages of [docs/](docs/), read from the folder the deployment mirrors (`REMOTO_SITE_DIR`). The reverse proxy in front (nginx or Caddy) does the TLS and the compression and passes the whole domain through. There are no accounts to manage: no login, passwords or identity providers.
 
@@ -120,9 +120,26 @@ The site and the simulator are one system on one domain, and one service serves 
 
 The pages redirect to the reader's language on the first visit, and the language selector of every page keeps the choice.
 
-**The deployment domain is not in this repository.** Addresses inside the pages are relative, the contact e-mail is built from the host the page is served from — `remoto@<domain>`, see [docs/assets/site.js](docs/assets/site.js) — and where to deploy comes from this repository's GitHub settings, below.
+**The deployment domain is not in this repository.** Addresses inside the pages are relative, and the contact e-mail is built from the host the page is served from — `remoto@<domain>`, see [docs/assets/site.js](docs/assets/site.js).
+
+#### Installing the service (start here)
+
+Installing and deploying are two different things. To put ReMoto on a Linux server you only need the installation; the GitHub Actions deployment described after it is optional, and is worth setting up once the service already runs.
+
+The installation is a dozen commands and needs nothing from GitHub: the DNS record, JDK 25, building the JAR, the `remoto` system user, `/opt/remoto`, `/var/lib/remoto` and `/var/www/remoto` (the pages of the site, which the service itself serves at the root), the `remoto.env` configuration, the systemd unit, and the reverse proxy with TLS. They are in the **"Installing on the server (Linux, no Docker)"** section of [docs/current-version.md](docs/current-version.md#installing-on-the-server-linux-no-docker), which also explains why the application serves the site itself and answers at `/simulator`. The files that section installs are in [deploy/](deploy/):
+
+| File | What |
+|---|---|
+| [`remoto.service`](deploy/remoto.service) | the systemd unit |
+| [`remoto.env.example`](deploy/remoto.env.example) | the configuration: port, folders, limits |
+| [`nginx-remoto.conf.example`](deploy/nginx-remoto.conf.example) | the reverse proxy for nginx, with the `certbot` command for the certificate |
+| [`Caddyfile.example`](deploy/Caddyfile.example) | the same for Caddy, which obtains the certificate by itself |
+
+With the service running, updating it by hand is replacing `/opt/remoto/remoto-web.jar` and `sudo systemctl restart remoto`. Everything below automates exactly that.
 
 #### Every push to `master` deploys
+
+Where to deploy is not in this repository either: it comes from this repository's GitHub settings, in the two tables below.
 
 A push to `master` that passes the tests deploys the whole system. The `deploy` job of [.github/workflows/ci.yml](.github/workflows/ci.yml) builds the JAR, keeps it as a workflow artifact (so a rollback needs no rebuild), mirrors `docs/` and `scenarios/` to the server with `rsync --delete`, installs the JAR, restarts the service and waits for its health endpoint to answer. It can also be started by hand, with "Run workflow" on the Actions tab.
 
@@ -153,7 +170,11 @@ The address is a secret rather than a variable so that it stays masked in the pu
 
 The `pages` job publishes the same `docs/` to GitHub Pages; for it to run, *Settings → Pages → Source* must be **GitHub Actions**.
 
-#### On the server, once
+#### On the server, once (what the deployment needs)
+
+This is only for the automatic deployment: the installation above does not need it. It comes
+after the installation, and hands the folders it writes — `/opt/remoto` and `/var/www/remoto` —
+to the `deploy` user; the `remoto` user only reads them.
 
 ```bash
 # the deploy user, and rsync, which the deployment needs on both ends
