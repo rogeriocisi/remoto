@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import br.remoto.core.model.channel.PulseChannel;
 import br.remoto.core.model.neuron.MotoneuronMembrane;
-import br.remoto.core.model.neuron.SpinalMembrane;
+import br.remoto.core.model.neuron.MotoneuronMembraneModel;
 import br.remoto.core.model.neuron.AxonNode;
 import br.remoto.core.simulation.Nerve;
 import br.remoto.core.simulation.ReMoto;
@@ -52,7 +52,11 @@ public class Motoneuron extends SpinalNeuron
 		reset();
 	}
 
-	public MotoneuronMembrane membrane()
+	/**
+	 * The membrane as the simulation sees it. The field keeps the concrete type because the
+	 * calcium pulse channel below belongs to the original formulation, not to the contract.
+	 */
+	public MotoneuronMembraneModel membrane()
 	{
 		return membrane;
 	}

@@ -3,7 +3,8 @@ package br.remoto.core.simulation.neuron;
 import java.util.ArrayList;
 
 import br.remoto.core.model.channel.PulseChannel;
-import br.remoto.core.model.neuron.MotoneuronMembrane;
+import br.remoto.core.model.neuron.Membrane;
+import br.remoto.core.model.neuron.MotoneuronMembraneModel;
 import br.remoto.core.model.neuron.SpinalMembrane;
 import br.remoto.core.model.synapse.SynapseGroup;
 import br.remoto.core.simulation.Current;
@@ -39,7 +40,7 @@ public abstract class SpinalNeuron extends Neuron
 	}
 
 	/** The membrane of this neuron, in br.remoto.core.model.neuron. */
-	public abstract SpinalMembrane membrane();
+	public abstract Membrane membrane();
 
 	public void reset()
 	{
@@ -70,14 +71,18 @@ public abstract class SpinalNeuron extends Neuron
 			injectionStepTime = t;
 			injectionRecorded = false;
 
-			SpinalMembrane m = membrane();
+			Membrane m = membrane();
 
 			signalStore.add( new Signal(ReMoto.Vd, getVd(), t) );
 			signalStore.add( new Signal(ReMoto.Vs, m.vs(), t) );
 
-			signalStore.add( new Signal(ReMoto.gNa, m.na().lastValue(), t) );
-			signalStore.add( new Signal(ReMoto.gKf, m.kf().lastValue(), t) );
-			signalStore.add( new Signal(ReMoto.gKs, m.ks().lastValue(), t) );
+			// The pulse channels belong to the original formulation, not to every membrane
+			if( m instanceof SpinalMembrane p )
+			{
+				signalStore.add( new Signal(ReMoto.gNa, p.na().lastValue(), t) );
+				signalStore.add( new Signal(ReMoto.gKf, p.kf().lastValue(), t) );
+				signalStore.add( new Signal(ReMoto.gKs, p.ks().lastValue(), t) );
+			}
 
 			if( m.dendExcit() != null ) signalStore.add( new Signal(ReMoto.gExcDend, m.dendExcit().lastValue(), t) );
 			if( m.dendInhib() != null ) signalStore.add( new Signal(ReMoto.gInibDend, m.dendInhib().lastValue(), t) );
@@ -120,13 +125,13 @@ public abstract class SpinalNeuron extends Neuron
 	}
 
 	// Only motoneurons have a dendritic compartment
-	private MotoneuronMembrane dendrite()
+	private MotoneuronMembraneModel dendrite()
 	{
-		return (MotoneuronMembrane)membrane();
+		return (MotoneuronMembraneModel)membrane();
 	}
 
 	public double getCapacitanceDend() {
-		return membrane() instanceof MotoneuronMembrane m ? m.capacitanceDend() : 0;
+		return membrane() instanceof MotoneuronMembraneModel m ? m.capacitanceDend() : 0;
 	}
 	public void setCapacitanceDend(double capacitanceDend) {
 		dendrite().setCapacitanceDend(capacitanceDend);
@@ -138,13 +143,13 @@ public abstract class SpinalNeuron extends Neuron
 		membrane().setCapacitanceSoma(capacitanceSoma);
 	}
 	public double getGCoupling() {
-		return membrane() instanceof MotoneuronMembrane m ? m.gCoupling() : 0;
+		return membrane() instanceof MotoneuronMembraneModel m ? m.gCoupling() : 0;
 	}
 	public void setGCoupling(double coupling) {
 		dendrite().setGCoupling(coupling);
 	}
 	public double getGLeakDend() {
-		return membrane() instanceof MotoneuronMembrane m ? m.gLeakDend() : 0;
+		return membrane() instanceof MotoneuronMembraneModel m ? m.gLeakDend() : 0;
 	}
 	public void setGLeakDend(double leakDend) {
 		dendrite().setGLeakDend(leakDend);
@@ -172,13 +177,13 @@ public abstract class SpinalNeuron extends Neuron
 		membrane().setThreshold(threshold);
 	}
 	public double getThresholdCa() {
-		return membrane() instanceof MotoneuronMembrane m ? m.thresholdCa() : 0;
+		return membrane() instanceof MotoneuronMembraneModel m ? m.thresholdCa() : 0;
 	}
 	public void setThresholdCa(double thresholdCa) {
 		dendrite().setThresholdCa(thresholdCa);
 	}
 	public double getVd() {
-		return membrane() instanceof MotoneuronMembrane m ? m.vd() : 0;
+		return membrane() instanceof MotoneuronMembraneModel m ? m.vd() : 0;
 	}
 	public void setVd(double vd) {
 		dendrite().setVd(vd);
@@ -190,22 +195,22 @@ public abstract class SpinalNeuron extends Neuron
 		membrane().setVs(vs);
 	}
 	public PulseChannel getGKf() {
-		return membrane().kf();
+		return membrane() instanceof SpinalMembrane p ? p.kf() : null;
 	}
 	public void setGKf(PulseChannel gK) {
-		membrane().setKf(gK);
+		if( membrane() instanceof SpinalMembrane p ) p.setKf(gK);
 	}
 	public PulseChannel getGNa() {
-		return membrane().na();
+		return membrane() instanceof SpinalMembrane p ? p.na() : null;
 	}
 	public void setGNa(PulseChannel gNa) {
-		membrane().setNa(gNa);
+		if( membrane() instanceof SpinalMembrane p ) p.setNa(gNa);
 	}
 	public PulseChannel getGKs() {
-		return membrane().ks();
+		return membrane() instanceof SpinalMembrane p ? p.ks() : null;
 	}
 	public void setGKs(PulseChannel ks) {
-		membrane().setKs(ks);
+		if( membrane() instanceof SpinalMembrane p ) p.setKs(ks);
 	}
 	public SynapseGroup getDendInhibSynapses() {
 		return membrane().dendInhib();
@@ -232,7 +237,7 @@ public abstract class SpinalNeuron extends Neuron
 		membrane().setTSomaSpike(somaSpike);
 	}
 	public double getTDendritePIC() {
-		return membrane() instanceof MotoneuronMembrane m ? m.tDendritePIC() : 0;
+		return membrane() instanceof MotoneuronMembraneModel m ? m.tDendritePIC() : 0;
 	}
 	public void setTDendriteSpike(double dendritePIC) {
 		dendrite().setTDendritePIC(dendritePIC);
