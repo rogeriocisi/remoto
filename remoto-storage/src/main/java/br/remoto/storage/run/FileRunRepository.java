@@ -6,6 +6,7 @@ import br.remoto.storage.Hashing;
 import br.remoto.storage.Ids;
 import br.remoto.storage.JsonCodec;
 import br.remoto.storage.StorageFiles;
+import br.remoto.storage.StorageGuard;
 import br.remoto.storage.UserId;
 import br.remoto.storage.UserLocks;
 
@@ -45,15 +46,22 @@ public final class FileRunRepository implements RunRepository {
     private final DataLayout layout;
     private final JsonCodec json;
     private final UserLocks locks;
+    private final StorageGuard guard;
 
     public FileRunRepository(DataLayout layout, JsonCodec json, UserLocks locks) {
+        this(layout, json, locks, StorageGuard.NONE);
+    }
+
+    public FileRunRepository(DataLayout layout, JsonCodec json, UserLocks locks, StorageGuard guard) {
         this.layout = layout;
         this.json = json;
         this.locks = locks;
+        this.guard = guard;
     }
 
     @Override
     public RunManifest create(UserId owner, Scenario scenario, String engineVersion) {
+        guard.requireRoom(owner);
         String runId = Ids.newId();
         byte[] config = json.toBytes(scenario);
         RunManifest manifest = new RunManifest(runId, owner.value(), scenario.id(), scenario.name(),
@@ -199,6 +207,7 @@ public final class FileRunRepository implements RunRepository {
 
     @Override
     public RunManifest importZip(UserId owner, InputStream zip) {
+        guard.requireRoom(owner);
         String runId = Ids.newId();
         Path dir = layout.runDir(owner, runId);
         byte[] manifestBytes = null;

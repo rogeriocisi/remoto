@@ -4,6 +4,7 @@ import br.remoto.core.engine.Engines;
 import br.remoto.core.engine.legacy.LegacyEngine;
 import br.remoto.storage.DataLayout;
 import br.remoto.storage.JsonCodec;
+import br.remoto.storage.StorageGuard;
 import br.remoto.storage.UserLocks;
 import br.remoto.storage.area.AreaRepository;
 import br.remoto.storage.area.FileAreaRepository;
@@ -12,6 +13,7 @@ import br.remoto.storage.run.RunRepository;
 import br.remoto.storage.scenario.FileScenarioRepository;
 import br.remoto.storage.scenario.PublicScenarioCatalog;
 import br.remoto.storage.scenario.ScenarioRepository;
+import br.remoto.web.sim.StorageQuota;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -44,14 +46,26 @@ class StorageConfig {
         return new UserLocks();
     }
 
+    /**
+     * O teto do disco, consultado pelos repositórios antes de a área crescer. Zero é sem limite,
+     * o padrão de quem roda no próprio computador.
+     */
     @Bean
-    ScenarioRepository scenarioRepository(DataLayout layout, JsonCodec json, UserLocks locks) {
-        return new FileScenarioRepository(layout, json, locks);
+    StorageQuota storageQuota(DataLayout layout, RemotoProperties props) {
+        long area = props.storage().maxAreaBytes().toBytes();
+        long all = props.storage().maxTotalBytes().toBytes();
+        log.info("Cota de disco: por área, {} | no total, {}", StorageQuota.describe(area), StorageQuota.describe(all));
+        return new StorageQuota(layout, area, all);
     }
 
     @Bean
-    RunRepository runRepository(DataLayout layout, JsonCodec json, UserLocks locks) {
-        return new FileRunRepository(layout, json, locks);
+    ScenarioRepository scenarioRepository(DataLayout layout, JsonCodec json, UserLocks locks, StorageGuard quota) {
+        return new FileScenarioRepository(layout, json, locks, quota);
+    }
+
+    @Bean
+    RunRepository runRepository(DataLayout layout, JsonCodec json, UserLocks locks, StorageGuard quota) {
+        return new FileRunRepository(layout, json, locks, quota);
     }
 
     @Bean

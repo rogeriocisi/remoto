@@ -2,6 +2,7 @@ package br.remoto.web.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.util.unit.DataSize;
 
 import java.util.List;
 
@@ -23,7 +24,8 @@ public record RemotoProperties(
         @DefaultValue("./docs") String siteDir,
         @DefaultValue({"en", "pt"}) List<String> languages,
         @DefaultValue Simulation simulation,
-        @DefaultValue Retention retention) {
+        @DefaultValue Retention retention,
+        @DefaultValue Storage storage) {
 
     /**
      * @param slots            simulações simultâneas no servidor; 0 = número de núcleos da CPU
@@ -62,5 +64,19 @@ public record RemotoProperties(
      *                   deste prazo; o cookie que identifica a área dura o mesmo
      */
     public record Retention(@DefaultValue("30") int runDays, @DefaultValue("30") int areaDays) {
+    }
+
+    /**
+     * Quanto o disco pode crescer (ver {@code StorageQuota}). Zero, o padrão, é sem limite: num
+     * computador pessoal não faz sentido limitar. Num servidor aberto faz, e aí os dois valem
+     * juntos — o primeiro segura o uso exagerado de quem está de boa-fé, e o segundo protege a
+     * máquina de quem não está, já que um cookie novo é uma área nova.
+     *
+     * @param maxAreaBytes  o que uma área (um navegador) pode ocupar; 0 = sem limite
+     * @param maxTotalBytes o que todas as áreas somadas podem ocupar; 0 = sem limite
+     */
+    public record Storage(
+            @DefaultValue("0") DataSize maxAreaBytes,
+            @DefaultValue("0") DataSize maxTotalBytes) {
     }
 }

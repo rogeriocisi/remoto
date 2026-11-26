@@ -232,6 +232,15 @@ data/
   area of the same address, and `max-queued-total` (200 by default), the ceiling of the server's
   queue; both answer `429` and accept 0 to turn them off. A room with everyone behind the same
   address (NAT) shares the per-origin limit: raise it if that is the case.
+- The queue limits bound the CPU; what bounds the disk is `remoto.storage`:
+  `max-area-bytes`, what one area may hold, and `max-total-bytes`, what every area together may
+  hold. Both are 0 (no limit) by default, which is the right thing on a personal computer, and
+  both answer `429` with the reason when reached. On an open server the two work as a pair: the
+  first holds back the heavy visitor acting in good faith, the second protects the machine from
+  the one who is not, since a new cookie is a new area. They are checked before the writes that
+  grow — submitting a run, importing, saving a scenario — and never during a run, so a simulation
+  that started finishes writing its results. Reading, exporting and deleting keep working at the
+  ceiling, which is how someone gets back under it.
 - A real limit: **one server instance**. Several machines would need a shared queue and common
   storage (S3/MinIO) — see the proposal.
 

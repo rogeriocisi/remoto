@@ -49,6 +49,13 @@ remoto:
   retention:
     run-days: 30             # execuções terminadas e não fixadas
     area-days: 30            # áreas sem uso (o cookie que as identifica dura o mesmo)
+  storage:
+    # Teto do disco. Zero é sem limite, que é o certo num computador pessoal. Num servidor
+    # aberto os dois valem juntos: o por área segura o uso exagerado de quem está de boa-fé, e
+    # o total protege a máquina de quem não está, já que um cookie novo é uma área nova. Ver
+    # deploy/remoto.env.example para valores de servidor.
+    max-area-bytes: 0        # o que uma área (um navegador) pode ocupar; REMOTO_STORAGE_MAX_AREA_BYTES
+    max-total-bytes: 0       # o que todas somadas podem ocupar; REMOTO_STORAGE_MAX_TOTAL_BYTES
 
 # Descrição OpenAPI da API em /api, e o Swagger UI que a mostra. Os caminhos saem sob o
 # context-path: <domínio>/simulator/v3/api-docs e <domínio>/simulator/swagger-ui.html.

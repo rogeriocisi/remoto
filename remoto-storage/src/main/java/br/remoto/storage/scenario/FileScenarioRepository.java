@@ -7,6 +7,7 @@ import br.remoto.storage.Ids;
 import br.remoto.storage.JsonCodec;
 import br.remoto.storage.StaleWriteException;
 import br.remoto.storage.StorageFiles;
+import br.remoto.storage.StorageGuard;
 import br.remoto.storage.UserId;
 import br.remoto.storage.UserLocks;
 import br.remoto.storage.Versioned;
@@ -26,11 +27,17 @@ public final class FileScenarioRepository implements ScenarioRepository {
     private final DataLayout layout;
     private final JsonCodec json;
     private final UserLocks locks;
+    private final StorageGuard guard;
 
     public FileScenarioRepository(DataLayout layout, JsonCodec json, UserLocks locks) {
+        this(layout, json, locks, StorageGuard.NONE);
+    }
+
+    public FileScenarioRepository(DataLayout layout, JsonCodec json, UserLocks locks, StorageGuard guard) {
         this.layout = layout;
         this.json = json;
         this.locks = locks;
+        this.guard = guard;
     }
 
     @Override
@@ -56,12 +63,14 @@ public final class FileScenarioRepository implements ScenarioRepository {
 
     @Override
     public Versioned<Scenario> create(UserId owner, Scenario scenario) {
+        guard.requireRoom(owner);
         Scenario stored = scenario.withId(Ids.newId());
         return locks.withLock(owner, () -> write(owner, stored));
     }
 
     @Override
     public Versioned<Scenario> update(UserId owner, Scenario scenario, String expectedEtag) {
+        guard.requireRoom(owner);
         Ids.requireSafe(scenario.id());
         return locks.withLock(owner, () -> {
             Versioned<Scenario> current = find(owner, scenario.id())
