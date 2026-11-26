@@ -55,6 +55,11 @@ const TYPES = {
 // ---- o simulador, por trás ---------------------------------------------------------------------
 // O proxy é transparente de propósito: mesmo método, mesmos cabeçalhos e o corpo em fluxo, sem
 // buffer, que é o que o /api/runs/{id}/events (SSE) precisa para chegar evento a evento.
+//
+// O Host vai como o navegador o mandou (esta porta, não a do simulador): é dele que o Spring tira
+// os endereços absolutos que escreve, e entre eles o "Servers" da descrição OpenAPI, que é para
+// onde o "Try it out" do Swagger UI manda as chamadas. Com o Host trocado, o Swagger aberto aqui
+// chamaria a porta do simulador, de outra origem, e o navegador barraria por CORS.
 function proxy(req, res) {
   const upstream = httpRequest(
     {
@@ -63,7 +68,7 @@ function proxy(req, res) {
       port: simulator.port,
       method: req.method,
       path: req.url,
-      headers: { ...req.headers, host: simulator.host },
+      headers: { ...req.headers, 'x-forwarded-host': req.headers.host, 'x-forwarded-proto': 'http' },
     },
     (answer) => {
       const headers = { ...answer.headers };
