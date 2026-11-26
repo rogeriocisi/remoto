@@ -241,6 +241,12 @@ data/
   grow — submitting a run, importing, saving a scenario — and never during a run, so a simulation
   that started finishes writing its results. Reading, exporting and deleting keep working at the
   ceiling, which is how someone gets back under it.
+- Those limits count simulations; what counts requests is `remoto.limits.api-writes-per-minute`,
+  a bucket of tokens per address that refills over the minute, applied to `POST`, `PUT`, `PATCH`
+  and `DELETE` under `/api/**` and answering `429` with `Retry-After`. It is the limit the
+  per-area quotas cannot give: a new cookie is a new area, but the address stays the same. It is
+  0 (off) by default, and it leaves the pages alone — they send htmx fragments, which do not swap
+  on a 4xx, and they already meet the queue and disk limits, which they know how to show.
 - A real limit: **one server instance**. Several machines would need a shared queue and common
   storage (S3/MinIO) — see the proposal.
 

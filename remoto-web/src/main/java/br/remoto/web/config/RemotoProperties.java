@@ -25,7 +25,8 @@ public record RemotoProperties(
         @DefaultValue({"en", "pt"}) List<String> languages,
         @DefaultValue Simulation simulation,
         @DefaultValue Retention retention,
-        @DefaultValue Storage storage) {
+        @DefaultValue Storage storage,
+        @DefaultValue Limits limits) {
 
     /**
      * @param slots            simulações simultâneas no servidor; 0 = número de núcleos da CPU
@@ -78,5 +79,14 @@ public record RemotoProperties(
     public record Storage(
             @DefaultValue("0") DataSize maxAreaBytes,
             @DefaultValue("0") DataSize maxTotalBytes) {
+    }
+
+    /**
+     * Limites por endereço de quem chama, e não por área: sem login, trocar de cookie é trocar
+     * de área, mas o endereço continua o mesmo (ver {@code ApiWriteRateFilter}).
+     *
+     * @param apiWritesPerMinute escritas da API aceitas por minuto do mesmo endereço; 0 = sem limite
+     */
+    public record Limits(@DefaultValue("0") int apiWritesPerMinute) {
     }
 }

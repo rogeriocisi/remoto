@@ -56,6 +56,11 @@ remoto:
     # deploy/remoto.env.example para valores de servidor.
     max-area-bytes: 0        # o que uma área (um navegador) pode ocupar; REMOTO_STORAGE_MAX_AREA_BYTES
     max-total-bytes: 0       # o que todas somadas podem ocupar; REMOTO_STORAGE_MAX_TOTAL_BYTES
+  limits:
+    # Escritas da API por minuto do mesmo endereço (0 = sem limite). É o limite que as cotas por
+    # área não dão: sem login, trocar de cookie é trocar de área, mas o endereço é o mesmo. Vale
+    # só para /api/** e só para POST/PUT/PATCH/DELETE; as telas seguem pelos limites de fila.
+    api-writes-per-minute: 0   # REMOTO_LIMITS_API_WRITES_PER_MINUTE
 
 # Descrição OpenAPI da API em /api, e o Swagger UI que a mostra. Os caminhos saem sob o
 # context-path: <domínio>/simulator/v3/api-docs e <domínio>/simulator/swagger-ui.html.
