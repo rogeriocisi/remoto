@@ -172,6 +172,15 @@ public final class MotoneuronMembrane extends SpinalMembrane implements Motoneur
         this.tDendritePIC = t;
     }
 
+    /**
+     * O último valor do canal de pulso do cálcio (µS). Aqui o ganho γ entra na corrente, não na
+     * condutância, então o valor é o do canal, como o original gravava.
+     */
+    @Override
+    public double calciumConductance() {
+        return ca == null ? 0 : ca.lastValue();
+    }
+
     public PulseChannel ca() {
         return ca;
     }

@@ -2,6 +2,7 @@ package br.remoto.core.simulation.neuron;
 
 import br.remoto.core.model.neuron.AfferentSettings;
 import br.remoto.core.model.neuron.MembraneSettings;
+import br.remoto.core.simulation.ReMoto;
 
 import java.io.Serializable;
 
@@ -22,6 +23,17 @@ public class Miscellaneous implements Serializable, MembraneSettings, AfferentSe
 	private double ibInSomaRefractoryPeriod;
 	private double afAxonRefractoryPeriod;
 	private double gIISomaRefractoryPeriod;
+
+	/** Qual membrana os motoneurônios usam; sem valor, a de pulso do original. */
+	private String motoneuronModel = ReMoto.mnModelPulse;
+
+	public String getMotoneuronModel() {
+		return motoneuronModel == null ? ReMoto.mnModelPulse : motoneuronModel;
+	}
+
+	public void setMotoneuronModel(String motoneuronModel) {
+		this.motoneuronModel = motoneuronModel;
+	}
 
 	public double getGammaCa() {
 		return gammaCa;

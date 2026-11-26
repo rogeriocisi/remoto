@@ -300,7 +300,7 @@ public final class ResultMenu {
     private static List<Option> conductances(boolean motoneuron) {
         List<Option> list = new ArrayList<>();
         for (String g : Graphics.CONDUCTANCES) {
-            if (motoneuron || !g.equals("gCa")) {
+            if (motoneuron || !Graphics.MOTONEURON_ONLY.contains(g)) {
                 list.add(new Option(g, g));
             }
         }

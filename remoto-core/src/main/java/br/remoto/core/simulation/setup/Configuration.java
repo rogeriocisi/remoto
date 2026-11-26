@@ -60,6 +60,8 @@ public class Configuration implements Serializable
 	private String cdSpindleModel;
 	private String cdGtoModel;
 	private String cdEMGModel;
+	/** Membrana dos motoneurônios; sem valor, a de pulso do original. */
+	private String cdMotoneuronModel = ReMoto.mnModelPulse;
 
 	private boolean isActiveAnkleExtensorMNs;
 	private boolean isActiveAnkleExtensorINs;
@@ -1196,6 +1198,16 @@ public class Configuration implements Serializable
 	public void setCdJoint(String cdJoint) {
 
 		this.cdJoint = cdJoint;
+	}
+
+	/** Membrana dos motoneurônios: {@link ReMoto#mnModelPulse} (padrão) ou
+	 * {@link ReMoto#mnModelContinuous}. */
+	public String getCdMotoneuronModel() {
+		return cdMotoneuronModel == null ? ReMoto.mnModelPulse : cdMotoneuronModel;
+	}
+
+	public void setCdMotoneuronModel(String cdMotoneuronModel) {
+		this.cdMotoneuronModel = cdMotoneuronModel;
 	}
 
 	public String getCdMuscleModel() {

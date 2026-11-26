@@ -303,8 +303,20 @@ public final class LegacyScreens {
                         + " cells and motoneurons, 0 keeps the declining factors of the Miscellaneous screen."));
     }
 
+    /**
+     * A família de membrana dos motoneurônios. Não estava no site antigo: a de pulso é a do
+     * original e é o padrão, de modo que um cenário sem a escolha dá os resultados publicados.
+     * O ganho γ da corrente de cálcio continua na tela Miscellaneous, onde sempre esteve.
+     */
+    private static Field motoneuronModel() {
+        return Field.choice("Membrane model", "cdMotoneuronModel",
+                ReMoto.mnModelPulse, "Pulse channels (original)",
+                ReMoto.mnModelContinuous, "Continuous kinetics (persistent Na and Ca)");
+    }
+
     /** motoneuron.jsp / NeuronAction (task=MN). */
     private static LegacyScreen motoneurons() {
+        Part membrane = confPart("Membrane (not in the original site)", List.of(motoneuronModel()));
         Part electrotonic = new Part("General electrotonic parameters", Layout.MATRIX,
                 (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.MN),
                 item -> ((NeuronVO) item).getType(),
@@ -334,7 +346,9 @@ public final class LegacyScreens {
                 List.of(Field.number("Blocked fraction of the pool", null, "blockedAxons")));
         return new LegacyScreen("motoneuron", "Parameters of the alpha motoneurons",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
-                List.of(electrotonic, geometry, stored, block),
+                // membrane é uma parte da Configuration e vai por último: as matrizes de tipos de
+                // neurônio precisam seguir nos índices que o handler abaixo usa
+                List.of(electrotonic, geometry, stored, block, membrane),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setListNeuronTypes(items.get(0));

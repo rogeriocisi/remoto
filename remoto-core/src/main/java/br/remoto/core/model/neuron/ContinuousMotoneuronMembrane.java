@@ -332,9 +332,34 @@ public final class ContinuousMotoneuronMembrane implements MotoneuronMembraneMod
         return caL;
     }
 
+    /** Condutância do sódio rápido no último passo (µS). */
+    public double gNa() {
+        return gNaBar * m * m * m * h;
+    }
+
+    /** Condutância do sódio persistente no último passo (µS). */
+    public double gNap() {
+        return gNapBar * p * p * p;
+    }
+
+    /** Condutância do potássio rápido no último passo (µS). */
+    public double gKf() {
+        return gKfBar * n * n * n * n;
+    }
+
+    /** Condutância do potássio lento no último passo (µS). */
+    public double gKs() {
+        return gKsBar * r * r;
+    }
+
     /** Condutância do cálcio tipo L já escalada por γ (µS). */
     public double gCaL() {
         return gCaLBar * caL * settings.gammaCa();
+    }
+
+    @Override
+    public double calciumConductance() {
+        return gCaL();
     }
 
     // --- acessores ------------------------------------------------------------------------

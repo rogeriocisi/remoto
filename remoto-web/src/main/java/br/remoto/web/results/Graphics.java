@@ -155,6 +155,9 @@ public final class Graphics {
     }
 
     /** As condutâncias da tela antiga ({@code cdSpecification} do gráfico "Conductance"). */
-    public static final List<String> CONDUCTANCES = List.of("gNa", "gKf", "gKs", "gCa", "gExc-dend", "gInib-dend",
-            "gExc-soma", "gInib-soma");
+    public static final List<String> CONDUCTANCES = List.of("gNa", "gKf", "gKs", "gCa", "gNap", "gExc-dend",
+            "gInib-dend", "gExc-soma", "gInib-soma");
+
+    /** Condutâncias que só os motoneurônios têm. {@code gNap}, só com a membrana contínua. */
+    public static final List<String> MOTONEURON_ONLY = List.of("gCa", "gNap");
 }

@@ -3,6 +3,7 @@ package br.remoto.core.simulation.neuron;
 import java.util.ArrayList;
 
 import br.remoto.core.model.channel.PulseChannel;
+import br.remoto.core.model.neuron.ContinuousMotoneuronMembrane;
 import br.remoto.core.model.neuron.Membrane;
 import br.remoto.core.model.neuron.MotoneuronMembraneModel;
 import br.remoto.core.model.neuron.SpinalMembrane;
@@ -76,12 +77,20 @@ public abstract class SpinalNeuron extends Neuron
 			signalStore.add( new Signal(ReMoto.Vd, getVd(), t) );
 			signalStore.add( new Signal(ReMoto.Vs, m.vs(), t) );
 
-			// The pulse channels belong to the original formulation, not to every membrane
+			// Each formulation reports its own conductances: the original reads the pulse
+			// channels, the continuous one reads the gates and adds the persistent sodium
 			if( m instanceof SpinalMembrane p )
 			{
 				signalStore.add( new Signal(ReMoto.gNa, p.na().lastValue(), t) );
 				signalStore.add( new Signal(ReMoto.gKf, p.kf().lastValue(), t) );
 				signalStore.add( new Signal(ReMoto.gKs, p.ks().lastValue(), t) );
+			}
+			else if( m instanceof ContinuousMotoneuronMembrane c )
+			{
+				signalStore.add( new Signal(ReMoto.gNa, c.gNa(), t) );
+				signalStore.add( new Signal(ReMoto.gKf, c.gKf(), t) );
+				signalStore.add( new Signal(ReMoto.gKs, c.gKs(), t) );
+				signalStore.add( new Signal(ReMoto.gNap, c.gNap(), t) );
 			}
 
 			if( m.dendExcit() != null ) signalStore.add( new Signal(ReMoto.gExcDend, m.dendExcit().lastValue(), t) );

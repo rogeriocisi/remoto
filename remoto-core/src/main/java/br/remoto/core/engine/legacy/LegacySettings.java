@@ -26,6 +26,7 @@ public final class LegacySettings {
     /** Na ordem das telas: Biomechanical Elements, Muscle Units/EMG, Stimulation, Joint, Muscle Spindle. */
     public static final List<String> PROPERTIES = List.of(
             "cdJointModel", "cdMuscleModel", "cdSpindleModel", "cdGtoModel", "cdEMGModel",
+            "cdMotoneuronModel",
             "muDistribution", "recruitmentOrderFES", "jointAngle", "kneeAngle",
             "gammaDynamic", "gammaStatic", "primaryBag1Gain", "primaryBag2AndChainGain",
             "secondaryBag2AndChainGain");
@@ -218,13 +219,22 @@ public final class LegacySettings {
         }
     }
 
+    /**
+     * Propriedades que o site antigo não tinha: só vão para o {@code settings} quando saem do
+     * padrão, de modo que um cenário que nunca as escolheu continue gravando exatamente o que
+     * gravava. As demais são sempre gravadas, como o original fazia.
+     */
+    private static final Map<String, Object> ADDED_DEFAULTS =
+            Map.of("cdMotoneuronModel", ReMoto.mnModelPulse);
+
     static Map<String, Object> capture(Configuration conf) {
         Map<String, Object> settings = new LinkedHashMap<>();
         for (String property : PROPERTIES) {
             Object value = invoke(descriptor(property).getReadMethod(), conf);
-            if (value != null) {
-                settings.put(property, value);
+            if (value == null || value.equals(ADDED_DEFAULTS.get(property))) {
+                continue;
             }
+            settings.put(property, value);
         }
         Map<String, Object> stored = new LinkedHashMap<>();
         for (Object o : conf.getNeuronTypes()) {
