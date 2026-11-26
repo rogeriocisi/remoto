@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.DoubleUnaryOperator;
 
 /**
  * Um parâmetro de um cenário que um protocolo em lote varia, escrito como texto:
@@ -24,7 +25,7 @@ import java.util.Map;
 public final class ScenarioParameter {
 
     private enum Kind {
-        TABLE, SETTINGS, SEED, DURATION
+        TABLE, SETTINGS, SEED, DURATION, MAPPED
     }
 
     private final String spec;
@@ -33,15 +34,37 @@ public final class ScenarioParameter {
     private final Map<String, String> keys;
     private final String column;
     private final List<String> path;
+    private final ScenarioParameter target;
+    private final DoubleUnaryOperator map;
 
     private ScenarioParameter(String spec, Kind kind, String table, Map<String, String> keys, String column,
             List<String> path) {
+        this(spec, kind, table, keys, column, path, null, null);
+    }
+
+    private ScenarioParameter(String spec, Kind kind, String table, Map<String, String> keys, String column,
+            List<String> path, ScenarioParameter target, DoubleUnaryOperator map) {
         this.spec = spec;
         this.kind = kind;
         this.table = table;
         this.keys = keys;
         this.column = column;
         this.path = path;
+        this.target = target;
+        this.map = map;
+    }
+
+    /**
+     * Um parâmetro derivado: o lote varia o que {@code spec} nomeia (é o que sai na tabela de
+     * medidas), e o cenário recebe {@code target} valendo {@code map} desse valor. É o caso do
+     * intervalo condicionamento-teste, que no cenário é o instante do pulso condicionante, contado
+     * para trás a partir do pulso teste.
+     */
+    public static ScenarioParameter mapped(String spec, ScenarioParameter target, DoubleUnaryOperator map) {
+        if (spec == null || spec.isBlank() || target == null || map == null) {
+            throw new IllegalArgumentException("o parâmetro derivado precisa de nome, alvo e função");
+        }
+        return new ScenarioParameter(spec, Kind.MAPPED, null, null, null, null, target, map);
     }
 
     /** @throws IllegalArgumentException se o texto não for um parâmetro */
@@ -89,6 +112,7 @@ public final class ScenarioParameter {
         return switch (kind) {
             case SEED -> scenario.withSeed(Math.round(value));
             case DURATION -> scenario.withDuration(value);
+            case MAPPED -> target.apply(scenario, map.applyAsDouble(value));
             case TABLE, SETTINGS -> withLegacy(scenario, legacy(scenario, value));
         };
     }
@@ -98,6 +122,7 @@ public final class ScenarioParameter {
         return switch (kind) {
             case SEED -> scenario.seed();
             case DURATION -> scenario.durationMs();
+            case MAPPED -> target.read(scenario);
             case SETTINGS -> {
                 Object node = config(scenario).settings();
                 for (String key : path) {

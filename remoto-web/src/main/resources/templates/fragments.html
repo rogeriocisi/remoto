@@ -28,7 +28,7 @@
            th:aria-label="#{scenarios.search.aria}">
 
     <div class="painel-aba" data-painel="publicos" role="tabpanel">
-      <!-- Os cenários públicos vêm reunidos por tema (ScenarioGroups): são 43, e quem procura um
+      <!-- Os cenários públicos vêm reunidos por tema (ScenarioGroups): são 45, e quem procura um
            fenômeno quer ver juntos os que tratam dele, venham de onde vierem. Os grupos começam
            fechados, para a lista inteira caber na tela; a busca procura em todos, abre os que têm
            resultado e esconde os que ficarem sem nenhum. -->
@@ -65,6 +65,12 @@
               </form>
               <a th:href="@{/api/scenarios/public/{id}/export(id=${s.id})}" class="botao secundario pequeno" download
                  th:title="#{scenario.export.title}" th:text="#{scenario.export}">Exportar</a>
+              <!-- a seção do guia que explica este cenário: o endereço vem da mensagem, e não de
+                   @{}, que prefixaria o context-path /simulator; o id é a âncora. Em outra aba:
+                   é uma consulta no meio do trabalho, e a página aberta aqui não se perde -->
+              <a th:href="${#messages.msg('scenario.guide.url') + '#' + s.id}" target="_blank"
+                 rel="noopener" class="botao secundario pequeno" th:title="#{scenario.guide.title}"
+                 th:text="#{scenario.guide}">Guia</a>
             </div>
           </li>
         </ul>

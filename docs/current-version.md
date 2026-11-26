@@ -560,7 +560,7 @@ on the new platform **with the same results, bit for bit, as the numerical code 
 | ReMoto_AIDP tasks | The 6 `aidp-*.json` are what the generator produces, and each one validates and runs (`AidpExamplesTest`) |
 | Conduction block | With 10% of the nucleus blocked, the 90 slowest motoneurons fire at the soma but carry no spike to the terminal, and the fastest ones do; with the whole nucleus blocked, the soleus produces no force; the fraction is kept in `settings` and comes back on reopening, and outside [0, 1] it is refused (`AxonConductionBlockTest`) |
 | Rate series | The "series" shape interpolates the points, makes steps and is 0 outside the window; the 100 axons of CM_ext follow 0 Hz, a step to 200 Hz and a ramp back (around 2000 spikes on the plateau and 1000 on the ramp); the series is kept in `settings` (`ModulationTest`, `TractSeriesTest`) |
-| Batch protocols | The parameter changes a table cell, the `settings`, the seed or the duration; the measures; in the H/M curve of configuration 17, with no current no motoneuron fires in the window of the M wave and, with 40 mA, all of them do; in force variability, the longer interval gives less force (`SweepTest`); `remoto sweep` writes one row per simulation (`RemotoCliTest`) |
+| Batch protocols | The parameter changes a table cell, the `settings`, the seed or the duration; the measures; in the H/M curve of configuration 17, with no current no motoneuron fires in the window of the M wave and, with 40 mA, all of them do; in force variability, the longer interval gives less force; in the conditioning of the H reflex, the conditioning pulse of each simulation falls at the interval asked for and the reciprocal inhibition reduces the reflex (`SweepTest`); `remoto sweep` writes one row per simulation (`RemotoCliTest`) |
 | Decay with distance | With decay in the synapses of the CM_ext tract on the soleus, the share of the tract in the conductance of each motoneuron falls and is larger in the middle of the nucleus than at the ends; the value is kept in `settings` and comes back on reopening (`SynapseDistanceDecayTest`) |
 | Reproducibility | Same seed gives identical outputs; a different seed, different outputs |
 | Golden master | The outputs of configurations 17, 24 and 42 of the database (the three public scenarios of the old site, as they are there), with 40 ms, match the hashes in `golden-master.properties` (force, spikes and torque in one hash; EMG in another; every output, those of the results screen included, in a third) |
@@ -581,7 +581,7 @@ java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar export-legacy --db leg
 ### Batch protocols
 
 `remoto sweep` runs a scenario once for each value of a parameter and writes to `sweep.csv` one
-row per simulation, with the value and the measures (`br.remoto.core.protocol`). Two protocols are
+row per simulation, with the value and the measures (`br.remoto.core.protocol`). Three protocols are
 ready:
 
 - `--protocol hm`: the recruitment curve of the H reflex and the M wave. It varies the intensity
@@ -591,6 +591,17 @@ ready:
   50 ms), which `--m-window` and `--h-window` change. The nerve is activated; with no stimulus
   window, it gives a single pulse, at the START of the table. The simulation goes to 10 ms after
   the end of the H window.
+- `--protocol ct`: the conditioning of the H reflex. The test pulse stays where the scenario puts
+  it, on one nerve (`--nerve`, PTN by default), and the conditioning pulse, on the other
+  (`--cond-nerve`, CPN by default, with `--cond-peak` for its intensity in mA), moves: what varies
+  is the conditioning-test interval (CT), in ms, counted backwards from the test pulse as in the
+  literature, so 3 means the conditioning pulse 3 ms before the test one, and a negative value
+  means after it. The measures are those of `--protocol hm`, in windows fixed on the test pulse, so
+  the table is the curve of the inhibition (or of the facilitation) of the H reflex against the
+  interval, and the first column is the interval itself. Both nerves give a single pulse. In
+  `ia880-h-reflex-conditioning`, the reciprocal Ia inhibition of the soleus takes the H reflex from
+  1.17 mV at CT = 0 to 0.03 mV at CT = 1 and 2 ms, and it is back at 1.20 mV at CT = 20 ms, with
+  the M wave untouched at 3.69 mV.
 - `--protocol force`: force variability. It varies the mean interval (ms) of a descending tract
   (`--tract`, CM_ext by default) and measures the mean, the standard deviation and the coefficient
   of variation of the muscle force, and how many motoneurons fired, in a window (`--from` and
@@ -642,6 +653,8 @@ row), and `LegacyDatabase` reads it directly, without HSQLDB.
 | `remoto-44-…` | *identSOLRenshaw*: the soleus with the Renshaw cells (recurrent inhibition) | 1.5 s |
 | `modelo-completo` | Every element of the model turned on, starting from number 24 (details in the scenario description) | 2 s |
 | `estiramento-tornozelo` | Stretch reflex: number 24 with the ankle at an imposed angle, a 5° trapezoid in dorsiflexion from 700 ms on | 1.5 s |
+| `demo-2-ramp-mg` | *Demo 2 - Ramp activation of Medial Gastrocnemius*: a ramp of injected current, from 0 to 20 nA in 4 s, in the soma of every motoneuron of the MG | 6 s |
+| `ia880-h-reflex-conditioning` | *IA880 - Conditioned H reflex*: the H reflex of the soleus (13 mA on the tibial nerve) conditioned by a 15 mA pulse on the common peroneal nerve, through the reciprocal Ia pathway | 0.1 s |
 | `projectfr-antidromic-stimulation` | *AntidromicSimulationofMNandRC*: Antidromic stimulation of 5 soleus motoneurons connected to 2 Renshaw cells | 0.6 s |
 | `projectfr-force-variability` | *ForceVariability*: Isometric force of the triceps surae with 400 axons in a gamma process, at 140 spikes/s | 16 s |
 | `projectfr-h-reflex-m-wave` | *H-ReflexM-WaveCurve*: H reflex and M wave of the soleus with a 12 mA pulse; the curve comes from `remoto sweep` | 0.05 s |
@@ -681,6 +694,24 @@ chooses, in the `settings`, the Hill muscle and the ankle at an imposed angle: a
 is taken 5° into dorsiflexion in 100 ms, stays for 100 ms and comes back in 100 ms; the spindles
 of the triceps surae respond, and the Ia afferents excite the motoneurons. It shows the feature; it
 does not reproduce an experiment.
+
+The 2 scenarios of the IA880 assignment (`demo-2-ramp-mg` and `ia880-h-reflex-conditioning`) are
+the two experiments the computational assignment of IA880 (*Estudo Quantitativo do Sistema
+Neuromuscular*, FEEC-UNICAMP) needs and the database does not have. The assignment, written for the
+applet site, starts its first task from a demonstration of that site, *Demo 2 (Ramp activation of
+Medial Gastrocnemius)*, which was a configuration of the server that went off the air and is not in
+the database that was kept; `demo-2-ramp-mg` rebuilds that experiment from what the assignment
+describes: the same ramp of current in the soma of every motoneuron of the MG, with the peak of
+20 nA the assignment asks to lower to 8 nA, and the signals of MN S 1 stored, which is the cell the
+questions are about. The fourth task asks for the H reflex of the soleus conditioned by a pulse on
+the common peroneal nerve, at a point of the recruitment curve where the reflex is still growing;
+`ia880-h-reflex-conditioning` is that system ready to run, with the conditioning-test interval at
+zero, which is the one thing the task asks the student to find (`remoto sweep --protocol ct`, the
+[conditioning-test protocol](#batch-protocols), sweeps it in one command). The two are not copies of
+the old demonstrations: they are the same experiments, remounted on configuration 24 with the model
+parameters of ReMoto in Java, as the `projectfr-*` ones are. They come from a generator
+(`Ia880Examples`, in the tests of `remoto-cli`), with the same `Ia880ExamplesTest` and the same
+`-Dremoto.gerar.cenarios=<folder>` option.
 
 The 16 `projectfr-*` convert the examples of the `Examples` folder of
 [projectFR](https://github.com/rnwatanabe/projectFR), the Fortran version of ReMoto (R. N.
@@ -1122,8 +1153,9 @@ always uses both compartments (there, only in "All MNs").
       *Distance decay* column of the *Synaptic Parameters* screen, with positions for afferents and
       tracts.
     - [x] **Batch protocols**: sweeping a parameter over several simulations, such as the
-      recruitment curve of the H reflex and the M wave (stimulus intensity) and force variability
-      (descending command). Done on the command line: `remoto sweep`, with the two ready protocols
+      recruitment curve of the H reflex and the M wave (stimulus intensity), the conditioning of
+      the H reflex (conditioning-test interval) and force variability (descending command). Done on
+      the command line: `remoto sweep`, with the three ready protocols
       and arbitrary batches (see [Batch protocols](#batch-protocols)); the site does not have them
       yet.
     - [x] **Tract command as an arbitrary rate series**, besides the ready-made shapes (sinusoid,

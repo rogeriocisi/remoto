@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Os cenários públicos reunidos por tema, para a lista da página inicial. Quarenta e três
+ * Os cenários públicos reunidos por tema, para a lista da página inicial. Quarenta e cinco
  * cenários numa lista corrida são difíceis de percorrer, e quem procura um fenômeno quer ver
  * juntos os que tratam dele, mesmo vindos de origens diferentes: o reflexo H do banco antigo
  * fica ao lado do convertido do projectFR.
@@ -37,6 +37,7 @@ final class ScenarioGroups {
                 "remoto-17-default-soleus-contraction",
                 "remoto-14-isometric-contraction",
                 "remoto-16-recruitment",
+                "demo-2-ramp-mg",
                 "remoto-32-variability-gamma",
                 "remoto-39-isometrictaskam",
                 "projectfr-descending-command",
@@ -45,6 +46,7 @@ final class ScenarioGroups {
 
         // o que um estímulo no nervo, ou um estiramento, provoca de volta
         group("reflexes",
+                "ia880-h-reflex-conditioning",
                 "remoto-18-neuroscience-meeting-2012",
                 "remoto-19-biceps-brachii-stim-ia",
                 "remoto-24-isb-2013-stretch-reflex",

@@ -742,16 +742,19 @@
     <section class="sec" id="scenarios">
       <div class="sec-no"><b>5</b>Scenarios</div>
       <div class="sec-body">
-        <h2>Forty-three scenarios ready to run</h2>
+        <h2>Forty-five scenarios ready to run</h2>
         <div class="prose">
           <p class="lead">A scenario is one JSON file with the whole configuration, the duration, the time step and the
             seed. The first three were the public scenarios of the old site; the next sixteen were recovered from
-            its database; the next two start from scenario 24 and were built to show features; sixteen convert the
-            examples of the Fortran version (<a href="https://github.com/rnwatanabe/projectFR">projectFR</a>); and the
-            last six convert the force and position tasks of <a
-              href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, the Fortran version for
-            demyelinating diseases, with its healthy subject (S0) and its two demyelinated ones (S1 and S2). Each one
-            has the design of the experiment, with the model parameters of the Java ReMoto.</p>
+            its database; the next four start from scenario 24 and were built to show features and to carry the two
+            experiments of the IA880 assignment that the database does not have; sixteen
+            convert the examples of the Fortran version (<a
+              href="https://github.com/rnwatanabe/projectFR">projectFR</a>); and the last six convert the force and
+            position tasks of <a href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, the Fortran
+            version for demyelinating diseases, with its healthy subject (S0) and its two demyelinated ones (S1 and
+            S2). Each one has the design of the experiment, with the model parameters of the Java ReMoto.</p>
+          <p>What each one simulates, what to look at in its results and what to change in it is in
+            <a href="guide/scenarios/">the scenarios, one by one</a>, in the guide.</p>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -935,6 +938,24 @@
                 <td class="num">1.5 s</td>
                 <td class="file"><a
                     href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/estiramento-tornozelo.json">estiramento-tornozelo</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Demo 2 &ndash; Ramp activation of Medial Gastrocnemius</th>
+                <td>A ramp of injected current, from 0 to 20 nA in 4 s, in the soma of every motoneuron of the medial
+                  gastrocnemius: recruitment with no synapses in the way</td>
+                <td class="num">6 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/demo-2-ramp-mg.json">demo-2-ramp-mg</a>
+                </td>
+              </tr>
+              <tr>
+                <th>IA880 &ndash; Conditioned H reflex (reciprocal inhibition)</th>
+                <td>The H reflex of the soleus (13 mA on the tibial nerve) conditioned by a 15 mA pulse on the common
+                  peroneal nerve, through the reciprocal Ia interneurons</td>
+                <td class="num">0.1 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/ia880-h-reflex-conditioning.json">ia880-h-reflex-conditioning</a>
                 </td>
               </tr>
               <tr>
@@ -1271,9 +1292,14 @@
           <p class="lead">The quick guide has been rewritten for version 4: from the scenario you pick to the plot
             you download, in seven steps, with today's screens. The editor and the results screen keep the names, units
             and limits of the original site, so the material written for it still applies too.</p>
+          <p>Beside it, a page for whoever is going to use the scenarios: <a href="guide/scenarios/">the 45 public
+            scenarios one by one</a>, with what each simulates, what to look at in its results and what to change in
+            it. The simulator leads there: every scenario card has a <b>Guide</b> button that opens the explanation
+            of that one.</p>
         </div>
         <ul class="links">
           <li><a class="btn primary" href="guide/">Quick guide</a></li>
+          <li><a class="btn" href="guide/scenarios/">The scenarios, one by one</a></li>
           <li><a class="btn" href="https://www.youtube.com/watch?v=UMORD8hG5Jk">Video tutorial (26 min)</a></li>
           <li><a class="btn" href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">Current
               version documentation</a></li>

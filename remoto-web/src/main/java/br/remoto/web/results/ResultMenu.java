@@ -377,8 +377,11 @@ public final class ResultMenu {
             general.add(new Subplot("biomechanical", "", first, "todos", "jointAngle", "", "Angle"));
         }
         add(presets, "general", "General", general);
-        Map<String, String> labels = Map.of("SOL", "generalForSoleus", "MG", "generalForMG", "LG", "generalForLG",
+        // o valor é o do site antigo; o rótulo, o nome que ele mostrava no menu
+        Map<String, String> values = Map.of("SOL", "generalForSoleus", "MG", "generalForMG", "LG", "generalForLG",
                 "TA", "generalForTA");
+        Map<String, String> labels = Map.of("SOL", "General for Soleus", "MG", "General for MG",
+                "LG", "General for LG", "TA", "General for TA");
         for (String m : MUSCLES) {
             List<Subplot> s = new ArrayList<>();
             if (names.contains("emg-" + m) || names.contains("emg-bruto-" + m)) {
@@ -406,7 +409,7 @@ public final class ResultMenu {
                 s.add(new Subplot("biomechanical", "", m, "todos", "jointAngle", "", "Angle"));
             }
             if (names.contains("forca-" + m)) {
-                add(presets, labels.get(m), labels.get(m), s);
+                add(presets, values.get(m), labels.get(m), s);
             }
         }
         return presets;

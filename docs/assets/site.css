@@ -279,6 +279,16 @@ pre.term .c { color: #8fa0b1; }
 .refs span { display: block; font-size: .93rem; color: var(--ink-2); }
 .links { list-style: none; padding: 0; margin: 1.6rem 0 0; display: flex; flex-wrap: wrap; gap: .7rem; }
 
+/* catálogo de cenários no guia: nome, duração e id, e o que olhar em cada um */
+.cat { list-style: none; margin: 1.5rem 0 0; padding: 0; max-width: 52rem; }
+.cat li { padding: 1rem 0; border-top: 1px solid var(--rule); break-inside: avoid; scroll-margin-top: 5rem; }
+.cat li:last-child { border-bottom: 1px solid var(--rule); }
+.cat li:target { background: var(--sheet); box-shadow: -1rem 0 0 var(--sheet), 1rem 0 0 var(--sheet); }
+.cat > li > b { display: block; font-size: 1.02rem; color: var(--ink); }
+.cat > li > i { display: block; font: 500 .73rem/1.7 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); font-style: normal; }
+.cat p { margin: .5rem 0 0; font-size: .96rem; line-height: 1.55; color: var(--ink-2); }
+.cat p b { color: var(--ink); font-weight: 600; }
+
 /* screenshots in the guide */
 .shot { margin: 2rem 0 0; max-width: 50rem; }
 .shot img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--sheet); box-shadow: 0 18px 40px -28px rgba(23, 33, 43, .45); }

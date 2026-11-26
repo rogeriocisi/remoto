@@ -33,11 +33,13 @@
     <span class="sub" th:text="#{app.tagline}">simulador de núcleos motores da medula espinhal</span>
     <span class="versao" th:if="${appVersion}" th:text="#{app.version(${appVersion})}">Versão 3.0</span>
   </a>
-  <!-- o mesmo menu do site, na mesma ordem: o outro lado do domínio, a API, o GitHub e os
-       idiomas na margem direita. As publicações ficam só no site, que é onde mora a
-       documentação do projeto. -->
+  <!-- o menu do site, na mesma ordem: o outro lado do domínio, o guia (o caminho pelo
+       simulador e o que cada cenário é), a API, o GitHub e os idiomas na
+       margem direita. As publicações ficam só no site, que é onde mora a documentação do
+       projeto. -->
   <nav class="conta">
     <a th:href="#{nav.site.url}" class="botao secundario pequeno" th:text="#{nav.site}">Página inicial</a>
+    <a th:href="#{nav.guide.url}" class="botao secundario pequeno" th:text="#{nav.guide}">Guia</a>
     <a th:href="@{/swagger-ui.html}" class="botao secundario pequeno" th:text="#{nav.api}"
        th:title="#{nav.api.title}">API</a>
     <a th:href="#{nav.repository.url}" class="botao secundario pequeno" target="_blank" rel="noopener" th:text="#{nav.repository}">GitHub</a>

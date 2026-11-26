@@ -752,16 +752,19 @@
     <section class="sec" id="scenarios">
       <div class="sec-no"><b>5</b>Cenários</div>
       <div class="sec-body">
-        <h2>Quarenta e três cenários prontos para rodar</h2>
+        <h2>Quarenta e cinco cenários prontos para rodar</h2>
         <div class="prose">
           <p class="lead">Um cenário é um arquivo JSON com a configuração inteira, a duração, o passo de integração e a
             seed. Os três primeiros eram os cenários públicos do site antigo; os dezesseis seguintes foram recuperados
-            do banco de dados dele; os dois seguintes partem do 24 e foram montados para mostrar recursos; dezesseis
-            convertem os exemplos da versão em Fortran (<a
+            do banco de dados dele; os quatro seguintes partem do 24 e foram montados para mostrar recursos e para
+            trazer os dois experimentos do trabalho da IA880 que o banco não tem;
+            dezesseis convertem os exemplos da versão em Fortran (<a
               href="https://github.com/rnwatanabe/projectFR">projectFR</a>); e os seis últimos convertem as tarefas de
             força e de posição do <a href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>, a versão em
             Fortran para doenças desmielinizantes, com o sujeito saudável (S0) e os dois desmielinizados (S1 e S2).
             Cada um tem o desenho do experimento, com os parâmetros dos modelos do ReMoto em Java.</p>
+          <p>O que cada um simula, o que olhar nos resultados dele e o que mudar nele está em
+            <a href="../guide/pt/scenarios/">os cenários, um por um</a>, no guia.</p>
         </div>
         <div class="tbl-wrap">
           <table>
@@ -945,6 +948,24 @@
                 <td class="num">1,5 s</td>
                 <td class="file"><a
                     href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/estiramento-tornozelo.json">estiramento-tornozelo</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Demo 2 &ndash; Ramp activation of Medial Gastrocnemius</th>
+                <td>Uma rampa de corrente injetada, de 0 a 20 nA em 4 s, no soma de cada motoneurônio do gastrocnêmio
+                  medial: recrutamento sem nenhuma sinapse no caminho</td>
+                <td class="num">6 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/demo-2-ramp-mg.json">demo-2-ramp-mg</a>
+                </td>
+              </tr>
+              <tr>
+                <th>IA880 &ndash; Conditioned H reflex (reciprocal inhibition)</th>
+                <td>O reflexo H do sóleo (13 mA no nervo tibial) condicionado por um pulso de 15 mA no fibular comum,
+                  pelos interneurônios Ia recíprocos</td>
+                <td class="num">0,1 s</td>
+                <td class="file"><a
+                    href="https://github.com/rogeriocisi/remoto/blob/master/scenarios/ia880-h-reflex-conditioning.json">ia880-h-reflex-conditioning</a>
                 </td>
               </tr>
               <tr>
@@ -1283,9 +1304,14 @@
           <p class="lead">O guia rápido foi reescrito para a versão 4: do cenário escolhido ao gráfico baixado, em
             sete passos, com as telas de hoje. O editor e a tela de resultados mantiveram os nomes, as unidades e os
             limites do site original, então o material escrito para ele também continua valendo.</p>
+          <p>Ao lado dele, uma página para quem vai usar os cenários: <a href="../guide/pt/scenarios/">os 45
+            cenários públicos, um por um</a>, com o que cada um simula, o que olhar nos resultados dele e o que mudar
+            nele. O simulador leva até ela: cada cartão de cenário tem um botão <b>Guia</b> que abre a explicação
+            daquele cenário.</p>
         </div>
         <ul class="links">
           <li><a class="btn primary" href="../guide/pt/">Guia rápido</a></li>
+          <li><a class="btn" href="../guide/pt/scenarios/">Os cenários, um por um</a></li>
           <li><a class="btn" href="https://www.youtube.com/watch?v=UMORD8hG5Jk">Tutorial em vídeo (26 min)</a></li>
           <li><a class="btn"
               href="https://github.com/rogeriocisi/remoto/blob/master/docs/current-version.md">Documentação da versão

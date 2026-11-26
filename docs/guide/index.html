@@ -57,6 +57,7 @@
       <a href="#build">Your own</a>
       <a href="#keep">Keep it</a>
       <a href="#cli">Command line</a>
+      <a href="scenarios/">Scenarios</a>
       <a class="api" href="../simulator/swagger-ui.html" title="OpenAPI description of the REST API (Swagger UI)">API</a>
       <a class="gh" href="../simulator/">Open</a>
       <span class="lang" role="group" aria-label="Language">
@@ -81,6 +82,7 @@
         quick guide of the legacy site, written for the Java applet version.</p>
       <p class="cta">
         <a class="btn primary" href="../simulator/">Open the simulator</a>
+        <a class="btn" href="scenarios/">The scenarios, one by one</a>
         <a class="btn" href="../">Project site</a>
         <a class="btn" href="https://github.com/rogeriocisi/remoto#readme">README</a>
       </p>
@@ -99,12 +101,13 @@
             machine after <a href="../#run">starting the server</a>.
           </p>
           <p>The page has two columns. On the left, <b>My simulations</b> at the top, with what you have already run,
-            and the <b>Scenarios</b> below, in two tabs: <i>Public</i>, the 43 that ship with the simulator, and <i>My
+            and the <b>Scenarios</b> below, in two tabs: <i>Public</i>, the 45 that ship with the simulator, and <i>My
               scenarios</i>, your own copies. The search box filters by name, id or description. The right column holds
             the simulation you have open.</p>
           <p>Each scenario card shows the name, the simulated duration, the id and the first lines of the description
             &mdash; one click shows the rest, which says what that scenario simulates and where it came from. The
-            buttons are <b>Run</b>, <b>Edit</b>, <b>Copy</b> and <b>Export</b>.</p>
+            buttons are <b>Run</b>, <b>Edit</b>, <b>Copy</b>, <b>Export</b> and <b>Guide</b> &mdash; the last one
+            opens the explanation of that scenario, here in the guide, in another tab.</p>
           <p>Three good ways in: <i>Default &ndash; Soleus contraction</i>, the default scenario of the legacy site;
             <i>projectFR &ndash; H-reflex and M-wave curve</i>, which shows the M wave and the H reflex in 50 ms of
             simulated time; and <i>Full model</i>, with every element switched on, to walk around the results
@@ -117,6 +120,20 @@
           <figcaption><b>Figure 1</b>The home screen. Simulations and scenarios on the left; the open simulation on the
             right &mdash; none yet, here.</figcaption>
         </figure>
+        <div class="note">
+          <h3>Every scenario comes explained, one by one</h3>
+          <ul>
+            <li><b>What it simulates</b>, and where it came from: the experiment, the paper or the example of the
+              Fortran version it rebuilds.</li>
+            <li><b>What to look at in its results</b>: which plot shows the effect, in which muscle and in which
+              neuron.</li>
+            <li><b>What to change in it</b> to turn it into your own experiment: the editor screen and the exact
+              field.</li>
+          </ul>
+        </div>
+        <ul class="links">
+          <li><a class="btn primary" href="scenarios/">The 45 scenarios, one by one</a></li>
+        </ul>
       </div>
     </section>
 
@@ -392,6 +409,7 @@
         <h2>Project</h2>
         <p><a href="../simulator/">Online simulator</a><br>
           <a href="../">Project site</a><br>
+          <a href="scenarios/">The scenarios</a><br>
           <a href="https://github.com/rogeriocisi/remoto">Source code</a><br>
           <a href="https://github.com/rogeriocisi/remoto/issues">Questions and bug reports</a>
         </p>

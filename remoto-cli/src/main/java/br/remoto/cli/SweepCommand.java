@@ -33,8 +33,10 @@ import java.util.function.IntFunction;
         description = {"Roda o cenário uma vez para cada valor de um parâmetro e grava as medidas de cada"
                 + " simulação em sweep.csv.",
                 "Protocolos prontos: --protocol hm (curva de recrutamento do reflexo H e da onda M, variando"
-                        + " a intensidade do estímulo do nervo) e --protocol force (variabilidade da força,"
-                        + " variando o intervalo médio de um trato descendente).",
+                        + " a intensidade do estímulo do nervo), --protocol ct (condicionamento do reflexo H,"
+                        + " variando o intervalo condicionamento-teste entre o pulso de um nervo e o do outro) e"
+                        + " --protocol force (variabilidade da força, variando o intervalo médio de um trato"
+                        + " descendente).",
                 "Ou um lote qualquer: --param e --measure (ver abaixo)."},
         sortOptions = false)
 final class SweepCommand implements Callable<Integer> {
@@ -61,17 +63,26 @@ final class SweepCommand implements Callable<Integer> {
     @Option(names = "--range", description = "os valores de DE a ATÉ de PASSO em PASSO: DE:ATÉ:PASSO (ex.: 5:40:1)")
     String range;
 
-    @Option(names = "--nerve", defaultValue = "PTN", description = "hm: o nervo estimulado (padrão: ${DEFAULT-VALUE})")
+    @Option(names = "--nerve", defaultValue = "PTN",
+            description = "hm e ct: o nervo estimulado, que em ct é o do pulso teste (padrão: ${DEFAULT-VALUE})")
     String nerve;
 
-    @Option(names = "--muscle", defaultValue = "SOL", description = "hm e force: o músculo medido (padrão: ${DEFAULT-VALUE})")
+    @Option(names = "--cond-nerve", defaultValue = "CPN",
+            description = "ct: o nervo do pulso condicionante (padrão: ${DEFAULT-VALUE})")
+    String condNerve;
+
+    @Option(names = "--cond-peak", description = "ct: a intensidade do pulso condicionante (mA);"
+            + " sem ela, a do cenário")
+    Double condPeak;
+
+    @Option(names = "--muscle", defaultValue = "SOL", description = "hm, ct e force: o músculo medido (padrão: ${DEFAULT-VALUE})")
     String muscle;
 
-    @Option(names = "--m-window", description = "hm: janela da onda M, em ms depois do início do estímulo: DE:ATÉ"
+    @Option(names = "--m-window", description = "hm e ct: janela da onda M, em ms depois do início do estímulo: DE:ATÉ"
             + " (padrão: 2:20)")
     String mWindow;
 
-    @Option(names = "--h-window", description = "hm: janela do reflexo H: DE:ATÉ (padrão: 20:50)")
+    @Option(names = "--h-window", description = "hm e ct: janela do reflexo H: DE:ATÉ (padrão: 20:50)")
     String hWindow;
 
     @Option(names = "--tract", defaultValue = "CM_ext", description = "force: o trato descendente (padrão: ${DEFAULT-VALUE})")
@@ -122,12 +133,17 @@ final class SweepCommand implements Callable<Integer> {
                 Protocols.Prepared p = Protocols.hmCurve(scenario, nerve, muscle, list, window(mWindow), window(hWindow));
                 base = durationMs != null ? p.scenario().withDuration(durationMs) : p.scenario();
                 sweep = p.sweep();
+            } else if ("ct".equals(protocol)) {
+                Protocols.Prepared p = Protocols.conditioningTest(scenario, nerve, condNerve, muscle, condPeak, list,
+                        window(mWindow), window(hWindow));
+                base = durationMs != null ? p.scenario().withDuration(durationMs) : p.scenario();
+                sweep = p.sweep();
             } else if ("force".equals(protocol)) {
                 Protocols.Prepared p = Protocols.forceVariability(scenario, tract, muscle, list, from, to);
                 base = p.scenario();
                 sweep = p.sweep();
             } else if (protocol != null) {
-                throw new IllegalArgumentException("protocolo desconhecido: " + protocol + " (há hm e force)");
+                throw new IllegalArgumentException("protocolo desconhecido: " + protocol + " (há hm, ct e force)");
             } else {
                 if (param == null || measures.isEmpty()) {
                     throw new IllegalArgumentException("sem --protocol, dê --param e pelo menos uma --measure");

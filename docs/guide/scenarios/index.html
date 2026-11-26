@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ReMoto scenarios, one by one</title>
+  <meta name="description"
+    content="What each of the 45 public scenarios of ReMoto simulates, what to look at in its results and what to change in it.">
+  <meta name="theme-color" content="#1f5f99">
+  <meta property="og:title" content="ReMoto scenarios, one by one">
+  <meta property="og:description"
+    content="What each of the 45 public scenarios simulates, what to look at in its results and what to change in it.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="../pt/scenarios/">
+  <link rel="alternate" hreflang="x-default" href="./">
+  <link rel="icon" href="../../favicon.ico" sizes="any">
+  <link rel="icon" href="../../assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'en', OTHER = '../pt/scenarios/';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body id="top">
+  <a class="skip" href="#read">Skip to content</a>
+
+  <header class="top">
+    <a class="brand" href="../../" aria-label="ReMoto, project site">
+      <img src="../../assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="../">Quick guide</a>
+      <a href="#contraction">Contraction</a>
+      <a href="#reflexes">Reflexes</a>
+      <a href="#proprioception">Proprioceptors</a>
+      <a href="#command">Command</a>
+      <a href="#posture">Posture</a>
+      <a class="gh" href="../../simulator/">Open</a>
+      <span class="lang" role="group" aria-label="Language">
+        <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i
+          aria-hidden="true">&middot;</i><a class="keep" href="../pt/scenarios/" hreflang="pt-BR" data-lang="pt"
+          lang="pt-BR">PT</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Guide &middot; </span><span>Scenarios</span>
+      </p>
+      <h1>The 45 public scenarios, <span class="hl">one by one</span>.</h1>
+      <p class="lede">What each one simulates, what is worth looking at in its results and what to change in it to turn
+        it into your own experiment. The simulator shows the same scenarios grouped by theme; this page follows those
+        groups, in the same order.</p>
+      <p class="cta">
+        <a class="btn primary" href="../../simulator/">Open the simulator</a>
+        <a class="btn" href="../">Quick guide</a>
+      </p>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="read">
+      <div class="sec-no"><b>&middot;</b>How to read</div>
+      <div class="sec-body">
+        <h2>Reading the list, and this page</h2>
+        <div class="prose">
+          <p class="lead">Every scenario is a file: the whole configuration of a simulation, its duration, its
+            integration step and its random seed. The 45 below are public and read-only; <b>Run</b> starts one as it
+            is, and <b>Edit</b> makes a copy of it under <i>My scenarios</i> and opens the editor on the copy, so
+            nothing you do here can spoil them for anyone else.</p>
+          <p>Each entry gives the name as it appears in the simulator, the simulated duration and the file name
+            (the scenario's id, which is also what the command line takes: <code>scenarios/&lt;id&gt;.json</code>).
+            The durations matter: the models are detailed, and one simulated second takes something like 17 to 30
+            seconds of real time on a four-core machine, so a 50 ms scenario answers at once and a 30 s one is a
+            coffee break.</p>
+          <p>Where the scenarios come from is part of what they are:</p>
+        </div>
+        <dl class="sheet">
+          <div>
+            <dt>remoto-NN</dt>
+            <dd>Configurations of the original database, exported as they were recorded, with the number they had.
+              They are the simulations of the old site, the ones the published papers used.</dd>
+          </div>
+          <div>
+            <dt>projectFR</dt>
+            <dd>The examples of <a href="https://github.com/rnwatanabe/projectFR">projectFR</a>, the Fortran version
+              of ReMoto: the design of each experiment is the one of the example, with the model parameters of ReMoto
+              in Java on top of configuration 24.</dd>
+          </div>
+          <div>
+            <dt>ReMoto_AIDP</dt>
+            <dd>The force and position tasks of <a href="https://github.com/oliveiramarina/ReMoto_AIDP">ReMoto_AIDP</a>,
+              the Fortran version for demyelinating diseases, with its three subjects.</dd>
+          </div>
+          <div>
+            <dt>The others</dt>
+            <dd><i>Ankle stretch reflex</i>, <i>Full model</i> and the two scenarios of the IA880 assignment were
+              built for this version, to show features the older ones do not use.</dd>
+          </div>
+        </dl>
+        <div class="prose">
+          <p style="margin-top:1.4rem">One warning that saves time: almost everything in the model starts switched
+            off, and a scenario only creates what it declares. If a plot is flat, the usual reason is that the element
+            is not in the scenario &mdash; afferents with no spindle to drive them, interneurons with no afferent
+            input, a joint that cannot move. The description of each scenario says what is on.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="contraction">
+      <div class="sec-no"><b>1</b>Contraction</div>
+      <div class="sec-body">
+        <h2>Contraction and recruitment</h2>
+        <div class="prose">
+          <p class="lead">A motor nucleus driven by a descending command or by an injected current, with the ankle
+            held still: force, EMG, spikes and the order in which the units come in.</p>
+        </div>
+        <ol class="cat">
+          <li id="remoto-17-default-soleus-contraction">
+            <b>Default &ndash; Soleus contraction</b>
+            <i>5 s &middot; remoto-17-default-soleus-contraction</i>
+            <p>The default scenario of the old site, and the shortest way into everything else: the 900 motoneurons of
+              the soleus receive 100 descending axons firing as Poisson processes with a mean interval of 3 ms, with
+              30% connectivity, and nothing else is on.</p>
+            <p><b>Look at</b> the force of the SOL, its EMG, the spike raster, and the interval histogram or the
+              firing rate of a single motoneuron. <b>Change</b> the mean interval (Structure &rarr; Descending
+              Commands) and the connectivity (Neural Parameters &rarr; Synapses) to see how the statistics of the
+              command reach the force.</p>
+          </li>
+          <li id="remoto-14-isometric-contraction">
+            <b>Isometric contraction</b>
+            <i>5 s &middot; remoto-14-isometric-contraction</i>
+            <p>The whole triceps surae: soleus, medial and lateral gastrocnemius, with their own pools of S, FR and FF
+              motoneurons, driven by 400 descending axons with a mean interval of 11 ms. No afferents and no
+              interneurons.</p>
+            <p><b>Look at</b> the force, the EMG and the torque of each muscle side by side: the three nuclei share the
+              command but differ in size and in the properties of their units.</p>
+          </li>
+          <li id="remoto-16-recruitment">
+            <b>Recruitment</b>
+            <i>20 s &middot; remoto-16-recruitment</i>
+            <p>The same triceps surae, with a command that grows: the mean interval of the 400 descending axons falls
+              as a ramp from 20 ms to 4 ms over the first 16 s and stays there. As the command grows, more motoneurons
+              are recruited and the ones already firing go faster.</p>
+            <p><b>Look at</b> the raster of the SOL beside the force: new units appear from the bottom up, in the order
+              of their thresholds, and the force rises in both ways at once. It is the size principle in one
+              figure.</p>
+          </li>
+          <li id="demo-2-ramp-mg">
+            <b>Demo 2 &ndash; Ramp activation of Medial Gastrocnemius</b>
+            <i>6 s &middot; demo-2-ramp-mg</i>
+            <p>Recruitment without any synapse: the same current is injected into the soma of every motoneuron of the
+              medial gastrocnemius (300 S, 150 FR, 150 FF), rising from 0 to 20 nA in the first 4 s and staying there
+              until the end. With the peak at 20 nA, 377 of the 600 motoneurons fire and the force settles near 980 N;
+              at 8 nA, 110 fire and the force stays around 74 N.</p>
+            <p><b>Look at</b> the firing rate of MN S 1, which rises while the current rises and becomes constant when
+              the ramp reaches its peak, and at its injected current, which the scenario stores. <b>Change</b> the peak in
+              Stimulation &rarr; Injected Current (field <i>Peak</i>, one row per type). It is the first task of the
+              IA880 assignment.</p>
+          </li>
+          <li id="remoto-32-variability-gamma">
+            <b>variability_gamma</b>
+            <i>5 s &middot; remoto-32-variability-gamma</i>
+            <p>An isometric contraction of the triceps surae with a strong command (mean interval of 3 ms), recorded
+              for a study of force variability with Poisson and gamma commands. The order of the gamma process was not
+              in the database, so the axons fire in Poisson here.</p>
+            <p><b>Change</b> the distribution to Gamma and set the order (field <i>Std</i>, in Descending Commands) to
+              get the comparison the original study made: with the same mean rate, a more regular command gives a
+              steadier force.</p>
+          </li>
+          <li id="remoto-39-isometrictaskam">
+            <b>IsometricTaskAM</b>
+            <i>8 s &middot; remoto-39-isometrictaskam</i>
+            <p>The triceps surae with 400 descending axons (mean interval of 15 ms) and an excitatory synaptic noise,
+              with the Ia afferents of the three muscles declared. Despite the name, the command is not modulated.</p>
+            <p>A good example of the warning above: with the isometric ankle and the default muscle the spindle is not
+              integrated, so the Ia afferents are there and never fire. To wake them up, choose the Hill muscle and a
+              joint that moves (Biomechanical).</p>
+          </li>
+          <li id="projectfr-descending-command">
+            <b>projectFR &ndash; Motor-unit pool with descending command</b>
+            <i>1 s &middot; projectfr-descending-command</i>
+            <p>The 900 motoneurons of the soleus driven by 400 descending axons at 60 spikes/s in a gamma process of
+              order 10 &mdash; a much more regular command than Poisson.</p>
+            <p><b>Look at</b> the EMG of the pool and the force in one second of contraction. The original example also
+              draws the EMG of each of the first 20 units, which is in the results here as the raw EMG of a chosen
+              motor unit.</p>
+          </li>
+          <li id="projectfr-motor-unit-pool-emg">
+            <b>projectFR &ndash; Motor-unit pool EMG</b>
+            <i>5 s &middot; projectfr-motor-unit-pool-emg</i>
+            <p>800 S motor units of the soleus with no synaptic input at all: each motoneuron gets a constant current
+              of 20 nA in the dendrite, and the spikes give the force and the EMG.</p>
+            <p><b>Look at</b> the EMG and at the properties table of the motor units: with no synapses in the way, the
+              surface EMG is the plain sum of the action potentials of units that differ only in size, depth and
+              rate.</p>
+          </li>
+          <li id="projectfr-force-variability">
+            <b>projectFR &ndash; Force variability</b>
+            <i>16 s &middot; projectfr-force-variability</i>
+            <p>The variability of the isometric force of the triceps surae: 400 descending axons in a gamma process of
+              order 4 at 140 spikes/s, with the ankle isometric. It is one of the combinations of an example that ran
+              nine rates in a batch.</p>
+            <p><b>Look at</b> the statistics of the force (mean, standard deviation and coefficient of variation) under
+              <i>Analysis</i>, in the second half of the simulation. <b>For the whole batch</b>, on the command line:
+              <code>remoto sweep --protocol force --tract CM_ext</code>.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="reflexes">
+      <div class="sec-no"><b>2</b>Reflexes</div>
+      <div class="sec-body">
+        <h2>Reflexes and nerve stimulation</h2>
+        <div class="prose">
+          <p class="lead">What a pulse on a nerve, or a stretch, provokes back: the M wave, the H reflex, reciprocal
+            inhibition and the stretch reflex.</p>
+        </div>
+        <ol class="cat">
+          <li id="projectfr-h-reflex-m-wave">
+            <b>projectFR &ndash; H-reflex and M-wave curve</b>
+            <i>50 ms &middot; projectfr-h-reflex-m-wave</i>
+            <p>The classic recruitment experiment, and the fastest scenario of all: a 1 ms pulse of 12 mA on the
+              posterior tibial nerve at 5 ms excites the motor axons of the soleus (the M wave, a few ms later) and its
+              Ia afferents, which excite the motoneurons back (the H reflex, about 30 ms later). At 12 mA the pulse
+              passes the threshold of part of the afferents and of almost no motor axon.</p>
+            <p><b>Look at</b> the EMG of the SOL: the M wave and the H reflex in one trace. <b>Change</b> the intensity
+              (Stimulation &rarr; Nerve Stimulation) and the whole curve appears, one run at a time; on the command
+              line the batch is one command: <code>remoto sweep --protocol hm --range 9:25:0.5</code>. It is the third
+              task of the IA880 assignment.</p>
+          </li>
+          <li id="ia880-h-reflex-conditioning">
+            <b>IA880 &ndash; Conditioned H reflex (reciprocal inhibition)</b>
+            <i>100 ms &middot; ia880-h-reflex-conditioning</i>
+            <p>The same H reflex, now with the reciprocal inhibition pathway in place: besides the test pulse on the
+              posterior tibial nerve, a conditioning pulse on the common peroneal nerve recruits the Ia afferents of
+              the tibialis anterior, which excite 350 reciprocal Ia interneurons, which in turn inhibit the
+              motoneurons of the soleus.</p>
+            <p><b>Look at</b> the H reflex in the EMG of the SOL and at the spikes of the interneurons.
+              <b>Change</b> the instant of the conditioning pulse (Stimulation &rarr; Nerve Stimulation, field
+              <i>Start</i> of the CPN) and the inhibition appears and disappears: the conditioning&ndash;test interval
+              is what the fourth task of the IA880 assignment asks for. On the command line:
+              <code>remoto sweep --protocol ct --range 0:20:1</code>.</p>
+          </li>
+          <li id="remoto-18-neuroscience-meeting-2012">
+            <b>Neuroscience Meeting 2012</b>
+            <i>200 ms &middot; remoto-18-neuroscience-meeting-2012</i>
+            <p>The H reflex at a supramaximal intensity: a 50 mA pulse on the posterior tibial nerve at 100 ms, with
+              the whole reciprocal pathway declared (400 Ia afferents of the soleus, 280 of the tibialis anterior and
+              350 interneurons) and a pulse on the common peroneal nerve at 97 ms whose intensity, as recorded, is
+              zero.</p>
+            <p><b>Look at</b> the EMG: at 50 mA every motor axon fires, the M wave is maximal and the H reflex is gone,
+              collided with by the antidromic spikes. <b>Change</b> the intensity of the CPN pulse to bring the
+              reciprocal inhibition in, which is what the configuration was recorded for.</p>
+          </li>
+          <li id="projectfr-reciprocal-inhibition">
+            <b>projectFR &ndash; Reciprocal inhibition</b>
+            <i>1.1 s &middot; projectfr-reciprocal-inhibition</i>
+            <p>The two responses one after the other, far apart in time: a 13 mA pulse on the posterior tibial nerve at
+              2 ms and a 19 mA one on the common peroneal nerve at 1001 ms, with the connectivities and conductances of
+              the projectFR example (100% from the TA afferents to the interneurons, 20% from them to the
+              motoneurons).</p>
+            <p><b>Look at</b> the EMG of the soleus, the spikes of the interneurons and the membrane potential of one
+              motoneuron: the first pulse gives an H reflex, the second an inhibitory potential.</p>
+          </li>
+          <li id="remoto-24-isb-2013-stretch-reflex">
+            <b>ISB_2013 &ndash; Stretch Reflex</b>
+            <i>30 s &middot; remoto-24-isb-2013-stretch-reflex</i>
+            <p>The configuration with everything in place that most of the converted scenarios build on: the four ankle
+              muscles with their motoneuron pools, the Ia afferents of the soleus and of the gastrocnemii exciting all
+              three, and 400 descending axons on the triceps surae. The ankle is isometric.</p>
+            <p>It is the longest of the group and the one to copy when you want the whole ankle and nothing missing
+              from the tables. For the stretch itself, see the next one.</p>
+          </li>
+          <li id="estiramento-tornozelo">
+            <b>Ankle stretch reflex</b>
+            <i>1.5 s &middot; estiramento-tornozelo</i>
+            <p>A perturbation imposed on the joint: at 700 ms the ankle is taken 5&deg; into dorsiflexion in 100 ms,
+              stays there for 100 ms and comes back. The spindles of the triceps surae respond to the stretch, the Ia
+              afferents excite the motoneurons of the soleus and of the gastrocnemii, and their force rises.</p>
+            <p><b>Look at</b> the length of the muscle, the rate of the Ia afference and the force, in that order: it is
+              the reflex loop in three plots. <b>Change</b> the trapezoid (Biomechanical &rarr; Joint) or the fusimotor
+              drive (Proprioceptors &rarr; Muscle Spindle), which can also vary over time.</p>
+          </li>
+          <li id="remoto-19-biceps-brachii-stim-ia">
+            <b>Biceps Brachii &ndash; Stim Ia</b>
+            <i>30 s &middot; remoto-19-biceps-brachii-stim-ia</i>
+            <p>Repetitive stimulation during a contraction: 10 mA pulses at 5 Hz from 1 s to the end, on a nucleus
+              sustained by 400 descending axons. The name comes from the muscle that was studied; the simulation uses
+              the SOL nucleus of the model, with 800 motoneurons and 320 Ia afferents.</p>
+            <p><b>Look at</b> the EMG, pulse after pulse, and at the force: the reflex response changes while the
+              contraction goes on.</p>
+          </li>
+          <li id="projectfr-node-axons">
+            <b>projectFR &ndash; Motor units with node-of-Ranvier axons</b>
+            <i>100 ms &middot; projectfr-node-axons</i>
+            <p>Three S motoneurons of the soleus with 20 mA pulses at 10 Hz on the posterior tibial nerve, and the one
+              feature that no other scenario uses: at the stimulus point each axon has a node of Ranvier with the
+              channels of the human axon model of Howells et al. (2012), instead of a plain current threshold. The step
+              is 0.005 ms, twenty times finer than usual.</p>
+            <p><b>Look at</b> the spikes of the three axons from pulse to pulse: refractoriness, supernormality and
+              accommodation come out of the node model. <b>Change</b> the pulse width (Nerve Stimulation) to get the
+              strength&ndash;duration curve.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="recurrent">
+      <div class="sec-no"><b>3</b>Recurrent</div>
+      <div class="sec-body">
+        <h2>Recurrent inhibition</h2>
+        <div class="prose">
+          <p class="lead">Motoneurons and Renshaw cells: the only loop of the model that is entirely inside the spinal
+            cord.</p>
+        </div>
+        <ol class="cat">
+          <li id="remoto-44-identsolrenshaw">
+            <b>identSOLRenshaw</b>
+            <i>1.5 s &middot; remoto-44-identsolrenshaw</i>
+            <p>The soleus with its 350 Renshaw cells, from the original database: the motoneurons receive 400 descending
+              axons with a mean interval of 6 ms, excite the Renshaw cells and are inhibited back by them.</p>
+            <p><b>Look at</b> the spikes of the Renshaw cells beside those of the motoneurons, and at the force.
+              <b>Compare</b> with the same scenario with the recurrent pathway switched off (Structure &rarr; Neural
+              Elements): the force is higher and less smooth without it.</p>
+          </li>
+          <li id="projectfr-mn-pool-renshaw">
+            <b>projectFR &ndash; MN pool with Renshaw cells</b>
+            <i>5 s &middot; projectfr-mn-pool-renshaw</i>
+            <p>The same loop with the parameters of the projectFR example: 800 S motoneurons, 350 Renshaw cells, 6%
+              connectivity one way and 4% the other, a synapse with 5% depression, and both pathways weakening with the
+              distance along the spinal column.</p>
+            <p><b>Look at</b> the rate of the Renshaw cells against the rate of the motoneurons. <b>Change</b> the
+              declining factors (Biomechanical &rarr; Miscellaneous) to see how much the distance between cells
+              matters.</p>
+          </li>
+          <li id="projectfr-renshaw-injected-current">
+            <b>projectFR &ndash; Renshaw cells with injected current</b>
+            <i>100 ms &middot; projectfr-renshaw-injected-current</i>
+            <p>350 Renshaw cells on their own, with no motoneurons: a constant current of 5 nA in the soma of each one,
+              on top of their spontaneous firing of 7 Hz.</p>
+            <p><b>Look at</b> the interval histogram of the cells: it is the response of the interneuron model to a
+              steady input, with nothing else around it.</p>
+          </li>
+          <li id="projectfr-antidromic-stimulation">
+            <b>projectFR &ndash; Antidromic stimulation of MN and RC</b>
+            <i>600 ms &middot; projectfr-antidromic-stimulation</i>
+            <p>The loop driven backwards: 20 mA pulses at 60 Hz on the posterior tibial nerve, on 5 S motoneurons
+              connected to 2 Renshaw cells with 100% connectivity both ways. The antidromic spikes travel up the axons,
+              activate the Renshaw cells, and the cells inhibit the motoneurons.</p>
+            <p><b>Look at</b> the soma and terminal spike trains of the motoneurons: the collision between the spikes
+              that come from the soma and those that come from the stimulus is explicit in the model.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="proprioception">
+      <div class="sec-no"><b>4</b>Proprioceptors</div>
+      <div class="sec-body">
+        <h2>Proprioceptors and the position task</h2>
+        <div class="prose">
+          <p class="lead">The spindle, the Golgi tendon organ and the afferent feedback, with the foot free to rotate:
+            the scenarios where the mechanics closes the loop.</p>
+        </div>
+        <ol class="cat">
+          <li id="remoto-25-position-task">
+            <b>Position Task</b>
+            <i>30 s &middot; remoto-25-position-task</i>
+            <p>The foot against a load of 15% of the maximum voluntary torque, held by the triceps surae: 400 descending
+              axons with a mean interval of 10 ms and the Ia afferents of the three muscles exciting the
+              motoneurons.</p>
+            <p><b>Look at</b> the ankle angle over the 30 s and at its variability: the task is to hold a position, and
+              what it costs is visible in the fluctuation of the angle and of the force.</p>
+          </li>
+          <li id="remoto-26-position-task-iia">
+            <b>Position Task &ndash; IIa</b>
+            <i>30 s &middot; remoto-26-position-task-iia</i>
+            <p>The same task with the group II afferents of the soleus and of the gastrocnemii added (500, 200 and
+              200). The group II interneurons are off, so the II afferents fire but do not reach the
+              motoneurons.</p>
+            <p><b>Look at</b> the rate of the group II afference against the length of the muscle. To close that
+              pathway, switch the group II interneurons on in Structure &rarr; Neural Elements.</p>
+          </li>
+          <li id="remoto-27-position-task-iia-no-ia">
+            <b>Position Task &ndash; IIa no Ia</b>
+            <i>30 s &middot; remoto-27-position-task-iia-no-ia</i>
+            <p>The same, without the Ia afferents: only the group II ones are left, and they do not reach the
+              motoneurons either, so the triceps surae holds the position with no afferent feedback at all.</p>
+            <p><b>Compare</b> the angle with that of the two scenarios above: it is the cleanest demonstration in the
+              set of what the Ia loop does for the steadiness of a position.</p>
+          </li>
+          <li id="remoto-28-position-task-ib">
+            <b>Position Task &ndash; Ib</b>
+            <i>30 s &middot; remoto-28-position-task-ib</i>
+            <p>The same task with the Ib afferents of the Golgi tendon organ (300, 120 and 120), which inhibit the
+              motoneurons of the triceps surae through 350 Ib interneurons: the pathway that reports force, not
+              length.</p>
+            <p><b>Look at</b> the Ib afference against the force of the tendon, and at the spikes of the Ib
+              interneurons.</p>
+          </li>
+          <li id="projectfr-muscle-spindle">
+            <b>projectFR &ndash; Muscle spindle</b>
+            <i>20 s &middot; projectfr-muscle-spindle</i>
+            <p>The spindle of the tibialis anterior on a slow sinusoidal stretch at 0.25 Hz, with the dynamic and static
+              fusimotor drives at 10 spikes/s. The ankle angle is imposed and the muscle does not contract, so what is
+              left is the receptor on its own.</p>
+            <p><b>Look at</b> the rate of the Ia afference beside the length and the velocity of the fascicle: the
+              dynamic sensitivity of the spindle is the phase lead between them.</p>
+          </li>
+          <li id="projectfr-isometric-closed-loop">
+            <b>projectFR &ndash; Closed loop with Ia feedback</b>
+            <i>5 s &middot; projectfr-isometric-closed-loop</i>
+            <p>The soleus with the loop closed: 400 descending axons and the Ia afferents driven by the spindle, with
+              the Hill muscle and the ankle following an imposed sinusoid of 5.7&deg; at 1 Hz, with the fusimotor drives
+              at 32 spikes/s.</p>
+            <p><b>Look at</b> the force against the angle: part of the excitation of the motoneurons now comes from the
+              movement itself. <b>Compare</b> with the Ia afferents switched off.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="command">
+      <div class="sec-no"><b>5</b>Command</div>
+      <div class="sec-body">
+        <h2>Descending command and identification</h2>
+        <div class="prose">
+          <p class="lead">The statistics of the command and what the nucleus does with it: oscillations, noise and the
+            scenarios recorded for system identification.</p>
+        </div>
+        <ol class="cat">
+          <li id="remoto-42-jn-watanabe-and-kohn-2015">
+            <b>JN &ndash; Watanabe and Kohn (2015)</b>
+            <i>15 s &middot; remoto-42-jn-watanabe-and-kohn-2015</i>
+            <p>The scenario of the paper on how the spinal cord decodes fast oscillatory commands: the soleus receives
+              400 descending axons with a mean interval of 15 ms and an excitatory synaptic noise, and from 3 s on the
+              rate of the axons gains a 20 Hz sinusoid amplitude-modulated at 1 Hz.</p>
+            <p><b>Look at</b> the FFT of the force (under <i>Analysis</i>): the 20 Hz of the command and the 1 Hz of its
+              envelope are not in the force in the same proportion, which is the point of the paper.</p>
+          </li>
+          <li id="remoto-34-identification-sol-mg">
+            <b>Identification_SOL_MG</b>
+            <i>15 s &middot; remoto-34-identification-sol-mg</i>
+            <p>The triceps surae with a mean interval of 17 ms and an excitatory synaptic noise; from 2 s to the end,
+              the rate of the axons gains a 20 Hz sinusoid of 20 spikes/s.</p>
+            <p><b>Look at</b> the FFT of the force and of the EMG: how much of the oscillation of the command survives
+              in each one is the transfer the configuration was recorded to measure.</p>
+          </li>
+          <li id="remoto-41-ammodrenshaw">
+            <b>AMmodRenshaw</b>
+            <i>15 s &middot; remoto-41-ammodrenshaw</i>
+            <p>The soleus alone with the same oscillatory command (20 Hz from 3 s on). Despite the name, the Renshaw
+              cells are off in the configuration as it was recorded.</p>
+            <p><b>Change</b> that: switch the Renshaw cells on (Structure &rarr; Neural Elements) and compare the FFT of
+              the force with and without recurrent inhibition &mdash; which is what the name suggests the author was
+              after.</p>
+          </li>
+          <li id="remoto-36-identification-sol-mg">
+            <b>Identification SOL_MG</b>
+            <i>1.5 s &middot; remoto-36-identification-sol-mg</i>
+            <p>The same configuration as 34 with 1.5 s instead of 15 s. Since the sinusoid of the command only starts at
+              2 s, here the command is constant: it is the control condition, and it runs in a fraction of the
+              time.</p>
+          </li>
+          <li id="remoto-35-identification-lg">
+            <b>Identification_LG</b>
+            <i>1.5 s &middot; remoto-35-identification-lg</i>
+            <p>The two gastrocnemii without the soleus, with 400 descending axons at a mean interval of 3 ms.</p>
+            <p>A small, quick scenario: useful as a starting point when what you want is the gastrocnemii and not the
+              whole triceps surae.</p>
+          </li>
+          <li id="remoto-38-identsol">
+            <b>IdentSOL</b>
+            <i>1.5 s &middot; remoto-38-identsol</i>
+            <p>The soleus with 400 descending axons at a mean interval of 12 ms, and a single S motoneuron in the
+              lateral gastrocnemius: enough to follow one unit of a second muscle without paying for the whole
+              pool.</p>
+            <p><b>Look at</b> the properties table of the motoneurons: it is the fastest way to see the parameters a
+              single cell gets.</p>
+          </li>
+          <li id="projectfr-neural-tract">
+            <b>projectFR &ndash; Neural tract</b>
+            <i>10 s &middot; projectfr-neural-tract</i>
+            <p>A descending tract on its own: 400 axons firing in a gamma process of order 1 (that is, exponential
+              intervals) at 83.3 spikes/s, with no motoneurons to receive them.</p>
+            <p><b>Look at</b> the raster and the interval histogram of the tract. It is the scenario to use when what
+              you want to check is the command generator itself.</p>
+          </li>
+          <li id="projectfr-neural-tract-unit">
+            <b>projectFR &ndash; Single neural tract unit</b>
+            <i>10 s &middot; projectfr-neural-tract-unit</i>
+            <p>One single descending axon with a mean interval of 4 ms in a gamma process of order 1.</p>
+            <p><b>Look at</b> the mean, the standard deviation and the coefficient of variation of the intervals, in the
+              interval histogram of the tract: with order 1 the coefficient of variation is 1, and raising the order
+              (field <i>Std</i>) brings it down.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="posture">
+      <div class="sec-no"><b>6</b>Posture</div>
+      <div class="sec-body">
+        <h2>Posture and biomechanics</h2>
+        <div class="prose">
+          <p class="lead">The body, the joint and the Hill muscle: the scenarios where the mechanics is the
+            subject.</p>
+        </div>
+        <ol class="cat">
+          <li id="projectfr-postural-control">
+            <b>projectFR &ndash; Postural control</b>
+            <i>12 s &middot; projectfr-postural-control</i>
+            <p>Upright stance as an inverted pendulum over the ankle, controlled by the soleus, the gastrocnemii and the
+              tibialis anterior, with Hill muscles, Ia, II and Ib afferents, group II, reciprocal Ia and Ib
+              interneurons, and 400 descending axons at 50 spikes/s. With the values of this scenario the body stays
+              still for about a second and falls backwards.</p>
+            <p>The original example repeated up to 100 trials and recorded the time to fall; here it is one trial. For
+              several, vary the fusimotor drive on the command line:
+              <code>remoto sweep --param settings.gammaDynamic --measure "max(articulacao-angulo)"</code>.</p>
+          </li>
+          <li id="projectfr-ankle-impedance">
+            <b>projectFR &ndash; Ankle impedance</b>
+            <i>2 s &middot; projectfr-ankle-impedance</i>
+            <p>The angle of the ankle imposed as the sum of 200 sinusoids from 0.25 to 50 Hz, with the four muscles
+              responding passively: the torque against the angle is the impedance of the joint.</p>
+            <p><b>Change</b> it into the interesting case: switch the CM_ext tract on in Descending Commands and the
+              impedance is measured during a contraction, which is what it depends on.</p>
+          </li>
+          <li id="projectfr-hill-muscle">
+            <b>projectFR &ndash; Hill muscle with imposed angle</b>
+            <i>1 s &middot; projectfr-hill-muscle</i>
+            <p>The Hill muscle of the soleus activated by 800 S motoneurons while the ankle follows a sinusoid of
+              5.7&deg; at 1 Hz, with no afferents.</p>
+            <p><b>Look at</b> the force, the length and the velocity of the muscle together: it is the
+              force&ndash;length&ndash;velocity behaviour of the model, with the neural side kept simple on
+              purpose.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="demyelination">
+      <div class="sec-no"><b>7</b>Demyelination</div>
+      <div class="sec-body">
+        <h2>Demyelinating diseases</h2>
+        <div class="prose">
+          <p class="lead">The two tasks of ReMoto_AIDP with its three subjects: the same experiment with healthy axons,
+            with demyelinated ones and with a conduction block. They are meant to be read in threes.</p>
+        </div>
+        <ol class="cat">
+          <li id="aidp-force-task-s0">
+            <b>ReMoto_AIDP &ndash; Force task (S0, healthy)</b>
+            <i>12 s &middot; aidp-force-task-s0</i>
+            <p>The soleus and the gastrocnemii, with Hill muscles and the ankle isometric, driven by 400 descending
+              axons at 40 spikes/s for 2 s and 250 spikes/s afterwards, with the Ia afferents responding to the spindle.
+              The motor axons conduct from 44 to 53 m/s, from the S units to the FF ones.</p>
+            <p><b>Look at</b> the force of the triceps surae and the ankle torque over the 10 s of contraction: this is
+              the reference the other two are compared against.</p>
+          </li>
+          <li id="aidp-force-task-s1">
+            <b>ReMoto_AIDP &ndash; Force task (S1, demyelinated)</b>
+            <i>12 s &middot; aidp-force-task-s1</i>
+            <p>The same task with moderate demyelination: the motor axons of the S units now conduct from 5 to 51 m/s
+              and those of the FF ones fall from 52 to 40 m/s, so that the thickest axons become the slowest. The
+              sensory axons are untouched.</p>
+            <p><b>Compare</b> the force with S0: the command is the same, and what changed is only when each spike
+              arrives at the end-plate.</p>
+          </li>
+          <li id="aidp-force-task-s2">
+            <b>ReMoto_AIDP &ndash; Force task (S2, demyelinated with conduction block)</b>
+            <i>12 s &middot; aidp-force-task-s2</i>
+            <p>Severe demyelination: the velocities of S1 and, on top of them, 65% of the axons of each nucleus,
+              counting from the slowest, with their conduction blocked &mdash; the motoneuron still fires at the soma,
+              and no spike reaches the muscle.</p>
+            <p><b>Look at</b> the force against the spikes of the motoneurons: the dissociation between what the spinal
+              cord does and what the muscle gets is the signature of the block.</p>
+          </li>
+          <li id="aidp-position-task-s0">
+            <b>ReMoto_AIDP &ndash; Position task (S0, healthy)</b>
+            <i>12 s &middot; aidp-position-task-s0</i>
+            <p>The foot free to rotate from 5&deg; on, loaded with 10% of the maximum voluntary torque, held by the four
+              muscles with their Ia afferents, with the command at 72.5 spikes/s in a gamma process of order 7.</p>
+            <p><b>Look at</b> the ankle angle and its variability: unlike the force task, here the feedback loop is
+              closed through the mechanics.</p>
+          </li>
+          <li id="aidp-position-task-s1">
+            <b>ReMoto_AIDP &ndash; Position task (S1, demyelinated)</b>
+            <i>12 s &middot; aidp-position-task-s1</i>
+            <p>The position task with the conduction velocities of S1.</p>
+            <p><b>Compare</b> the variability of the angle with S0: in a task held by feedback, a delay costs more than
+              in an isometric contraction.</p>
+          </li>
+          <li id="aidp-position-task-s2">
+            <b>ReMoto_AIDP &ndash; Position task (S2, demyelinated with conduction block)</b>
+            <i>12 s &middot; aidp-position-task-s2</i>
+            <p>The position task with the velocities of S1 and the conduction block of 65% of each motor nucleus.</p>
+            <p><b>Look at</b> whether the position is held at all: it is the condition in which the model predicts the
+              functional loss the paper describes.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="complete">
+      <div class="sec-no"><b>8</b>Everything</div>
+      <div class="sec-body">
+        <h2>The whole model</h2>
+        <ol class="cat">
+          <li id="modelo-completo">
+            <b>Full model</b>
+            <i>2 s &middot; modelo-completo</i>
+            <p>Every element of the model turned on at the same time: the four ankle muscles with S, FR and FF
+              motoneurons; the Ia, II and Ib afferents of each, with spindle and Golgi tendon organ; the reciprocal Ia,
+              Ib and group II interneurons and the Renshaw cells of extensors and flexors; the six descending tracts;
+              the Hill muscle and the ankle as an inverted pendulum; and a 12 mA pulse on the posterior tibial nerve at
+              1 s.</p>
+            <p>It is not an experiment &mdash; the rates and the pulse were chosen to make everything fire &mdash; but
+              it is the scenario to run once to walk around the whole results screen with no empty plots. Two simulated
+              seconds take a few minutes.</p>
+          </li>
+        </ol>
+        <div class="prose">
+          <p style="margin-top:1.8rem">From here, the <a href="../">quick guide</a>: the editor, the results screen
+            and the command line.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="../../"><img src="../../assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>A simulator of spinal cord motor nuclei and their nerves and muscles, developed at the Biomedical
+          Engineering Laboratory (LEB) of the University of S&atilde;o Paulo.</p>
+      </div>
+      <div>
+        <h2>Project</h2>
+        <p><a href="../../simulator/">Online simulator</a><br>
+          <a href="../../">Project site</a><br>
+          <a href="../">Quick guide</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Source code</a>
+        </p>
+      </div>
+      <div>
+        <h2>License</h2>
+        <p>Released under the <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi and the ReMoto contributors.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

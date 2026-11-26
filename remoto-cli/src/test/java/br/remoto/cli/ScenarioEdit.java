@@ -138,6 +138,40 @@ final class ScenarioEdit {
         set("INJECTED_CURRENT", key, "CD_SIGNAL", "none");
     }
 
+    /**
+     * A corrente injetada em rampa: sobe de 0 ao pico (nA) em {@code rampMs} e fica nele até
+     * {@code tfin}, como o sinal "ramp" do original. A amplitude fixa (IMAX) fica em zero, e o
+     * pico é o campo "Peak" da tela do editor.
+     */
+    void injectedRamp(String nucleus, String type, String compartment, double peakNa, double tini, double tfin,
+            double rampMs) {
+        Map<String, Object> key = Map.of("CD_NUCLEUS", nucleus, "CD_NEURON_TYPE", type);
+        set("INJECTED_CURRENT", key, "ACTIVE", 1);
+        set("INJECTED_CURRENT", key, "COMPARTMENT", compartment);
+        set("INJECTED_CURRENT", key, "IMAX", 0);
+        set("INJECTED_CURRENT", key, "CD_SIGNAL", "ramp");
+        set("INJECTED_CURRENT", key, "TINI", tini);
+        set("INJECTED_CURRENT", key, "TFIN", tfin);
+        set("INJECTED_CURRENT", key, "AMP", peakNa);
+        set("INJECTED_CURRENT", key, "WIDTH", rampMs);
+    }
+
+    /**
+     * Liga o STORE_SIGNALS da configuração: os potenciais, as condutâncias e a corrente injetada
+     * passam a ser guardados e aparecem nos resultados. Como no original, cada tipo de motoneurônio
+     * ou interneurônio guarda dois neurônios, o primeiro e o do meio do tipo, a menos que o cenário
+     * escolha outros índices ("Index of MNs that will have signals stored", no settings
+     * {@code storedNeurons}); não há como guardar nenhum de um tipo ativo.
+     */
+    void storeSignals() {
+        set("CONFIGURATION", Map.of(), "STORE_SIGNALS", 1);
+    }
+
+    /** O núcleo que o editor e a tela de resultados mostram primeiro. */
+    void pool(String nucleus) {
+        set("INTERFACE_PARAMETERS", Map.of(), "CD_NUCLEUS", nucleus);
+    }
+
     Example example(String file, String name, double durationMs, double stepMs, String description) {
         Map<String, Object> key = Map.of();
         set("CONFIGURATION", key, "NM_CONFIGURATION", name);

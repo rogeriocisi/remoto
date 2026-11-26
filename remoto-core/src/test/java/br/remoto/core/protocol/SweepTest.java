@@ -120,6 +120,64 @@ class SweepTest {
         assertThat(csv.toString()).startsWith("NERVE:CD_NERVE=PTN:PEAK,M_p2p[mV],H_p2p[mV],M_motoneuronios,H_motoneuronios\n0,");
     }
 
+    /**
+     * O condicionamento do reflexo H na configuração 18 (sóleo com aferentes Ia, aferentes Ia do
+     * tibial anterior e interneurônios Ia), com o pulso teste do nervo tibial em 100 ms, baixado
+     * dos 50 mA gravados para 13, onde há reflexo H: o que varia é o intervalo CT, e no cenário de
+     * cada simulação o pulso condicionante do fibular comum está CT ms antes do teste. A coluna do
+     * parâmetro é o intervalo, não o instante.
+     */
+    @Test
+    void condicionamentoTeste() {
+        Scenario s18 = ScenarioParameter.parse("NERVE:CD_NERVE=PTN:PEAK").apply(db.exportScenario(18), 13);
+        Protocols.Prepared ct = Protocols.conditioningTest(s18, "PTN", "CPN", "SOL", 15.0,
+                List.of(0.0, 1.0, 20.0), null, null);
+
+        assertThat(ct.scenario().durationMs()).isEqualTo(160);
+        ScenarioParameter condStart = ScenarioParameter.parse("NERVE:CD_NERVE=CPN:START");
+        ScenarioParameter condPeak = ScenarioParameter.parse("NERVE:CD_NERVE=CPN:PEAK");
+        ScenarioParameter condActive = ScenarioParameter.parse("NERVE:CD_NERVE=CPN:ACTIVE");
+        assertThat(((Number) condPeak.read(ct.scenario())).doubleValue()).isEqualTo(15);
+        assertThat(((Number) condActive.read(ct.scenario())).intValue()).isEqualTo(1);
+        // o pulso condicionante de cada simulação: CT ms antes do teste, que fica em 100 ms
+        for (double interval : ct.sweep().values()) {
+            Scenario one = ct.sweep().parameter().apply(ct.scenario(), interval);
+            assertThat(((Number) condStart.read(one)).doubleValue()).as("CT de %s ms", interval)
+                    .isEqualTo(100 - interval);
+            // o pulso teste não se move
+            assertThat(((Number) ScenarioParameter.parse("NERVE:CD_NERVE=PTN:START").read(one)).doubleValue())
+                    .isEqualTo(100);
+        }
+
+        List<Sweep.Row> rows = ct.sweep().run(ct.scenario(), new LegacyEngine(1), null, null);
+        assertThat(rows).extracting(Sweep.Row::value).containsExactly(0.0, 1.0, 20.0);
+        // o reflexo H do pulso teste aparece nas três, e a inibição recíproca o derruba no
+        // intervalo de 1 ms, que é onde o potencial inibitório encontra o excitatório
+        double[] h = rows.stream().mapToDouble(r -> r.measures()[1]).toArray();
+        for (double amplitude : h) {
+            assertThat(amplitude).isGreaterThan(0);
+        }
+        assertThat(h[1]).isLessThan(h[0] / 10).isLessThan(h[2] / 10);
+        // a onda M não muda: o condicionamento age na medula, não nos axônios motores
+        double[] m = rows.stream().mapToDouble(r -> r.measures()[0]).toArray();
+        assertThat(m[1]).isCloseTo(m[0], within(m[0] / 100));
+        assertThat(m[2]).isCloseTo(m[0], within(m[0] / 100));
+
+        StringBuilder csv = new StringBuilder();
+        try {
+            ct.sweep().writeCsv(rows, csv);
+        } catch (java.io.IOException e) {
+            throw new AssertionError(e);
+        }
+        assertThat(csv.toString()).startsWith("CT[ms],M_p2p[mV],H_p2p[mV],M_motoneuronios,H_motoneuronios\n0,");
+
+        // um intervalo maior que o instante do pulso teste jogaria o condicionante para antes de zero
+        assertThatThrownBy(() -> Protocols.conditioningTest(s18, "PTN", "CPN", "SOL", null, List.of(200.0), null, null))
+                .hasMessageContaining("antes do início da simulação");
+        assertThatThrownBy(() -> Protocols.conditioningTest(s18, "PTN", "PTN", "SOL", null, List.of(1.0), null, null))
+                .hasMessageContaining("o mesmo");
+    }
+
     /** Com o intervalo médio do trato maior, a força média cai. */
     @Test
     void variabilidadeDaForca() {
