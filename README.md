@@ -71,13 +71,13 @@ JDK 25. Maven is downloaded automatically by the Maven Wrapper (`./mvnw`, or `mv
 
 ### Run locally
 
-Use the start script for your shell. It finds a JDK 25 (from `JAVA_HOME`, the `PATH` or the usual install folders), so it works even if your default Java is older. An optional argument sets the port (default 8081, the same port the service listens on in production, because 8080 is often already taken by something else).
+Use the start script for your shell. It finds a JDK 25 (from `JAVA_HOME`, the `PATH` or the usual install folders), so it works even if your default Java is older, and it brings up both halves of the system: the simulator on 8081 and, in front of it, the descriptive site on 8090 (see below). An optional argument sets the port of the simulator (default 8081, the same port the service listens on in production, because 8080 is often already taken by something else), and a second one the port of the site.
 
 | Shell | Command |
 |---|---|
-| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090` |
-| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090` |
-| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090` |
+| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090 9099` |
+| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090 -SitePort 9099` |
+| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090 9099` |
 
 If PowerShell refuses to run scripts, use `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`, or the `.cmd` version.
 
@@ -88,6 +88,16 @@ Without the scripts, the equivalent command is below. Keep the quotes, because P
 ```
 
 Then open http://localhost:8081/simulator/ (or http://localhost:8081/simulator/pt/ for Portuguese). The port comes from `application.yml` (`server.port`, overridable by `SERVER_PORT`), so it is 8081 with or without the start scripts. There is no login. The simulator lives under `/simulator` in development too, because that is where it is served in production, with the descriptive site at the root of the domain.
+
+#### The site and the simulator together
+
+Both sides are one domain in production, and the links between them are relative to it: `/pt/` in the simulator's menu, `simulator/` in the pages of the site. With the simulator alone on localhost those links have nowhere to land, because nothing serves the site at the root. That is what the start scripts also run: `scripts/site-serve.mjs` serves [docs/](docs/) at the root of 8090 and passes `/simulator/*` to the simulator, which is the same shape as the deployment, so http://localhost:8090/ is the site, http://localhost:8090/simulator/ is the simulator, and both menus work in both directions. It needs only Node (18 or newer); without Node, the scripts bring up the simulator alone and say so.
+
+To run it by itself — with the simulator started from an IDE, say — the server takes the two ports as options:
+
+```bash
+node scripts/site-serve.mjs --port 8090 --simulator http://localhost:8081
+```
 
 ### Command line
 

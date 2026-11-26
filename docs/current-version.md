@@ -47,17 +47,28 @@ Requires JDK 25. Maven is downloaded by the wrapper.
 
 The simplest way to bring the site up in development mode is the start script for your shell. It
 looks for a JDK 25 (in `JAVA_HOME`, in the `PATH` or in the usual install folders), so it works
-even if the machine's default Java is older. The optional argument is the port (8081 by default, the
-same port the service listens on in production, because 8080 is often already taken):
+even if the machine's default Java is older. The first optional argument is the port of the
+simulator (8081 by default, the same port the service listens on in production, because 8080 is
+often already taken) and the second one the port of the site:
 
 | Shell | Command |
 |---|---|
-| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090` |
-| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090` |
-| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090` |
+| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090 9099` |
+| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090 -SitePort 9099` |
+| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090 9099` |
 
 If PowerShell refuses to run scripts, use
 `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`, or the `.cmd` version.
+
+The scripts bring up both halves of the system, because the links between them are relative to the
+domain (`/pt/` in the simulator's menu, `simulator/` in the pages of the site) and so need the two
+of them in the same place: besides the simulator on 8081, `scripts/site-serve.mjs` serves the
+descriptive pages of `docs/` at the root of 8090 and passes `/simulator/*` to the simulator. That
+is the shape of the deployment, so <http://localhost:8090/> is the site,
+<http://localhost:8090/simulator/> is the simulator, and the menus work in both directions. The
+site server needs Node (18 or newer); without it the scripts bring up the simulator alone and say
+so. It also runs by itself, for a simulator started from an IDE:
+`node scripts/site-serve.mjs --port 8090 --simulator http://localhost:8081`.
 
 The equivalent commands, without the scripts:
 
