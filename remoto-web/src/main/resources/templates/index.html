@@ -33,12 +33,15 @@
     <span class="sub" th:text="#{app.tagline}">simulador de núcleos motores da medula espinhal</span>
     <span class="versao" th:if="${appVersion}" th:text="#{app.version(${appVersion})}">Versão 3.0</span>
   </a>
-  <!-- o mesmo menu do site, na mesma ordem: idiomas, o outro lado do domínio e o GitHub. As
-       publicações ficam só no site, que é onde mora a documentação do projeto. -->
+  <!-- o mesmo menu do site, na mesma ordem: o outro lado do domínio, a API, o GitHub e os
+       idiomas na margem direita. As publicações ficam só no site, que é onde mora a
+       documentação do projeto. -->
   <nav class="conta">
-    <th:block th:replace="~{fragments :: idioma}"></th:block>
     <a th:href="#{nav.site.url}" class="botao secundario pequeno" th:text="#{nav.site}">Página inicial</a>
+    <a th:href="@{/swagger-ui.html}" class="botao secundario pequeno" th:text="#{nav.api}"
+       th:title="#{nav.api.title}">API</a>
     <a th:href="#{nav.repository.url}" class="botao secundario pequeno" target="_blank" rel="noopener" th:text="#{nav.repository}">GitHub</a>
+    <th:block th:replace="~{fragments :: idioma}"></th:block>
   </nav>
 </header>
 

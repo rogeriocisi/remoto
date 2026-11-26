@@ -62,6 +62,10 @@ em { font-style: italic; }
 .top nav a.gh:hover { background: var(--blue-deep); }
 .top nav a.sim { color: var(--paper); background: var(--blue); padding: .5rem .75rem; border-radius: 2px; border: 0; }
 .top nav a.sim:hover { background: var(--blue-deep); color: var(--paper); }
+/* o terceiro botão da barra, em âmbar: o azul é o simulador e o escuro é o código, e a API fica
+   entre os dois. O texto é da cor da tinta, porque o âmbar é claro demais para o papel. */
+.top nav a.api { color: var(--ink); background: var(--amber); padding: .5rem .75rem; border-radius: 2px; border: 0; }
+.top nav a.api:hover { background: color-mix(in srgb, var(--amber) 80%, var(--ink)); color: var(--ink); }
 @media (max-width: 700px) { .top nav a:not(.gh):not(.sim):not(.keep) { display: none; } }
 /* num celular estreito, o "Rodar"/"Run" sai (o botão Simulador leva ao mesmo lugar) e o espaço
    aperta, para o botão GitHub caber inteiro sem rolar a barra */
@@ -316,6 +320,14 @@ footer .brand span i { color: #8fc0ee; }
   body { background: #fff; }
 }
 /* ---- language switch (EN / PT) ---- */
-.top nav .lang { display: inline-flex; align-items: baseline; gap: .35rem; }
+/* o seletor de idioma fica colado na margem direita do cabeçalho: quando o menu não cabe na
+   largura da janela, a barra rola por baixo dele e a troca de idioma continua a um clique.
+   O degradê à esquerda evita a borda dura de onde o texto que rola desaparece. */
+.top nav .lang {
+  display: inline-flex; align-items: baseline; gap: .35rem;
+  position: sticky; right: 0; z-index: 1;
+  padding-inline: 1rem .15rem; margin-inline: -.7rem -.15rem;
+  background: linear-gradient(to right, transparent, var(--paper) .9rem);
+}
 .top nav .lang i { font: 500 .72rem/1 var(--mono); color: var(--rule); font-style: normal; }
 .top nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
