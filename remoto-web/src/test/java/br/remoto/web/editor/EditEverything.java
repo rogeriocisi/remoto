@@ -62,7 +62,8 @@ final class EditEverything {
                                 if (cell.name().endsWith(".indexStoreVm1") || cell.name().endsWith(".indexStoreVm2")
                                         || cell.name().endsWith(".distanceDecay") || cell.name().endsWith(".rateSeries")
                                         || cell.name().endsWith(".blockedAxons")
-                                        || cell.name().endsWith(".percentageOfMVC")) {
+                                        || cell.name().endsWith(".percentageOfMVC")
+                                        || cell.name().endsWith(".cdMotoneuronModel")) {
                                     continue; // campo novo, que o DAO original não gravava: a referência é anterior a ele
                                 }
                                 if ((item.id().equals("joint") || item.id().equals("muscleSpindle")

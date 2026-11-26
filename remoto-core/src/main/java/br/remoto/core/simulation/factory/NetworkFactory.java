@@ -38,6 +38,7 @@ public class NetworkFactory
     	misc.setStepByTwo( conf.getStep()/2.0 );
     	misc.setStepBySix( conf.getStep()/6.0 );
     	misc.setGammaCa( conf.getMiscellaneous( ReMoto.gammaCa ) );
+    	misc.setMotoneuronModel( conf.getCdMotoneuronModel() );
     	misc.setMnSomaRefractoryPeriod( conf.getMiscellaneous( ReMoto.mnSomaRefractoryPeriod ) );
     	misc.setMnAxonRefractoryPeriod( conf.getMiscellaneous( ReMoto.mnAxonRefractoryPeriod ) );
     	misc.setRcSomaRefractoryPeriod( conf.getMiscellaneous( ReMoto.inRcSomaRefractoryPeriod ) );

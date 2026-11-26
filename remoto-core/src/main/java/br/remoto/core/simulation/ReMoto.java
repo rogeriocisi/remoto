@@ -46,6 +46,13 @@ public class ReMoto
 	public static final String spindleModelProchazka = "spindleModelProchazka";
 
 	// ------
+	// Motoneuron membrane models. The pulse one is the original and stays the default, so that
+	// scenarios without the setting give the published results.
+
+	public static final String mnModelPulse = "mnModelPulse";
+	public static final String mnModelContinuous = "mnModelContinuous";
+
+	// ------
 	// Golgi Tendon Organ models
 
 	public static final String lumpedGtoModelCrago = "lumpedGtoModelCrago";
@@ -180,6 +187,8 @@ public class ReMoto
 	public static final String gKN = "gKN";
 	public static final String gKQ = "gKQ";
 	public static final String gCa = "gCa";
+	/** Persistent sodium: only the continuous-kinetics motoneuron membrane has it. */
+	public static final String gNap = "gNap";
 	public static final String gCaP = "gCaP";
 	public static final String gExcDend = "gExc-dend";
 	public static final String gInibDend = "gInib-dend";

@@ -67,4 +67,11 @@ public sealed interface MotoneuronMembraneModel extends Membrane
     double tDendritePIC();
 
     void setTDendritePIC(double t);
+
+    /**
+     * Condutância de cálcio do dendrito no último passo (µS), já com o ganho γ, para os sinais
+     * gravados. Cada formulação a calcula do seu jeito: o modelo de pulso lê o canal, o de
+     * cinética contínua lê a comporta.
+     */
+    double calciumConductance();
 }

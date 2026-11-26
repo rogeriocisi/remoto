@@ -3,6 +3,7 @@ package br.remoto.core.simulation.neuron;
 import java.util.ArrayList;
 
 import br.remoto.core.model.channel.PulseChannel;
+import br.remoto.core.model.neuron.ContinuousMotoneuronMembrane;
 import br.remoto.core.model.neuron.MotoneuronMembrane;
 import br.remoto.core.model.neuron.MotoneuronMembraneModel;
 import br.remoto.core.model.neuron.AxonNode;
@@ -39,7 +40,8 @@ public class Motoneuron extends SpinalNeuron
 	// The node of Ranvier at the stimulus site, when the nerve uses them (created at the first step)
 	private AxonNode axonNode;
 
-	private final MotoneuronMembrane membrane;
+	/** The membrane, of the family the scenario chose; the pulse one is the default. */
+	private final MotoneuronMembraneModel membrane;
 
 	public Motoneuron(NeuronVO neu, int index, int indexCategory, Miscellaneous misc)
 	{
@@ -47,7 +49,9 @@ public class Motoneuron extends SpinalNeuron
 
 		this.index = indexCategory;
 		this.misc = misc;
-		this.membrane = new MotoneuronMembrane(misc);
+		this.membrane = ReMoto.mnModelContinuous.equals(misc.getMotoneuronModel())
+				? new ContinuousMotoneuronMembrane(misc)
+				: new MotoneuronMembrane(misc);
 
 		reset();
 	}
@@ -104,7 +108,7 @@ public class Motoneuron extends SpinalNeuron
 			// Store signals as marked
 			if( storedSignals == true )
 			{
-				signalStore.add( new Signal(ReMoto.gCa, membrane.ca().lastValue(), t) );
+				signalStore.add( new Signal(ReMoto.gCa, membrane.calciumConductance(), t) );
 			}
 
 			atualizeDendrite(t);
@@ -296,11 +300,13 @@ public class Motoneuron extends SpinalNeuron
 		this.nerve = nerve;
 	}
 
+	/** The calcium pulse channel, when the membrane is the pulse one; null otherwise. */
 	public PulseChannel getGCa() {
-		return membrane.ca();
+		return membrane instanceof MotoneuronMembrane m ? m.ca() : null;
 	}
 
 	public void setGCa(PulseChannel gCa){
-		membrane.setCa(gCa);
+		if( membrane instanceof MotoneuronMembrane m )
+			m.setCa(gCa);
 	}
 }

@@ -11,6 +11,7 @@ import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.model.synapse.SynapseGroup;
 import br.remoto.core.model.channel.GatedChannel;
 import br.remoto.core.model.channel.SodiumChannel;
+import br.remoto.core.model.neuron.ContinuousMotoneuronMembrane;
 import br.remoto.core.simulation.neuron.Interneuron;
 import br.remoto.core.simulation.neuron.Motoneuron;
 import br.remoto.core.simulation.neuron.SensoryFiber;
@@ -179,6 +180,11 @@ public class NeuronFactory
 
 				// Create Ca conductances for dendritic compartment
 				((Motoneuron)neu).setGCa( calcium( pattern.getGCaPVO() ) );
+
+				// The continuous-kinetics membrane has no pulse channels: it takes the same
+				// maximal conductances and reversal potentials directly
+				if( ((Motoneuron)neu).membrane() instanceof ContinuousMotoneuronMembrane c )
+					continuousConductances( c, pattern );
 			}
 			else
 			{
@@ -252,6 +258,32 @@ public class NeuronFactory
 	private static GatedChannel slowPotassium(ConductanceVO g)
 	{
 		return GatedChannel.slowPotassium(g.getGmax() / 1000, g.getE(), g.getTpeak(), g.getAlpha(), g.getBeta());
+	}
+
+	/**
+	 * Fraction of the fast sodium conductance used as persistent sodium. The published parameter
+	 * set puts it near 1% of gNa over the pool; a single ratio is a provisional stand-in until
+	 * the per-unit gradient is fixed by the validation against the f-I curve.
+	 */
+	private static final double PERSISTENT_SODIUM_RATIO = 0.01;
+
+	/**
+	 * The maximal conductances of the continuous-kinetics membrane, in uS, from the same
+	 * conductance values the pulse channels use (already scaled by area, in nS here).
+	 */
+	private static void continuousConductances(ContinuousMotoneuronMembrane c, NeuronVO pattern)
+	{
+		double gNaBar = pattern.getGNaMVO().getGmax() / 1000;
+		c.setGNaBar( gNaBar );
+		c.setGNapBar( gNaBar * PERSISTENT_SODIUM_RATIO );
+		c.setGKfBar( pattern.getGKNVO().getGmax() / 1000 );
+		c.setGKsBar( pattern.getGKQVO().getGmax() / 1000 );
+		c.setGCaLBar( pattern.getGCaPVO().getGmax() / 1000 );
+
+		c.setENa( pattern.getGNaMVO().getE() );
+		c.setEK( pattern.getGKNVO().getE() );
+		c.setECaL( pattern.getGCaPVO().getE() );
+		c.reset();
 	}
 
 	private static GatedChannel calcium(ConductanceVO g)
