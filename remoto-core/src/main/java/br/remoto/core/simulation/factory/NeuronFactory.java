@@ -184,7 +184,7 @@ public class NeuronFactory
 				// The continuous-kinetics membrane has no pulse channels: it takes the same
 				// maximal conductances and reversal potentials directly
 				if( ((Motoneuron)neu).membrane() instanceof ContinuousMotoneuronMembrane c )
-					continuousConductances( c, pattern );
+					continuousConductances( c, pattern, bias, areaSoma );
 			}
 			else
 			{
@@ -261,24 +261,37 @@ public class NeuronFactory
 	}
 
 	/**
-	 * Fraction of the fast sodium conductance used as persistent sodium. The published parameter
-	 * set puts it near 1% of gNa over the pool; a single ratio is a provisional stand-in until
-	 * the per-unit gradient is fixed by the validation against the f-I curve.
+	 * Persistent sodium over the pool, in S/cm², from the published parameter set of the model
+	 * this membrane transcribes: it has a gradient of its own, which is why it is not a fraction
+	 * of the fast sodium. The source grades it along a curve; here the interpolation is linear,
+	 * like every other per-unit parameter of the ReMoto, until the comparison of the f-I curve
+	 * says whether the curve shape matters.
+	 *
+	 * <p>The configuration's gmax is S/cm² times 1e-5, which is what makes
+	 * {@code gmax * 1e6 * area} come out in nS; from S/cm² the same conductance in uS is
+	 * {@code value * area / 100}.
 	 */
-	private static final double PERSISTENT_SODIUM_RATIO = 0.01;
+	private static final double PERSISTENT_SODIUM_FIRST = 0.00043;
+	private static final double PERSISTENT_SODIUM_LAST = 0.00067;
 
 	/**
-	 * The maximal conductances of the continuous-kinetics membrane, in uS, from the same
-	 * conductance values the pulse channels use (already scaled by area, in nS here).
+	 * The maximal conductances of the continuous-kinetics membrane, in uS: the ones the pulse
+	 * channels share come from the same values (already scaled by area, in nS here), and the
+	 * persistent sodium, which the original model does not have, from its own gradient.
+	 *
+	 * @param bias     where this neuron sits in the pool, 0 at the first and 1 at the last
+	 * @param areaSoma the soma area in µm², the same one the other conductances were scaled by
 	 */
-	private static void continuousConductances(ContinuousMotoneuronMembrane c, NeuronVO pattern)
+	private static void continuousConductances(ContinuousMotoneuronMembrane c, NeuronVO pattern,
+			double bias, double areaSoma)
 	{
-		double gNaBar = pattern.getGNaMVO().getGmax() / 1000;
-		c.setGNaBar( gNaBar );
-		c.setGNapBar( gNaBar * PERSISTENT_SODIUM_RATIO );
+		c.setGNaBar( pattern.getGNaMVO().getGmax() / 1000 );
 		c.setGKfBar( pattern.getGKNVO().getGmax() / 1000 );
 		c.setGKsBar( pattern.getGKQVO().getGmax() / 1000 );
 		c.setGCaLBar( pattern.getGCaPVO().getGmax() / 1000 );
+
+		double gNap = Gradient.linear( PERSISTENT_SODIUM_FIRST, PERSISTENT_SODIUM_LAST, bias );
+		c.setGNapBar( gNap * areaSoma / 100 );
 
 		c.setENa( pattern.getGNaMVO().getE() );
 		c.setEK( pattern.getGKNVO().getE() );
