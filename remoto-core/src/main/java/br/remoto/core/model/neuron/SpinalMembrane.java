@@ -11,8 +11,13 @@ import java.util.function.DoubleUnaryOperator;
  * e o axônio ficam com quem a usa.
  *
  * <p>Os potenciais são medidos a partir do repouso (mV) e saturam entre {@link #P0} e {@link #ESE}.
+ *
+ * <p>Esta é a formulação de canais de pulso do ReMoto original. O que a simulação pede de
+ * qualquer membrana está em {@link Membrane}; os canais {@link #na}, {@link #kf} e {@link #ks}
+ * são daqui, e quem precisa deles trata esta classe pelo nome.
  */
-public abstract sealed class SpinalMembrane permits MotoneuronMembrane, InterneuronMembrane {
+public abstract sealed class SpinalMembrane implements Membrane
+        permits MotoneuronMembrane, InterneuronMembrane {
 
     /** Potencial de repouso, referência das fugas (mV). */
     static final double E0 = 0.0;

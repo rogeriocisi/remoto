@@ -13,7 +13,7 @@ import java.util.function.DoubleUnaryOperator;
  * depois o soma, com o dendrito já atualizado: dois Runge-Kutta de 4ª ordem em sequência, como no
  * original.
  */
-public final class MotoneuronMembrane extends SpinalMembrane {
+public final class MotoneuronMembrane extends SpinalMembrane implements MotoneuronMembraneModel {
 
     /** Intervalo mínimo entre dois inícios da PIC (ms). */
     private static final double PIC_INTERVAL = 0.05;
