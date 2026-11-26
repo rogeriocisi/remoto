@@ -1,10 +1,14 @@
 # /etc/caddy/Caddyfile — a mesma coisa que o nginx-remoto.conf.example faz, para quem usa Caddy.
 #
-# Um domínio, duas coisas:
+# Um domínio, duas coisas — e um serviço só por trás:
 #
 #   /            o site descritivo — os arquivos de docs/, estáticos, que o deploy espelha
-#                em /var/www/remoto (DEPLOY_SITE_DIR)
+#                em /var/www/remoto (DEPLOY_SITE_DIR) e que o próprio Tomcat serve
+#                (REMOTO_SITE_DIR no remoto.env)
 #   /simulator/  o simulador — o Spring Boot do remoto-web
+#
+# O Caddy aqui faz o que só ele faz: o HTTPS, a compressão e o repasse. Quem decide o que
+# responde em cada caminho é a aplicação, igual em desenvolvimento e no ar.
 #
 # O repositório não sabe em que domínio é servido: os endereços das páginas são relativos e o
 # e-mail de contato sai do próprio domínio (docs/assets/site.js). Este arquivo, no servidor, é o
@@ -15,27 +19,16 @@
 #   caddy validate --config /etc/caddy/Caddyfile && systemctl reload caddy
 
 exemplo.org {
-	root * /var/www/remoto
-	file_server
-
 	# compressão das páginas, do CSS e do JavaScript (a página inicial cai de 117 KB para ~30 KB)
 	encode zstd gzip
-
-	# endereço que não existe no site: a página 404.html, com o status 404
-	handle_errors 404 {
-		rewrite * /404.html
-		file_server
-	}
 
 	# o actuator é interno: fica acessível na máquina (é o que o deploy consulta), não de fora
 	@interno path /simulator/actuator /simulator/actuator/*
 	respond @interno 404
 
-	# O app roda com context-path /simulator, então o caminho segue inteiro: o reverse_proxy
-	# casa o prefixo e não reescreve nada. A porta é a SERVER_PORT do remoto.env.
-	redir /simulator /simulator/ 301
-	@simulador path /simulator/*
-	reverse_proxy @simulador 127.0.0.1:8081
+	# O domínio inteiro vai para o serviço: ele serve o site na raiz e o simulador em
+	# /simulator/, e o caminho segue sem reescrita. A porta é a SERVER_PORT do remoto.env.
+	reverse_proxy 127.0.0.1:8081
 }
 
 # Se o simulador já morou num subdomínio só dele, fica o redirecionamento para o endereço novo,

@@ -20,6 +20,7 @@ import java.util.List;
 public record RemotoProperties(
         @DefaultValue("./data") String dataDir,
         @DefaultValue("./scenarios") String publicScenariosDir,
+        @DefaultValue("./docs") String siteDir,
         @DefaultValue({"en", "pt"}) List<String> languages,
         @DefaultValue Simulation simulation,
         @DefaultValue Retention retention) {

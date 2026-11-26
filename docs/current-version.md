@@ -47,28 +47,27 @@ Requires JDK 25. Maven is downloaded by the wrapper.
 
 The simplest way to bring the site up in development mode is the start script for your shell. It
 looks for a JDK 25 (in `JAVA_HOME`, in the `PATH` or in the usual install folders), so it works
-even if the machine's default Java is older. The first optional argument is the port of the
-simulator (8081 by default, the same port the service listens on in production, because 8080 is
-often already taken) and the second one the port of the site:
+even if the machine's default Java is older. The optional argument is the port (8081 by default,
+the same port the service listens on in production, because 8080 is often already taken):
 
 | Shell | Command |
 |---|---|
-| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090 9099` |
-| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090 -SitePort 9099` |
-| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090 9099` |
+| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090` |
+| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090` |
+| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090` |
 
 If PowerShell refuses to run scripts, use
 `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`, or the `.cmd` version.
 
-The scripts bring up both halves of the system, because the links between them are relative to the
-domain (`/pt/` in the simulator's menu, `simulator/` in the pages of the site) and so need the two
-of them in the same place: besides the simulator on 8081, `scripts/site-serve.mjs` serves the
-descriptive pages of `docs/` at the root of 8090 and passes `/simulator/*` to the simulator. That
-is the shape of the deployment, so <http://localhost:8090/> is the site,
-<http://localhost:8090/simulator/> is the simulator, and the menus work in both directions. The
-site server needs Node (18 or newer); without it the scripts bring up the simulator alone and say
-so. It also runs by itself, for a simulator started from an IDE:
-`node scripts/site-serve.mjs --port 8090 --simulator http://localhost:8081`.
+One server comes up with both halves of the system, because the links between them are relative
+to the domain (`/pt/` in the simulator's menu, `simulator/` in the pages of the site) and so need
+the two of them in the same place. The same Tomcat serves both: the path decides who answers, with
+`/simulator/**` going to the Spring application and everything else to the pages of `docs/`, from
+a second context whose file servlet reads the folder `remoto.site-dir` (`REMOTO_SITE_DIR`, `./docs`
+by default) — see `SiteConfig`. So <http://localhost:8081/> is the site,
+<http://localhost:8081/simulator/> is the simulator, and the menus work in both directions, with
+nothing else running. If the folder is not there, the root answers nothing and the simulator comes
+up alone.
 
 The equivalent commands, without the scripts:
 
@@ -110,6 +109,7 @@ sudo useradd --system --home-dir /var/lib/remoto --shell /usr/sbin/nologin remot
 sudo install -d -o remoto -g remoto -m 750 /var/lib/remoto
 sudo install -D -m 644 remoto-web/target/remoto-web-4.0.0-SNAPSHOT.jar /opt/remoto/remoto-web.jar
 sudo mkdir -p /opt/remoto/scenarios && sudo cp scenarios/*.json /opt/remoto/scenarios/
+sudo install -d -o remoto -g remoto -m 755 /var/www/remoto   # the pages of the site (REMOTO_SITE_DIR)
 sudo install -D -m 600 deploy/remoto.env.example /etc/remoto/remoto.env   # edit: port, folders, limits
 
 # 4. Service
@@ -125,13 +125,16 @@ curl -s http://localhost:8081/simulator/actuator/health
 
 The app runs with `context-path` `/simulator` (`application.yml`, overridable by
 `SERVER_SERVLET_CONTEXT_PATH`), because on the domain it shares the place with the descriptive
-site, which sits at the root. What puts each thing on its own path is the reverse proxy:
-`deploy/nginx-remoto.conf.example` has the static root, the `proxy_pass` of `/simulator/` with no
-path rewriting, and what live progress (SSE) needs — `proxy_buffering off` and a generous
-`proxy_read_timeout`; `deploy/Caddyfile.example` is the same thing for Caddy, which streams and
-accepts any body size without being told to. In both, the port is the `SERVER_PORT` of
-`remoto.env` (8081, the default of `application.yml`), and the actuator is kept off the public address — the deployment's health check
-asks for it on the machine itself.
+site, which sits at the root — and which it serves itself, from `REMOTO_SITE_DIR`
+(`/var/www/remoto`, the folder the deployment mirrors). What puts each thing on its own path is
+therefore the app, the same way in development and on the server; the reverse proxy in front does
+the TLS, the compression and the repassing of the whole domain.
+`deploy/nginx-remoto.conf.example` has the `proxy_pass` with no path rewriting and what live
+progress (SSE) needs — `proxy_buffering off` and a generous `proxy_read_timeout` — on
+`/simulator/`; `deploy/Caddyfile.example` is the same thing for Caddy, which streams and accepts
+any body size without being told to. In both, the port is the `SERVER_PORT` of `remoto.env` (8081,
+the default of `application.yml`), and the actuator is kept off the public address — the
+deployment's health check asks for it on the machine itself.
 
 - **Updating:** it is automatic. Every push to `master` that passes the tests sends the site, the
   public scenarios and the new JAR to the server and restarts the service (the `deploy` job of

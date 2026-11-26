@@ -21,9 +21,10 @@ server:
   # lugares. Sobreponível por SERVER_PORT (ver deploy/remoto.env.example).
   port: 8081
   servlet:
-    # o simulador fica em <domínio>/simulator; na raiz do domínio está o site descritivo (docs/).
-    # Vale também em desenvolvimento (http://localhost:8081/simulator/), para que os caminhos sejam
-    # os mesmos nos dois lugares. Sobreponível por SERVER_SERVLET_CONTEXT_PATH.
+    # o simulador fica em <domínio>/simulator; na raiz do domínio está o site descritivo (docs/),
+    # que este mesmo Tomcat serve, num segundo contexto (ver SiteConfig e remoto.site-dir). Vale
+    # também em desenvolvimento (http://localhost:8081/ e .../simulator/), para que os caminhos
+    # sejam os mesmos nos dois lugares. Sobreponível por SERVER_SERVLET_CONTEXT_PATH.
     context-path: /simulator
     session:
       timeout: 12h            # a área do navegador não depende da sessão (ver remoto.retention.area-days)
@@ -34,6 +35,10 @@ remoto:
   version: '@project.version@'        # preenchido pelo Maven; o cabeçalho mostra maior.menor
   data-dir: ./data                    # REMOTO_DATA_DIR
   public-scenarios-dir: ./scenarios   # REMOTO_PUBLIC_SCENARIOS_DIR
+  # as páginas do site descritivo, servidas na raiz do domínio; no repositório é docs/, e no
+  # servidor é a pasta que o deploy espelha (DEPLOY_SITE_DIR). Se a pasta não existir, a raiz
+  # fica sem nada e só o simulador responde.
+  site-dir: ./docs                    # REMOTO_SITE_DIR
   simulation:
     slots: 0                 # simulações em paralelo; 0 = núcleos da CPU
     max-active-per-user: 2

@@ -36,7 +36,7 @@ remoto-web/           web application (Spring Boot, no login), including the sce
 remoto-cli/           command-line runner for scripts and clusters, and export of old configurations
 scenarios/            public scenarios (JSON)
 deploy/            systemd service, configuration template and the reverse-proxy examples (nginx, Caddy)
-docs/              project website (`/`, `/pt/`, `/guide/`, `/guide/pt/`), served from the root of the domain and mirrored on GitHub Pages, and documentation of the new version (in Portuguese)
+docs/              project website (`/`, `/pt/`, `/guide/`, `/guide/pt/`), served from the root of the domain by the application itself and mirrored on GitHub Pages, and documentation of the new version (in Portuguese)
 legacy-db/         original HSQLDB database (text script), read by export-legacy without HSQLDB
 ref.bib            BibTeX references
 ```
@@ -57,6 +57,7 @@ Detailed documentation, including the REST API and the data layout, is in [docs/
 - **Batch protocols:** `remoto sweep` runs a scenario once for each value of a parameter and writes the measures of every run to a table, with ready protocols for the H-reflex and M-wave recruitment curve and for force variability (see [Command line](#command-line)).
 - **The papers:** the journal papers, conference proceedings and book chapter from the old site are listed, each with its DOI, in the publications section of the project site (`docs/`), which is where the documentation lives; the simulator links to it.
 - **Reproducible runs:** every run stores the exact scenario, the random seed and the engine version; the same seed always gives the same results.
+- **One server for both halves:** the descriptive site and the simulator are served by the same embedded Tomcat that starts with the application, on port 8081 by default (`server.port`, `SERVER_PORT`): the pages of `docs/` at the root — <http://localhost:8081/>, folder `remoto.site-dir` — and the simulator under `/simulator` — <http://localhost:8081/simulator/>. The path decides which of the two answers, so the links between them work the same in development and on the server, with nothing else running: no static server beside it and no proxy in front to stitch the two together (in production the reverse proxy only adds TLS and compression, and passes the whole domain through).
 - Live progress, interactive charts, CSV and PNG downloads and a REST API.
 
 ### Requirements
@@ -71,13 +72,13 @@ JDK 25. Maven is downloaded automatically by the Maven Wrapper (`./mvnw`, or `mv
 
 ### Run locally
 
-Use the start script for your shell. It finds a JDK 25 (from `JAVA_HOME`, the `PATH` or the usual install folders), so it works even if your default Java is older, and it brings up both halves of the system: the simulator on 8081 and, in front of it, the descriptive site on 8090 (see below). An optional argument sets the port of the simulator (default 8081, the same port the service listens on in production, because 8080 is often already taken by something else), and a second one the port of the site.
+Use the start script for your shell. It finds a JDK 25 (from `JAVA_HOME`, the `PATH` or the usual install folders), so it works even if your default Java is older. What comes up is one process — the application, with its embedded Tomcat — serving both halves of the system on one port: the simulator under `/simulator` and the descriptive site at the root (see below). An optional argument sets the port (default 8081, the same port the service listens on in production, because 8080 is often already taken by something else).
 
 | Shell | Command |
 |---|---|
-| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090 9099` |
-| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090 -SitePort 9099` |
-| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090 9099` |
+| Windows (cmd) | `scripts\start.cmd` or `scripts\start.cmd 9090` |
+| Windows (PowerShell) | `.\scripts\start.ps1` or `.\scripts\start.ps1 -Port 9090` |
+| Linux, macOS, Git Bash | `scripts/start.sh` or `scripts/start.sh 9090` |
 
 If PowerShell refuses to run scripts, use `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`, or the `.cmd` version.
 
@@ -87,17 +88,13 @@ Without the scripts, the equivalent command is below. Keep the quotes, because P
 ./mvnw -pl remoto-web -am spring-boot:run "-Dspring-boot.run.profiles=dev"
 ```
 
-Then open http://localhost:8081/simulator/ (or http://localhost:8081/simulator/pt/ for Portuguese). The port comes from `application.yml` (`server.port`, overridable by `SERVER_PORT`), so it is 8081 with or without the start scripts. There is no login. The simulator lives under `/simulator` in development too, because that is where it is served in production, with the descriptive site at the root of the domain.
+Then open http://localhost:8081/simulator/ (or http://localhost:8081/simulator/pt/ for Portuguese), and http://localhost:8081/ for the site. The port comes from `application.yml` (`server.port`, overridable by `SERVER_PORT`), so it is 8081 with or without the start scripts. There is no login. The simulator lives under `/simulator` in development too, because that is where it is served in production, with the descriptive site at the root of the domain.
 
 #### The site and the simulator together
 
-Both sides are one domain in production, and the links between them are relative to it: `/pt/` in the simulator's menu, `simulator/` in the pages of the site. With the simulator alone on localhost those links have nowhere to land, because nothing serves the site at the root. That is what the start scripts also run: `scripts/site-serve.mjs` serves [docs/](docs/) at the root of 8090 and passes `/simulator/*` to the simulator, which is the same shape as the deployment, so http://localhost:8090/ is the site, http://localhost:8090/simulator/ is the simulator, and both menus work in both directions. It needs only Node (18 or newer); without Node, the scripts bring up the simulator alone and say so.
+Both sides are one domain, and the links between them are relative to it: `/pt/` in the simulator's menu, `simulator/` in the pages of the site. The same Tomcat serves both, so that holds in development as it does in production: the path decides who answers, with `/simulator/**` going to the Spring application and everything else to the pages of [docs/](docs/), served from a second context by Tomcat's own file servlet (`SiteConfig`). Nothing else runs: no static server beside it, and no proxy in front of it to stitch the two together.
 
-To run it by itself — with the simulator started from an IDE, say — the server takes the two ports as options:
-
-```bash
-node scripts/site-serve.mjs --port 8090 --simulator http://localhost:8081
-```
+The folder is `remoto.site-dir` (`REMOTO_SITE_DIR`), `./docs` by default, which is where it is in the repository; in production it is the copy the deployment mirrors. If the folder is not there, the root answers nothing and the simulator comes up alone, which is what happens when the JAR runs by itself.
 
 ### Command line
 
@@ -113,7 +110,7 @@ java -jar remoto-cli/target/remoto-cli-4.0.0-SNAPSHOT.jar export-legacy --db leg
 
 ### Deployment
 
-The site and the simulator are one system on one domain: the descriptive pages of [docs/](docs/) are static files served from the root, and the simulator is a single executable JAR with an embedded web server, installed as a systemd service and served at `/simulator` behind a reverse proxy (nginx or Caddy). There are no accounts to manage: no login, passwords or identity providers.
+The site and the simulator are one system on one domain, and one service serves both: a single executable JAR with an embedded web server, installed as a systemd service, which answers at `/simulator` with the simulator and at the root with the descriptive pages of [docs/](docs/), read from the folder the deployment mirrors (`REMOTO_SITE_DIR`). The reverse proxy in front (nginx or Caddy) does the TLS and the compression and passes the whole domain through. There are no accounts to manage: no login, passwords or identity providers.
 
 | Address | What |
 |---|---|
@@ -173,7 +170,7 @@ echo 'deploy ALL=(root) NOPASSWD: /usr/bin/systemctl restart remoto' \
   | sudo install -m 440 /dev/stdin /etc/sudoers.d/remoto-deploy
 ```
 
-The files it writes are read by the `remoto` user that runs the service (mode 644 under `/opt/remoto`) and by the reverse proxy (`/var/www/remoto`). The service itself — the `remoto` user, `/etc/remoto/remoto.env`, the systemd unit — and the reverse proxy are set up once, as described in the "Installing on the server" section of [docs/current-version.md](docs/current-version.md), with [deploy/nginx-remoto.conf.example](deploy/nginx-remoto.conf.example) or [deploy/Caddyfile.example](deploy/Caddyfile.example) for the proxy.
+The files it writes are read by the `remoto` user that runs the service: the JAR and the public scenarios under `/opt/remoto` (mode 644) and the pages of the site under `/var/www/remoto`. The service itself — the `remoto` user, `/etc/remoto/remoto.env`, the systemd unit — and the reverse proxy are set up once, as described in the "Installing on the server" section of [docs/current-version.md](docs/current-version.md), with [deploy/nginx-remoto.conf.example](deploy/nginx-remoto.conf.example) or [deploy/Caddyfile.example](deploy/Caddyfile.example) for the proxy.
 
 #### Adding a language
 
