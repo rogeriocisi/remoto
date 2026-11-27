@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Os modelos dentro do ReMoto</title>
+  <meta name="description"
+    content="O que cada elemento do ReMoto é como modelo: motoneurônios e interneurônios, sinapses, axônios e estimulação de nervo, fuso e órgão tendinoso, unidades motoras, músculos, tendão e articulação.">
+  <meta name="theme-color" content="#1f5f99">
+  <meta property="og:title" content="Os modelos dentro do ReMoto">
+  <meta property="og:description"
+    content="O que cada elemento do ReMoto é como modelo: membranas e canais, sinapses, axônios, proprioceptores, músculos e a articulação.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:locale:alternate" content="en">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="./">
+  <link rel="alternate" hreflang="en" href="../../models/">
+  <link rel="alternate" hreflang="x-default" href="../../models/">
+  <link rel="icon" href="../../../favicon.ico" sizes="any">
+  <link rel="icon" href="../../../assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../../assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'pt', OTHER = '../../models/';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body id="top">
+  <a class="skip" href="#read">Ir para o conteúdo</a>
+
+  <header class="top">
+    <a class="brand" href="../../../pt/" aria-label="ReMoto, site do projeto">
+      <img src="../../../assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Seções">
+      <a href="../">Guia rápido</a>
+      <a href="#membrane">Membranas</a>
+      <a href="#axon">Axônios</a>
+      <a href="#receptors">Receptores</a>
+      <a href="#muscle">Músculo</a>
+      <a href="#joint">Articulação</a>
+      <a class="gh" href="../../../simulator/pt/">Abrir</a>
+      <span class="lang" role="group" aria-label="Idioma">
+        <a class="keep" href="../../models/" hreflang="en" data-lang="en" lang="en">EN</a><i
+          aria-hidden="true">&middot;</i><a class="keep" href="./" hreflang="pt-BR" data-lang="pt"
+          aria-current="page">PT</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Guia &middot; </span><span>Os modelos</span>
+      </p>
+      <h1>O que cada elemento <span class="hl">de fato é</span>.</h1>
+      <p class="lede">Membranas e canais iônicos, sinapses, axônios e estimulação de nervo, fuso muscular e órgão
+        tendinoso, unidades motoras, os três modelos de músculo, o tendão e o tornozelo. O que cada um representa,
+        que parâmetros tem e onde eles são editados.</p>
+      <p class="cta">
+        <a class="btn primary" href="../../../simulator/pt/">Abrir o simulador</a>
+        <a class="btn" href="../simulation/">Por dentro de uma simulação</a>
+      </p>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="read">
+      <div class="sec-no"><b>&middot;</b>Como ler</div>
+      <div class="sec-body">
+        <h2>Modelos, não configurações</h2>
+        <div class="prose">
+          <p class="lead">Esta página é sobre o que os elementos do ReMoto <i>são</i>. Se você quer saber em que
+            ordem eles rodam e como um sinal caminha entre eles, a página companheira é
+            <a href="../simulation/">por dentro de uma simulação</a>. Se quer pôr alguma coisa para rodar, comece
+            pelo <a href="../">guia rápido</a>.</p>
+          <p>Duas coisas valem antes da lista. Primeiro, <b>quase tudo começa desligado</b>: um cenário cria só o que
+            declara, e um modelo que não está no cenário não é simulado &mdash; não é simulado como zero. Segundo,
+            vários elementos vêm em <b>mais de um modelo</b>, e o cenário escolhe: o músculo, o fuso, a articulação
+            e, agora, a membrana do motoneurônio. A escolha que o site antigo fazia continua sendo o padrão em todos
+            eles, para que os cenários publicados continuem dando os resultados publicados.</p>
+          <p>Todo parâmetro nomeado aqui é editável, e o editor manteve as telas, os nomes, as unidades e os limites
+            do site original &mdash; e é por isso que os artigos escritos para ele ainda descrevem o que você vê.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="membrane">
+      <div class="sec-no"><b>1</b>Membranas</div>
+      <div class="sec-body">
+        <h2>O motoneurônio, e o interneurônio</h2>
+        <div class="prose">
+          <p class="lead">Um motoneurônio tem dois compartimentos, um soma e um dendrito, cada um com seu potencial,
+            ligados por uma condutância de acoplamento. Os potenciais são medidos a partir do repouso e mantidos
+            entre &minus;16 e 120&nbsp;mV.</p>
+          <p>As propriedades passivas não são digitadas direto: saem da <b>geometria</b>. Cada compartimento tem
+            diâmetro e comprimento, que dão uma área; com a capacitância específica e a resistência específica de
+            membrana, a área dá a capacitância e a condutância de fuga; com a resistividade do citoplasma, as duas
+            geometrias dão a condutância de acoplamento entre eles. Mudar um diâmetro, portanto, muda de uma vez a
+            resistência de entrada, a constante de tempo e a reobase, como aconteceria numa célula.</p>
+          <p>Sobre a membrana passiva ficam as <b>condutâncias ativas</b>. No soma, um canal de sódio que ativa e
+            inativa, um canal de potássio rápido e um lento; o lento é o que define a hiperpolarização pós-potencial
+            e, com ela, boa parte da frequência de disparo. No dendrito, uma condutância de cálcio que carrega a
+            corrente persistente de entrada, escalada por um ganho em geral escrito &gamma;: em zero o dendrito é
+            passivo e o núcleo se comporta como no modelo publicado em 2008; acima de zero, ele tem o dendrito ativo
+            dos trabalhos posteriores.</p>
+          <p>Há <b>duas formulações</b> desses canais, e o cenário escolhe na tela dos motoneurônios. Na original, as
+            constantes de taxa são trocadas por um pulso de duração fixa quando o soma cruza o limiar, o que é barato
+            e reproduz a forma do potencial de ação por construção; é o padrão. Na contínua, as comportas são
+            integradas a cada passo, à maneira de Hodgkin e Huxley, com uma corrente persistente de sódio
+            acrescentada no soma e uma corrente de cálcio tipo L inativante no dendrito. A diferença prática: na
+            primeira, a corrente persistente de entrada é um evento; na segunda é um estado da membrana, que é o que
+            produz platôs de despolarização e disparo autossustentado.</p>
+          <p>Um núcleo não é uniforme. Dentro dele todo parâmetro é <b>graduado do primeiro neurônio ao último</b>, e
+            o núcleo se divide em tipos &mdash; S, FR e FF &mdash;, cada um com sua faixa. As células pequenas, de
+            alta resistência e limiar baixo, entram primeiro, e as grandes por último: é o princípio do tamanho, que
+            não está imposto em lugar nenhum do código e sai do gradiente.</p>
+          <p>Os <b>interneurônios</b> têm só o compartimento somático, com os mesmos canais e período refratário
+            próprio. São quatro tipos no modelo: células de Renshaw, interneurônios inibitórios Ia e os
+            interneurônios das vias Ib e do grupo II.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="synapse">
+      <div class="sec-no"><b>2</b>Sinapses</div>
+      <div class="sec-body">
+        <h2>Condutância, não corrente</h2>
+        <div class="prose">
+          <p class="lead">Cada compartimento tem um grupo de sinapses excitatórias e um de inibitórias. Um grupo não
+            é uma lista de sinapses integradas uma a uma &mdash; é uma condutância só, para a qual todas contribuem,
+            e é isso que torna tratável um núcleo com centenas de milhares de conexões.</p>
+          <p>Um disparo pré-sináptico chega depois do atraso da sua própria sinapse e libera transmissor por um pulso
+            de duração fixa. Durante o pulso, a fração ligada do receptor sobe em direção a um valor de saturação com
+            uma constante de tempo; depois dele, decai com outra. É o esquema cinético de Destexhe e colaboradores, e
+            a saturação importa: dois disparos próximos não entregam o dobro de um.</p>
+          <p>O grupo mantém duas somas correntes &mdash; as sinapses em pulso e as demais &mdash;, cada uma com
+            solução fechada entre eventos, na forma proposta por Lytton. A condutância é a condutância máxima do
+            grupo vezes essas somas, e a corrente é essa condutância contra o potencial de membrana do momento.</p>
+          <p>Há dois refinamentos disponíveis. Uma sinapse pode apresentar <b>depressão ou facilitação</b>: sua
+            condutância máxima muda por uma porcentagem fixa a cada disparo e se recupera exponencialmente, de modo
+            que um trem não entrega a mesma coisa do começo ao fim. E o peso de uma conexão pode <b>cair com a
+              distância</b> entre as duas células ao longo do núcleo, o que mantém local a inibição recorrente; no
+            original isso existia só entre células de Renshaw e motoneurônios, e aqui pode ser ajustado para
+            qualquer via.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="drive">
+      <div class="sec-no"><b>3</b>Comando</div>
+      <div class="sec-body">
+        <h2>Tratos descendentes e ruído</h2>
+        <div class="prose">
+          <p class="lead">Um trato descendente é uma população de axônios que disparam como processos pontuais
+            estocásticos. Eles não têm membrana: são fontes de disparo, com a estatística que o cenário escolher.</p>
+          <p>Há três tipos: <b>Poisson</b>, um <b>processo gama de ordem inteira</b> e <b>intervalos gaussianos</b>.
+            A ordem do processo gama é o botão que mais importa e o mais fácil de passar despercebido: ela controla o
+            quanto o trem é regular, e um comando regular e um irregular de mesma taxa média dão variabilidade de
+            força visivelmente diferente. As fontes de ruído independente usam a mesma máquina.</p>
+          <p>O intervalo médio, ou a taxa média, pode seguir um <b>sinal modulante</b>: constante, senoide, senoide
+            modulada em amplitude, onda quadrada, rampa, triângulo, trapézio, aleatório, ou uma série arbitrária de
+            pontos. As correntes injetadas e os estímulos de nervo usam a mesma família de sinais, então uma rampa de
+            corrente e uma rampa de comando descendente se descrevem do mesmo jeito.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="axon">
+      <div class="sec-no"><b>4</b>Axônios e nervo</div>
+      <div class="sec-body">
+        <h2>Condução, colisão e estimulação</h2>
+        <div class="prose">
+          <p class="lead">Cada motoneurônio e cada fibra aferente tem uma velocidade de condução, graduada ao longo
+            do núcleo, e dela saem as latências entre a medula, o ponto de estímulo e a placa motora.</p>
+          <p>Os disparos viajam nos dois sentidos. Um que sai do soma vai ao músculo; um levantado por um estímulo no
+            meio do axônio vai para os dois lados, em direção ao músculo, dando a <b>onda M</b>, e de volta ao soma.
+            Dois disparos que se encontram no mesmo axônio se <b>aniquilam</b> &mdash; essa colisão é a razão de o
+            <b>reflexo H</b> diminuir conforme o estímulo cresce, e ela é modelada, não desenhada.</p>
+          <p>Como um estímulo decide quais axônios excita tem <b>dois modelos</b>. O original compara a corrente do
+            estímulo com um limiar de cada fibra. A alternativa, vinda da versão em Fortran, modela o <b>nó de
+              Ranvier</b>: um modelo de axônio humano com seus canais, bombas e o internó, com parâmetros motores e
+            sensoriais de Howells e colaboradores (2012). Com ele, a largura do pulso importa como importa num
+            experimento &mdash; há uma relação intensidade-duração, em torno de 0,4&nbsp;ms na fibra motora e
+            0,5&nbsp;ms na sensorial &mdash; e o nó é refratário, então pulsos pareados se comportam direito.</p>
+          <p>Um núcleo também pode ter uma fração dos axônios <b>bloqueada</b>, contada do mais lento. Esses
+            motoneurônios disparam no soma e aparecem no raster, mas nada chega à placa motora: é o bloqueio de
+            condução das doenças desmielinizantes, e veio da versão em Fortran adaptada a elas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="receptors">
+      <div class="sec-no"><b>5</b>Receptores</div>
+      <div class="sec-body">
+        <h2>O fuso e o órgão tendinoso</h2>
+        <div class="prose">
+          <p class="lead">Os dois receptores diferem no que medem, no quanto são elaborados e em quanto deles você
+            pode controlar.</p>
+          <p>O <b>fuso muscular</b> é o detalhado. O modelo padrão, de Mileusnic e colaboradores, tem três fibras
+            intrafusais &mdash; uma bolsa dinâmica, uma bolsa estática e uma cadeia &mdash;, cada uma com sua
+            mecânica e sua tensão, e as atividades aferentes primária (Ia) e secundária (II) são formadas a partir
+            delas, com ganhos próprios. A sensibilidade dele é ela mesma controlada, pelo <b>drive fusimotor</b>: uma
+            entrada gama dinâmica e uma estática, que o cenário pode manter constantes ou variar no tempo. Uma
+            alternativa agregada, nomeada no código a partir de Prochazka, troca tudo isso por uma relação direta de
+            comprimento e velocidade para taxa de disparo &mdash; bem mais barata, e suficiente quando o fuso é
+            entrada e não objeto de estudo.</p>
+          <p>O <b>órgão tendinoso de Golgi</b> é agregado nos dois sentidos: um modelo só, nomeado no código a partir
+            de Lin e Crago, transformando a força no tendão na taxa da aferente Ib. É um sensor de tensão, então o
+            que ele relata é com o que o músculo está de fato puxando &mdash; que não é o mesmo que o quanto o núcleo
+            está sendo acionado, e essa diferença é quase tudo o que torna a realimentação Ib interessante.</p>
+          <p>Os dois receptores chegam ao circuito do mesmo jeito: a fibra aferente dispara como um processo gama
+            cuja taxa segue o receptor, conduz com sua própria velocidade e cai em sinapses de motoneurônios e
+            interneurônios. A ordem desse processo gama era fixa no código original e aqui é editável.</p>
+          <p class="fine">Uma consequência prática de como os padrões estão ligados: com o músculo criticamente
+            amortecido e o tornozelo isométrico, o fuso não chega a ser integrado. Se você quer saída de fuso, o
+            cenário precisa de um modelo de músculo que forneça comprimento e velocidade.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="unit">
+      <div class="sec-no"><b>6</b>Unidades motoras</div>
+      <div class="sec-body">
+        <h2>Um disparo, um abalo e um potencial</h2>
+        <div class="prose">
+          <p class="lead">A unidade motora é a ponte entre as duas metades do modelo: recebe disparos e produz um
+            sinal mecânico e um elétrico, calculados em separado até o fim.</p>
+          <p>O <b>abalo</b> é uma função alfa com amplitude de pico e tempo de pico próprios, avançada como um
+            sistema de segunda ordem. Unidades lentas têm abalos pequenos e longos; rápidas, grandes e breves. Uma
+            unidade que dispara repetidamente soma os próprios abalos, e é por isso que a força se funde conforme a
+            taxa sobe.</p>
+          <p>O <b>potencial de ação</b> é uma forma de onda de Hermite-Rodriguez com amplitude e constante de tempo
+            próprias, atenuada conforme a posição da unidade na <b>secção transversal</b> do músculo. As unidades são
+            distribuídas por essa secção, e uma unidade profunda é vista de leve pelo eletrodo enquanto uma
+            superficial domina. A distribuição em si é escolha do cenário.</p>
+          <p>As duas propriedades são graduadas ao longo do núcleo, como todo o resto, e as duas ficam disponíveis
+            por unidade nos resultados, junto da posição que definiu a atenuação.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="muscle">
+      <div class="sec-no"><b>7</b>Músculo</div>
+      <div class="sec-body">
+        <h2>Três jeitos de fazer força, e o EMG</h2>
+        <div class="prose">
+          <p class="lead">Os abalos precisam virar força muscular, e há mais de um modelo para isso. O cenário
+            escolhe na tela de biomecânica.</p>
+        </div>
+        <ol class="cat">
+          <li>
+            <b>Sistema de segunda ordem criticamente amortecido</b>
+            <p>O padrão, e o que os cenários publicados usam. Cada unidade contribui com seu abalo e a força do
+              músculo é a soma. Não há dependência de comprimento nem de velocidade: é a escolha certa quando a
+              pergunta é sobre o núcleo e não sobre a mecânica.</p>
+          </li>
+          <li>
+            <b>Músculo de Hill com tendão</b>
+            <p>As unidades acionam uma ativação, separadamente para as do tipo I e as do tipo II, e a ativação aciona
+              um elemento contrátil com suas propriedades de força-comprimento e força-velocidade, num ângulo de
+              penação, em série com um tendão elástico. A força passa a depender de quão comprido o músculo está e de
+              quão rápido está mudando. É o modelo para quando a articulação se move, e o que dá ao fuso e ao órgão
+              tendinoso algo para ler.</p>
+          </li>
+          <li>
+            <b>Raikova</b>
+            <p>Outro modelo de abalo, nomeado no código a partir de Raikova, sem a mecânica de Hill. É uma forma
+              alternativa para o abalo, não um músculo diferente.</p>
+          </li>
+        </ol>
+        <div class="prose">
+          <p style="margin-top:1.4rem">Uma quarta opção, <i>distribution moments</i>, existe no editor e é mantida
+            por compatibilidade com o banco antigo, mas ela nunca calculou força: fica em zero. Está listada aqui
+            para que uma curva de força achatada com esse modelo selecionado seja reconhecida pelo que é.</p>
+          <p>O <b>EMG</b> é um caminho separado a partir dos mesmos disparos. O sinal bruto é a soma dos potenciais
+            de ação de todas as unidades, com a atenuação de cada uma. O que a tela de resultados mostra por padrão é
+            essa soma com ruído e um passa-faixa de 50 a 1000&nbsp;Hz, que é como o site antigo apresentava; a ordem
+            do filtro, as frequências de corte, o nível de ruído, a atenuação e a amostragem são todos opções, e a
+            soma sem filtro está disponível, assim como o EMG de uma unidade guardada.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="joint">
+      <div class="sec-no"><b>8</b>Geometria e articulação</div>
+      <div class="sec-body">
+        <h2>Da força ao torque, e de volta ao comprimento</h2>
+        <div class="prose">
+          <p class="lead">O que liga os músculos à articulação, nos dois sentidos, é a geometria musculotendínea:
+            polinômios que dão o comprimento de cada músculo e seu braço de momento em função do ângulo do tornozelo,
+            com o ângulo do joelho levado em conta nos músculos que o cruzam.</p>
+          <p>Eles funcionam nos dois sentidos a cada passo. O ângulo dá a cada músculo seu comprimento atual, que é o
+            que o fuso lê; a força vezes o braço de momento dá o torque que a articulação recebe. São quatro músculos
+            modelados &mdash; sóleo, gastrocnêmios medial e lateral, tibial anterior &mdash;, então o tornozelo tem um
+            grupo flexor plantar e um antagonista dorsiflexor.</p>
+        </div>
+        <ol class="cat">
+          <li>
+            <b>Isométrico</b>
+            <p>O padrão. O ângulo não muda, os comprimentos ficam fixos e a malha pelo fuso fica quieta, a menos que
+              outra coisa estire o músculo. A escolha certa para estudar recrutamento, estatística de disparo e força
+              sob comando estável.</p>
+          </li>
+          <li>
+            <b>Pêndulo invertido</b>
+            <p>O modelo da postura ereta: um corpo acima do tornozelo, com sua inércia, oscilando sob a gravidade. A
+              oscilação estira os músculos, os fusos relatam, o núcleo reage e o torque muda a oscilação. A malha
+              inteira, com a gravidade como perturbação.</p>
+          </li>
+          <li>
+            <b>Tarefa de posição</b>
+            <p>A articulação se move contra uma carga, como num experimento em que a pessoa mantém uma posição em vez
+              de uma força.</p>
+          </li>
+          <li>
+            <b>Ângulo imposto</b>
+            <p>Não existia no site original, e é o jeito mais simples de entregar uma perturbação: o cenário conduz o
+              ângulo por um sinal próprio &mdash; um toque de tendão, um estiramento em rampa &mdash; e tudo rio
+              abaixo responde livremente.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="choices">
+      <div class="sec-no"><b>9</b>Padrões</div>
+      <div class="sec-body">
+        <h2>O que é fixo, e o que dá para trocar</h2>
+        <div class="prose">
+          <p class="lead">As configurações que vieram do banco antigo carregam um conjunto fixo de modelos: o
+            músculo criticamente amortecido, o tornozelo isométrico, o fuso de Mileusnic e o órgão tendinoso
+            agregado. Era o que o armazenamento original conseguia registrar, e é por isso que aqueles cenários
+            reproduzem exatamente.</p>
+          <p>Todo o resto é escolha que o editor faz e que o arquivo do cenário guarda ao lado da configuração: o
+            modelo de músculo, o de articulação, o de fuso, o de EMG, a membrana do motoneurônio, a distribuição das
+            unidades na secção transversal, os ganhos fusimotores e o ângulo imposto. Um cenário que não escolhe fica
+            com o comportamento original, que é a regra que mantém os 45 cenários públicos reproduzíveis enquanto o
+            modelo cresce.</p>
+          <p>Onde ficam os parâmetros, tela por tela, está no <a href="../">guia rápido</a>; o que cada cenário
+            público liga está em <a href="../scenarios/">a lista de cenários</a>; e a ordem em que tudo isso roda
+            está em <a href="../simulation/">por dentro de uma simulação</a>.</p>
+        </div>
+        <ul class="links" style="margin-top:1.6rem">
+          <li><a class="btn primary" href="../../../simulator/pt/">Abrir o simulador</a></li>
+          <li><a class="btn" href="../simulation/">Por dentro de uma simulação</a></li>
+          <li><a class="btn" href="../scenarios/">Os cenários, um por um</a></li>
+        </ul>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">Os valores de parâmetro de cada modelo, e os
+          artigos de onde vêm, estão nas <a href="../../../pt/#publications">publicações listadas no site do
+            projeto</a>. Esta página descreve o que os modelos representam; aqueles dão os números.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="../../../pt/"><img src="../../../assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>Um simulador dos núcleos motores da medula espinhal e de seus nervos e músculos, desenvolvido no
+          Laboratório de Engenharia Biomédica (LEB) da Universidade de São Paulo.</p>
+      </div>
+      <div>
+        <h2>Projeto</h2>
+        <p><a href="../../../simulator/pt/">Simulador online</a><br>
+          <a href="../../../pt/">Site do projeto</a><br>
+          <a href="../">Guia rápido</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Código-fonte</a>
+        </p>
+      </div>
+      <div>
+        <h2>Licença</h2>
+        <p>Distribuído sob a <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">licença MIT</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi e os contribuidores do ReMoto.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
