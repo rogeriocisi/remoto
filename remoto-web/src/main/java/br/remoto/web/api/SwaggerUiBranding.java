@@ -124,7 +124,7 @@ class SwaggerUiBranding {
         private static String header(String simulator) {
             return """
                         <header class="remoto-topo">
-                          <a class="remoto-marca" href="%1$s" title="%2$s">
+                          <a class="remoto-marca" href="%11$s" title="%2$s">
                             <img src="%1$simg/remoto-icon.svg" alt="" width="30" height="30">
                             <strong>ReMoto</strong>
                           </a>
@@ -136,11 +136,12 @@ class SwaggerUiBranding {
                             <a href="%9$s" target="_blank" rel="noopener">%10$s</a>
                           </nav>
                         </header>
-                    """.formatted(simulator, Messages.msg("nav.simulator"),
+                    """.formatted(simulator, Messages.msg("nav.site"),
                     Messages.msg("nav.site.url"), Messages.msg("nav.site"),
                     Messages.msg("nav.guide.url"), Messages.msg("nav.guide"),
                     Messages.msg("nav.simulator"), Messages.msg("nav.api"),
-                    Messages.msg("nav.repository.url"), Messages.msg("nav.repository"));
+                    Messages.msg("nav.repository.url"), Messages.msg("nav.repository"),
+                    Messages.msg("nav.site.url"));
         }
 
         /**
