@@ -127,7 +127,8 @@ class EditorIntegrationTest {
         String id = copyAs("ana");
         mvc.perform(post("/editor/" + id).session(session("ana")).with(csrf())
                         .param("screen", "motoneuron").param("sel.pool", "SOL").param("etag", etag("ana", id))
-                        .param("p0.i0.threshold1", "abc"))
+                        // p1: a parte 0 é a escolha da membrana, e as matrizes de tipos vêm depois
+                        .param("p1.i0.threshold1", "abc"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Soma threshold")));
     }

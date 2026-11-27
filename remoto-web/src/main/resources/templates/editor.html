@@ -69,6 +69,13 @@
     <!-- Telas do site antigo (rótulos em inglês nos dois idiomas: são os do site original) -->
     <th:block th:if="${view != null}">
       <h2 th:text="${view.title}">Tela</h2>
+      <!-- o que a tela configura, em duas frases; o detalhe de cada campo fica nas notas, logo
+           acima do Salvar, para onde o "saiba mais" leva -->
+      <p class="intro-tela" th:if="${view.intro != null}">
+        <th:block th:text="${view.intro}">explicação</th:block>
+        <a th:unless="${#lists.isEmpty(view.notes)}" href="#notas-tela"
+           th:text="#{editor.learnMore}">Saiba mais</a>
+      </p>
 
       <form th:if="${!#lists.isEmpty(view.selectors)}" th:action="@{/editor/{id}(id=${scenario.id})}" method="get"
             class="seletores" id="seletores-tela" th:data-aviso="#{editor.discard}">
@@ -95,7 +102,7 @@
             Nada para editar nesta seleção.</p>
           <div class="tabela-rolavel" th:unless="${#lists.isEmpty(sec.rows)}">
             <!-- MATRIX: parâmetros nas linhas, tipos nas colunas (from/to) -->
-            <table th:if="${sec.layout.name() == 'MATRIX'}" class="tabela tabela-editor">
+            <table th:if="${sec.layout.name() == 'MATRIX'}" class="tabela tabela-editor matriz">
               <thead>
               <tr>
                 <th></th>
@@ -139,7 +146,8 @@
           </div>
         </section>
 
-        <ul th:if="${!#lists.isEmpty(view.notes)}" class="notas">
+        <ul th:if="${!#lists.isEmpty(view.notes)}" class="notas" id="notas-tela"
+            th:aria-label="#{editor.notes.aria}">
           <li th:each="n : ${view.notes}" th:text="${n}">nota</li>
         </ul>
         <button type="submit" th:text="#{editor.save}">Salvar</button>

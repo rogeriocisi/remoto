@@ -171,6 +171,9 @@ label.botao { cursor: pointer; }
 .so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* ---- tabelas e status -------------------------------------------------------------------------- */
+/* a explicação da tela do editor, abaixo do título */
+.intro-tela { max-width: 70ch; color: var(--suave); margin: 0 0 14px; }
+.intro-tela a { white-space: nowrap; }
 .tabela-rolavel { overflow-x: auto; }
 .tabela { width: 100%; border-collapse: collapse; }
 .tabela th, .tabela td { text-align: left; padding: 6px 4px; border-top: 1px solid var(--borda); }
@@ -380,6 +383,18 @@ label.botao { cursor: pointer; }
 .tabela-editor { width: auto; }
 .tabela-editor th, .tabela-editor td { padding-right: 18px; }
 .tabela-editor th { white-space: nowrap; font-weight: 600; }
+/* Cada grupo de parâmetros é uma tabela, e cada uma dimensionava as colunas pelo seu próprio
+   conteúdo: os tipos (S, FR, FF) de um grupo não caíam embaixo dos do grupo de cima. Com a coluna
+   dos rótulos na mesma largura em todas, e as células de valor iguais entre si, os grupos de uma
+   tela se alinham. Um rótulo mais largo que isso empurra a coluna, em vez de ser cortado. */
+.tabela-editor.matriz { table-layout: fixed; width: max-content; }
+.tabela-editor.matriz thead th { width: 15em; }      /* um tipo (S, FR, FF...) */
+.tabela-editor.matriz tr.sub th { width: 7.5em; }    /* as subcolunas from/to de um tipo */
+.tabela-editor.matriz thead th:first-child { width: 19em; }
+/* o rótulo quebra em vez de alargar a coluna: um rótulo longo desalinhava o grupo inteiro */
+.tabela-editor.matriz th { white-space: normal; }
+.tabela-editor.matriz th, .tabela-editor.matriz td { padding-right: 4px; }
+.tabela-editor.matriz input.numero, .tabela-editor.matriz select { width: 100%; box-sizing: border-box; }
 .tabela-editor thead th { text-align: center; }
 /* o título da coluna dos nomes das linhas acompanha os nomes, à esquerda */
 .tabela-editor thead th:first-child { text-align: left; }

@@ -109,7 +109,10 @@ public final class LegacyScreens {
      * duração e o passo; quem roda é o botão "Rodar este cenário".
      */
     private static LegacyScreen simulation() {
-        return new LegacyScreen("start", "Duration and Time Step", List.of(),
+        return new LegacyScreen("start", "Duration and Time Step",
+                "How long the simulation runs, and how finely it is integrated. Every model on the other"
+                        + " screens advances by this same time step, so it sets both the accuracy and the cost of a"
+                        + " run.", List.of(),
                 List.of(new Part(null, Layout.LIST,
                         (conf, sel) -> List.of(new SimulationSettings(conf)),
                         Object::toString,
@@ -119,7 +122,12 @@ public final class LegacyScreens {
                         conf.setStep(ReMoto.minStep);
                     }
                 },
-                List.of());
+                List.of("Time step: the integration step of every model on the other screens, and the"
+                                + " interval at which the signals are stored. Smaller is more accurate and slower."
+                                + " Below 0.0001 ms it is raised to that value when saved.",
+                        "Duration: how much time is simulated, not how long the run takes. The models are"
+                                + " detailed, and therefore slow: one simulated second of the public scenarios takes"
+                                + " minutes."));
     }
 
     // ------------------------------------------------------------------ Structure
@@ -159,7 +167,9 @@ public final class LegacyScreens {
                 },
                 Object::toString,
                 List.of(Field.number("Initial", "mm", "initial"), Field.number("Final", "mm", "final")));
-        return new LegacyScreen("network", "Neural Elements", List.of(), List.of(neurons, positions),
+        return new LegacyScreen("network", "Neural Elements",
+                "Which cells exist and how many: the motoneurons of each muscle, the interneurons of each"
+                        + " side and the afferent fibers, and where each pool lies along the spinal cord.", List.of(), List.of(neurons, positions),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     List<?> list = items.get(0);
@@ -215,7 +225,7 @@ public final class LegacyScreens {
                 (conf, sel) -> conf.getNeuronTypes(ReMoto.DT, ReMoto.Noise),
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.bool("Active", "active"), Field.number("ISI mean", "ms", "mean")));
-        Part series = new Part("Series modulation (not in the original site)", Layout.LIST,
+        Part series = new Part("Series modulation (new in ReMoto 4)", Layout.LIST,
                 (conf, sel) -> {
                     List list = conf.getNeuronTypes(ReMoto.DT, ReMoto.TR);
                     Collections.sort(list);
@@ -226,7 +236,9 @@ public final class LegacyScreens {
                     return n.getTractName() == null || n.getTractName().isBlank() ? n.getType() : n.getTractName();
                 },
                 List.of(Field.text("Points: time [ms] and value", "rateSeries")));
-        return new LegacyScreen("input", "Descending Commands", List.of(), List.of(inputs, noises, series),
+        return new LegacyScreen("input", "Descending Commands",
+                "The descending tracts that drive the pools from above: how many axons each one has, how"
+                        + " regularly they fire, and how their mean rate changes over time.", List.of(), List.of(inputs, noises, series),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     List<Object> modulations = new ArrayList<>();
@@ -300,7 +312,10 @@ public final class LegacyScreens {
                 new LegacyScreen.Grouping("compartment",
                         item -> compartmentGroup(((ConductanceVO) item).getCompartment())),
                 "Compartment");
-        return new LegacyScreen("synapse", "Synaptic Parameters", selectors, List.of(part),
+        return new LegacyScreen("synapse", "Synaptic Parameters",
+                "Every connection of the circuit, one line per kind of synapse: how strong it is, where"
+                        + " it lands on the target cell, how many of the target cells it reaches and how long it"
+                        + " takes to arrive.", selectors, List.of(part),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setSynapseTypes(new ArrayList<>(items.get(0)));
@@ -309,7 +324,7 @@ public final class LegacyScreens {
                         + " compartment of a synapse moves its line to the group of the new compartment when you"
                         + " save. Only motoneurons have two compartments; an interneuron has a single one, so"
                         + " its incoming synapses have no compartment to choose and the column is left out.",
-                        "Distance decay (not in the original site): each synapse of the type gets the weight"
+                        "Distance decay (new in ReMoto 4): each synapse of the type gets the weight"
                         + " dec / (dec + d\u00B2), d being the distance (mm) between the two cells in the"
                         + " caudal-rostral column, and no synapse is made below 1%. 0 = no decay (weight 1)."
                         + " Motoneurons and interneurons are placed as in the original (Miscellaneous: initial"
@@ -346,7 +361,7 @@ public final class LegacyScreens {
 
     /** motoneuron.jsp / NeuronAction (task=MN). */
     private static LegacyScreen motoneurons() {
-        Part membrane = confPart("Membrane (not in the original site)", List.of(motoneuronModel()));
+        Part membrane = confPart("Membrane (new in ReMoto 4)", List.of(motoneuronModel()));
         Part electrotonic = new Part("General electrotonic parameters", Layout.MATRIX,
                 (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.MN),
                 item -> ((NeuronVO) item).getType(),
@@ -370,21 +385,31 @@ public final class LegacyScreens {
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.integer("Index of MNs that will have signals stored (1)", null, "indexStoreVm1"),
                         Field.integer("Index of MNs that will have signals stored (2)", null, "indexStoreVm2")));
-        Part block = new Part("Conduction block (not in the original site)", Layout.MATRIX,
+        Part block = new Part("Conduction block (new in ReMoto 4)", Layout.MATRIX,
                 (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.MN),
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.number("Blocked fraction of the pool", null, "blockedAxons")));
         return new LegacyScreen("motoneuron", "Parameters of the alpha motoneurons",
+                "The alpha motoneurons of a pool, type by type (S, FR and FF): the geometry and the"
+                        + " passive electrical properties of the soma and of the dendrite, and the axon that carries"
+                        + " the spike to the muscle. Each parameter runs from the first cell of the type to the"
+                        + " last, which is what makes recruitment orderly.",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
-                // membrane é uma parte da Configuration e vai por último: as matrizes de tipos de
-                // neurônio precisam seguir nos índices que o handler abaixo usa
-                List.of(electrotonic, geometry, stored, block, membrane),
+                // a escolha da membrana decide o significado de tudo o que vem depois, então abre a
+                // tela; as matrizes de tipos de neurônio seguem nos índices que o handler abaixo usa
+                List.of(membrane, electrotonic, geometry, stored, block),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
-                    conf.setListNeuronTypes(items.get(0));
+                    conf.setListNeuronTypes(items.get(1));
                     conf.setMerge(true);
                 },
-                List.of("Columns \"from\"/\"to\": values for the first and the last motoneuron of each type.",
+                List.of("Membrane model: the pulse channels are the ones of the original ReMoto and are the"
+                                + " default, so a scenario that leaves this alone gives the published results."
+                                + " The continuous kinetics replace them with a persistent sodium current and a"
+                                + " calcium current; the γ gain of the calcium current is on the Miscellaneous"
+                                + " screen. What is marked \"new in ReMoto 4\", here and on the other screens, is"
+                                + " an addition of this version, and its default is always the original behaviour.",
+                        "Columns \"from\"/\"to\": values for the first and the last motoneuron of each type.",
                         "Signals stored (membrane potentials, conductances, injected current) appear in the results;"
                                 + " by default, the first and the middle motoneuron of each type.",
                         "Blocked fraction of the pool: a fraction from 0 (none, as in the original) to 1 of the"
@@ -409,13 +434,24 @@ public final class LegacyScreens {
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.integer("Index of INs that will have signals stored", null, "indexStoreVm1")));
         return new LegacyScreen("interneuron", "Parameters of the interneurons",
+                "The interneurons of the spinal circuit (Renshaw cells, Ia reciprocal, Ib and group II),"
+                        + " which have a single compartment each.",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, false, true)), ReMoto.IN_ext)),
                 List.of(part, stored),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setListNeuronTypes(items.get(0));
                 },
-                List.of());
+                List.of(
+                        "The interneuron has a single compartment: the threshold, the specific"
+                                + " capacitance, the specific resistance and the total area are what set how it"
+                                + " charges and when it fires. Unlike the motoneuron, it has one value per type, and"
+                                + " not a range from the first cell to the last.",
+                        "The refractory period of each type is on the Miscellaneous screen, the synapses"
+                                + " that reach these cells are on the Synapses screen, and how many of them exist is"
+                                + " on Neural Elements.",
+                        "Signals stored (membrane potentials, conductances, injected current) appear in"
+                                + " the results; by default, the first interneuron of each type."));
     }
 
     /** sensory.jsp / NeuronAction (task=AF). */
@@ -425,11 +461,13 @@ public final class LegacyScreens {
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.number("Axon threshold", "mA", "axonThreshold1", "axonThreshold2"),
                         Field.number("Axon conduction velocity", "m/s", "axonVelocity1", "axonVelocity2")));
-        Part order = new Part("Receptor-driven firing (not in the original site)", Layout.MATRIX,
+        Part order = new Part("Receptor-driven firing (new in ReMoto 4)", Layout.MATRIX,
                 (conf, sel) -> conf.getNeuronTypes(sel.get("pool"), ReMoto.AF),
                 item -> ((NeuronVO) item).getType(),
                 List.of(Field.integer("Gamma order", null, "gammaOrder")));
         return new LegacyScreen("sensory", "Parameters of the sensory fibers",
+                "The Ia, II and Ib afferent fibers of a muscle: the axon that carries their spikes to the"
+                        + " cord, and how regular the firing driven by the receptors is.",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
                 List.of(part, order),
                 (conf, sel, items) -> {
@@ -460,10 +498,21 @@ public final class LegacyScreens {
                         Field.number("MUAP duration factor", "ms", "lambdaEMG1", "lambdaEMG2")));
         Part model = confPart(null, List.of(muscleModel(), muDistribution()));
         return new LegacyScreen("motorunit", "Parameters of the muscle units",
+                "What a motoneuron spike produces in the muscle: a twitch, which sums into the force, and"
+                        + " an action potential, which sums into the electromyogram.",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
                 List.of(model, muscle, emg),
                 (conf, sel, items) -> conf.setListMotorUnitTypes(items.get(1)),
-                List.of(SETTINGS_NOTE));
+                List.of(
+                        "Twitch peak and tetanic force: the force of a single twitch of one unit of that"
+                                + " type, and of its fully fused contraction. With the twitch time-to-peak, they are"
+                                + " what grade the force of the pool as more units are recruited and fire faster.",
+                        "MUAP scale and duration factors: the amplitude and the width of the action"
+                                + " potential that a unit of that type adds to the electromyogram. The shape itself"
+                                + " is chosen on the Electromyogram screen.",
+                        "The muscle and joint models chosen here are the same ones of the Biomechanical"
+                                + " Elements screen.",
+                        SETTINGS_NOTE));
     }
 
     // ------------------------------------------------------------------ campos ligados à Configuration
@@ -503,7 +552,10 @@ public final class LegacyScreens {
                     return m.getDescription() == null || m.getDescription().isBlank() ? m.getProperty() : m.getDescription();
                 },
                 List.of(Field.number("Value", null, "value")));
-        return new LegacyScreen("miscellaneous", "Miscellaneous", List.of(), List.of(part),
+        return new LegacyScreen("miscellaneous", "Miscellaneous",
+                "The loose constants of the original model, gathered in one list: refractory periods, the"
+                        + " declining factors between Renshaw cells and motoneurons, the positions of the pools and"
+                        + " other values that no other screen owns.", List.of(), List.of(part),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setMiscellaneous(new ArrayList<>(items.get(0)));
@@ -546,7 +598,7 @@ public final class LegacyScreens {
                         Field.number("Width", null, "width")));
         Part order = confPart(null, List.of(Field.choice("Motor-unit recruitment order", "recruitmentOrderFES",
                 "linear", "Linear")));
-        Part pulse = new Part("Pulse and axon threshold (not in the original site)", Layout.LIST,
+        Part pulse = new Part("Pulse and axon threshold (new in ReMoto 4)", Layout.LIST,
                 (conf, sel) -> conf.getNerves(),
                 item -> ((NerveVO) item).getCdNerve(),
                 List.of(Field.number("Pulse width", "ms", "pulseWidth"),
@@ -556,7 +608,10 @@ public final class LegacyScreens {
                                 NerveVO.NODE_THRESHOLD, "Node of Ranvier"),
                         Field.number("Time constant, motor axons", "ms", "tauMotor"),
                         Field.number("Time constant, sensory axons", "ms", "tauSensory")));
-        return new LegacyScreen("stimulation", "Nerve Stimulation", List.of(), List.of(order, part, pulse),
+        return new LegacyScreen("stimulation", "Nerve Stimulation",
+                "Electrical pulses on the tibial and the common peroneal nerves, which is how M waves and"
+                        + " H reflexes are produced: where the stimulus sits along the nerve, how strong it is, and"
+                        + " how each axon decides to fire.", List.of(), List.of(order, part, pulse),
                 (conf, sel, items) -> {
                     for (Object o : items.get(1)) {
                         NerveVO nerve = (NerveVO) o;
@@ -607,6 +662,8 @@ public final class LegacyScreens {
                         Field.number("Delay", "ms", "delay"),
                         Field.number("Width", null, "width")));
         return new LegacyScreen("injectedCurrent", "Injected Current",
+                "Current injected straight into the cells of a pool, bypassing the synapses: a steady"
+                        + " amplitude and a signal that shapes it over time.",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, true)), ReMoto.SOL)),
                 List.of(part),
                 (conf, sel, items) -> {
@@ -660,7 +717,10 @@ public final class LegacyScreens {
                         Field.number("Time-to-peak", "ms", "tpeak"),
                         Field.number("Peak value of alpha", "1/ms", "alpha"),
                         Field.number("Peak value of beta", "1/ms", "beta")));
-        return new LegacyScreen("conductance", "Parameters of the voltage-dependent conductances", selectors,
+        return new LegacyScreen("conductance", "Parameters of the voltage-dependent conductances",
+                "The voltage-dependent channels of one neuron type: sodium, fast and slow potassium and"
+                        + " the dendritic calcium current, each with its conductance, its equilibrium potential and"
+                        + " the rates of its gates.", selectors,
                 List.of(part),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
@@ -683,13 +743,24 @@ public final class LegacyScreens {
                         Field.number("Backward rate", "1/ms", "beta"),
                         Field.number("Reversal potential", "mV", "e")));
         return new LegacyScreen("markov", "Kinetic Properties",
+                "The kinetics of the synapses that arrive at a pool: how much transmitter a spike"
+                        + " releases, how fast the receptors bind it and let it go, and which way the current then"
+                        + " flows.",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, true)), ReMoto.SOL)),
                 List.of(part),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setListMarkovTypes(new ArrayList<>(items.get(0)));
                 },
-                List.of());
+                List.of("Each line is one kind of synapse that reaches the pool. The kinetics are those"
+                                + " of Destexhe et al. (1994), summed over the synapses of a compartment as in"
+                                + " Lytton (1996): a presynaptic spike releases transmitter at the concentration"
+                                + " below for the time-to-peak, the bound fraction rises towards αT/(αT+β) with the"
+                                + " time constant 1/(αT+β), and falls with 1/β once the pulse ends.",
+                        "Reversal potential: with respect to the resting potential, so a positive value"
+                                + " depolarizes the cell (excitatory) and a negative one hyperpolarizes it"
+                                + " (inhibitory). How strong each pathway is, and where it lands, are on the"
+                                + " Synapses screen."));
     }
 
     /** dynamics.jsp / DynamicsAction: depressão ou facilitação de cada sinapse do pool. */
@@ -712,6 +783,7 @@ public final class LegacyScreens {
                         Field.number("Variation", "%", "variation"),
                         Field.number("Time constant", "ms", "tau")));
         return new LegacyScreen("dynamics", "Synaptic dynamics",
+                "Whether a synapse gets weaker or stronger as it is used, and how fast it recovers.",
                 List.of(new SelectorDef("pool", "Pool", conf -> options(pools(conf, true, true)), ReMoto.SOL)),
                 List.of(part),
                 (conf, sel, items) -> {
@@ -720,7 +792,12 @@ public final class LegacyScreens {
                         conf.setDynamicType((DynamicVO) o);
                     }
                 },
-                List.of());
+                List.of("Depression and facilitation of Capek and Esplin (1977) and Kohn et al. (1995):"
+                                + " at every presynaptic spike the maximum conductance of that synapse falls"
+                                + " (depressing) or rises (facilitating) by the variation, in per cent, and returns"
+                                + " to its resting value with the time constant below.",
+                        "With the type \"none\", every spike of that pathway has the same conductance,"
+                                + " which is what the public scenarios use unless they say otherwise."));
     }
 
     // ------------------------------------------------------------------ Proprioceptors
@@ -767,7 +844,10 @@ public final class LegacyScreens {
                 Field.number("Gain of bag 2 and chain fibers secondary afferent activity", null, "secondaryBag2AndChainGain")));
         Part fusimotor = signalPart("Fusimotor drive over time (added to the values above)",
                 conf -> List.of(conf.getGammaDynamicSignal(), conf.getGammaStaticSignal()));
-        return new LegacyScreen("muscleSpindle", "Muscle Spindle", List.of(), List.of(part, fusimotor),
+        return new LegacyScreen("muscleSpindle", "Muscle Spindle",
+                "The muscle spindle, which turns the length and the velocity of each muscle into the"
+                        + " firing of its Ia and II afferents, and the fusimotor drive that sets how sensitive it"
+                        + " is.", List.of(), List.of(part, fusimotor),
                 (conf, sel, items) -> { },
                 List.of(SETTINGS_NOTE,
                         "Fusimotor drive over time: each signal is added to the constant rate above (a negative"
@@ -779,8 +859,17 @@ public final class LegacyScreens {
     private static LegacyScreen golgiTendonOrgan() {
         Part part = confPart(null, List.of(
                 Field.choice("Model", "cdGtoModel", ReMoto.lumpedGtoModelCrago, "Crago")));
-        return new LegacyScreen("golgiTendonOrgan", "Golgi Tendon Organ", List.of(), List.of(part),
-                (conf, sel, items) -> { }, List.of());
+        return new LegacyScreen("golgiTendonOrgan", "Golgi Tendon Organ",
+                "The Golgi tendon organ, which turns the force of each muscle into the firing of its Ib"
+                        + " afferents.", List.of(), List.of(part),
+                (conf, sel, items) -> { },
+                List.of(
+                        "Crago model: the force of the muscle drives the firing of its Ib afferents. It"
+                                + " is the only model there is, so there is nothing else to choose here. The Ib"
+                                + " fibers themselves are on the Sensory Fibers screen, and where they arrive is on"
+                                + " the Synapses screen.",
+                        "Model choices were not stored by the original ConfigurationDAO (they lasted only"
+                                + " for the session); here they are saved with the scenario."));
     }
 
     // ------------------------------------------------------------------ Biomechanical Elements / Parameters
@@ -788,7 +877,9 @@ public final class LegacyScreens {
     /** biomechanicalElements.jsp / BiomechanicalElementsAction. */
     private static LegacyScreen biomechanicalElements() {
         Part part = confPart(null, List.of(jointModel(), muscleModel()));
-        return new LegacyScreen("biomechanicalElements", "Biomechanical Elements", List.of(), List.of(part),
+        return new LegacyScreen("biomechanicalElements", "Biomechanical Elements",
+                "Which mechanical models the simulation uses: how a motor unit makes force, and what the"
+                        + " ankle does with it.", List.of(), List.of(part),
                 (conf, sel, items) -> { },
                 List.of("Joint: Ankle. The converted scenarios only have data for the ankle nuclei"
                                 + " (SOL, MG, LG, TA); the metacarpophalangeal and wrist joints are not available.",
@@ -805,7 +896,9 @@ public final class LegacyScreens {
                 Field.number("Load of the position task (fraction of the MVC)", null, "percentageOfMVC")));
         Part imposed = signalPart("Imposed ankle angle (added to the initial angle)",
                 conf -> List.of(conf.getJointAngleSignal()));
-        return new LegacyScreen("joint", "Joint Parameters", List.of(), List.of(part, imposed),
+        return new LegacyScreen("joint", "Joint Parameters",
+                "The ankle: the angle it starts from, the knee angle that fixes the geometry, and the"
+                        + " load it works against in the position task.", List.of(), List.of(part, imposed),
                 (conf, sel, items) -> { },
                 List.of("The joint model is chosen in Biomechanical Elements.",
                         "Load of the position task: with the joint model \"Position Task\", the fraction of the"
@@ -850,6 +943,8 @@ public final class LegacyScreens {
                         Field.number("Toe curvature", "-", "c_T"),
                         Field.number("Length at linear region onset", "L0T", "LR_T")));
         return new LegacyScreen("musculotendon", "Musculotendon Parameters",
+                "The mechanics of the muscle and of its tendon, in the parameters of whichever muscle"
+                        + " model is in use.",
                 List.of(new SelectorDef("pool", "Muscle", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
                 List.of(socds, raikova, hill),
                 (conf, sel, items) -> {
@@ -872,6 +967,8 @@ public final class LegacyScreens {
                 List.of(Field.number("MUAP scale factor (A MUAP)", "mV", "ampEMG1", "ampEMG2"),
                         Field.number("MUAP duration factor (λ MUAP)", "ms", "lambdaEMG1", "lambdaEMG2")));
         return new LegacyScreen("emg", "Electromyogram",
+                "How each motor-unit action potential is shaped before the sum of them all becomes the"
+                        + " electromyogram.",
                 List.of(new SelectorDef("pool", "Muscle", conf -> options(pools(conf, true, false)), ReMoto.SOL)),
                 List.of(model, units),
                 (conf, sel, items) -> conf.setEMGParameters(items.get(1)),

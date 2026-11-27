@@ -70,15 +70,24 @@ public final class LegacyScreen {
 
     private final String id;
     private final String title;
+    private final String intro;
     private final List<SelectorDef> selectors;
     private final List<Part> parts;
     private final Saver saver;
     private final List<String> notes;
 
-    public LegacyScreen(String id, String title, List<SelectorDef> selectors, List<Part> parts, Saver saver,
-                        List<String> notes) {
+    /**
+     * @param intro uma ou duas frases logo abaixo do título, dizendo o que a tela configura e
+     *              onde isso entra no modelo; o detalhe de cada campo fica nas {@code notes},
+     *              para onde a tela leva pelo "saiba mais"
+     * @param notes o que convém saber antes de salvar: o que cada parâmetro significa, os
+     *              limites e o que é daqui e não existia no site original
+     */
+    public LegacyScreen(String id, String title, String intro, List<SelectorDef> selectors, List<Part> parts,
+                        Saver saver, List<String> notes) {
         this.id = id;
         this.title = title;
+        this.intro = intro;
         this.selectors = selectors;
         this.parts = parts;
         this.saver = saver;
@@ -91,6 +100,10 @@ public final class LegacyScreen {
 
     public String title() {
         return title;
+    }
+
+    public String intro() {
+        return intro;
     }
 
     /** Seleção efetiva: o que veio do pedido, se for uma opção válida, ou o padrão do Action original. */
@@ -121,7 +134,7 @@ public final class LegacyScreen {
             List<?> items = part.items().apply(conf, selection);
             sections.add(part.layout() == ScreenView.Layout.MATRIX ? matrix(p, part, items) : list(p, part, items));
         }
-        return new ScreenView(id, title, selectorViews, sections, notes);
+        return new ScreenView(id, title, intro, selectorViews, sections, notes);
     }
 
     /**
