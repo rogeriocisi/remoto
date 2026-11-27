@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The models inside ReMoto</title>
+  <meta name="description"
+    content="What each element of ReMoto is as a model: motoneurons and interneurons, synapses, axons and nerve stimulation, spindle and tendon organ, motor units, muscles, tendon and joint.">
+  <meta name="theme-color" content="#1f5f99">
+  <meta property="og:title" content="The models inside ReMoto">
+  <meta property="og:description"
+    content="What each element of ReMoto is as a model: membranes and channels, synapses, axons, proprioceptors, muscles and the joint.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="../pt/models/">
+  <link rel="alternate" hreflang="x-default" href="./">
+  <link rel="icon" href="../../favicon.ico" sizes="any">
+  <link rel="icon" href="../../assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'en', OTHER = '../pt/models/';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body id="top">
+  <a class="skip" href="#read">Skip to content</a>
+
+  <header class="top">
+    <a class="brand" href="../../" aria-label="ReMoto, project site">
+      <img src="../../assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="../">Quick guide</a>
+      <a href="#membrane">Membranes</a>
+      <a href="#axon">Axons</a>
+      <a href="#receptors">Receptors</a>
+      <a href="#muscle">Muscle</a>
+      <a href="#joint">Joint</a>
+      <a class="gh" href="../../simulator/">Open</a>
+      <span class="lang" role="group" aria-label="Language">
+        <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i
+          aria-hidden="true">&middot;</i><a class="keep" href="../pt/models/" hreflang="pt-BR" data-lang="pt"
+          lang="pt-BR">PT</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Guide &middot; </span><span>The models</span>
+      </p>
+      <h1>What each element <span class="hl">actually is</span>.</h1>
+      <p class="lede">Membranes and ion channels, synapses, axons and nerve stimulation, muscle spindle and tendon
+        organ, motor units, the three muscle models, the tendon and the ankle. What each one represents, which
+        parameters it has and where they are edited.</p>
+      <p class="cta">
+        <a class="btn primary" href="../../simulator/">Open the simulator</a>
+        <a class="btn" href="../simulation/">Inside a simulation</a>
+      </p>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="read">
+      <div class="sec-no"><b>&middot;</b>How to read</div>
+      <div class="sec-body">
+        <h2>Models, not settings</h2>
+        <div class="prose">
+          <p class="lead">This page is about what the elements of ReMoto <i>are</i>. If you want to know in which
+            order they run and how a signal travels between them, that is the companion page,
+            <a href="../simulation/">inside a simulation</a>. If you want to get something running, start with the
+            <a href="../">quick guide</a>.</p>
+          <p>Two things are worth knowing before the list. First, <b>almost everything starts switched off</b>: a
+            scenario creates only what it declares, and a model that is not in the scenario is not simulated at all
+            &mdash; not simulated as zero. Second, several elements come in <b>more than one model</b>, and the
+            scenario chooses: the muscle, the spindle, the joint, and now the motoneuron membrane. The choice the old
+            site made is still the default everywhere, so published scenarios keep giving published results.</p>
+          <p>Every parameter named here is editable, and the editor keeps the screens, names, units and limits of the
+            original site &mdash; which is why the papers written for it still describe what you see.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="membrane">
+      <div class="sec-no"><b>1</b>Membranes</div>
+      <div class="sec-body">
+        <h2>The motoneuron, and the interneuron</h2>
+        <div class="prose">
+          <p class="lead">A motoneuron has two compartments, a soma and a dendrite, each with its own potential,
+            joined by a coupling conductance. Potentials are measured from rest and held between &minus;16 and
+            120&nbsp;mV.</p>
+          <p>The passive properties are not typed in directly: they are computed from the <b>geometry</b>. Each
+            compartment has a diameter and a length, which give an area; with the specific membrane capacitance and
+            the specific membrane resistance, the area gives the capacitance and the leak conductance; with the
+            cytoplasm resistivity, the two geometries give the coupling conductance between them. Changing a diameter
+            therefore changes the input resistance, the time constant and the rheobase at once, as it would in a
+            cell.</p>
+          <p>On top of the passive membrane sit the <b>active conductances</b>. In the soma, a sodium channel that
+            activates and inactivates, a fast potassium channel and a slow one; the slow one is what sets the
+            afterhyperpolarisation, and therefore most of the firing rate. In the dendrite, a calcium conductance
+            that carries the persistent inward current, scaled by a gain usually written &gamma;: at zero the
+            dendrite is passive, and the pool behaves as in the model published in 2008; above zero it has the
+            active dendrite of the later work.</p>
+          <p>There are <b>two formulations</b> of those channels, and the scenario chooses on the motoneuron screen.
+            In the original one the rate constants are swapped for a pulse of fixed duration when the soma crosses
+            threshold, which is cheap and reproduces the spike shape by construction; it is the default. In the
+            continuous one the gating variables are integrated on every step, Hodgkin-Huxley style, with a persistent
+            sodium current added in the soma and an inactivating L-type calcium current in the dendrite. The
+            practical difference: in the first, the persistent inward current is an event; in the second it is a
+            state of the membrane, which is what produces plateau potentials and self-sustained firing.</p>
+          <p>A pool is not uniform. Within a nucleus every parameter is <b>graded from the first neuron to the
+              last</b>, and the pool is divided into types &mdash; S, FR and FF &mdash; each with its own range. The
+            small, high-resistance, low-threshold cells come in first and the large ones last, which is the size
+            principle: it is not imposed anywhere in the code, it falls out of the gradient.</p>
+          <p><b>Interneurons</b> have the somatic compartment only, with the same channels and their own refractory
+            period. There are four kinds in the model: Renshaw cells, Ia inhibitory interneurons, and the
+            interneurons of the Ib and group II pathways.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="synapse">
+      <div class="sec-no"><b>2</b>Synapses</div>
+      <div class="sec-body">
+        <h2>Conductance, not current</h2>
+        <div class="prose">
+          <p class="lead">Each compartment has one excitatory and one inhibitory group of synapses. A group is not a
+            list of independent synapses being integrated one by one &mdash; it is a single conductance that all of
+            them contribute to, which is what makes a nucleus with hundreds of thousands of connections tractable.</p>
+          <p>A presynaptic spike arrives after the delay of its own synapse and releases transmitter for a pulse of
+            fixed duration. During the pulse the bound fraction of receptor rises towards a saturating value with one
+            time constant; after it, it decays with another. This is the kinetic scheme of Destexhe and colleagues,
+            and the saturation matters: two spikes close together do not deliver twice as much as one.</p>
+          <p>The group keeps two running sums &mdash; the synapses currently in a pulse, and the rest &mdash; each
+            with a closed-form solution between events, in the way proposed by Lytton. The conductance is the maximal
+            conductance of the group times those sums, and the current is that conductance against the membrane
+            potential of the moment.</p>
+          <p>Two refinements are available. A synapse may show <b>depression or facilitation</b>: its maximal
+            conductance changes by a fixed percentage at each spike and recovers exponentially, so a train does not
+            deliver the same thing throughout. And the weight of a connection may <b>fall with the distance</b>
+            between the two cells along the nucleus, which keeps recurrent inhibition local; in the original this
+            existed only between Renshaw cells and motoneurons, and here it can be set for any pathway.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="drive">
+      <div class="sec-no"><b>3</b>Drive</div>
+      <div class="sec-body">
+        <h2>Descending tracts and noise</h2>
+        <div class="prose">
+          <p class="lead">A descending tract is a population of axons that fire as stochastic point processes. They
+            have no membrane: they are sources of spikes, with statistics the scenario chooses.</p>
+          <p>Three kinds are available: <b>Poisson</b>, a <b>gamma process of integer order</b>, and <b>Gaussian
+              intervals</b>. The order of the gamma process is the knob that matters most and the easiest to
+            overlook: it controls how regular the train is, and a regular command and an irregular one of the same
+            mean rate give visibly different force variability. Independent noise sources use the same machinery.</p>
+          <p>The mean interval, or the mean rate, can follow a <b>modulating signal</b>: constant, sine,
+            amplitude-modulated sine, square, ramp, triangle, trapezoid, random, or an arbitrary series of points.
+            Injected currents and nerve stimuli draw on the same family of signals, so a ramp of current and a ramp
+            of descending drive are described the same way.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="axon">
+      <div class="sec-no"><b>4</b>Axons and nerve</div>
+      <div class="sec-body">
+        <h2>Conduction, collision and stimulation</h2>
+        <div class="prose">
+          <p class="lead">Each motoneuron and each afferent fibre has a conduction velocity, graded across the pool,
+            and from it come the latencies between the spinal cord, the stimulation site and the end plate.</p>
+          <p>Spikes travel in both directions. One leaving the soma goes to the muscle; one raised by a nerve
+            stimulus in the middle of the axon goes both ways, towards the muscle, giving the <b>M wave</b>, and back
+            towards the soma. Two spikes meeting on the same axon <b>annihilate</b> &mdash; that collision is why the
+            <b>H reflex</b> shrinks as the stimulus grows, and it is modelled rather than drawn.</p>
+          <p>How a stimulus decides which axons it excites has <b>two models</b>. The original compares the stimulus
+            current with a threshold for each fibre. The alternative, from the Fortran version, models the
+            <b>node of Ranvier</b>: a human axon model with its channels, pumps and the internode, with motor and
+            sensory parameters from Howells and colleagues (2012). With it the pulse width matters as it does in an
+            experiment &mdash; there is a strength-duration relation, around 0.4&nbsp;ms in the motor fibre and
+            0.5&nbsp;ms in the sensory one &mdash; and the node is refractory, so paired pulses behave properly.</p>
+          <p>A pool may also have a fraction of its axons <b>blocked</b>, counted from the slowest. Those
+            motoneurons fire at the soma and appear in the raster, but nothing reaches the end plate: it is the
+            conduction block of demyelinating disease, and it comes from the Fortran version adapted for them.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="receptors">
+      <div class="sec-no"><b>5</b>Receptors</div>
+      <div class="sec-body">
+        <h2>The spindle and the tendon organ</h2>
+        <div class="prose">
+          <p class="lead">The two receptors differ in what they measure, in how elaborate they are and in how much
+            of them you can control.</p>
+          <p>The <b>muscle spindle</b> is the detailed one. The default model, after Mileusnic and colleagues, has
+            three intrafusal fibres &mdash; a dynamic bag, a static bag and a chain &mdash; each with its own
+            mechanics and its own tension, and the primary (Ia) and secondary (II) afferent activities are formed
+            from them with their own gains. Its sensitivity is itself under control, through the <b>fusimotor
+              drive</b>: a dynamic and a static gamma input, which the scenario can hold constant or vary over time.
+            A lumped alternative, named after Prochazka in the code, replaces the whole thing with a direct relation
+            from length and velocity to firing rate &mdash; much cheaper, and enough when the spindle is an input
+            rather than an object of study.</p>
+          <p>The <b>Golgi tendon organ</b> is lumped in both senses: one model, named after Lin and Crago in the
+            code, turning the force in the tendon into the Ib afferent rate. It is a tension sensor, so what it
+            reports is what the muscle is actually pulling with &mdash; which is not the same as how hard the pool is
+            being driven, and the difference is most of what makes Ib feedback interesting.</p>
+          <p>Both receptors reach the circuit the same way: the afferent fibre fires as a gamma process whose rate
+            follows the receptor, conducts with its own velocity, and lands on synapses of motoneurons and
+            interneurons. The order of that gamma process was fixed in the original code and is editable here.</p>
+          <p class="fine">A practical consequence of how the defaults are wired: with the critically damped muscle
+            and the isometric ankle, the spindle is not integrated at all. If you want spindle output, the scenario
+            needs a muscle model that provides length and velocity.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="unit">
+      <div class="sec-no"><b>6</b>Motor units</div>
+      <div class="sec-body">
+        <h2>One spike, a twitch and a potential</h2>
+        <div class="prose">
+          <p class="lead">A motor unit is the bridge between the two halves of the model: it takes spikes and
+            produces one mechanical and one electrical signal, computed separately all the way to the end.</p>
+          <p>The <b>twitch</b> is an alpha function with its own peak amplitude and time to peak, advanced as a
+            second-order system. Slow units have small, long twitches and fast ones large, brief ones; a unit firing
+            repeatedly sums its own twitches, which is why force fuses as rate climbs.</p>
+          <p>The <b>action potential</b> is a Hermite-Rodriguez waveform with its own amplitude and time constant,
+            attenuated according to where the unit sits in the <b>cross-section</b> of the muscle. Units are
+            distributed across that section, and a deep unit is seen faintly by the electrode while a superficial one
+            dominates. The distribution itself is a scenario choice.</p>
+          <p>Both properties are graded along the pool, like everything else, and both are available per unit in the
+            results, together with the position that set the attenuation.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="muscle">
+      <div class="sec-no"><b>7</b>Muscle</div>
+      <div class="sec-body">
+        <h2>Three ways to make force, and the EMG</h2>
+        <div class="prose">
+          <p class="lead">The twitches have to become a muscle force, and there is more than one model for that. The
+            scenario chooses on the biomechanics screen.</p>
+        </div>
+        <ol class="cat">
+          <li>
+            <b>Second-order critically damped system</b>
+            <p>The default, and the one the published scenarios use. Each unit contributes its twitch and the muscle
+              force is the sum. There is no length or velocity dependence: it is the right choice when the question
+              is about the pool and not about the mechanics.</p>
+          </li>
+          <li>
+            <b>Hill-type muscle with tendon</b>
+            <p>The units drive an activation, separately for type I and type II units, and the activation drives a
+              contractile element with its force-length and force-velocity properties, at a pennation angle, in
+              series with an elastic tendon. Force now depends on how long the muscle is and how fast it is
+              changing. This is the model to use when the joint moves, and the one that gives the spindle and the
+              tendon organ something to read.</p>
+          </li>
+          <li>
+            <b>Raikova</b>
+            <p>Another twitch model, named after Raikova in the code, without Hill's mechanics. It is an alternative
+              shape for the twitch, not a different muscle.</p>
+          </li>
+        </ol>
+        <div class="prose">
+          <p style="margin-top:1.4rem">A fourth option, <i>distribution moments</i>, exists in the editor and is kept
+            for compatibility with the old database, but it never computed force: it stays at zero. It is listed here
+            so that a flat force curve with that model selected is recognised for what it is.</p>
+          <p>The <b>EMG</b> is a separate path with the same spikes. The raw signal is the sum of the action
+            potentials of every unit, with the attenuation of each. What the results screen shows by default is that
+            sum with noise added and a band pass from 50 to 1000&nbsp;Hz, which is how the old site presented it; the
+            filter order, the cut-offs, the noise level, the attenuation and the sampling are all options, and the
+            unfiltered sum is available, as is the EMG of a single stored unit.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="joint">
+      <div class="sec-no"><b>8</b>Geometry and joint</div>
+      <div class="sec-body">
+        <h2>From force to torque, and back to length</h2>
+        <div class="prose">
+          <p class="lead">What connects the muscles to the joint, in both directions, is the musculotendon geometry:
+            polynomials that give the length of each muscle and its moment arm as functions of the ankle angle, with
+            the knee angle taken into account for the muscles that cross it.</p>
+          <p>They work both ways on every step. The angle gives each muscle its current length, which is what the
+            spindle reads; the force times the moment arm gives the torque the joint receives. Four muscles are
+            modelled &mdash; soleus, medial and lateral gastrocnemius, tibialis anterior &mdash; so the ankle has a
+            plantar flexor group and a dorsiflexor antagonist.</p>
+        </div>
+        <ol class="cat">
+          <li>
+            <b>Isometric</b>
+            <p>The default. The angle does not change, muscle lengths are fixed, and the loop through the spindle
+              stays quiet unless something else stretches the muscle. The right choice for studying recruitment,
+              firing statistics and force under a steady command.</p>
+          </li>
+          <li>
+            <b>Inverted pendulum</b>
+            <p>The model of upright stance: a body above the ankle, with its inertia, swaying under gravity. The
+              sway stretches the muscles, the spindles report it, the pool reacts and the torque changes the sway.
+              The full loop, with gravity as the disturbance.</p>
+          </li>
+          <li>
+            <b>Position task</b>
+            <p>The joint moves against a load, as in an experiment where the subject holds a position rather than a
+              force.</p>
+          </li>
+          <li>
+            <b>Imposed angle</b>
+            <p>Not in the original site, and the simplest way to deliver a perturbation: the scenario drives the
+              angle along a signal of its own &mdash; a tendon tap, a ramp stretch &mdash; and everything downstream
+              responds freely.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="sec" id="choices">
+      <div class="sec-no"><b>9</b>Defaults</div>
+      <div class="sec-body">
+        <h2>What is fixed, and what you can swap</h2>
+        <div class="prose">
+          <p class="lead">The configurations that came from the old database carry one fixed set of models: the
+            critically damped muscle, the isometric ankle, the Mileusnic spindle and the lumped tendon organ. That
+            is what the original data store could record, and it is why those scenarios reproduce exactly.</p>
+          <p>Everything else is a choice the editor can make and the scenario file keeps alongside the configuration:
+            the muscle model, the joint model, the spindle model, the EMG model, the motoneuron membrane, the
+            distribution of units in the cross-section, the fusimotor gains and the imposed angle. A scenario that
+            does not choose gets the original behaviour, which is the rule that keeps the 45 public scenarios
+            reproducible while the model grows.</p>
+          <p>Where the parameters live, screen by screen, is in the <a href="../">quick guide</a>; what each public
+            scenario switches on is in <a href="../scenarios/">the scenario list</a>; and the order in which all of
+            this runs is in <a href="../simulation/">inside a simulation</a>.</p>
+        </div>
+        <ul class="links" style="margin-top:1.6rem">
+          <li><a class="btn primary" href="../../simulator/">Open the simulator</a></li>
+          <li><a class="btn" href="../simulation/">Inside a simulation</a></li>
+          <li><a class="btn" href="../scenarios/">The scenarios, one by one</a></li>
+        </ul>
+        <p class="fine" style="margin-top:1.2rem;max-width:43rem">The parameter values of every model, and the papers
+          they come from, are in the <a href="../../#publications">publications listed on the project site</a>. This
+          page describes what the models represent; those give the numbers.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="../../"><img src="../../assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>A simulator of spinal cord motor nuclei and their nerves and muscles, developed at the Biomedical
+          Engineering Laboratory (LEB) of the University of S&atilde;o Paulo.</p>
+      </div>
+      <div>
+        <h2>Project</h2>
+        <p><a href="../../simulator/">Online simulator</a><br>
+          <a href="../../">Project site</a><br>
+          <a href="../">Quick guide</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Source code</a>
+        </p>
+      </div>
+      <div>
+        <h2>License</h2>
+        <p>Released under the <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi and the ReMoto contributors.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
