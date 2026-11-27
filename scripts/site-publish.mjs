@@ -10,8 +10,13 @@
 //                    não aceitam endereço relativo. Sem ela, as páginas saem sem prévia, como antes.
 //   --simulator-url  para o espelho do GitHub Pages, que só tem as páginas estáticas: os links do
 //                    simulador ("simulator/", "../simulator/pt/") passam a apontar para o servidor.
+//   --without        pastas do primeiro nível que ficam fora da cópia, separadas por vírgula, e
+//                    cujos links passam a apontar para o site de verdade. É para o espelho do
+//                    Pages: downloads/ são 62 dos 65 MB do artefato, e o artefato grande demora a
+//                    ser indexado, o que faz o deploy-pages não encontrá-lo. Precisa de
+//                    --site-url, que é para onde os links vão; sem ela, nada é deixado de fora.
 //
-// Sem nenhuma das duas, a cópia sai igual à origem.
+// Sem nenhuma das três, a cópia sai igual à origem.
 
 import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
@@ -27,6 +32,7 @@ const option = (name) => {
 const withSlash = (url) => (url && !url.endsWith('/') ? url + '/' : url);
 const siteUrl = withSlash(option('--site-url').trim());
 const simulatorUrl = withSlash(option('--simulator-url').trim());
+const without = option('--without').split(',').map((n) => n.trim()).filter(Boolean);
 const [from, to] = args;
 if (!from || !to) {
   console.error('uso: node scripts/site-publish.mjs <origem> <destino> [--site-url URL] [--simulator-url URL]');
@@ -41,9 +47,10 @@ for (const url of [siteUrl, simulatorUrl]) {
 
 // cópia arquivo por arquivo: o cpSync do Node 24 encerra o processo sem mensagem no Windows
 // quando o caminho tem acento
-function copy(src, dst) {
+function copy(src, dst, skip = []) {
   mkdirSync(dst, { recursive: true });
   for (const name of readdirSync(src)) {
+    if (skip.includes(name)) continue;
     const s = join(src, name);
     const d = join(dst, name);
     if (statSync(s).isDirectory()) copy(s, d);
@@ -51,7 +58,9 @@ function copy(src, dst) {
   }
 }
 rmSync(to, { recursive: true, force: true });
-copy(from, to);
+// sem --site-url não há para onde mandar os links, e deixar a pasta de fora só os quebraria
+const leftOut = siteUrl ? without : [];
+copy(from, to, leftOut);
 
 const pages = [];
 (function walk(dir) {
@@ -84,6 +93,12 @@ for (const file of pages) {
     html = html.replace(/(\n\s*<meta property="og:type"[^>]*>)/, `$1\n${tags}`);
   }
 
+  for (const dir of leftOut) {
+    // href="downloads/x.zip" e href="../downloads/x.zip" viram o endereço no site de verdade
+    const pattern = new RegExp(`href="((?:\.\./)*)${dir}/`, 'g');
+    html = html.replace(pattern, `href="${escape(siteUrl + dir)}/`);
+  }
+
   if (simulatorUrl) {
     html = html.replace(/href="((?:\.\.\/)*)simulator\/((?:[a-z]{2}(?:-[a-z]{2,4})?\/)?)"/g,
       (_, up, lang) => `href="${escape(simulatorUrl)}simulator/${lang}"`);
@@ -96,4 +111,5 @@ for (const file of pages) {
 }
 console.log(`${to}: ${pages.length} páginas, ${changed} alteradas`
   + (siteUrl ? `; prévia em ${siteUrl}` : '; sem prévia (SITE_URL vazio)')
-  + (simulatorUrl ? `; simulador em ${simulatorUrl}simulator/` : ''));
+  + (simulatorUrl ? `; simulador em ${simulatorUrl}simulator/` : '')
+  + (leftOut.length ? `; fora da cópia: ${leftOut.join(', ')} (links para ${siteUrl})` : ''));
