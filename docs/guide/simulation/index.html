@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inside a ReMoto simulation</title>
+  <meta name="description"
+    content="What happens between pressing Run and the plots: the fixed step, the order of each iteration, how spikes travel, how force and EMG are made.">
+  <meta name="theme-color" content="#1f5f99">
+  <meta property="og:title" content="Inside a ReMoto simulation">
+  <meta property="og:description"
+    content="What happens between pressing Run and the plots: the fixed step, the order of each iteration, how spikes travel, how force and EMG are made.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="en">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="en" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="../pt/simulation/">
+  <link rel="alternate" hreflang="x-default" href="./">
+  <link rel="icon" href="../../favicon.ico" sizes="any">
+  <link rel="icon" href="../../assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'en', OTHER = '../pt/simulation/';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body id="top">
+  <a class="skip" href="#read">Skip to content</a>
+
+  <header class="top">
+    <a class="brand" href="../../" aria-label="ReMoto, project site">
+      <img src="../../assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Sections">
+      <a href="../">Quick guide</a>
+      <a href="#iteration">The iteration</a>
+      <a href="#spike">The spike</a>
+      <a href="#muscle">Force and EMG</a>
+      <a href="#feedback">The loop closes</a>
+      <a class="gh" href="../../simulator/">Open</a>
+      <span class="lang" role="group" aria-label="Language">
+        <a class="keep" href="./" hreflang="en" data-lang="en" aria-current="page">EN</a><i
+          aria-hidden="true">&middot;</i><a class="keep" href="../pt/simulation/" hreflang="pt-BR" data-lang="pt"
+          lang="pt-BR">PT</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Guide &middot; </span><span>Inside a simulation</span>
+      </p>
+      <h1>What happens after you press <span class="hl">Run</span>.</h1>
+      <p class="lede">Every iteration, in the order it runs: where the command comes from, how a spike crosses a
+        synapse, what makes a membrane fire, how twitches become force and action potentials become EMG, and how the
+        proprioceptors close the loop back onto the pool.</p>
+      <p class="cta">
+        <a class="btn primary" href="../../simulator/">Open the simulator</a>
+        <a class="btn" href="../">Quick guide</a>
+      </p>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="read">
+      <div class="sec-no"><b>&middot;</b>How to read</div>
+      <div class="sec-body">
+        <h2>One clock, and nothing else</h2>
+        <div class="prose">
+          <p class="lead">ReMoto has no events waiting in a queue and no element that runs ahead of the others. There
+            is a single clock, advancing in fixed steps, and on every tick each element of the model is updated once,
+            always in the same order. Everything on this page is a consequence of that.</p>
+          <p>The step is part of the scenario, and in almost all the public ones it is <b>0.05&nbsp;ms</b>. A
+            simulation of 5&nbsp;s is therefore 100&nbsp;000 iterations. Nothing in the model knows what time it is
+            except through the number it is handed on each tick.</p>
+          <p>This page follows one iteration from end to end. If you only want to get a scenario running, the
+            <a href="../">quick guide</a> is the shorter way in; if you want to know which scenario does what, there
+            is <a href="../scenarios/">the list of the 45 public ones</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="start">
+      <div class="sec-no"><b>1</b>Build</div>
+      <div class="sec-body">
+        <h2>Pressing Run: what gets built</h2>
+        <div class="prose">
+          <p class="lead">A scenario is a file, not a running thing. Pressing <b>Run</b> turns that description into
+            objects in memory, in a fixed order, and only then does the clock start.</p>
+          <p>First the <b>network</b>: every motoneuron, interneuron and afferent fibre the scenario declares is
+            created, one object each, with its own diameter, membrane resistance, capacitance, threshold and axon
+            conduction velocity. These are not all equal. Within a pool the properties are graded from the first
+            neuron to the last, which is what makes a nucleus a population and not a thousand copies of one cell.</p>
+          <p>Then the <b>joint</b> and the <b>muscles</b>, each with its motor units; the <b>inputs</b>, which are the
+            descending tracts and any injected current; the <b>nerve stimulation</b>, if the scenario has any; and
+            last the <b>synapses</b>, which are what connects all of it. Connections are drawn at random, with the
+            probability the scenario gives, and the draw uses the scenario's seed.</p>
+          <p>That seed is the reason a run is repeatable: the same scenario with the same seed draws the same network
+            and gives the same result, to the last digit, today or in five years. Each run stores the exact scenario,
+            the seed and the engine version alongside its results.</p>
+          <p class="fine">Almost everything starts switched off. A scenario only creates what it declares, which is
+            why an empty plot is usually an element that is not in the scenario rather than a bug.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="iteration">
+      <div class="sec-no"><b>2</b>The iteration</div>
+      <div class="sec-body">
+        <h2>One tick, in four movements</h2>
+        <div class="prose">
+          <p class="lead">The loop is short enough to describe in a sentence: for each iteration, the time is the step
+            times the iteration number, and then four things happen, always in this order.</p>
+        </div>
+        <ol class="cat">
+          <li>
+            <b>The nerves</b>
+            <p>If the scenario has electrical stimulation, each active nerve is updated first. It decides whether a
+              pulse falls on this tick and, if it does, which axons it excites &mdash; by their threshold, which
+              depends on the fibre and on the stimulus intensity.</p>
+          </li>
+          <li>
+            <b>The neurons</b>
+            <p>Every neuron in the model is updated once: tracts generate their spikes, membranes are integrated by
+              one step, thresholds are tested, axons move spikes along. This is where almost all the work is.</p>
+          </li>
+          <li>
+            <b>The muscles</b>
+            <p>Each musculotendon unit reads the joint angle to find its current length and moment arm, advances its
+              motor units, computes the force, and feeds the proprioceptors.</p>
+          </li>
+          <li>
+            <b>The joint</b>
+            <p>Last, the joint collects the torques and advances. If it can move, the angle it reaches is the one the
+              muscles will read on the next tick.</p>
+          </li>
+        </ol>
+        <div class="prose">
+          <p style="margin-top:1.4rem">That order is the whole feedback loop in miniature. Neurons act on muscles
+            within the tick; muscles act on neurons only on the next one, through the proprioceptors and the joint.
+            The one step of delay is not an approximation to be apologised for &mdash; it is how a loop is closed in
+            discrete time, and it is the same delay the published models had.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="command">
+      <div class="sec-no"><b>3</b>Command</div>
+      <div class="sec-body">
+        <h2>Where the firing comes from</h2>
+        <div class="prose">
+          <p class="lead">A motoneuron in ReMoto does not decide to fire on its own. Something has to push it, and
+            there are three ways in.</p>
+          <p>The usual one is a <b>descending tract</b>: a population of axons, each one a stochastic point process.
+            The scenario sets the mean interval between spikes and the kind of process &mdash; Poisson, a gamma
+            process of integer order, or Gaussian intervals. The order matters more than it looks: a Poisson command
+            and a gamma command of the same mean rate produce very different force variability, because the order
+            controls how regular the input is.</p>
+          <p>The mean rate does not have to be constant. It can follow a modulating signal &mdash; a ramp, a sinusoid,
+            a square wave, an amplitude-modulated carrier, or an arbitrary series of points &mdash; which is how a
+            scenario makes a contraction grow, oscillate or hold.</p>
+          <p>The second way is an <b>injected current</b>, applied to the soma or to the dendrite of a chosen pool,
+            as in an experiment with an electrode. The third is <b>nerve stimulation</b>, which does not go through
+            synapses at all: it excites the axon directly, and that is a different story, told further down.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="synapse">
+      <div class="sec-no"><b>4</b>Synapse</div>
+      <div class="sec-body">
+        <h2>How a spike crosses</h2>
+        <div class="prose">
+          <p class="lead">A spike is an instant, not a current. What turns one into the other is the synapse, and it
+            does so in three stages.</p>
+          <p>When a neuron fires, it hands the time of the spike to every synaptic group it transmits to. The group
+            holds it for the <b>conduction and synaptic delay</b> of that particular connection, which differs from
+            synapse to synapse.</p>
+          <p>When the delay is over, the spike releases a pulse of neurotransmitter, and the <b>conductance</b> of the
+            group rises and then decays with its own kinetics. The model is the one that depends on transmitter
+            concentration, so overlapping spikes do not simply add: the group aggregates them, in the way described
+            by Lytton, which keeps the cost of a thousand synapses close to the cost of one while preserving
+            saturation.</p>
+          <p>The conductance becomes a <b>current</b> only against the membrane potential of the moment:
+            <i>I</i>&nbsp;=&nbsp;<i>g</i>&nbsp;&times;&nbsp;(<i>E</i>&nbsp;&minus;&nbsp;<i>V</i>). That is why the
+            same synaptic input does less as the cell depolarises, and why an inhibitory synapse can be silent at
+            rest and strong during a contraction.</p>
+          <p>Synapses can also change with use. A group may be set to <b>depress</b> or to <b>facilitate</b>, so that
+            a train of spikes does not deliver the same thing on the first and on the tenth. And the weight of a
+            connection can fall with the distance between the two cells in the nucleus, which is how recurrent
+            inhibition is kept local.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="spike">
+      <div class="sec-no"><b>5</b>The spike</div>
+      <div class="sec-body">
+        <h2>The membrane, and the moment it fires</h2>
+        <div class="prose">
+          <p class="lead">A motoneuron here has two compartments: a soma and a dendrite, joined by a coupling
+            conductance. Both are integrated on every tick, the dendrite first, with the soma potential from the
+            previous step, and then the soma, with the dendrite already updated.</p>
+          <p>Each compartment sums its currents &mdash; the ionic channels, the synapses, the leak towards rest, the
+            current coming from the other compartment and any injected current &mdash; divides by the capacitance and
+            advances the potential by a fourth-order Runge-Kutta step. The potential is clamped to a physiological
+            range, as in the original model.</p>
+          <p>What fires is the soma. When its potential crosses the threshold, and the refractory period since the
+            last spike has elapsed, the neuron registers a spike. Everything else follows from that one moment: the
+            channels of the formulation in use respond, the spike enters the axon, and the time is handed to the
+            synapses.</p>
+          <p>There are two formulations of those channels, and the scenario chooses. The <b>original</b> one swaps the
+            rate constants for a pulse of fixed duration when the threshold is crossed, in the manner of the
+            pulse-based models of Destexhe, and it is the default, so that published scenarios keep giving published
+            results. The <b>continuous</b> one integrates the gating variables on every step, Hodgkin-Huxley style,
+            and adds a persistent sodium current in the soma and an inactivating L-type calcium current in the
+            dendrite. The difference that matters is not detail for its own sake: in the first, the persistent inward
+            current is an event triggered by the soma; in the second it is a state of the membrane, which is what
+            allows plateau potentials and self-sustained firing.</p>
+          <p class="fine">Interneurons have a single compartment and their own refractory period, but the rest of the
+            story is the same.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="axon">
+      <div class="sec-no"><b>6</b>Axon</div>
+      <div class="sec-body">
+        <h2>From the soma to the end plate</h2>
+        <div class="prose">
+          <p class="lead">A spike at the soma is not yet a spike at the muscle. It has to travel, and the travel takes
+            time that depends on the axon.</p>
+          <p>Each motoneuron has its own conduction velocity, graded across the pool, and from it come the latencies
+            between the spinal cord, the site of stimulation and the end plate. A spike leaving the soma reaches the
+            muscle a few milliseconds later, and the slowest units of a pool are measurably later than the fastest.</p>
+          <p>When the scenario stimulates a nerve, spikes also travel the other way. A stimulus excites the axon in
+            the middle, and the resulting spike propagates both towards the muscle, which produces the <b>M wave</b>,
+            and back towards the soma, antidromically. If an orthodromic and an antidromic spike meet on the same
+            axon, they annihilate: that is the collision, and it is why the <b>H reflex</b> shrinks as the stimulus
+            grows. Both are reproduced here because both are modelled, not because they were drawn.</p>
+          <p>A pool can also have a fraction of its axons <b>blocked</b>, counted from the slowest. Those motoneurons
+            still fire at the soma &mdash; they appear in the raster &mdash; but nothing reaches the end plate and
+            their motor units make no force. It is the conduction block of demyelinating disease, and it is the one
+            place where the spikes you see and the force you measure deliberately disagree.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="muscle">
+      <div class="sec-no"><b>7</b>Force and EMG</div>
+      <div class="sec-body">
+        <h2>One spike, two signals</h2>
+        <div class="prose">
+          <p class="lead">A spike arriving at the end plate produces two things at once, and they are computed
+            separately all the way to the end.</p>
+          <p>The first is a <b>twitch</b>: a mechanical response with its own peak amplitude and time to peak, both
+            properties of that motor unit. Slow units have small, long twitches; fast ones have large, brief ones.
+            The twitch is the alpha function of the published model, advanced as a second-order system, so a unit
+            firing repeatedly sums its own twitches and the force fuses as the rate climbs.</p>
+          <p>The second is a <b>motor unit action potential</b>: the electrical signature of that unit as seen by the
+            electrode, with its own amplitude and time constant, and with an attenuation that depends on where the
+            unit sits in the cross-section of the muscle. Deep units are seen faintly, superficial ones strongly.</p>
+          <p>The muscle force and the EMG are then the same operation applied to different quantities: the force is
+            the sum of the twitches of every unit, and the raw EMG is the sum of the action potentials of every unit.
+            Nothing else is added. What the results screen shows by default as EMG is that sum with noise and a band
+            pass applied, the same way the old site presented it; the unfiltered sum is available too.</p>
+          <p>How the sum becomes a muscle force depends on the model the scenario chose. With the second-order
+            critically damped system each unit contributes its twitch directly. With the <b>Hill</b> model the units
+            drive an activation, and the activation drives a contractile element with its force-length and
+            force-velocity properties, in series with a tendon &mdash; so the force depends on how long the muscle is
+            and how fast it is changing, not only on how much it is being told to contract.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="feedback">
+      <div class="sec-no"><b>8</b>The loop</div>
+      <div class="sec-body">
+        <h2>The proprioceptors, and the way back</h2>
+        <div class="prose">
+          <p class="lead">Up to here the signal has gone one way. What makes this a model of the spinal cord rather
+            than a chain is that the muscle reports back, through two receptors, and the report arrives as spikes on
+            the same pool that caused it.</p>
+          <p>The <b>Golgi tendon organ</b> reads the force in the tendon and drives the Ib afferents. It is a tension
+            sensor: it responds to what the muscle is actually pulling with, which is not the same as how hard it is
+            being driven.</p>
+          <p>The <b>muscle spindle</b> reads the length of the muscle, and also its velocity and acceleration, and
+            drives the Ia and II afferents. It is the more elaborate of the two: it has its own intrafusal fibres
+            &mdash; dynamic bag, static bag and chain &mdash; and its sensitivity is itself under control, through
+            the fusimotor drive, which the scenario can hold constant or vary over time. A spindle with a high gamma
+            drive reports a stretch that a slack one would not notice.</p>
+          <p>Both receptors turn their output into spikes the same way: the afferent fibre fires as a gamma process
+            whose rate follows the receptor, conducts with its own velocity, and lands on the synapses of
+            motoneurons and interneurons. From there the cycle starts again, one tick later.</p>
+          <p>Between the afferents and the motoneurons sit the <b>interneurons</b>, and they are what make the circuit
+            a circuit: Renshaw cells, fed by the motoneurons themselves, inhibiting them back; Ia inhibitory
+            interneurons, which silence the antagonist when the agonist is driven; and the Ib and group II
+            interneurons through which tendon organ and spindle reach the pool. A stretch reflex, an H reflex and the
+            oscillation of upright stance are all the same loop, read at different speeds.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="joint">
+      <div class="sec-no"><b>9</b>Joint</div>
+      <div class="sec-body">
+        <h2>Where the force goes</h2>
+        <div class="prose">
+          <p class="lead">Force in a muscle becomes torque at a joint through the moment arm, and the moment arm
+            changes with the angle. ReMoto recomputes both on every tick, from polynomials fitted to the ankle, with
+            the knee angle taken into account for the muscles that cross it.</p>
+          <p>What the joint does with that torque is the scenario's choice. Held <b>isometric</b>, it does not move:
+            the length of each muscle is fixed and the loop through the spindle stays quiet unless something else
+            stretches it. As an <b>inverted pendulum</b>, it is the model of upright stance: the body sways, the
+            muscles are stretched by the sway, the spindles report it and the pool reacts &mdash; the full loop, with
+            gravity as the disturbance. In a <b>position task</b>, it moves against a load. And with an
+            <b>imposed angle</b>, the scenario drives the joint along a signal of its own, which is how a
+            perturbation is delivered: a tendon tap or a ramp stretch, with everything downstream free to respond.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="determinism">
+      <div class="sec-no"><b>10</b>Repeatable</div>
+      <div class="sec-body">
+        <h2>Why two runs give the same numbers</h2>
+        <div class="prose">
+          <p class="lead">A model with random connections, random spike trains and several threads has three good
+            reasons to give a different answer every time. None of them applies here, and that is deliberate.</p>
+          <p>The randomness is seeded. Every draw &mdash; which neuron connects to which, when a Poisson axon fires,
+            the noise on a conductance &mdash; comes from a generator started from the scenario's seed. Same seed,
+            same draws, same run.</p>
+          <p>The parallelism does not change the order. Neurons are updated across all the cores of the machine, but
+            a neuron that fires during a parallel step does not deliver its spike there: the spike is held and
+            delivered afterwards, in the same sequence the single-threaded loop would have used. The number of
+            threads changes how long a simulation takes and nothing else &mdash; results are identical, bit for bit,
+            with one thread or with sixteen.</p>
+          <p>And the models are the published ones. The numerical core was ported from the original code with the
+            requirement that every output stay identical, checked against reference hashes of the configurations of
+            the old database. When a scenario of 2008 is run today, it gives what it gave then.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="outputs">
+      <div class="sec-no"><b>11</b>Results</div>
+      <div class="sec-body">
+        <h2>What comes out</h2>
+        <div class="prose">
+          <p class="lead">While the loop runs, the elements that were asked to store signals write them down. What is
+            kept is a choice, because keeping everything for every neuron of a large pool would not fit.</p>
+          <p>Always kept: the force of each muscle, the spikes of every neuron, the joint torque and the EMG. From
+            those come the raster plots, the firing rates, the interval histograms and the force and torque curves.</p>
+          <p>Kept for the neurons you nominate &mdash; by default the first and the middle one of each type &mdash;
+            the membrane potentials of soma and dendrite, each ionic and synaptic conductance, and the injected
+            current. That is the level at which you watch a single cell charge, fire and recover.</p>
+          <p>Kept for the periphery: muscle and tendon lengths, the activation, the spindle and tendon organ outputs,
+            the properties of each motor unit and its position in the cross-section. Every one of them can be plotted
+            against time or against another, downloaded as CSV or as a figure, and the whole run can be exported with
+            its configuration and seed.</p>
+        </div>
+        <ul class="links" style="margin-top:1.6rem">
+          <li><a class="btn primary" href="../../simulator/">Open the simulator</a></li>
+          <li><a class="btn" href="../scenarios/">The scenarios, one by one</a></li>
+          <li><a class="btn" href="../">Quick guide</a></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="../../"><img src="../../assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>A simulator of spinal cord motor nuclei and their nerves and muscles, developed at the Biomedical
+          Engineering Laboratory (LEB) of the University of S&atilde;o Paulo.</p>
+      </div>
+      <div>
+        <h2>Project</h2>
+        <p><a href="../../simulator/">Online simulator</a><br>
+          <a href="../../">Project site</a><br>
+          <a href="../">Quick guide</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Source code</a>
+        </p>
+      </div>
+      <div>
+        <h2>License</h2>
+        <p>Released under the <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">MIT License</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi and the ReMoto contributors.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

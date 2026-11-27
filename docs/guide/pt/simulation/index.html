@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Por dentro de uma simulação do ReMoto</title>
+  <meta name="description"
+    content="O que acontece entre apertar Rodar e os gráficos: o passo fixo, a ordem de cada iteração, como os disparos caminham, como força e EMG são gerados.">
+  <meta name="theme-color" content="#1f5f99">
+  <meta property="og:title" content="Por dentro de uma simulação do ReMoto">
+  <meta property="og:description"
+    content="O que acontece entre apertar Rodar e os gráficos: o passo fixo, a ordem de cada iteração, como os disparos caminham, como força e EMG são gerados.">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:locale:alternate" content="en">
+  <link rel="canonical" href="./">
+  <link rel="alternate" hreflang="pt-BR" href="./">
+  <link rel="alternate" hreflang="en" href="../../simulation/">
+  <link rel="alternate" hreflang="x-default" href="../../simulation/">
+  <link rel="icon" href="../../../favicon.ico" sizes="any">
+  <link rel="icon" href="../../../assets/remoto-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../../../assets/site.css">
+  <script>
+    // Idioma: a escolha da pessoa (localStorage) manda; sem escolha, vale o idioma do navegador.
+    // Sem JavaScript nada disso roda e o seletor EN / PT continua funcionando como link comum.
+    (function () {
+      var HERE = 'pt', OTHER = '../../simulation/';
+      try {
+        document.addEventListener('click', function (e) {
+          var a = e.target.closest && e.target.closest('a[data-lang]');
+          if (a) { try { localStorage.setItem('remoto.lang', a.getAttribute('data-lang')); } catch (x) { } }
+        }, true);
+        var saved = localStorage.getItem('remoto.lang');
+        var want = saved || (navigator.languages && navigator.languages[0]) || navigator.language || HERE;
+        want = /^pt\b/i.test(want) || want === 'pt' ? 'pt' : 'en';
+        if (want !== HERE) location.replace(OTHER);
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body id="top">
+  <a class="skip" href="#read">Ir para o conteúdo</a>
+
+  <header class="top">
+    <a class="brand" href="../../../pt/" aria-label="ReMoto, site do projeto">
+      <img src="../../../assets/remoto-icon.svg" width="28" height="28" alt="">
+      <span><i>Re</i>Moto</span>
+    </a>
+    <nav aria-label="Seções">
+      <a href="../">Guia rápido</a>
+      <a href="#iteration">A iteração</a>
+      <a href="#spike">O disparo</a>
+      <a href="#muscle">Força e EMG</a>
+      <a href="#feedback">A malha fecha</a>
+      <a class="gh" href="../../../simulator/pt/">Abrir</a>
+      <span class="lang" role="group" aria-label="Idioma">
+        <a class="keep" href="../../simulation/" hreflang="en" data-lang="en" lang="en">EN</a><i
+          aria-hidden="true">&middot;</i><a class="keep" href="./" hreflang="pt-BR" data-lang="pt"
+          aria-current="page">PT</a>
+      </span>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-in">
+      <p class="eyebrow">
+        <svg width="92" height="22" viewBox="0 0 92 22" aria-hidden="true">
+          <path class="trace" d="M1 14H34L39 2 45 20 49 14H91" fill="none" stroke="#1f5f99" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Guia &middot; </span><span>Por dentro de uma simulação</span>
+      </p>
+      <h1>O que acontece depois que você aperta <span class="hl">Rodar</span>.</h1>
+      <p class="lede">Cada iteração, na ordem em que roda: de onde vem o comando, como um disparo atravessa uma
+        sinapse, o que faz uma membrana disparar, como abalos viram força e potenciais de ação viram EMG, e como os
+        proprioceptores fecham a malha de volta no núcleo.</p>
+      <p class="cta">
+        <a class="btn primary" href="../../../simulator/pt/">Abrir o simulador</a>
+        <a class="btn" href="../">Guia rápido</a>
+      </p>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="sec" id="read">
+      <div class="sec-no"><b>&middot;</b>Como ler</div>
+      <div class="sec-body">
+        <h2>Um relógio, e nada mais</h2>
+        <div class="prose">
+          <p class="lead">O ReMoto não tem eventos esperando numa fila nem elemento que corra na frente dos outros.
+            Há um único relógio, que avança em passos fixos, e a cada tique todo elemento do modelo é atualizado uma
+            vez, sempre na mesma ordem. Tudo nesta página é consequência disso.</p>
+          <p>O passo faz parte do cenário e, em quase todos os públicos, é de <b>0,05&nbsp;ms</b>. Uma simulação de
+            5&nbsp;s são, portanto, 100&nbsp;000 iterações. Nada no modelo sabe que horas são a não ser pelo número
+            que recebe a cada tique.</p>
+          <p>Esta página acompanha uma iteração de ponta a ponta. Se você só quer pôr um cenário para rodar, o
+            <a href="../">guia rápido</a> é o caminho curto; se quer saber qual cenário faz o quê, existe
+            <a href="../scenarios/">a lista dos 45 públicos</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="start">
+      <div class="sec-no"><b>1</b>Montagem</div>
+      <div class="sec-body">
+        <h2>Apertar Rodar: o que é construído</h2>
+        <div class="prose">
+          <p class="lead">Um cenário é um arquivo, não uma coisa que roda. Apertar <b>Rodar</b> transforma aquela
+            descrição em objetos na memória, numa ordem fixa, e só então o relógio começa.</p>
+          <p>Primeiro a <b>rede</b>: cada motoneurônio, interneurônio e fibra aferente que o cenário declara é
+            criado, um objeto por célula, com seu diâmetro, resistência de membrana, capacitância, limiar e
+            velocidade de condução do axônio. Eles não são todos iguais. Dentro de um núcleo as propriedades são
+            graduadas do primeiro neurônio ao último, e é isso que faz de um núcleo uma população, e não mil cópias
+            de uma célula.</p>
+          <p>Depois a <b>articulação</b> e os <b>músculos</b>, cada um com suas unidades motoras; as
+            <b>entradas</b>, que são os tratos descendentes e a corrente injetada; a <b>estimulação de nervo</b>, se
+            o cenário tiver; e por último as <b>sinapses</b>, que são o que liga tudo isso. As conexões são sorteadas
+            com a probabilidade que o cenário dá, e o sorteio usa a semente do cenário.</p>
+          <p>Essa semente é a razão de uma execução ser repetível: o mesmo cenário com a mesma semente sorteia a
+            mesma rede e dá o mesmo resultado, até o último dígito, hoje ou daqui a cinco anos. Cada execução guarda
+            o cenário exato, a semente e a versão do motor junto dos resultados.</p>
+          <p class="fine">Quase tudo começa desligado. Um cenário só cria o que declara, e é por isso que um gráfico
+            vazio costuma ser um elemento que não está no cenário, e não um defeito.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="iteration">
+      <div class="sec-no"><b>2</b>A iteração</div>
+      <div class="sec-body">
+        <h2>Um tique, em quatro tempos</h2>
+        <div class="prose">
+          <p class="lead">O laço cabe numa frase: a cada iteração, o tempo é o passo vezes o número da iteração, e aí
+            quatro coisas acontecem, sempre nesta ordem.</p>
+        </div>
+        <ol class="cat">
+          <li>
+            <b>Os nervos</b>
+            <p>Se o cenário tem estimulação elétrica, cada nervo ativo é atualizado primeiro. Ele decide se um pulso
+              cai neste tique e, caso caia, quais axônios excita &mdash; pelo limiar de cada um, que depende da fibra
+              e da intensidade do estímulo.</p>
+          </li>
+          <li>
+            <b>Os neurônios</b>
+            <p>Todo neurônio do modelo é atualizado uma vez: os tratos geram seus disparos, as membranas avançam um
+              passo, os limiares são testados, os axônios movem os disparos. É aqui que está quase todo o trabalho.</p>
+          </li>
+          <li>
+            <b>Os músculos</b>
+            <p>Cada unidade musculotendínea lê o ângulo da articulação para achar seu comprimento e braço de momento
+              atuais, avança suas unidades motoras, calcula a força e alimenta os proprioceptores.</p>
+          </li>
+          <li>
+            <b>A articulação</b>
+            <p>Por último, a articulação recolhe os torques e avança. Se ela puder se mover, o ângulo a que chegar é
+              o que os músculos vão ler no tique seguinte.</p>
+          </li>
+        </ol>
+        <div class="prose">
+          <p style="margin-top:1.4rem">Essa ordem é a malha de realimentação inteira em miniatura. Os neurônios agem
+            sobre os músculos dentro do tique; os músculos agem sobre os neurônios só no seguinte, pelos
+            proprioceptores e pela articulação. O passo de atraso não é uma aproximação a se desculpar &mdash; é como
+            se fecha uma malha em tempo discreto, e é o mesmo atraso que os modelos publicados tinham.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="command">
+      <div class="sec-no"><b>3</b>Comando</div>
+      <div class="sec-body">
+        <h2>De onde vem o disparo</h2>
+        <div class="prose">
+          <p class="lead">Um motoneurônio no ReMoto não resolve disparar sozinho. Alguma coisa tem de empurrá-lo, e
+            há três portas de entrada.</p>
+          <p>A usual é um <b>trato descendente</b>: uma população de axônios, cada um um processo pontual
+            estocástico. O cenário define o intervalo médio entre disparos e o tipo de processo &mdash; Poisson, um
+            processo gama de ordem inteira, ou intervalos gaussianos. A ordem importa mais do que parece: um comando
+            de Poisson e um comando gama de mesma taxa média produzem variabilidade de força bem diferente, porque é
+            a ordem que controla o quanto a entrada é regular.</p>
+          <p>A taxa média não precisa ser constante. Ela pode seguir um sinal modulante &mdash; rampa, senoide, onda
+            quadrada, portadora modulada em amplitude, ou uma série arbitrária de pontos &mdash;, e é assim que um
+            cenário faz a contração crescer, oscilar ou se manter.</p>
+          <p>A segunda porta é a <b>corrente injetada</b>, aplicada ao soma ou ao dendrito de um núcleo escolhido,
+            como num experimento com eletrodo. A terceira é a <b>estimulação de nervo</b>, que não passa por sinapse
+            alguma: excita o axônio diretamente, e essa é outra história, contada mais abaixo.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="synapse">
+      <div class="sec-no"><b>4</b>Sinapse</div>
+      <div class="sec-body">
+        <h2>Como um disparo atravessa</h2>
+        <div class="prose">
+          <p class="lead">Um disparo é um instante, não uma corrente. O que transforma um no outro é a sinapse, e ela
+            faz isso em três etapas.</p>
+          <p>Quando um neurônio dispara, ele entrega o instante do disparo a cada grupo sináptico para o qual
+            transmite. O grupo o segura pelo <b>atraso de condução e sináptico</b> daquela conexão em particular, que
+            difere de sinapse para sinapse.</p>
+          <p>Vencido o atraso, o disparo libera um pulso de neurotransmissor, e a <b>condutância</b> do grupo sobe e
+            depois decai com sua própria cinética. O modelo é o que depende da concentração de transmissor, então
+            disparos sobrepostos não simplesmente se somam: o grupo os agrega, na forma descrita por Lytton, o que
+            mantém o custo de mil sinapses perto do custo de uma e preserva a saturação.</p>
+          <p>A condutância só vira <b>corrente</b> contra o potencial de membrana do momento:
+            <i>I</i>&nbsp;=&nbsp;<i>g</i>&nbsp;&times;&nbsp;(<i>E</i>&nbsp;&minus;&nbsp;<i>V</i>). É por isso que a
+            mesma entrada sináptica faz menos à medida que a célula despolariza, e por que uma sinapse inibitória
+            pode ser silenciosa em repouso e forte durante uma contração.</p>
+          <p>As sinapses também podem mudar com o uso. Um grupo pode estar ajustado para <b>deprimir</b> ou
+            <b>facilitar</b>, de modo que um trem de disparos não entregue a mesma coisa no primeiro e no décimo. E o
+            peso de uma conexão pode cair com a distância entre as duas células no núcleo, que é como a inibição
+            recorrente se mantém local.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="spike">
+      <div class="sec-no"><b>5</b>O disparo</div>
+      <div class="sec-body">
+        <h2>A membrana, e o momento em que ela dispara</h2>
+        <div class="prose">
+          <p class="lead">Um motoneurônio aqui tem dois compartimentos: um soma e um dendrito, ligados por uma
+            condutância de acoplamento. Os dois são integrados a cada tique, o dendrito primeiro, com o potencial do
+            soma do passo anterior, e depois o soma, com o dendrito já atualizado.</p>
+          <p>Cada compartimento soma suas correntes &mdash; os canais iônicos, as sinapses, a fuga em direção ao
+            repouso, a corrente que vem do outro compartimento e a corrente injetada &mdash;, divide pela capacitância
+            e avança o potencial por um passo de Runge-Kutta de quarta ordem. O potencial é limitado a uma faixa
+            fisiológica, como no modelo original.</p>
+          <p>Quem dispara é o soma. Quando o potencial dele cruza o limiar, e o período refratário desde o último
+            disparo já passou, o neurônio registra um disparo. Todo o resto decorre desse instante: os canais da
+            formulação em uso respondem, o disparo entra no axônio, e o instante é entregue às sinapses.</p>
+          <p>Há duas formulações desses canais, e o cenário escolhe. A <b>original</b> troca as constantes de taxa
+            por um pulso de duração fixa quando o limiar é cruzado, à maneira dos modelos de pulso de Destexhe, e é o
+            padrão, para que os cenários publicados continuem dando os resultados publicados. A <b>contínua</b>
+            integra as comportas a cada passo, à maneira de Hodgkin e Huxley, e acrescenta uma corrente persistente
+            de sódio no soma e uma corrente de cálcio tipo L inativante no dendrito. A diferença que importa não é
+            detalhe pelo detalhe: na primeira, a corrente persistente de entrada é um evento disparado pelo soma; na
+            segunda é um estado da membrana, que é o que permite platôs de despolarização e disparo autossustentado.</p>
+          <p class="fine">Os interneurônios têm um compartimento só e período refratário próprio, mas o resto da
+            história é igual.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="axon">
+      <div class="sec-no"><b>6</b>Axônio</div>
+      <div class="sec-body">
+        <h2>Do soma até a placa motora</h2>
+        <div class="prose">
+          <p class="lead">Um disparo no soma ainda não é um disparo no músculo. Ele precisa viajar, e a viagem leva
+            um tempo que depende do axônio.</p>
+          <p>Cada motoneurônio tem sua velocidade de condução, graduada ao longo do núcleo, e dela saem as latências
+            entre a medula, o ponto de estímulo e a placa motora. Um disparo que sai do soma chega ao músculo alguns
+            milissegundos depois, e as unidades mais lentas de um núcleo chegam mensuravelmente depois das mais
+            rápidas.</p>
+          <p>Quando o cenário estimula um nervo, disparos viajam também no sentido contrário. O estímulo excita o
+            axônio no meio, e o disparo resultante se propaga tanto em direção ao músculo, o que produz a <b>onda
+              M</b>, quanto de volta ao soma, antidromicamente. Se um disparo ortodrômico e um antidrômico se
+            encontram no mesmo axônio, eles se aniquilam: é a colisão, e é por isso que o <b>reflexo H</b> diminui à
+            medida que o estímulo cresce. Os dois aparecem aqui porque os dois são modelados, não porque foram
+            desenhados.</p>
+          <p>Um núcleo também pode ter uma fração dos axônios <b>bloqueada</b>, contada do mais lento. Esses
+            motoneurônios continuam disparando no soma &mdash; aparecem no raster &mdash;, mas nada chega à placa
+            motora e suas unidades motoras não fazem força. É o bloqueio de condução das doenças desmielinizantes, e
+            é o único lugar em que os disparos que você vê e a força que você mede discordam de propósito.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="muscle">
+      <div class="sec-no"><b>7</b>Força e EMG</div>
+      <div class="sec-body">
+        <h2>Um disparo, dois sinais</h2>
+        <div class="prose">
+          <p class="lead">Um disparo que chega à placa motora produz duas coisas ao mesmo tempo, e elas são
+            calculadas separadamente até o fim.</p>
+          <p>A primeira é um <b>abalo</b>: uma resposta mecânica com amplitude de pico e tempo de pico próprios, as
+            duas propriedades daquela unidade motora. Unidades lentas têm abalos pequenos e longos; rápidas, abalos
+            grandes e breves. O abalo é a função alfa do modelo publicado, avançada como um sistema de segunda ordem,
+            de modo que uma unidade que dispara repetidamente soma os próprios abalos e a força se funde conforme a
+            taxa sobe.</p>
+          <p>A segunda é um <b>potencial de ação de unidade motora</b>: a assinatura elétrica daquela unidade como o
+            eletrodo a vê, com amplitude e constante de tempo próprias, e com uma atenuação que depende de onde a
+            unidade está na secção transversal do músculo. Unidades profundas são vistas de leve; superficiais, com
+            força.</p>
+          <p>A força do músculo e o EMG são então a mesma operação aplicada a grandezas diferentes: a força é a soma
+            dos abalos de todas as unidades, e o EMG bruto é a soma dos potenciais de ação de todas as unidades. Nada
+            mais é acrescentado. O que a tela de resultados mostra por padrão como EMG é essa soma com ruído e um
+            passa-faixa, do mesmo jeito que o site antigo apresentava; a soma sem filtro também está disponível.</p>
+          <p>Como a soma vira força muscular depende do modelo que o cenário escolheu. Com o sistema de segunda ordem
+            criticamente amortecido, cada unidade contribui com seu abalo diretamente. Com o modelo de <b>Hill</b>,
+            as unidades acionam uma ativação, e a ativação aciona um elemento contrátil com suas propriedades de
+            força-comprimento e força-velocidade, em série com um tendão &mdash; então a força depende de quão
+            comprido o músculo está e de quão rápido está mudando, e não só do quanto ele está sendo mandado
+            contrair.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="feedback">
+      <div class="sec-no"><b>8</b>A malha</div>
+      <div class="sec-body">
+        <h2>Os proprioceptores, e o caminho de volta</h2>
+        <div class="prose">
+          <p class="lead">Até aqui o sinal foi num sentido só. O que faz disto um modelo da medula, e não uma
+            cadeia, é que o músculo relata de volta, por dois receptores, e o relato chega como disparos no mesmo
+            núcleo que o causou.</p>
+          <p>O <b>órgão tendinoso de Golgi</b> lê a força no tendão e aciona as aferentes Ib. É um sensor de tensão:
+            responde ao que o músculo está de fato puxando, que não é a mesma coisa que o quanto ele está sendo
+            acionado.</p>
+          <p>O <b>fuso muscular</b> lê o comprimento do músculo, e também sua velocidade e aceleração, e aciona as
+            aferentes Ia e II. É o mais elaborado dos dois: tem fibras intrafusais próprias &mdash; bolsa dinâmica,
+            bolsa estática e cadeia &mdash; e sua sensibilidade é ela mesma controlada, pelo drive fusimotor, que o
+            cenário pode manter constante ou variar no tempo. Um fuso com drive gama alto relata um estiramento que
+            um fuso frouxo não notaria.</p>
+          <p>Os dois receptores transformam sua saída em disparos do mesmo jeito: a fibra aferente dispara como um
+            processo gama cuja taxa segue o receptor, conduz com sua própria velocidade e cai nas sinapses de
+            motoneurônios e interneurônios. Dali o ciclo recomeça, um tique depois.</p>
+          <p>Entre as aferentes e os motoneurônios estão os <b>interneurônios</b>, e são eles que fazem do circuito
+            um circuito: células de Renshaw, alimentadas pelos próprios motoneurônios e inibindo-os de volta;
+            interneurônios inibitórios Ia, que silenciam o antagonista quando o agonista é acionado; e os
+            interneurônios Ib e do grupo II, por onde órgão tendinoso e fuso chegam ao núcleo. Um reflexo de
+            estiramento, um reflexo H e a oscilação da postura ereta são todos a mesma malha, lida em velocidades
+            diferentes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="joint">
+      <div class="sec-no"><b>9</b>Articulação</div>
+      <div class="sec-body">
+        <h2>Para onde vai a força</h2>
+        <div class="prose">
+          <p class="lead">Força num músculo vira torque numa articulação pelo braço de momento, e o braço de momento
+            muda com o ângulo. O ReMoto recalcula os dois a cada tique, por polinômios ajustados ao tornozelo, com o
+            ângulo do joelho levado em conta nos músculos que o cruzam.</p>
+          <p>O que a articulação faz com esse torque é escolha do cenário. Mantida <b>isométrica</b>, ela não se
+            move: o comprimento de cada músculo fica fixo e a malha pelo fuso fica quieta, a menos que outra coisa o
+            estire. Como <b>pêndulo invertido</b>, é o modelo da postura ereta: o corpo oscila, os músculos são
+            estirados pela oscilação, os fusos relatam e o núcleo reage &mdash; a malha inteira, com a gravidade como
+            perturbação. Numa <b>tarefa de posição</b>, ela se move contra uma carga. E com <b>ângulo imposto</b>, o
+            cenário conduz a articulação por um sinal próprio, que é como se entrega uma perturbação: um toque de
+            tendão ou um estiramento em rampa, com tudo rio abaixo livre para responder.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="determinism">
+      <div class="sec-no"><b>10</b>Repetível</div>
+      <div class="sec-body">
+        <h2>Por que duas execuções dão os mesmos números</h2>
+        <div class="prose">
+          <p class="lead">Um modelo com conexões sorteadas, trens de disparo aleatórios e várias threads tem três
+            bons motivos para dar uma resposta diferente a cada vez. Nenhum deles vale aqui, e isso é deliberado.</p>
+          <p>O sorteio tem semente. Todo sorteio &mdash; qual neurônio conecta em qual, quando um axônio de Poisson
+            dispara, o ruído sobre uma condutância &mdash; sai de um gerador iniciado pela semente do cenário. Mesma
+            semente, mesmos sorteios, mesma execução.</p>
+          <p>O paralelismo não muda a ordem. Os neurônios são atualizados em todos os núcleos da máquina, mas um
+            neurônio que dispara durante um passo paralelo não entrega o disparo ali: o disparo é retido e entregue
+            depois, na mesma sequência que o laço de uma thread só teria usado. O número de threads muda quanto tempo
+            a simulação leva, e nada mais &mdash; os resultados são idênticos, bit a bit, com uma thread ou com
+            dezesseis.</p>
+          <p>E os modelos são os publicados. O núcleo numérico foi portado do código original com a exigência de que
+            toda saída continuasse idêntica, conferida contra hashes de referência das configurações do banco antigo.
+            Quando um cenário de 2008 roda hoje, ele dá o que dava então.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="outputs">
+      <div class="sec-no"><b>11</b>Resultados</div>
+      <div class="sec-body">
+        <h2>O que sai</h2>
+        <div class="prose">
+          <p class="lead">Enquanto o laço roda, os elementos que foram marcados para guardar sinais os anotam. O que
+            se guarda é uma escolha, porque guardar tudo de todo neurônio de um núcleo grande não caberia.</p>
+          <p>Sempre guardados: a força de cada músculo, os disparos de todos os neurônios, o torque da articulação e
+            o EMG. Deles saem os rasters, as frequências instantâneas, os histogramas de intervalos e as curvas de
+            força e torque.</p>
+          <p>Guardados para os neurônios que você indicar &mdash; por padrão o primeiro e o do meio de cada tipo
+            &mdash;: os potenciais de membrana do soma e do dendrito, cada condutância iônica e sináptica, e a
+            corrente injetada. É nesse nível que se acompanha uma célula carregar, disparar e se recuperar.</p>
+          <p>Guardados para a periferia: comprimentos de músculo e tendão, a ativação, as saídas do fuso e do órgão
+            tendinoso, as propriedades de cada unidade motora e sua posição na secção transversal. Cada um deles pode
+            ser traçado contra o tempo ou contra outro, baixado em CSV ou como figura, e a execução inteira pode ser
+            exportada com sua configuração e sua semente.</p>
+        </div>
+        <ul class="links" style="margin-top:1.6rem">
+          <li><a class="btn primary" href="../../../simulator/pt/">Abrir o simulador</a></li>
+          <li><a class="btn" href="../scenarios/">Os cenários, um por um</a></li>
+          <li><a class="btn" href="../">Guia rápido</a></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="in">
+      <div>
+        <a class="brand" href="../../../pt/"><img src="../../../assets/remoto-icon.svg" width="28" height="28"
+            alt=""><span><i>Re</i>Moto</span></a>
+        <p>Um simulador dos núcleos motores da medula espinhal e de seus nervos e músculos, desenvolvido no
+          Laboratório de Engenharia Biomédica (LEB) da Universidade de São Paulo.</p>
+      </div>
+      <div>
+        <h2>Projeto</h2>
+        <p><a href="../../../simulator/pt/">Simulador online</a><br>
+          <a href="../../../pt/">Site do projeto</a><br>
+          <a href="../">Guia rápido</a><br>
+          <a href="https://github.com/rogeriocisi/remoto">Código-fonte</a>
+        </p>
+      </div>
+      <div>
+        <h2>Licença</h2>
+        <p>Distribuído sob a <a href="https://github.com/rogeriocisi/remoto/blob/master/LICENSE">licença MIT</a>.<br>
+          &copy; 2006&ndash;2026 Rogerio R. L. Cisi e os contribuidores do ReMoto.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
