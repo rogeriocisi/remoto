@@ -53,8 +53,10 @@ public record Field(String label, String unit, Kind kind, List<Option> options, 
         return accessors.size() == 2;
     }
 
+    /** O rótulo no idioma da requisição, com a unidade, que é símbolo e não se traduz. */
     public String labelWithUnit() {
-        return unit == null || unit.isBlank() ? label : label + " [" + unit + "]";
+        String text = EditorTexts.t(label);
+        return unit == null || unit.isBlank() ? text : text + " [" + unit + "]";
     }
 
     public static Field number(String label, String unit, String... properties) {

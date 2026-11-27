@@ -125,8 +125,8 @@ public final class LegacyScreen {
         Map<String, String> selection = selection(conf, requested);
         List<ScreenView.Selector> selectorViews = new ArrayList<>();
         for (SelectorDef s : selectors) {
-            selectorViews.add(new ScreenView.Selector(s.name(), s.label(), s.options().apply(conf, selection),
-                    selection.get(s.name())));
+            selectorViews.add(new ScreenView.Selector(s.name(), EditorTexts.t(s.label()),
+                    translated(s.options().apply(conf, selection)), selection.get(s.name())));
         }
         List<ScreenView.Section> sections = new ArrayList<>();
         for (int p = 0; p < parts.size(); p++) {
@@ -134,7 +134,8 @@ public final class LegacyScreen {
             List<?> items = part.items().apply(conf, selection);
             sections.add(part.layout() == ScreenView.Layout.MATRIX ? matrix(p, part, items) : list(p, part, items));
         }
-        return new ScreenView(id, title, intro, selectorViews, sections, notes);
+        return new ScreenView(id, EditorTexts.t(title), EditorTexts.t(intro), selectorViews, sections,
+                notes.stream().map(EditorTexts::t).toList());
     }
 
     /**
@@ -167,7 +168,8 @@ public final class LegacyScreen {
                         try {
                             accessor.set(item, raw, field.kind());
                         } catch (IllegalArgumentException e) {
-                            errors.add(part.itemLabel().apply(item) + " — " + field.label() + ": " + e.getMessage());
+                            errors.add(part.itemLabel().apply(item) + " — " + EditorTexts.t(field.label())
+                                    + ": " + e.getMessage());
                         }
                     }
                 }
@@ -193,8 +195,8 @@ public final class LegacyScreen {
             }
             rows.add(new ScreenView.Row(field.labelWithUnit(), false, cells));
         }
-        return new ScreenView.Section(part.title(), ScreenView.Layout.MATRIX, headers, paired, rows,
-                List.of(), null, null);
+        return new ScreenView.Section(EditorTexts.t(part.title()), ScreenView.Layout.MATRIX, headers, paired,
+                rows, List.of(), null, null);
     }
 
     private ScreenView.Section list(int p, Part part, List<?> items) {
@@ -213,7 +215,7 @@ public final class LegacyScreen {
                 if (!g.equals(group)) {
                     group = g;
                     groupRows.add(rows.size());
-                    rows.add(new ScreenView.Row(g, true, List.of()));
+                    rows.add(new ScreenView.Row(EditorTexts.t(g), true, List.of()));
                 }
             }
             List<ScreenView.Cell> cells = new ArrayList<>();
@@ -244,11 +246,18 @@ public final class LegacyScreen {
             // diria nada.
             for (int n = 0; n < groupRows.size(); n++) {
                 ScreenView.Row r = rows.get(groupRows.get(n));
-                rows.set(groupRows.get(n), new ScreenView.Row("Group " + (n + 1) + ": " + r.label(), true, r.cells()));
+                rows.set(groupRows.get(n),
+                        new ScreenView.Row(EditorTexts.t("Group") + " " + (n + 1) + ": " + r.label(), true,
+                                r.cells()));
             }
         }
-        return new ScreenView.Section(part.title(), ScreenView.Layout.LIST, headers, false, rows, order,
-                groupProperty, rowHeader);
+        return new ScreenView.Section(EditorTexts.t(part.title()), ScreenView.Layout.LIST, headers, false, rows,
+                order, groupProperty, EditorTexts.t(rowHeader));
+    }
+
+    /** As opções de um seletor, com os rótulos no idioma da requisição. */
+    private static List<Field.Option> translated(List<Field.Option> options) {
+        return options.stream().map(o -> new Field.Option(o.value(), EditorTexts.t(o.label()))).toList();
     }
 
     /** O índice da coluna de uma propriedade numa lista, ou -1. */
@@ -315,7 +324,7 @@ public final class LegacyScreen {
                 options.add(0, new Field.Option(Field.KEEP, Field.KEEP_LABEL));
             }
         }
-        return new ScreenView.Cell(name(p, i, accessor), value, selected, field.kind(), options, span);
+        return new ScreenView.Cell(name(p, i, accessor), value, selected, field.kind(), translated(options), span);
     }
 
     private static boolean isOption(List<Field.Option> options, String value) {
