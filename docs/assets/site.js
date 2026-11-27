@@ -73,8 +73,10 @@
   function configured(then) {
     // o link da API, e não o do simulador: este aponta para a porta do idioma (/simulator/pt/),
     // e o endereço do endpoint é a raiz do simulador, que é onde a Swagger UI também está
-    var api = document.querySelector('nav a.api');
-    if (!api || !window.fetch) {
+    // document.querySelector e fetch podem não existir: o arquivo também é lido fora do
+    // navegador, pelo scripts/site-domain-test.mjs, que monta só o mínimo de que precisa
+    var api = document.querySelector && document.querySelector('nav a.api');
+    if (!api || !window.fetch || typeof URL !== 'function') {
       then(null);
       return;
     }
