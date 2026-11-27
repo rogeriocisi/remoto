@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -166,6 +167,54 @@ class EditorIntegrationTest {
                         .param("publicScenarioId", "nao-existe"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
+    }
+
+    /**
+     * "Editar" num cenário público: da primeira vez abre o editor numa cópia nova; da segunda,
+     * como já há uma cópia, pergunta antes, em vez de criar mais uma igual. Escolhendo começar
+     * outra, ela sai com a data e a hora no nome.
+     */
+    @Test
+    void editarUmPublicoQueJaTemCopiaPerguntaAntesDeCriarOutra() throws Exception {
+        MockHttpSession quem = session("carla");
+
+        mvc.perform(post("/ui/scenarios/edit-copy").session(quem).with(csrf())
+                        .param("publicScenarioId", "remoto-17-default-soleus-contraction"))
+                .andExpect(redirectedUrlPattern("/editor/*"));
+
+        // de novo: a página volta com a pergunta, e nenhuma cópia nova foi criada
+        mvc.perform(post("/ui/scenarios/edit-copy").session(quem).with(csrf())
+                        .param("publicScenarioId", "remoto-17-default-soleus-contraction"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("pergunta-copia")));
+        assertThat(nomesDe(quem)).hasSize(1);
+
+        // escolhendo começar outra, ela vem com a data e a hora no nome
+        mvc.perform(post("/ui/scenarios/edit-copy").session(quem).with(csrf())
+                        .param("publicScenarioId", "remoto-17-default-soleus-contraction")
+                        .param("novo", "true"))
+                .andExpect(redirectedUrlPattern("/editor/*"));
+        List<String> nomes = new java.util.ArrayList<>(nomesDe(quem));
+        nomes.sort(null);
+        assertThat(nomes).hasSize(2);
+        assertThat(nomes.get(0)).isEqualTo(nomes.get(1).replaceFirst(" \\d{4}(-\\d{2}){4}$", ""));
+        assertThat(nomes.get(1)).matches(".* \\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}");
+    }
+
+    /** Pelo navegador a lista é trocada no lugar, então quem leva ao editor é o HX-Redirect. */
+    @Test
+    void peloNavegadorEditarLevaAoEditorPeloCabecalho() throws Exception {
+        mvc.perform(post("/ui/scenarios/edit-copy").session(session("davi")).with(csrf())
+                        .header("HX-Request", "true")
+                        .param("publicScenarioId", "remoto-17-default-soleus-contraction"))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers
+                        .header().string("HX-Redirect", containsString("/editor/")));
+    }
+
+    private List<String> nomesDe(MockHttpSession quem) throws Exception {
+        MvcResult r = mvc.perform(get("/api/scenarios").session(quem)).andExpect(status().isOk()).andReturn();
+        return JsonPath.read(r.getResponse().getContentAsString(), "$[*].name");
     }
 
     private String copyAs(String username) throws Exception {

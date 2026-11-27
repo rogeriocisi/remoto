@@ -118,11 +118,15 @@ public class ConductanceVO extends ConductanceProperties implements Comparable
 			return pre;
 		}
 
-		// Synapse between INs
+		// Synapse between INs. O original gravava "antagonist" no próprio cdNucleusPre aqui, num
+		// getter que só monta o rótulo da linha: quem mostrasse a tela e depois gravasse a mesma
+		// Configuration passava a ter a sinapse recíproca com o núcleo pré trocado, e em duas
+		// chaves ao mesmo tempo (a de origem e a nova) — chave primária repetida em
+		// CONDUCTANCE_TYPE. O rótulo é o mesmo; o VO não muda mais.
 		if( ( cdNucleusPre.indexOf( "flex" ) > 0 && cdNucleus.indexOf( "ext" ) > 0 ) ||
 			( cdNucleusPre.indexOf( "ext" ) > 0 && cdNucleus.indexOf( "flex" ) > 0 ) )
 		{
-			cdNucleusPre = "antagonist";
+			return pre + " antagonist";
 		}
 
 		pre = pre + " " + cdNucleusPre;

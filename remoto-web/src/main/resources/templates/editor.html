@@ -71,11 +71,11 @@
       <h2 th:text="${view.title}">Tela</h2>
 
       <form th:if="${!#lists.isEmpty(view.selectors)}" th:action="@{/editor/{id}(id=${scenario.id})}" method="get"
-            class="seletores">
+            class="seletores" id="seletores-tela" th:data-aviso="#{editor.discard}">
         <input type="hidden" name="screen" th:value="${screen}">
         <label th:each="s : ${view.selectors}">
           <span th:text="${s.label}">Pool</span>
-          <select th:name="${s.name}" onchange="this.form.submit()">
+          <select th:name="${s.name}">
             <option th:each="o : ${s.options}" th:value="${o.value}" th:text="${o.label}"
                     th:selected="${o.value == s.selected}">opção</option>
           </select>
@@ -83,7 +83,8 @@
         <noscript><button type="submit" th:text="#{editor.selector.change}">Trocar</button></noscript>
       </form>
 
-      <form th:action="@{/editor/{id}(id=${scenario.id})}" method="post">
+      <form th:action="@{/editor/{id}(id=${scenario.id})}" method="post" id="form-tela"
+            th:data-aviso-grupo="#{editor.group.moves}">
         <input type="hidden" name="screen" th:value="${screen}">
         <input type="hidden" name="etag" th:value="${etag}">
         <input th:each="s : ${view.selectors}" type="hidden" th:name="|sel.${s.name}|" th:value="${s.selected}">
@@ -109,7 +110,7 @@
               <tr th:each="r : ${sec.rows}">
                 <th th:text="${r.label}">parâmetro</th>
                 <td th:each="c : ${r.cells}" th:colspan="${c.span}">
-                  <th:block th:replace="~{editor-campo :: campo(${c})}"></th:block>
+                  <th:block th:replace="~{editor-campo :: campo(${c}, false)}"></th:block>
                 </td>
               </tr>
               </tbody>
@@ -117,7 +118,9 @@
             <!-- LIST: um item por linha -->
             <table th:if="${sec.layout.name() == 'LIST'}" class="tabela tabela-editor">
               <thead>
-              <tr><th></th><th th:each="h : ${sec.headers}" th:text="${h}">campo</th></tr>
+              <!-- sec.order: a ordem das colunas na tela, que pode não ser a dos campos -->
+              <tr><th th:text="${sec.rowHeader}"></th>
+                <th th:each="i : ${sec.order}" th:text="${sec.headers[i]}">campo</th></tr>
               </thead>
               <tbody>
               <th:block th:each="r : ${sec.rows}">
@@ -126,7 +129,9 @@
                 </tr>
                 <tr th:unless="${r.header}">
                   <th th:text="${r.label}">item</th>
-                  <td th:each="c : ${r.cells}"><th:block th:replace="~{editor-campo :: campo(${c})}"></th:block></td>
+                  <td th:each="i : ${sec.order}"><th:block
+                      th:replace="~{editor-campo :: campo(${r.cells[i]},
+                          ${sec.groupProperty != null and #strings.endsWith(r.cells[i].name(), '.' + sec.groupProperty)})}"></th:block></td>
                 </tr>
               </th:block>
               </tbody>
@@ -143,5 +148,67 @@
   </main>
 </div>
 
+<!--
+  Trocar um seletor, ir para outra tela ou rodar o cenário recarrega a página: o que foi digitado e
+  ainda não foi salvo se perde. Antes só acontecia, sem aviso nenhum.
+-->
+<script>
+  (function () {
+    var seletores = document.getElementById('seletores-tela');
+    var form = document.getElementById('form-tela');
+    if (!form) return;
+    var sujo = false;
+    form.addEventListener('input', function () { sujo = true; });
+    form.addEventListener('change', function () { sujo = true; });
+    form.addEventListener('submit', function () { sujo = false; });
+
+    var aviso = (seletores && seletores.dataset.aviso) || '';
+    function podeSair() { return !sujo || window.confirm(aviso); }
+
+    if (seletores) {
+      // o seletor trocava de seleção no onchange; agora pergunta antes, e volta ao que estava
+      // quando o usuário prefere ficar e salvar
+      var anteriores = new Map();
+      seletores.querySelectorAll('select').forEach(function (s) { anteriores.set(s, s.value); });
+      seletores.addEventListener('change', function (e) {
+        if (!podeSair()) {
+          e.target.value = anteriores.get(e.target);
+          return;
+        }
+        seletores.submit();
+      });
+    }
+
+    // A lista é agrupada por um campo da própria linha (o compartimento, nas sinapses): enquanto
+    // o combo estiver diferente do que está gravado, a linha ainda aparece no grupo antigo, e a
+    // marca diz que ela vai mudar de grupo quando for salva.
+    var avisoGrupo = form.dataset.avisoGrupo || '';
+    form.querySelectorAll('select[data-agrupa]').forEach(function (s) {
+      s.addEventListener('change', function () {
+        var tr = s.closest('tr');
+        var mudou = s.value !== s.dataset.salvo;
+        tr.classList.toggle('muda-de-grupo', mudou);
+        if (mudou) {
+          tr.firstElementChild.dataset.aviso = avisoGrupo;
+        } else {
+          delete tr.firstElementChild.dataset.aviso;
+        }
+      });
+    });
+
+    // sair da tela por um link (outra tela, a página inicial, o outro idioma) ou rodar o cenário
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[href]') : null;
+      if (a && !podeSair()) {
+        e.preventDefault();
+      }
+    });
+    document.querySelectorAll('form').forEach(function (f) {
+      if (f !== form && f !== seletores) {
+        f.addEventListener('submit', function (e) { if (!podeSair()) e.preventDefault(); });
+      }
+    });
+  })();
+</script>
 </body>
 </html>

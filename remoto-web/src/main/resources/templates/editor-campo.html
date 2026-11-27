@@ -2,12 +2,15 @@
 <html th:lang="#{lang.htmlTag}" xmlns:th="http://www.thymeleaf.org">
 <body>
 <!-- um campo do editor, conforme o tipo (usado por editor.html) -->
-<th:block th:fragment="campo(c)">
+<th:block th:fragment="campo(c, agrupa)">
   <input th:if="${c.kind().name() == 'BOOLEAN'}" type="checkbox" th:name="${c.name()}" value="true"
          th:checked="${c.checked()}">
-  <select th:if="${c.kind().name() == 'CHOICE'}" th:name="${c.name()}">
+  <!-- data-agrupa: é este campo que decide o grupo da linha, e data-salvo é o valor gravado;
+       com os dois, a tela marca a linha que vai mudar de grupo quando for salva -->
+  <select th:if="${c.kind().name() == 'CHOICE'}" th:name="${c.name()}"
+          th:attr="data-salvo=${c.selected()},data-agrupa=${agrupa} ? 'sim' : null">
     <option th:each="o : ${c.options()}" th:value="${o.value()}" th:text="${o.label()}"
-            th:selected="${o.value() == c.value()}">opção</option>
+            th:selected="${o.value() == c.selected()}">opção</option>
   </select>
   <input th:if="${c.kind().name() == 'NUMBER' or c.kind().name() == 'INTEGER'}" type="text" th:name="${c.name()}"
          th:value="${c.value()}" size="8" inputmode="decimal" class="numero">

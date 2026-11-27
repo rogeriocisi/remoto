@@ -158,7 +158,7 @@ public final class LegacyScreens {
                     return list;
                 },
                 Object::toString,
-                List.of(Field.number("Initial", null, "initial"), Field.number("Final", null, "final")));
+                List.of(Field.number("Initial", "mm", "initial"), Field.number("Final", "mm", "final")));
         return new LegacyScreen("network", "Neural Elements", List.of(), List.of(neurons, positions),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
@@ -170,7 +170,15 @@ public final class LegacyScreens {
                     }
                     conf.setListNeuronTypes(list);
                 },
-                List.of("Quantity: at most " + ReMoto.maxNeuronsPerType + " neurons per type."));
+                List.of("Quantity: at most " + ReMoto.maxNeuronsPerType + " neurons per type.",
+                        "Anatomical position: where a pool lies along the spinal cord, on the caudal-rostral"
+                                + " axis, in millimetres. Initial and Final are the two ends of the stretch it"
+                                + " occupies, and the cells are spread evenly between them in the order of their"
+                                + " index (cell i of n sits at Initial + (Final − Initial) × i/(n−1);"
+                                + " in a motor nucleus the S units come first). The position only changes a result"
+                                + " where distance counts: the Distance decay of the Synaptic Parameters screen,"
+                                + " and the declining factors between Renshaw cells and motoneurons of the"
+                                + " Miscellaneous screen."));
     }
 
     /** input.jsp / InputAction. */
@@ -288,19 +296,41 @@ public final class LegacyScreens {
                         Field.number("Maximum conductance", "nS", "gmax"),
                         Field.number("Connectivity", "%", "connectivity"),
                         Field.number("Transmission delay", "ms", "delay"),
-                        Field.number("Distance decay", "mm²", "distanceDecay")));
+                        Field.number("Distance decay", "mm²", "distanceDecay")),
+                new LegacyScreen.Grouping("compartment",
+                        item -> compartmentGroup(((ConductanceVO) item).getCompartment())),
+                "Compartment");
         return new LegacyScreen("synapse", "Synaptic Parameters", selectors, List.of(part),
                 (conf, sel, items) -> {
                     conf.setChangedConfiguration(true);
                     conf.setSynapseTypes(new ArrayList<>(items.get(0)));
                 },
-                List.of("Distance decay (not in the original site): each synapse of the type gets the weight"
+                List.of("The list is grouped and ordered by compartment, as in the original site: changing the"
+                        + " compartment of a synapse moves its line to the group of the new compartment when you"
+                        + " save. Only motoneurons have two compartments; an interneuron has a single one, so"
+                        + " its incoming synapses have no compartment to choose and the column is left out.",
+                        "Distance decay (not in the original site): each synapse of the type gets the weight"
                         + " dec / (dec + d\u00B2), d being the distance (mm) between the two cells in the"
                         + " caudal-rostral column, and no synapse is made below 1%. 0 = no decay (weight 1)."
                         + " Motoneurons and interneurons are placed as in the original (Miscellaneous: initial"
                         + " and final positions of each pool); the afferents of a muscle spread over its"
                         + " motoneuron pool, and the descending axons over the whole column. Between Renshaw"
                         + " cells and motoneurons, 0 keeps the declining factors of the Miscellaneous screen."));
+    }
+
+    /**
+     * O título do grupo de uma sinapse na tela "Synaptic Parameters". A lista vem ordenada pelo
+     * compartimento ({@code ConductanceVO.compareTo}, como no site antigo), então mudar o
+     * compartimento muda a linha de lugar; com o grupo à vista, a linha não some sem explicação.
+     */
+    private static String compartmentGroup(String compartment) {
+        if (ReMoto.somaCompartment.equals(compartment)) {
+            return "Synapses on the soma";
+        }
+        if (ReMoto.dendriteCompartment.equals(compartment)) {
+            return "Synapses on the dendrite";
+        }
+        return "Synapses on the single compartment";
     }
 
     /**
@@ -565,9 +595,11 @@ public final class LegacyScreens {
                 List.of(Field.bool("Active", "active"),
                         Field.choice("Neuron compartment", "compartment", "S", "soma", "D", "dendrite"),
                         Field.number("Amplitude", "nA", "imax"),
+                        // Quase toda corrente injetada da base original não tem código de sinal, e
+                        // sem código ela não modula: é o "none" da lista.
                         Field.choice("Modulating signal", "cdSignal", "none", "none", "constant", "constant",
                                 "ramp", "ramp", "random", "random", "sine", "sine", "square", "square",
-                                "trapezoid", "trapezoid", "triangle", "triangle"),
+                                "trapezoid", "trapezoid", "triangle", "triangle").whenMissing(ReMoto.none),
                         Field.number("Start", "ms", "ini"),
                         Field.number("Stop", "ms", "fin"),
                         Field.number("Peak", "nA", "amp"),
