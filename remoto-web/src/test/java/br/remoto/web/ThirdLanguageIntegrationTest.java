@@ -86,6 +86,6 @@ class ThirdLanguageIntegrationTest {
                 // o rótulo de cada idioma e, nas chaves sem tradução, o texto do pacote padrão
                 .contains(">EN<")
                 .contains(">PT<")
-                .contains("Homepage");
+                .contains("The model");
     }
 }

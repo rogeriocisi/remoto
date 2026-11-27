@@ -1,5 +1,6 @@
 package br.remoto.web.api;
 
+import br.remoto.web.i18n.Messages;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springdoc.core.properties.SwaggerUiOAuthProperties;
@@ -94,6 +95,19 @@ class SwaggerUiBranding {
                           .remoto-topo .remoto-marca:hover strong { text-decoration: underline; }
                           .remoto-topo strong { font-size: 1.25rem; letter-spacing: -.01em; }
                           .remoto-topo .remoto-sub { color: #5b6470; font-size: .9rem; }
+                          /* a barra de lugares, com as medidas dos botões do simulador */
+                          .remoto-topo .remoto-lugares {
+                            display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto;
+                          }
+                          .remoto-topo .remoto-lugares a {
+                            color: #1b1f24; text-decoration: none; font-size: .9rem;
+                            padding: 4px 10px; border: 1px solid #dde2e8; border-radius: 4px;
+                            background: #ffffff;
+                          }
+                          .remoto-topo .remoto-lugares a:hover { border-color: #1f5f99; color: #1f5f99; }
+                          .remoto-topo .remoto-lugares a.atual {
+                            background: #eaf2fa; border-color: #c7dcef; font-weight: 600; cursor: default;
+                          }
                           /* o título que o Swagger monta a partir do info, agora clicável */
                           .swagger-ui .info .title a.remoto-link { color: inherit; text-decoration: none; }
                           .swagger-ui .info .title a.remoto-link:hover { text-decoration: underline; }
@@ -101,16 +115,32 @@ class SwaggerUiBranding {
                     """.formatted(contextPath);
         }
 
+        /**
+         * O cabeçalho: a marca e a mesma barra de lugares do site, do guia e do simulador, para
+         * que a página da API não seja o único canto do ReMoto de onde não se sai. Os endereços
+         * do site e do guia saem das chaves {@code nav.*}, que têm uma versão por idioma, e o
+         * idioma é o da requisição.
+         */
         private static String header(String simulator) {
             return """
                         <header class="remoto-topo">
-                          <a class="remoto-marca" href="%1$s" title="Back to the simulator">
+                          <a class="remoto-marca" href="%1$s" title="%2$s">
                             <img src="%1$simg/remoto-icon.svg" alt="" width="30" height="30">
                             <strong>ReMoto</strong>
                           </a>
-                          <span class="remoto-sub">REST API</span>
+                          <nav class="remoto-lugares" aria-label="ReMoto">
+                            <a href="%3$s">%4$s</a>
+                            <a href="%5$s">%6$s</a>
+                            <a href="%1$s">%7$s</a>
+                            <a class="atual" aria-current="page">%8$s</a>
+                            <a href="%9$s" target="_blank" rel="noopener">%10$s</a>
+                          </nav>
                         </header>
-                    """.formatted(simulator);
+                    """.formatted(simulator, Messages.msg("nav.simulator"),
+                    Messages.msg("nav.site.url"), Messages.msg("nav.site"),
+                    Messages.msg("nav.guide.url"), Messages.msg("nav.guide"),
+                    Messages.msg("nav.simulator"), Messages.msg("nav.api"),
+                    Messages.msg("nav.repository.url"), Messages.msg("nav.repository"));
         }
 
         /**

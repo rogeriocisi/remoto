@@ -203,6 +203,22 @@
   </div>
 </th:block>
 
+<!-- A barra 1 da navegação do ReMoto, igual à do site e à do guia: os quatro lugares, o
+     GitHub e os idiomas. "atual" marca onde se está, e no simulador é sempre o simulador. -->
+<th:block th:fragment="lugares">
+  <nav class="conta" th:aria-label="#{nav.places.aria}">
+    <a th:href="#{nav.site.url}" class="botao secundario pequeno" th:text="#{nav.site}">O modelo</a>
+    <a th:href="#{nav.guide.url}" class="botao secundario pequeno" th:text="#{nav.guide}">Guia</a>
+    <a th:href="@{/}" class="botao secundario pequeno atual" aria-current="page"
+       th:text="#{nav.simulator}">Simulador</a>
+    <a th:href="@{/swagger-ui.html}" class="botao secundario pequeno" th:text="#{nav.api}"
+       th:title="#{nav.api.title}">API</a>
+    <a th:href="#{nav.repository.url}" class="botao secundario pequeno" target="_blank" rel="noopener"
+       th:text="#{nav.repository}">GitHub</a>
+    <th:block th:replace="~{fragments :: idioma}"></th:block>
+  </nav>
+</th:block>
+
 <!-- corpo vazio: a resposta que só leva um cabeçalho (HX-Redirect) -->
 <th:block th:fragment="vazio"></th:block>
 
