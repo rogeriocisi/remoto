@@ -12,8 +12,8 @@ import java.util.List;
  *   <li>{@link Layout#LIST}: um item por linha, parâmetros nas colunas.</li>
  * </ul>
  */
-public record ScreenView(String id, String title, List<Selector> selectors, List<Section> sections,
-                         List<String> notes) {
+public record ScreenView(String id, String title, String intro, List<Selector> selectors,
+                         List<Section> sections, List<String> notes) {
 
     public enum Layout { MATRIX, LIST }
 

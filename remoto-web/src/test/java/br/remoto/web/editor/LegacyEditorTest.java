@@ -45,9 +45,10 @@ class LegacyEditorTest {
                 }
             }
         }
+        // a seção 0 é a escolha da membrana; as matrizes de tipos vêm depois
         ScreenView mn = editor.view("motoneuron", Map.of("pool", "SOL"));
-        assertThat(mn.sections().get(0).headers()).contains("S");
-        assertThat(mn.sections().get(0).paired()).isTrue();
+        assertThat(mn.sections().get(1).headers()).contains("S");
+        assertThat(mn.sections().get(1).paired()).isTrue();
     }
 
     @Test
@@ -85,7 +86,7 @@ class LegacyEditorTest {
     void numeroInvalidoNaoAlteraNada() {
         LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
         ScreenView view = editor.view("motoneuron", Map.of("pool", "SOL"));
-        String threshold = view.sections().get(0).rows().get(2).cells().get(0).name();
+        String threshold = view.sections().get(1).rows().get(2).cells().get(0).name();
 
         List<String> errors = editor.apply("motoneuron", Map.of("pool", "SOL"), Map.of(threshold, "abc"));
 
@@ -162,7 +163,7 @@ class LegacyEditorTest {
     void neuroniosGuardadosEscolhidosNoEditorChegamAosResultados() {
         LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
         ScreenView mn = editor.view("motoneuron", Map.of("pool", "SOL"));
-        ScreenView.Section stored = mn.sections().get(2);
+        ScreenView.Section stored = mn.sections().get(3);
         assertThat(stored.title()).isEqualTo("Additional configuration");
         assertThat(stored.headers()).contains("S");
         int column = stored.headers().indexOf("S");
@@ -175,7 +176,7 @@ class LegacyEditorTest {
         assertThat(saved.settings()).containsKey("storedNeurons");
         assertThat(((Map<?, ?>) saved.settings().get("storedNeurons")).get("SOL:S")).isEqualTo(List.of(5, -1));
         ScreenView reopened = LegacyEditor.open(saved, 5000, 0.05).view("motoneuron", Map.of("pool", "SOL"));
-        assertThat(reopened.sections().get(2).rows().get(0).cells().get(column).value()).isEqualTo("5");
+        assertThat(reopened.sections().get(3).rows().get(0).cells().get(column).value()).isEqualTo("5");
 
         br.remoto.core.scenario.Scenario scenario = new br.remoto.core.scenario.Scenario(null, "guardados", "", 1, 3,
                 2, 0.05, br.remoto.core.scenario.Scenario.ENGINE_LEGACY,
@@ -609,6 +610,38 @@ class LegacyEditorTest {
 
         ScreenView.Row linha = s.rows().stream().filter(r -> !r.header()).findFirst().orElseThrow();
         assertThat(linha.cells().get(s.order().get(0)).name()).endsWith(".compartment");
+    }
+
+    /**
+     * Toda tela do editor explica o que configura, logo abaixo do título, e o que vai ser salvo,
+     * nas notas acima do Salvar — é para lá que o "saiba mais" leva. Quem acrescentar uma tela
+     * acrescenta os dois textos.
+     */
+    @Test
+    void todaTelaExplicaOQueConfiguraEOQueVaiSerSalvo() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        for (LegacyScreens.MenuGroup group : LegacyScreens.menu()) {
+            for (LegacyScreens.MenuItem item : group.items()) {
+                if (!item.available()) {
+                    continue;
+                }
+                ScreenView view = editor.view(item.id(), Map.of());
+                assertThat(view.intro()).as("introdução de %s", item.id()).isNotBlank();
+                assertThat(view.intro()).as("introdução de %s", item.id()).hasSizeGreaterThan(60);
+                assertThat(view.notes()).as("notas de %s", item.id()).isNotEmpty();
+                assertThat(view.notes()).as("notas de %s", item.id()).allSatisfy(n -> assertThat(n).isNotBlank());
+            }
+        }
+    }
+
+    /** A escolha da membrana abre a tela dos motoneurônios, antes das matrizes de parâmetros. */
+    @Test
+    void aEscolhaDaMembranaEaPrimeiraSecaoDosMotoneuronios() {
+        ScreenView view = LegacyEditor.open(config17, 5000, 0.05).view("motoneuron", Map.of("pool", "SOL"));
+
+        assertThat(view.sections().get(0).title()).isEqualTo("Membrane (new in ReMoto 4)");
+        assertThat(view.sections().get(0).rows().get(0).cells().get(0).name()).endsWith(".cdMotoneuronModel");
+        assertThat(view.sections().get(1).title()).isEqualTo("General electrotonic parameters");
     }
 
     /** A lista das sinapses vem ordenada por compartimento: os grupos mostram isso. */
