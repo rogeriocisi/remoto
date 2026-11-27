@@ -145,7 +145,12 @@ jobs:
       - name: Montar o espelho
         env:
           SITE_URL: ${{ vars.SITE_URL }}
-        run: node scripts/site-publish.mjs docs _pages --site-url "$SITE_URL" --simulator-url "$SITE_URL"
+        # downloads/ fica de fora do espelho: são 62 dos 65 MB, e um artefato desse tamanho
+        # demora a ser indexado, o que já fez o deploy-pages não o encontrar. Os links passam a
+        # apontar para o site de verdade, que os serve.
+        run: >
+          node scripts/site-publish.mjs docs _pages
+          --site-url "$SITE_URL" --simulator-url "$SITE_URL" --without downloads
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _pages
