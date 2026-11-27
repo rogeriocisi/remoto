@@ -51,7 +51,7 @@ class LanguageIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("lang=\"pt-BR\"")))
                 .andExpect(content().string(containsString("Nenhuma simulação aberta")))
-                .andExpect(content().string(containsString("Página inicial"))); // o menu, no idioma
+                .andExpect(content().string(containsString("O modelo"))); // o menu, no idioma
 
         mvc.perform(get("/").header(HttpHeaders.ACCEPT_LANGUAGE, "en-US,en;q=0.9"))
                 .andExpect(content().string(containsString("lang=\"en\"")))
