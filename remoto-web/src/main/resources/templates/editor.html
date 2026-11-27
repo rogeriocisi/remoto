@@ -12,7 +12,9 @@
 </head>
 <body>
 <header class="topo">
-  <a th:href="@{/}" class="marca marca-link">
+  <!-- a marca leva sempre à página inicial do site, aqui e nas páginas do site, do guia
+       e da API; quem leva à raiz do simulador é o item "Simulador" da barra -->
+  <a th:href="#{nav.site.url}" class="marca marca-link" th:title="#{nav.site}">
     <img th:src="@{/img/remoto-icon.svg}" alt="" class="logo" width="26" height="26">
     <strong>ReMoto</strong>
   </a>
