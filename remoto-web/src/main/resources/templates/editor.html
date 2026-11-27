@@ -28,7 +28,7 @@
 <div class="editor">
   <nav class="menu-editor cartao" th:aria-label="#{editor.menu.aria}">
     <a th:href="@{/editor/{id}(id=${scenario.id},screen='general')}"
-       th:classappend="${screen == 'general'} ? 'atual'">Scenario</a>
+       th:classappend="${screen == 'general'} ? 'atual'" th:text="#{editor.screen.scenario}">Scenario</a>
     <th:block th:each="g : ${menu}">
       <h4 th:text="${g.title}">Grupo</h4>
       <th:block th:each="item : ${g.items}">
@@ -49,7 +49,7 @@
 
     <!-- Scenario (general.jsp): nome, descrição, seed -->
     <th:block th:if="${screen == 'general'}">
-      <h2>Scenario</h2>
+      <h2 th:text="#{editor.screen.scenario}">Scenario</h2>
       <form th:action="@{/editor/{id}(id=${scenario.id})}" method="post" class="form-geral">
         <input type="hidden" name="screen" value="general">
         <input type="hidden" name="etag" th:value="${etag}">
@@ -110,7 +110,8 @@
               </tr>
               <tr th:if="${sec.paired}" class="sub">
                 <th></th>
-                <th:block th:each="h : ${sec.headers}"><th>from</th><th>to</th></th:block>
+                <th:block th:each="h : ${sec.headers}">
+                  <th th:text="#{editor.matrix.from}">from</th><th th:text="#{editor.matrix.to}">to</th></th:block>
               </tr>
               </thead>
               <tbody>

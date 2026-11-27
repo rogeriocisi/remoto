@@ -93,9 +93,10 @@ public final class LegacyScreens {
     private static MenuGroup group(String title, String... idsAndTitles) {
         List<MenuItem> items = new ArrayList<>();
         for (int i = 0; i < idsAndTitles.length; i += 2) {
-            items.add(new MenuItem(idsAndTitles[i], idsAndTitles[i + 1], SCREENS.containsKey(idsAndTitles[i])));
+            items.add(new MenuItem(idsAndTitles[i], EditorTexts.t(idsAndTitles[i + 1]),
+                    SCREENS.containsKey(idsAndTitles[i])));
         }
-        return new MenuGroup(title, items);
+        return new MenuGroup(EditorTexts.t(title), items);
     }
 
     private static void register(LegacyScreen screen) {
@@ -160,7 +161,7 @@ public final class LegacyScreens {
                             {ReMoto.LG, "LG MN pool"}, {ReMoto.TA, "TA MN pool"},
                             {ReMoto.IN_ext, "Extensors IN pool"}, {ReMoto.IN_flex, "Flexors (TA) IN pool"}}) {
                         if (PoolPosition.exists(conf, pool[0])) {
-                            list.add(new PoolPosition(conf, pool[0], pool[1]));
+                            list.add(new PoolPosition(conf, pool[0], EditorTexts.t(pool[1])));
                         }
                     }
                     return list;
@@ -301,7 +302,7 @@ public final class LegacyScreens {
                 (conf, sel) -> conf.getSynapticConductances(sel.get("pool"), sel.get("typePre"), sel.get("typePos")),
                 item -> {
                     ConductanceVO c = (ConductanceVO) item;
-                    return c.getPre() + " → " + c.getPos() + " (" + c.getPolarity() + ")";
+                    return c.getPre() + " → " + c.getPos() + " (" + EditorTexts.t(c.getPolarity()) + ")";
                 },
                 List.of(Field.bool("Active", "active"),
                         Field.choice("Compartment", "compartment", "S", "soma", "D", "dendrite"),
@@ -540,7 +541,8 @@ public final class LegacyScreens {
 
     /** Uma "linha" só: a própria Configuration, como os formulários que usavam conf.get/set direto. */
     private static Part confPart(String title, List<Field> fields) {
-        return new Part(title, Layout.MATRIX, (conf, sel) -> List.of(conf), item -> "Value", fields);
+        return new Part(title, Layout.MATRIX, (conf, sel) -> List.of(conf),
+                item -> EditorTexts.t("Value"), fields);
     }
 
     /** miscellaneous.jsp / MiscellaneousAction. */
@@ -549,7 +551,8 @@ public final class LegacyScreens {
                 (conf, sel) -> conf.getMiscellaneous(),
                 item -> {
                     MiscellaneousVO m = (MiscellaneousVO) item;
-                    return m.getDescription() == null || m.getDescription().isBlank() ? m.getProperty() : m.getDescription();
+                    return EditorTexts.label(m.getDescription() == null || m.getDescription().isBlank()
+                            ? m.getProperty() : m.getDescription());
                 },
                 List.of(Field.number("Value", null, "value")));
         return new LegacyScreen("miscellaneous", "Miscellaneous",
@@ -931,7 +934,7 @@ public final class LegacyScreens {
                     MuscleVO vo = conf.getMuscle(sel.get("pool"), ReMoto.Hill);
                     return vo == null ? List.of() : List.of(vo);
                 },
-                item -> "Value",
+                item -> EditorTexts.t("Value"),
                 List.of(Field.number("Optimal Length", "m", "optimalLength"),
                         Field.number("Maximum Muscle Force", "N", "maximumMuscleForce"),
                         Field.number("Mass", "Kg", "muscleMass"),
