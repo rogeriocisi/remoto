@@ -16,12 +16,19 @@ import java.util.List;
  *                  Acrescentar um idioma é acrescentar o código aqui e o arquivo de textos
  *                  completo — o {@code MessagesTest} falha enquanto faltar uma chave —, sem página
  *                  nem rota nova.
+ * @param contactEmail endereço de contato que as páginas do site mostram. Vazio, que é o padrão,
+ *                  deixa como sempre foi: o site monta {@code remoto@<domínio>} a partir do
+ *                  domínio em que está servido, e não mostra nada em localhost, em endereço IP ou
+ *                  no espelho do GitHub Pages, que não têm caixa postal. Preencher é de quem
+ *                  instala: serve para quem publica num domínio cuja caixa não é essa, ou para
+ *                  quem prefere não publicar endereço nenhum e aponta só as issues do GitHub.
  */
 @ConfigurationProperties("remoto")
 public record RemotoProperties(
         @DefaultValue("./data") String dataDir,
         @DefaultValue("./scenarios") String publicScenariosDir,
         @DefaultValue("./docs") String siteDir,
+        @DefaultValue("") String contactEmail,
         @DefaultValue({"en", "pt"}) List<String> languages,
         @DefaultValue Simulation simulation,
         @DefaultValue Retention retention,

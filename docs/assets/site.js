@@ -39,12 +39,14 @@
   // Exportado para o teste da tabela de hosts (scripts/site-domain-test.mjs).
   window.ReMotoSiteDomain = siteDomain;
 
-  function fill() {
-    var domain = siteDomain(window.location.hostname);
-    if (!domain) {
-      return;
+  function fill(address) {
+    if (!address) {
+      var domain = siteDomain(window.location.hostname);
+      if (!domain) {
+        return;
+      }
+      address = BOX + '@' + domain;
     }
-    var address = BOX + '@' + domain;
     var links = document.querySelectorAll('a[data-mail]');
     for (var i = 0; i < links.length; i++) {
       links[i].href = 'mailto:' + address;
@@ -60,9 +62,42 @@
     }
   }
 
+  /**
+   * O endereço que a instalação configurou (REMOTO_CONTACT_EMAIL), se houver.
+   *
+   * O simulador o entrega em api/site; o endereço dele sai do link "Simulador" da própria página,
+   * porque o caminho do simulador dentro do domínio é configurável. Sem resposta — o espelho do
+   * GitHub Pages, que não tem aplicação atrás, ou uma instalação só do site — fica o que o site
+   * deduz do domínio, que é como sempre foi.
+   */
+  function configured(then) {
+    // o link da API, e não o do simulador: este aponta para a porta do idioma (/simulator/pt/),
+    // e o endereço do endpoint é a raiz do simulador, que é onde a Swagger UI também está
+    var api = document.querySelector('nav a.api');
+    if (!api || !window.fetch) {
+      then(null);
+      return;
+    }
+    var url = new URL('api/site', api.href).toString();
+    window.fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (info) { then(info && info.contactEmail ? info.contactEmail : null); })
+      .catch(function () { then(null); });
+  }
+
+  function start() {
+    // o deduzido primeiro, para a página não ficar esperando a rede; o configurado corrige depois
+    fill(null);
+    configured(function (address) {
+      if (address) {
+        fill(address);
+      }
+    });
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', fill);
+    document.addEventListener('DOMContentLoaded', start);
   } else {
-    fill();
+    start();
   }
 })();

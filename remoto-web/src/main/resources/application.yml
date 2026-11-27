@@ -39,6 +39,12 @@ remoto:
   # servidor é a pasta que o deploy espelha (DEPLOY_SITE_DIR). Se a pasta não existir, a raiz
   # fica sem nada e só o simulador responde.
   site-dir: ./docs                    # REMOTO_SITE_DIR
+  # O endereço de contato que as páginas do site mostram. Vazio, que é o padrão, deixa como
+  # sempre foi: o site monta remoto@<domínio> a partir do domínio em que está servido, e não
+  # mostra endereço nenhum em localhost, em endereço IP ou no espelho do GitHub Pages. Quem
+  # instala decide: preencha se a caixa postal do seu domínio for outra, ou se preferir não
+  # publicar endereço e deixar só as issues do GitHub.
+  contact-email: ''                   # REMOTO_CONTACT_EMAIL
   simulation:
     slots: 0                 # simulações em paralelo; 0 = núcleos da CPU
     max-active-per-user: 2
