@@ -514,10 +514,17 @@ public class SynapsesFactory
 
 		String cd = neuronPre.getSynapseKey();
 
+		// Only the motoneuron has two compartments. The interneuron has one, and its membrane
+		// (InterneuronMembrane) integrates the dendritic groups alone, so a synapse put in the
+		// somatic group of an interneuron would never reach it. In the original database the
+		// compartment is empty for every synapse onto an interneuron, which already lands here;
+		// this keeps a scenario that says "S" there working instead of silently losing the synapse.
+		boolean soma = ReMoto.somaCompartment.equals( gType.getCompartment() ) && neuronPos instanceof Motoneuron;
+
 		// Verify synapse polarity and location (which compartment the synapse is located)
 		if( gType.getE() > 0 )
 		{
-			if( gType.getCompartment() != null && gType.getCompartment().equals( ReMoto.somaCompartment ) )
+			if( soma )
 			{
 				addSynapse( ((SpinalNeuron)neuronPos).getSomaExcitSynapses(), gType, weight, cd );
 				neuronPre.getTransmittingSynapses().add( ((SpinalNeuron)neuronPos).getSomaExcitSynapses() );
@@ -530,7 +537,7 @@ public class SynapsesFactory
 		}
 		else
 		{
-			if( gType.getCompartment() != null && gType.getCompartment().equals( ReMoto.somaCompartment ) )
+			if( soma )
 			{
 				addSynapse( ((SpinalNeuron)neuronPos).getSomaInhibSynapses(), gType, weight, cd );
 				neuronPre.getTransmittingSynapses().add( ((SpinalNeuron)neuronPos).getSomaInhibSynapses() );

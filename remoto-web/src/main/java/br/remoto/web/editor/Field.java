@@ -13,10 +13,28 @@ import java.util.Locale;
  * Um campo de uma tela do editor: rótulo e unidade iguais aos do JSP original, e uma ou duas
  * propriedades do objeto editado (por exemplo {@code threshold1}/{@code threshold2}, as colunas
  * "from"/"to" do site antigo).
+ *
+ * @param missing CHOICE: a opção que a tela mostra quando o valor guardado não é nenhuma das
+ *                opções, porque na configuração a ausência tem esse significado (uma corrente
+ *                injetada sem código de sinal não modula, como "none"). {@code null} = a ausência
+ *                não significa nenhuma das opções, e a tela mostra {@link #KEEP_LABEL}.
  */
-public record Field(String label, String unit, Kind kind, List<Option> options, List<Accessor> accessors) {
+public record Field(String label, String unit, Kind kind, List<Option> options, List<Accessor> accessors,
+                    String missing) {
 
     public enum Kind { NUMBER, INTEGER, BOOLEAN, CHOICE, TEXT }
+
+    /**
+     * Valor da opção que um {@link Kind#CHOICE} ganha quando o valor guardado não é nenhuma das
+     * opções — por exemplo o compartimento de uma sinapse sobre um interneurônio, que tem um
+     * compartimento só e por isso não tem compartimento escolhido. Sem ela o navegador mostraria a
+     * primeira opção como se fosse o valor atual e a gravaria no primeiro "Salvar"; com ela, a tela
+     * mostra {@link #KEEP_LABEL} e gravar não muda o campo.
+     */
+    public static final String KEEP = "__keep__";
+
+    /** O que a opção {@link #KEEP} mostra: nenhum valor escolhido. */
+    public static final String KEEP_LABEL = "—";
 
     public record Option(String value, String label) {
     }
@@ -40,19 +58,19 @@ public record Field(String label, String unit, Kind kind, List<Option> options, 
     }
 
     public static Field number(String label, String unit, String... properties) {
-        return new Field(label, unit, Kind.NUMBER, List.of(), beans(properties));
+        return new Field(label, unit, Kind.NUMBER, List.of(), beans(properties), null);
     }
 
     public static Field integer(String label, String unit, String... properties) {
-        return new Field(label, unit, Kind.INTEGER, List.of(), beans(properties));
+        return new Field(label, unit, Kind.INTEGER, List.of(), beans(properties), null);
     }
 
     public static Field bool(String label, String property) {
-        return new Field(label, null, Kind.BOOLEAN, List.of(), beans(property));
+        return new Field(label, null, Kind.BOOLEAN, List.of(), beans(property), null);
     }
 
     public static Field text(String label, String property) {
-        return new Field(label, null, Kind.TEXT, List.of(), beans(property));
+        return new Field(label, null, Kind.TEXT, List.of(), beans(property), null);
     }
 
     /** @param options pares valor, rótulo, valor, rótulo... (os mesmos do html:select original) */
@@ -61,7 +79,15 @@ public record Field(String label, String unit, Kind kind, List<Option> options, 
         for (int i = 0; i < list.length; i++) {
             list[i] = new Option(options[2 * i], options[2 * i + 1]);
         }
-        return new Field(label, null, Kind.CHOICE, List.of(list), beans(property));
+        return new Field(label, null, Kind.CHOICE, List.of(list), beans(property), null);
+    }
+
+    /**
+     * Esta escolha, com o significado da ausência de valor: a configuração pode não ter código
+     * nenhum no campo, e a tela mostra esta opção em vez de "—".
+     */
+    public Field whenMissing(String option) {
+        return new Field(label, unit, kind, options, accessors, option);
     }
 
     private static List<Accessor> beans(String... properties) {

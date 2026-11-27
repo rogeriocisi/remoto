@@ -103,10 +103,11 @@ final class EditEverything {
                 yield (k % 5 == 0) ? (b ? null : "true") : (b ? "true" : null);
             }
             case CHOICE -> {
-                // a opção "imposed" do modelo de articulação é posterior à referência
+                // a opção "imposed" do modelo de articulação é posterior à referência; a "—" é a
+                // da escolha sem valor atual, que o editor passou a mostrar
                 List<Field.Option> options = cell.options().stream()
                         .filter(o -> !br.remoto.core.simulation.ReMoto.imposedAngle.equals(o.value())
-                                && !"series".equals(o.value()))
+                                && !"series".equals(o.value()) && !Field.KEEP.equals(o.value()))
                         .toList();
                 yield options.isEmpty() || k % 4 != 0 ? v : options.get(k % options.size()).value();
             }

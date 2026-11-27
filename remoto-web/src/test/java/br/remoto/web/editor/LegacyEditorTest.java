@@ -486,6 +486,154 @@ class LegacyEditorTest {
         assertThat(hash).as("golden master editor.%d", id).isEqualTo(golden.getProperty("editor." + id));
     }
 
+    /**
+     * Varre todas as telas, em todas as opções de cada seletor, atrás de combos à vista cujo valor
+     * atual não é nenhuma das opções: eles mostravam a primeira opção como se fosse o valor
+     * guardado e a gravavam no primeiro "Salvar". Hoje não há nenhum — o único caso, o
+     * compartimento de uma sinapse sobre um alvo de um compartimento só, é uma coluna inteira que
+     * a tela deixa de fora. Um combo novo nessa situação aparece aqui.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = {17, 24, 42})
+    void nenhumComboAVistaMostraUmValorQueNaoEstaGuardado(int id) {
+        LegacyEditor editor = LegacyEditor.open(db.export(id), 5000, 0.05);
+        java.util.Set<String> semValor = new java.util.TreeSet<>();
+        for (LegacyScreens.MenuGroup group : LegacyScreens.menu()) {
+            for (LegacyScreens.MenuItem item : group.items()) {
+                if (!item.available()) {
+                    continue;
+                }
+                List<Map<String, String>> selections = new java.util.ArrayList<>();
+                selections.add(Map.of());
+                ScreenView first = editor.view(item.id(), Map.of());
+                for (ScreenView.Selector s : first.selectors()) {
+                    // uma seleção por opção de cada seletor, com os outros no padrão, e o
+                    // "all" dos filtros junto, para nenhuma linha ficar de fora da varredura
+                    Map<String, String> todas = new HashMap<>();
+                    first.selectors().forEach(o -> todas.put(o.name(), ReMoto.ALL));
+                    for (Field.Option o : s.options()) {
+                        selections.add(Map.of(s.name(), o.value()));
+                        Map<String, String> com = new HashMap<>(todas);
+                        com.put(s.name(), o.value());
+                        selections.add(com);
+                    }
+                }
+                for (Map<String, String> selection : selections) {
+                    for (ScreenView.Section section : editor.view(item.id(), selection).sections()) {
+                        for (ScreenView.Row row : section.rows()) {
+                            for (ScreenView.Cell cell : visiveis(section, row)) {
+                                if (cell.kind() == Field.Kind.CHOICE && Field.KEEP.equals(cell.selected())) {
+                                    semValor.add(item.id() + "." + cell.name().replaceAll(".*\\.", ""));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        assertThat(semValor).isEmpty();
+    }
+
+    /** As células que a tela mostra: numa lista, só as colunas da {@code order} da seção. */
+    private static List<ScreenView.Cell> visiveis(ScreenView.Section section, ScreenView.Row row) {
+        if (section.order().isEmpty() || row.header()) {
+            return row.cells();
+        }
+        return section.order().stream().map(row.cells()::get).toList();
+    }
+
+    /**
+     * O compartimento só vale para motoneurônio. Nas sinapses sobre interneurônio a coluna não
+     * aparece, o campo não vai no formulário e salvar não inventa um compartimento para elas.
+     */
+    @Test
+    void salvarAsSinapsesSobreInterneuronioNaoInventaCompartimento() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        Map<String, String> selection = Map.of("pool", "IN_ext", "typePre", ReMoto.ALL, "typePos", ReMoto.ALL);
+        ScreenView view = editor.view("synapse", selection);
+        Map<String, String> form = new HashMap<>();
+        for (ScreenView.Section section : view.sections()) {
+            for (ScreenView.Row row : section.rows()) {
+                for (ScreenView.Cell cell : visiveis(section, row)) {
+                    // o formulário que a tela manda quando não se mexe em nada
+                    form.put(cell.name(), cell.selected());
+                }
+            }
+        }
+        assertThat(form).isNotEmpty();
+        assertThat(form.keySet()).noneMatch(n -> n.endsWith(".compartment"));
+        assertThat(editor.apply("synapse", selection, form)).isEmpty();
+
+        LegacyConfig.Table t = editor.save().config().tables().get("CONDUCTANCE_TYPE");
+        int type = t.columns().indexOf("CD_CONDUCTANCE_TYPE");
+        int compartment = t.columns().indexOf("COMPARTMENT");
+        assertThat(t.rows().stream().filter(r -> !((String) r.get(type)).contains("-MN"))
+                .map(r -> r.get(compartment))).isNotEmpty().containsOnly("");
+        assertThat(t.rows().stream().filter(r -> ((String) r.get(type)).contains("-MN"))
+                .map(r -> r.get(compartment))).isNotEmpty().doesNotContain("");
+    }
+
+    /**
+     * O rótulo da sinapse recíproca entre interneurônios ("antagonist") não mexe no núcleo
+     * pré-sináptico: mostrar a tela e gravar a mesma configuração deixava a sinapse em duas
+     * chaves, e a gravação terminava em chave primária repetida.
+     */
+    @Test
+    void mostrarAsSinapsesNaoRenomeiaONucleoPreDaReciprocaEntreInterneuronios() {
+        LegacyEditor editor = LegacyEditor.open(config17, 5000, 0.05);
+        Map<String, String> selection = Map.of("pool", "IN_ext", "typePre", ReMoto.ALL, "typePos", ReMoto.ALL);
+        assertThat(editor.view("synapse", selection).sections().get(0).rows())
+                .anySatisfy(r -> assertThat(r.label()).contains("antagonist"));
+
+        LegacyConfig.Table t = editor.save().config().tables().get("CONDUCTANCE_TYPE");
+        int pre = t.columns().indexOf("CD_NUCLEUS_PRE");
+        assertThat(t.rows().stream().map(r -> r.get(pre))).doesNotContain("antagonist");
+    }
+
+    /**
+     * O compartimento é a primeira coluna da tela, mas continua sendo o segundo campo: a ordem dos
+     * campos é a do Action original e é por ela que o formulário é percorrido (os golden masters
+     * dependem disso). Só a tela troca a ordem, pela {@code order} da seção.
+     */
+    @Test
+    void oCompartimentoEaPrimeiraColunaSemMudarAOrdemDosCampos() {
+        ScreenView.Section s = LegacyEditor.open(config17, 5000, 0.05)
+                .view("synapse", Map.of("pool", "SOL", "typePre", ReMoto.ALL, "typePos", ReMoto.ALL))
+                .sections().get(0);
+
+        assertThat(s.headers()).startsWith("Active", "Compartment");
+        assertThat(s.order()).startsWith(1, 0);
+        assertThat(s.order()).containsExactlyInAnyOrderElementsOf(
+                java.util.stream.IntStream.range(0, s.headers().size()).boxed().toList());
+        assertThat(s.groupProperty()).isEqualTo("compartment");
+
+        ScreenView.Row linha = s.rows().stream().filter(r -> !r.header()).findFirst().orElseThrow();
+        assertThat(linha.cells().get(s.order().get(0)).name()).endsWith(".compartment");
+    }
+
+    /** A lista das sinapses vem ordenada por compartimento: os grupos mostram isso. */
+    @Test
+    void aListaDasSinapsesMostraOsGruposDeCompartimento() {
+        ScreenView view = LegacyEditor.open(config17, 5000, 0.05)
+                .view("synapse", Map.of("pool", "SOL", "typePre", ReMoto.ALL, "typePos", ReMoto.ALL));
+        List<String> groups = view.sections().get(0).rows().stream()
+                .filter(ScreenView.Row::header).map(ScreenView.Row::label).toList();
+        assertThat(groups).containsExactly("Group 1: Synapses on the soma", "Group 2: Synapses on the dendrite");
+
+        // Alvo de um compartimento só: nada a escolher, então a coluna sai e o que o grupo diria
+        // vira o título da coluna dos nomes.
+        ScreenView.Section in = LegacyEditor.open(config17, 5000, 0.05)
+                .view("synapse", Map.of("pool", "IN_ext", "typePre", ReMoto.ALL, "typePos", ReMoto.ALL))
+                .sections().get(0);
+        assertThat(in.rows()).isNotEmpty().noneMatch(ScreenView.Row::header);
+        assertThat(in.rowHeader()).isEqualTo("Synapses on the single compartment");
+        assertThat(in.order().stream().map(in.headers()::get)).doesNotContain("Compartment");
+        assertThat(in.headers()).contains("Compartment"); // o campo continua lá, só não é mostrado
+        assertThat(in.groupProperty()).isNull();
+        assertThat(view.sections().get(0).rows().stream().filter(r -> !r.header()))
+                .allSatisfy(r -> assertThat(r.cells()).isNotEmpty());
+    }
+
     private static String cellOf(ScreenView view, String rowLabel, int section) {
         return row(view, section, rowLabel).cells().get(0).name();
     }
