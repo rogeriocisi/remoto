@@ -1,5 +1,6 @@
 package br.remoto.cli;
 
+import br.remoto.core.engine.SimulationCancelledException;
 import br.remoto.core.engine.ResultSink;
 import br.remoto.core.engine.SimulationEngine;
 import br.remoto.core.protocol.Measure;
@@ -178,12 +179,26 @@ final class SweepCommand implements Callable<Integer> {
         }
 
         int total = sweep.values().size();
-        List<Sweep.Row> rows = sweep.run(base, engine, extra, new Sweep.Listener() {
-            @Override
-            public void started(int index, double value) {
-                System.err.printf("[%d/%d] %s = %s%n", index + 1, total, sweep.parameter().spec(), value);
-            }
-        });
+        Cancellation cancellation = Cancellation.onShutdown();
+        List<Sweep.Row> rows;
+        try {
+            rows = sweep.run(base, engine, extra, new Sweep.Listener() {
+                @Override
+                public void started(int index, double value) {
+                    System.err.printf("[%d/%d] %s = %s%n", index + 1, total, sweep.parameter().spec(), value);
+                }
+
+                @Override
+                public boolean cancelled() {
+                    return cancellation.cancelled();
+                }
+            });
+        } catch (SimulationCancelledException cancelled) {
+            System.err.println("varredura cancelada");
+            return 130;
+        } finally {
+            cancellation.close();
+        }
 
         StringBuilder csv = new StringBuilder();
         sweep.writeCsv(rows, csv);

@@ -77,4 +77,28 @@ class RemotoCliTest {
                 "--measure", "media(emg-SOL)", "-o", tmp.toString())).isEqualTo(2);
         assertThat(cli.execute("sweep", scenario.toString(), "--protocol", "hm", "-o", tmp.toString())).isEqualTo(2);
     }
+
+    @Test
+    void cancelarParaASimulacaoEMarcaOManifesto() throws Exception {
+        // O motor consulta isCancelled() na thread do vigia de progresso, não nesta. Enquanto a CLI
+        // respondia Thread.currentThread().isInterrupted(), lia a flag da thread errada e nunca
+        // cancelava; e, sem capturar a exceção, o manifesto ficava preso em RUNNING.
+        Path scenario = Path.of("..", "scenarios", "remoto-17-default-soleus-contraction.json");
+        Path out = tmp.resolve("cancelada");
+
+        RunCommand cmd = new RunCommand();
+        cmd.scenarioFile = scenario;
+        cmd.out = out;
+        cmd.threads = 1;
+        cmd.cancellation = Cancellation.onShutdown();
+        cmd.cancellation.cancel();
+
+        assertThat(cmd.call()).as("código de saída de execução cancelada").isEqualTo(130);
+        assertThat(out.resolve("manifest.json")).exists();
+        assertThat(Files.readString(out.resolve("manifest.json")))
+                .as("manifesto de execução cancelada").contains("CANCELED");
+        try (var arquivos = Files.list(out.resolve("results"))) {
+            assertThat(arquivos).as("execução cancelada não grava resultados").isEmpty();
+        }
+    }
 }

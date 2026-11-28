@@ -2,6 +2,7 @@ package br.remoto.cli;
 
 import br.remoto.core.engine.ResultSink;
 import br.remoto.core.engine.RunContext;
+import br.remoto.core.engine.SimulationCancelledException;
 import br.remoto.core.engine.SimulationEngine;
 import br.remoto.core.scenario.Scenario;
 import br.remoto.core.scenario.ScenarioValidator;
@@ -43,6 +44,12 @@ final class RunCommand implements Callable<Integer> {
                     + "O resultado é o mesmo com qualquer valor.")
     Integer threads;
 
+    /**
+     * O cancelamento desta execução. Fica visível para o teste poder entregar um já cancelado;
+     * em uso normal é criado em {@link #call()} e ligado ao Ctrl+C.
+     */
+    Cancellation cancellation;
+
     @Override
     public Integer call() throws Exception {
         JsonCodec json = new JsonCodec();
@@ -72,26 +79,37 @@ final class RunCommand implements Callable<Integer> {
 
         ResultSink sink = new CsvGzResultSink(results);
         int[] lastDecile = {-1};
-        engine.run(scenario, new RunContext() {
-            @Override
-            public void progress(double fraction) {
-                int decile = (int) (fraction * 10);
-                if (decile != lastDecile[0]) {
-                    lastDecile[0] = decile;
-                    System.err.printf("  %3d%%%n", decile * 10);
+        Cancellation cancel = cancellation != null ? cancellation : Cancellation.onShutdown();
+        try {
+            engine.run(scenario, new RunContext() {
+                @Override
+                public void progress(double fraction) {
+                    int decile = (int) (fraction * 10);
+                    if (decile != lastDecile[0]) {
+                        lastDecile[0] = decile;
+                        System.err.printf("  %3d%%%n", decile * 10);
+                    }
                 }
-            }
 
-            @Override
-            public boolean isCancelled() {
-                return Thread.currentThread().isInterrupted();
-            }
+                @Override
+                public boolean isCancelled() {
+                    return cancel.cancelled();
+                }
 
-            @Override
-            public ResultSink results() {
-                return sink;
-            }
-        });
+                @Override
+                public ResultSink results() {
+                    return sink;
+                }
+            });
+        } catch (SimulationCancelledException cancelled) {
+            json.writeAtomically(dir.resolve("manifest.json"),
+                    manifest.finished(RunStatus.CANCELED, Instant.now(), "cancelada"));
+            System.err.println("simulação cancelada");
+            System.out.println(dir.toAbsolutePath());
+            return 130;
+        } finally {
+            cancel.close();
+        }
 
         json.writeAtomically(dir.resolve("manifest.json"), manifest.finished(RunStatus.DONE, Instant.now(), null));
         System.out.println(dir.toAbsolutePath());

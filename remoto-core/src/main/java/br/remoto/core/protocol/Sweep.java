@@ -42,6 +42,15 @@ public record Sweep(ScenarioParameter parameter, List<Double> values, List<Measu
 
         default void finished(int index, Row row) {
         }
+
+        /**
+         * Se o lote foi cancelado. É consultado de dentro do vigia de progresso do motor, numa
+         * thread que não é a de quem chamou {@link Sweep#run}, então a resposta tem de vir de um
+         * estado compartilhado — nunca do estado da thread corrente.
+         */
+        default boolean cancelled() {
+            return false;
+        }
     }
 
     public Sweep {
@@ -93,7 +102,7 @@ public record Sweep(ScenarioParameter parameter, List<Double> values, List<Measu
 
                 @Override
                 public boolean isCancelled() {
-                    return Thread.currentThread().isInterrupted();
+                    return l.cancelled();
                 }
 
                 @Override
