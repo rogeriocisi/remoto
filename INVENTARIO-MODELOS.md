@@ -137,7 +137,7 @@ injetada em rampa no soma, a reobase da curva f–I deve cair quando `gmax` do N
 | `slowPotassium` | `g = gmax·q²` | potássio lento da **AHP** | 24-27 |
 | `calcium` | `g = gmax·p` | **cálcio persistente do dendrito (PIC)** | 29-32 |
 
-Não há padrão: quem monta a membrana escolhe (ver `NeuronFactory`, §9.4).
+Não há padrão: quem monta a membrana escolhe (ver `NeuronFactory`, §12.1).
 O `switch` em `conductance` (linhas 38-42) usa expoentes constantes, com o comentário
 "expoentes constantes, como no original, para a JIT especializar o `Math.pow`".
 
@@ -319,10 +319,10 @@ if (settings.gammaCa() > 0) {
 
 **Variantes selecionáveis.** É uma das duas implementações de
 `MotoneuronMembraneModel`; a outra é `ContinuousMotoneuronMembrane`. **Esta é o padrão**
-(ver §9.4, `NeuronFactory`).
+(ver §12.1, `NeuronFactory`).
 
 **Status.** Implementado. A PIC é **implementada mas desligada por padrão** quando
-`gammaCa = 0` (ver §9.4 para o valor efetivo na configuração).
+`gammaCa = 0` (ver §12.1 e §14 para o valor efetivo na configuração).
 
 **Como testar.**
 
@@ -1120,7 +1120,7 @@ threshold(I_1ms, d, tau) = I_1ms · (1 − e^(−PULSE_WIDTH/tau)) / (1 − e^(�
 `IllegalArgumentException`**), `step` (ms).
 
 **Status.** Implementado. É uma variante do mecanismo de limiar; o padrão nominal é a
-comparação direta de intensidade (ver §9 para qual a configuração escolhe).
+comparação direta de intensidade (ver §11.4 e §14 para qual a configuração escolhe).
 
 **Como testar.**
 
@@ -1919,7 +1919,7 @@ a partir de `i = 3`.
 `fcHigh` (Hz, "o do passa-baixa"), `period` (**s**).
 
 **Variantes selecionáveis.** Esta classe e `BandPassFilter` são as **duas variantes de
-filtro de EMG** oferecidas (ver §9 para qual a configuração escolhe).
+filtro de EMG** oferecidas (ver §13 e §14 para qual a configuração escolhe).
 
 **Status.** Implementado. É **offline** (processa um vetor inteiro), ao contrário de
 `BandPassFilter`, que é amostra a amostra — uma assimetria de interface (F-30).
@@ -2047,8 +2047,7 @@ torque = Σ_músculos (força · braço de momento)        [nulos não contam]
 
 1. **Torque isométrico voluntário.** Recrutar os plantiflexores progressivamente e medir
    o torque: o máximo deve ficar na ordem de **~100-150 N·m** para plantiflexão humana
-   (compare com o `MAXIMUM_VOLUNTARY_TORQUE = 79` N·m de `PositionTaskAnkle`, §9.4 —
-   F-33).
+   (compare com o `MAXIMUM_VOLUNTARY_TORQUE = 79` N·m de `PositionTaskAnkle`, §9.4 — F-33).
 2. **Relação torque-ângulo.** Com `angleSignal` em rampa, medir o torque isométrico
    máximo em cada ângulo: deve seguir a composição de força-comprimento (§8.6) e braço de
    momento (§9.1), com pico perto do ângulo neutro.
@@ -3006,7 +3005,7 @@ threshold   = Draws.gaussian(threshold1,   threshold1   * miscellaneous(threshol
 thresholdCa = Draws.gaussian(thresholdCa1, thresholdCa1 * miscellaneous(thresholdCaSTD));
 ```
 
-**Bloqueio de condução (literal, linhas 157-164):**
+**Bloqueio de condução (literal, linhas 156-159):**
 
 > "Conduction block of the slowest axons of the pool (scenario settings `axonConductionBlock`), as
 > in the demyelinating version of the Fortran ReMoto: **the velocity 0 becomes the minimum of 0.01
@@ -3032,7 +3031,7 @@ no bloqueio, o `somaSpikeTrain` continua normal e só o `terminalSpikeTrain` fic
 contraste é o teste.
 
 **Condutâncias da membrana de cinética contínua (`continuousConductances`, linhas 275-299).**
-É a ponte entre as duas famílias, e o javadoc admite uma divergência (literal, linhas 262-272):
+É a ponte entre as duas famílias, e o javadoc admite uma divergência (literal, linhas 263-272):
 
 > "Persistent sodium over the pool, in S/cm², from the published parameter set of the model this
 > membrane transcribes: it has a gradient of its own, which is why it is not a fraction of the fast
@@ -3301,3 +3300,667 @@ A variante `ThirdOrderBandPass` é usada só na camada web
 | Distribuição dos tratos | Poisson / gama / gaussiana | pelo cenário | `TractSpikeGenerator:33-64` |
 | Forma do sinal modulante | 13 formas | pelo cenário | `Modulation.Shape` |
 | Filtro de EMG | "1st2nd" (`BandPassFilter`) / 3ª+3ª ordem (`ThirdOrderBandPass`) | **"1st2nd", 50-1000 Hz** | `LegacyOutputs:38-40`; a 2ª só na web |
+
+---
+
+# 15. Achados
+
+Tudo que encontrei de estranho, inconsistente ou simplesmente digno de um teste. **Nada aqui é
+uma recomendação de mudança**: várias dessas coisas são fidelidades deliberadas ao ReMoto
+original, e o próprio código as declara. O valor da lista é dizer *o que a campanha de testes
+precisa fixar*, e onde um teste vai falhar por motivo legítimo.
+
+**Severidade.**
+
+- **Alta** — altera resultado científico, ou um caminho do código não produz o que o nome promete.
+- **Média** — correto no caminho usado hoje, mas frágil, assimétrico, ou com alvo de teste ambíguo.
+- **Baixa** — ruído, código morto, custo, inconsistência cosmética.
+- **Declarada** — divergência que um comentário já admite. Entra aqui porque um teste que a
+  desconheça vai falhar, e porque é a documentação mais honesta do módulo.
+
+## 15.1 Estrutura
+
+**A-01 — Dois conjuntos de classes de modelo coexistem. Severidade: média.**
+`br.remoto.core.model` tem os modelos reescritos; `br.remoto.core.simulation.{neuron,
+musculotendon,joint,proprioceptor}` tem o porte do original, que hoje em grande parte os envolve.
+A migração não terminou: `simulation/musculotendon/ExtrafusalMuscleSuperClass.java:107-126` ainda
+calcula equações próprias (o triângulo do SOL, F-55), e
+`simulation/musculotendon/MusculotendonSuperClass.java:162` guarda a citação de um polinômio que
+já não está nesse arquivo (F-32). Para a campanha isso significa: **procurar o modelo nos dois
+lugares**, e desconfiar quando uma classe de `simulation` tem aritmética.
+
+## 15.2 Severidade alta
+
+**F-39 — Os ganhos aferentes da fibra chain do fuso nunca são atribuídos.**
+`model/receptor/ChainFiber.java:20-21`: `G_primary_bag2_and_chain` e
+`G_secondary_bag2_and_chain` são declarados e nunca recebem valor; o construtor (linhas 37-40)
+não tem parâmetro de ganho. Resultado: `calculatePrimaryAfferentActivity` e
+`calculateSecondaryAfferentActivity` **sempre devolvem 0**. A fibra integra tensão e ativação
+fusimotora (e isso aparece em `fiberTensions()` e `fusimotorActivations()`), mas não contribui
+nada para Ia nem para II. O javadoc da classe admite: *"Como no original, os ganhos das
+aferências dela nunca são atribuídos e ficam em 0."* **Consequência científica:** a II do fuso
+é só a bag2, e a oclusão parcial da Ia (§10.5) compara a bag1 contra a bag2 sozinha. Um teste de
+rampa-platô comparado com Mileusnic et al. (2006) vai divergir por esse motivo, e não por erro
+de implementação.
+
+**F-43 — O fator 40 da não linearidade do órgão tendinoso não está no comentário.**
+`model/receptor/CragoTendonOrgan.java:65`: `x[N] = 40 * (GR * Math.log(force / FN + 1));`.
+O javadoc (linhas 3-6) descreve a não linearidade como `60·ln(F/4 + 1)` **Hz**, sem mencionar o
+40. Na prática a escala é `2400·ln(F/4 + 1)`. Antes de comparar a taxa Ib com Crago et al.
+(1982) é preciso resolver qual é o alvo: se o 40 é parte da discretização (um fator do filtro
+absorvido na entrada) ou se é um ganho a mais. **O teste de invariância ao passo (§10.7, item 3)
+é o que distingue os dois casos**, porque um fator de discretização deveria depender do passo e
+este não depende.
+
+**F-31 — O ângulo do joelho chega à geometria em radianos num ramo e em graus nos outros.**
+`model/joint/MusculotendonGeometry.java:35,43,92,100` compara `kneeAngle` com `0` e com `90`.
+Quem alimenta: `simulation/musculotendon/MusculotendonSuperClass.java:84,109,135`, que passa
+`associatedJoint.getKneeAngle()`. E esse valor é:
+
+- **radianos** no ramo isométrico — `IsometricAnkle` converte no construtor
+  (`model/joint/IsometricAnkle.java:53`) e `kneeAngle()` devolve rad (javadoc linha 80);
+- **graus** nos ramos pêndulo e posição — `InvertedPendulumAnkle.kneeAngle()` e
+  `PositionTaskAnkle.kneeAngle()` devolvem graus, como o javadoc de cada um diz.
+
+Portanto, com **joelho a 90°**: no isométrico o valor que chega é 1,5708, que não casa com 0 nem
+com 90, e **o MG e o LG ficam com comprimento 0 e braço de momento 0** — não produzem força nem
+torque. Nos ramos pêndulo e posição o valor 90 casa, e os coeficientes de joelho flexionado
+são usados corretamente. O javadoc de `MusculotendonGeometry` admite metade disso (*"o ângulo do
+joelho chega aqui em radianos e é comparado com 0 e com 90, de modo que só o joelho estendido (0)
+tem coeficientes"*) mas não registra que o comportamento **difere por modelo de articulação**.
+**Teste obrigatório:** o mesmo cenário com joelho a 90°, nos três modelos de articulação,
+conferindo a força do MG.
+
+**F-48 — No tornozelo isométrico o fuso só é atualizado se o músculo for o de Hill.**
+`simulation/musculotendon/MusculotendonSuperClass.java`: a chamada `spindle.atualize(...)` está
+**dentro** do `if (muscleModel == "hill")` no ramo isométrico (linha 98), e **fora** do `if/else`
+nos ramos pêndulo (linha 129) e posição (linha 155). Consequência: num cenário **isométrico com
+SOCDS, Raikova ou momentos de distribuição**, o fuso nunca avança, `IaFiringRate` e
+`IIFiringRate` ficam em 0, as fibras Ia e II não disparam pelo receptor e **não há reflexo de
+estiramento nem retroação proprioceptiva**. Como o SOCDS é o músculo padrão (§14) e o tornozelo
+isométrico é o cenário mais comum, esta combinação é provavelmente a mais usada do simulador.
+**Teste:** cenário isométrico + SOCDS, conferir que `IaFiringRate` é 0 e que o
+`IaFiringRateStore` é uma série de zeros — e comparar com o mesmo cenário em `pendulum`.
+
+**F-36 — O "Runge-Kutta de 4ª ordem" das duas articulações dinâmicas não é um RK4.**
+`model/joint/InvertedPendulumAnkle.java:89-101` e `model/joint/PositionTaskAnkle.java:95-107`:
+os quatro estágios chamam `calculateAcceleration()` **sem argumentos**, usando sempre o ângulo e a
+velocidade do início do passo. Logo `k1_v = k2_v = k3_v = k4_v` a menos do distúrbio (que é
+re-sorteado em cada estágio, F-15), e o esquema degenera em:
+
+```
+velocity += h · a                      (Euler de 1ª ordem)
+angle    += h · (v + h·a/2)            (o termo de 2ª ordem correto, por acidente da combinação)
+```
+
+O javadoc admite a causa (*"os torques gravitacional e passivo de cada estágio do Runge-Kutta
+usam o ângulo e a velocidade do início do passo"*) mas chama o método de RK4. **Consequência:**
+o erro na dinâmica é de 1ª ordem na velocidade. Para o pêndulo invertido, que é instável, isso
+muda a taxa de divergência. **Teste quantitativo direto:** a tarefa de posição tem frequência
+natural `√(K/I)/(2π)` ≈ **33,4 Hz** e amortecimento ≈ 0,36 (§9.4); com passo de 0,05 ms o Euler
+dá erro pequeno, mas o teste de convergência (reduzir o passo e medir a mudança) deve mostrar
+**erro de 1ª ordem**, não de 4ª. Se mostrar 4ª ordem, é porque o teste está medindo outra coisa.
+
+**F-26 — O músculo de Hill calcula o RK4 e avança por Euler; a força gravada é de outro
+estado.** `model/muscle/HillMuscle.java:299-315`: os quatro estágios são calculados
+(`calculateAcceleration` quatro vezes, cada uma gravando os campos `force` e `acceleration`), mas
+o avanço usa só `k1`. Como o 4º estágio é avaliado em `length + h·k3` e `velocity + h·k3_v`,
+**a força e a aceleração reportadas são de um estado que o músculo nunca ocupou**. O javadoc
+admite: *"a dinâmica calcula os quatro estágios do Runge-Kutta, mas avança por Euler (só k1);
+como cada estágio grava força e aceleração, ficam as do 4º estágio."* **Consequências:** (a) três
+quartos do cálculo de força são descartados; (b) qualquer teste que confira
+`força = f(comprimento, velocidade)` com os valores reportados **vai falhar**, porque não são do
+mesmo instante. **Teste:** recalcular a força a partir do `lengthNorm` e da `velocity`
+reportados e comparar com a `force` reportada — a diferença é a medida deste achado.
+
+**F-52 — `instantMuscleForce` e `instantMotorUnitForce` avançam o estado dos abalos.**
+`simulation/musculotendon/SecondOrderCriticallyDampedSystem.java:53-63` e
+`Raikova.java:51-61` chamam `muscle.muscleForce(t)` / `muscle.unitForce(mu, t)`, que em
+`model/muscle/CriticallyDampedMuscle.java:107-150` e `RaikovaMuscle.java:100-148` incrementam
+`mu.setIndexSpike(...)` e `mu.setIteration(...)`. O mesmo vale para
+`DistributionMomentsMuscle.activation(t, slow)` (`model/muscle/DistributionMomentsMuscle.java:63-76`,
+F-22). Qualquer camada de resultados que chame esses métodos **avança o músculo um passo a mais**
+e corrompe o estado de quem for ler depois. É um *getter* com efeito colateral, com nome de
+consulta. **Teste:** chamar `instantMuscleForce` duas vezes no mesmo `t` e conferir se o
+resultado muda.
+
+**F-57 — `catch (Exception)` engolindo exceções a cada passo, em três níveis.**
+
+| Arquivo | Linha | O que faz |
+| --- | --- | --- |
+| `simulation/neuron/Motoneuron.java` | 163-166 | `System.out.println("Error while atualizing MN: " + cd)` — **nem imprime a mensagem da exceção** |
+| `simulation/neuron/Motoneuron.java` | 175-178 | `"MN.atualizeDendrite: " + e.getMessage()` |
+| `simulation/neuron/Motoneuron.java` | 195-198 | `"MN.atualizeSoma: " + e.getMessage()` |
+| `simulation/neuron/Interneuron.java` | 335-338 | `"Error while atualizing IN: " + cd` — sem mensagem |
+| `simulation/neuron/Interneuron.java` | 350-353 | `e.getMessage()` sozinho |
+| `simulation/neuron/SensoryFiber.java` | 71-74 | `"Error while atualizing AF: " + cd` — sem mensagem |
+
+Um `NullPointerException` ou um `ArithmeticException` num passo de um neurônio é impresso em
+`stdout` e a simulação continua com o neurônio num estado indefinido. Combinado com F-47
+(`NullPointerException` garantida se o modelo de GTO não for o de Crago) e com
+`SensoryFiber.atualize` lendo `nerve.isActive()` sem verificar nulo (linha 65), isso significa
+que **a simulação pode produzir resultados silenciosamente errados**. A única barreira é
+`Rng.ForbiddenDraw`, que é deliberadamente um `Error` justamente por isso
+(`model/random/Rng.java:27-30`: *"É um Error para que os `catch (Exception)` do código original
+não o engulam"*). **Para a campanha:** rodar todos os cenários com `stdout` capturado e **falhar
+o teste se qualquer uma dessas mensagens aparecer**. É provavelmente o teste de maior retorno
+sobre custo do módulo inteiro.
+
+**F-58 — Os `catch` das fibras intrafusais engolem exceção e imprimem o rótulo errado.**
+`model/receptor/Bag1Fiber.java:57-61`, `Bag2Fiber.java:107-111`, `ChainFiber.java:73-77`:
+dentro de `calculateFiberTension` o `catch` imprime `"Fusimotor Activation: " + e.getMessage()`
+— o rótulo é do outro método. Além de engolir, dá a pista errada.
+
+**F-04 — A comporta L do cálcio não tem fator de inclinação.**
+`model/neuron/ContinuousMotoneuronMembrane.java:278-280`:
+
+```java
+private double lInf(double v) {
+    return 1 / (Math.exp(-((v - vTraubDend) - L_HALF)) + 1);
+}
+```
+
+Com `vTraubDend = 35` e `L_HALF = −30`, isso é `1/(1 + e^(−(v − 5)))`: uma sigmoide de
+**inclinação 1 mV**, meia-ativação em 5 mV acima do repouso. Vai de 0,007 em `v = 0` a 0,993 em
+`v = 10` — **praticamente um degrau**. Todas as outras comportas da classe têm um fator de
+inclinação explícito (`M_ALPHA_K = 4`, `N_ALPHA_K = 7`, `R_ALPHA_K = 4`...); só esta não.
+A forma usual de uma comporta de cálcio tipo L é `1/(1 + e^(−(v − v½)/k))` com `k` da ordem de
+5 mV. **Consequência:** a PIC da membrana de cinética contínua liga e desliga de forma quase
+binária em `vd ≈ 5` mV, o que exagera a biestabilidade e torna o platô muito sensível ao ruído.
+**Teste:** medir `gateL()` em função de `vd` em regime e ajustar uma sigmoide — a inclinação
+medida deve sair ~1 mV. Comparar com a histerese medida numa rampa triangular: um `k` de 1 mV dá
+uma transição abrupta, um de 5 mV dá uma gradual.
+
+**F-10 — A membrana de cinética contínua não nomeia nenhuma fonte.**
+`model/neuron/ContinuousMotoneuronMembrane.java` cita Destexhe (1997) apenas **por contraste**
+(o que ela não é) e, para si, diz "as formulações de origem" (linha 26) e "o conjunto de
+parâmetros de origem" (linha 21). Os dez pares de coeficientes α/β (linhas 46-54), `L_HALF`,
+`eCaL = 140`, `vTraubDend = 35`, `lTau = 60` e `rInact = 0.05` não têm artigo, tabela ou equação
+atribuídos. O mesmo vale para `PERSISTENT_SODIUM_FIRST/LAST` em
+`simulation/factory/NeuronFactory.java:274-275`, cujo javadoc diz "the published parameter set of
+the model this membrana transcribes" sem dizer qual. **Para a campanha isso é bloqueante na
+validação:** não há contra o que comparar os parâmetros, só contra observáveis
+(f–I, AHP, platô). Recomendo registrar a fonte no código antes da validação, ou aceitar que esta
+família só pode ser validada por comportamento.
+
+**F-05 — As condutâncias máximas são reaproveitadas entre duas formulações com significados
+diferentes.** `simulation/factory/NeuronFactory.java:286-289` dá à membrana de cinética contínua
+exatamente as mesmas `gNaBar`, `gKfBar`, `gKsBar` e `gCaLBar` dos canais de pulso. Mas o papel
+não é o mesmo: no modelo de pulso a comporta **relaxa para 1** durante o pulso, então `m³h` chega
+perto de 1 e `gmax` é quase a condutância de pico; na cinética de Hodgkin-Huxley, `m³h` atinge um
+máximo bem menor, determinado por α e β. O javadoc da fábrica (linhas 266-272) admite a dúvida
+num ponto vizinho (linhas 264-268) — *"until the comparison of the f-I curve says whether the
+curve shape matters"* — mas não a levanta para as condutâncias compartilhadas. **Teste decisivo:** a
+comparação f–I entre as duas membranas no mesmo neurônio (§2.6, item 1). Se a curva da contínua
+ficar deslocada para correntes muito maiores, é este o motivo.
+
+**F-50 — `Raikova.getMaximumMuscleForce()` devolve 0, e o tendão herda isso.**
+`simulation/musculotendon/Raikova.java:85-88` devolve literalmente `0`, enquanto
+`SecondOrderCriticallyDampedSystem.java:87-89` devolve a soma real de `gpeak·twTet`. E
+`simulation/factory/JointFactory.java:128` constrói o tendão com
+`muscle.getMaximumMuscleForce()`, de modo que com o músculo de Raikova
+`Tendon.muscleMaximumForce = 0` e `Tendon.force()` é **sempre 0**
+(`model/muscle/Tendon.java:48`: `force = forceNorm * muscleMaximumForce`).
+
+O torque da articulação **não** é afetado: nos três ramos de
+`MusculotendonSuperClass.atualize` a força do tendão só é usada quando o modelo é o de Hill;
+com Raikova o `else` usa `extrafusalMuscle.getForce()`, que é a força real. O que fica zerado é
+`tendon.getForce()` e `tendon.getForceStore()` — a série de força do tendão gravada nos
+resultados — e qualquer consumidor de `getMaximumMuscleForce()` com esse músculo.
+**Teste:** conferir que a série de força do tendão é identicamente zero num cenário com Raikova,
+e decidir se é isso que se quer gravar.
+
+## 15.3 Severidade média
+
+**F-07 — Depois do primeiro disparo, a fibra II sorteia o limiar com a ordem da Ia.**
+`model/neuron/AfferentFiber.java:202-205`: `case IA, II -> Draws.gamma(1/GAMMA_ORDER_IA,
+GAMMA_ORDER_IA)`. A ordem própria da II é 400 (linha 40) e é usada no `reset()`, mas **só no
+primeiro intervalo**. Declarado no javadoc (*"depois do primeiro disparo, a fibra II sorteia o
+limiar com a ordem da Ia (25), não com a sua (400)"*). **Consequência para o teste de CV
+(§2.9, item 2):** sem `gammaOrder` explícito, a II mede CV ≈ 0,20 e não 0,05. O teste tem de
+esperar isso, ou passar `gammaOrder = 400`.
+
+**F-12 — `TractSpikeGenerator.meanValue` compara uma taxa em Hz com o passo em ms.**
+`model/tract/TractSpikeGenerator.java:235`:
+`if (modulationValue > integrationStep || modulationValue < -integrationStep)`.
+`modulationValue` é uma **taxa** (Hz, linha 232: `modulationValue += 1000/mean`) e
+`integrationStep` é um **tempo** (ms). O limiar efetivo de "taxa pequena demais" passa a depender
+do passo de integração: com passo 0,05 ms a taxa mínima aceita é 0,05 Hz; com 0,1 ms, 0,1 Hz.
+Nessa faixa o resultado é `MAX_MEAN = 2000` ms (0,5 Hz), então o efeito prático é pequeno, mas
+**o comportamento do modelo depende do passo numérico**, o que quebra a invariância que um teste
+de convergência espera.
+
+**F-24 — Na relação força-velocidade o ramo troca em `v = 0.1`, não em `v = 0`.**
+`model/muscle/HillMuscle.java:260`: `if (stretchVelocity > 0.1)`. Para `0 < v ≤ 0.1` L₀/s usa o
+ramo **concêntrico** com velocidade positiva, isto é `(Vmax − v)/(Vmax + v·Cv)` com `Vmax < 0`.
+Não há garantia de continuidade em `v = 0.1`. **Teste obrigatório:** varrer a velocidade com
+passo fino em torno de 0,1 e medir o salto na força. Se houver descontinuidade, ela entra como
+ruído na dinâmica músculo-tendão.
+
+**F-25 — O elemento elástico paralelo não se anula no comprimento ótimo.**
+`model/muscle/HillMuscle.java:222-225`: `F_paralelo = e^(skP·(Ln−1)/EPS0_M) / e^(skP)`. Em
+`Ln = 1` isso dá `e^(−skP)`, que é positivo, e para `Ln → 0` tende a `e^(−skP·(1/0.5 + 1))`,
+ainda positivo. Logo há **força passiva de repouso** em qualquer comprimento, inclusive abaixo do
+ótimo, onde fisiologicamente deveria ser zero. **Consequência:** um deslocamento constante na
+força total. **Teste:** ativação zero, varrer `Ln` de 0,5 a 1,0 e verificar o valor em `Ln = 1`;
+comparar com a curva passiva de músculo humano, que é ~0 abaixo do comprimento de folga.
+
+**F-19 — A janela do abalo de Raikova usa o **próximo** disparo, não o último.**
+`model/muscle/RaikovaMuscle.java:117-136`: `tSpike` é lido de `mu.endPlate().spike(indexSpike)`,
+que é o disparo **ainda não consumido**, e a condição é `t − tSpike < 10·tHalfRaikova`. Enquanto
+há disparos futuros, `t − tSpike` é negativo e a condição é trivialmente verdadeira; quando a
+lista esgota, `tSpike` congela no último e a janela passa a contar dele. O javadoc descreve o
+efeito (*"só contam enquanto o último lido tiver menos de 10 meias relaxações"*) mas a variável
+não é "o último". O resultado é que o trem de força é cortado 10 meias relaxações **depois do fim
+dos disparos** — comportamento razoável, obtido por acidente. **Teste:** conferir que a força cai
+a zero exatamente em `t_último + 10·tHalf`.
+
+**F-21 — `DistributionMomentsMuscle` não cita fonte e multiplica onde a forma usual divide.**
+`model/muscle/DistributionMomentsMuscle.java:108`:
+`(e^(−t/τ1) − e^(−t/τ2)) · (τ1 − τ2)`, com τ1 = 20 e τ2 = 15 ms, ou seja × 5. A forma canônica
+de uma diferença de exponenciais normalizada é **dividida** por `(τ1 − τ2)`. Sem citação de fonte
+(a única classe de músculo sem nenhuma) não há como decidir. Como o modelo nunca calcula força
+(declarado no javadoc), a consequência prática é nula hoje — mas se alguém ligar a força, a
+escala estará errada em `(τ1 − τ2)²` = 25×. A classe também usa `mu.tHalfRaikova()` (linha 107),
+um parâmetro **de outro modelo**, como janela própria.
+
+**F-37 — As duas articulações dinâmicas definem `jointTorque()` de formas diferentes, e o
+torque muscular entra com sinais opostos.**
+
+| | `InvertedPendulumAnkle` | `PositionTaskAnkle` |
+| --- | --- | --- |
+| `jointTorque()` | `T_grav + 2·T_músc − T_pass + dist` (linhas 64-67) | `aceleração · I_pé` (linhas 70-73) |
+| aceleração | `(T_grav + **2·T_músc** − T_pass + dist)/I` (linha 110) | `(**T_músc** − T_grav − T_pass + dist)/I` (linha 117) |
+
+No pêndulo o torque muscular **soma** ao gravitacional (e é dobrado, pelas duas pernas); na
+tarefa de posição **subtrai** do gravitacional e não é dobrado. As duas convenções podem estar
+certas para as respectivas montagens, mas nada no código as explica, e um sinal errado aqui
+inverte a retroação de todo o reflexo. **Teste:** em cada articulação, aplicar um torque muscular
+positivo conhecido com os músculos fixos e verificar a direção do movimento resultante contra a
+convenção de sinal do braço de momento (§9.1: plantiflexores negativos, TA positivo).
+
+**F-49 — Todo sinal gravado está atrasado de um passo em relação ao estado.**
+`simulation/musculotendon/Hill.java:352` e os três modelos de articulação amostram **antes** de
+`atualize`, com o comentário *"The samples are taken before the update: they hold the values of
+the previous step"*. Consequência: toda latência medida nas séries gravadas tem um passo (0,05 ms)
+de viés sistemático, e grandezas de arquivos diferentes podem estar defasadas entre si se umas
+amostrarem antes e outras depois. **Teste:** comparar a latência da onda M medida no EMG gravado
+com `latencyStimulusEndPlate` e conferir se a diferença é exatamente um passo.
+
+**F-47 — `GolgiTendonOrgan.atualize` não verifica nulo.**
+`simulation/proprioceptor/GolgiTendonOrgan.java:202-207` chama `lumpedGTO.step(force)` sem
+guarda, e `lumpedGTO` só é construído quando
+`gto_model.equals(ReMoto.lumpedGtoModelCrago)` (linha 198). Qualquer outro valor de
+`gto_model` → `NullPointerException` a cada passo, engolida pelo `catch` de quem chamar (F-57).
+Compare com `MuscleSpindle` (linhas 87-101), que **testa os dois** modelos e simplesmente não faz
+nada se nenhum casar — a assimetria entre os dois proprioceptores é o achado.
+
+**F-46 — Um interneurônio de tipo fora dos quatro conhecidos fica sem período refratário.**
+`simulation/neuron/Interneuron.java:306-314` é uma cadeia `if/else if` sobre `RC`, `IaIn`,
+`IbIn`, `gII`, sem `else`. Um tipo novo deixa `somaRefractoryPeriod` em 0, e o interneurônio pode
+disparar **a cada passo** (até 20 kHz com passo de 0,05 ms).
+
+**F-13 — As formas aleatórias do sinal modulante são re-sorteadas em cada estágio do
+Runge-Kutta.** `model/signal/Modulation.java:184,187`: `RANDOM` chama `Rng.random()` e
+`STOCHASTIC_GAMMA` chama `Draws.gamma(amp, width)` **a cada avaliação de `value(t)`**. E
+`value(t)` é chamada 4 vezes por passo quando o sinal modula uma corrente injetada:
+`SpinalNeuron.injection()` → `Current.getCurrent(t)` → `Modulation.value(t)`, uma vez por estágio
+do RK (`MotoneuronMembrane.java:60-68`). Consequência: (a) o RK integra uma função que muda entre
+estágios, o que destrói a ordem do método; (b) a corrente **gravada** é a do primeiro estágio
+(`SpinalNeuron.java:123-133`, que registra só a primeira chamada de cada passo), não a média das
+quatro. O javadoc admite o sorteio por avaliação (*"as formas aleatória e gama sorteiam a cada
+avaliação"*) mas não a consequência numérica. **Teste:** um neurônio com corrente `RANDOM` deve
+dar resultado diferente se o número de estágios mudar — e a comparação com um sinal `SERIES`
+equivalente mede o efeito.
+
+**F-03 — `PulseChannel.value` troca um NaN pelo valor anterior, sem avisar.**
+`model/channel/PulseChannel.java:47-49`. Se uma comporta produzir NaN (um `alpha` ou `beta`
+patológico, um `t − t0` enorme), a condutância volta ao valor do passo anterior e a simulação
+segue como se nada tivesse acontecido. É uma máscara sobre exatamente o tipo de erro que um teste
+de validação quer ver. **Teste:** um teste que force o NaN e exija que ele apareça (ou um
+contador de ocorrências que a campanha possa inspecionar).
+
+**F-29 — `BandPassFilter` com `fc1 = 0` produz NaN.**
+`model/emg/BandPassFilter.java:32-42`. Com `fc1 = 0`: `D = −ω2²`, `α = 0`, `γ = 0`,
+`β = ω2²`, e `B = β√2/(α·ω2) − 1 = ∞`. Então `b11 = T·α·(...)·(... + B·sin(...))` = `0 · ∞` =
+**NaN**, e toda a saída vira NaN a partir da primeira amostra. Não há validação dos cortes no
+construtor. **Teste de borda:** `fc1 = 0`, `fc1 = fc2`, `fc1 > fc2`.
+
+**F-42 — O fuso de Prochazka usa o mesmo ganho de velocidade no encurtamento e no
+alongamento.** `model/receptor/ProchazkaSpindle.java:33-37`: `+80·|v|^0.6` quando `v ≥ 0` e
+`−80·|v|^0.6` quando `v < 0`, isto é `80·sign(v)·|v|^0.6`. A taxa Ia cai tão rápido quanto sobe,
+truncada em 0. Aferentes Ia reais param de disparar no encurtamento, mas a assimetria é maior.
+Sem citação de equação (F-41), não há como saber se é a forma do artigo.
+
+**F-41 — Os coeficientes do fuso de Prochazka estão em linha, sem citação de equação.**
+`model/receptor/ProchazkaSpindle.java:34,36,47`: 80, 0.6, 250, 15 (Ia) e 250, 8 (II). O javadoc
+cita "Prochazka (1999)" mas não a equação ou tabela, e nenhum dos seis números é configurável.
+**Para a campanha:** conferir os seis contra a fonte é um teste manual de proveniência de alto
+valor e custo baixo.
+
+**F-44 — Os coeficientes do filtro do órgão tendinoso são polinômios mágicos no passo.**
+`model/receptor/CragoTendonOrgan.java:43-48`: `0.4h² + 4.4h + 4`, `0.4h² + 5.16h + 6.8`,
+`0.8h² − 13.6`... Vêm de uma discretização de Tustin de uma função de transferência contínua que
+**não está escrita em nenhum lugar**. Sem ela não há como verificar os coeficientes diretamente.
+**Caminho de teste:** inverter a bilinear numericamente (medir a resposta em frequência discreta
+e ajustar uma 2ª ordem contínua) e comparar com Crago et al. (1982). Mais caro, mas é o único
+caminho.
+
+**F-45 — A não linearidade do órgão tendinoso dá NaN com força abaixo de −4 N.**
+`model/receptor/CragoTendonOrgan.java:65`: `Math.log(force / FN + 1)` com `FN = 4`. Para
+`force < −4`, logaritmo de negativo → **NaN**, que propaga pelo filtro IIR e nunca sai (não há a
+guarda de NaN que `PulseChannel` tem). Força de tendão negativa não deveria ocorrer com a lei
+*softplus* de `Tendon` (sempre positiva), mas ocorre se a força vier do músculo direto
+(`gto.atualize(t, force)` no ramo não-Hill).
+
+**F-08 — A dinâmica sináptica exige `lastSpike > 0`.**
+`model/synapse/SynapseGroup.java:199,246`. `lastSpike` é inicializado em
+`Double.NEGATIVE_INFINITY`, então o primeiro disparo não ativa a dinâmica — correto. Mas um
+disparo em `t = 0` **exato** também não a ativaria no disparo seguinte, porque `0 > 0` é falso.
+Caso de borda estreito; vale um teste.
+
+**F-67 — Uma sinapse substituída continua somada no total de condutância.**
+`model/synapse/SynapseGroup.java:79-84`: `gMaxTot += gmax` antes do `synapses.put(key, s)`. Se a
+chave já existia, a sinapse antiga sai do mapa mas sua `gmax` permanece em `gMaxTot`. Como as
+contribuições são frações de `gMaxTot`, o resultado é uma condutância total inflada e frações
+menores. Declarado no javadoc (*"a condutância das duas continua somada no total, como no
+original"*). **Teste:** construir a rede e conferir que `gMaxTotal()` é a soma das `gmax()` das
+sinapses realmente no grupo; a diferença mede quantas chaves foram reusadas.
+
+**F-70 — Na colisão no meio do axônio os dois índices podem ser incrementados duas vezes.**
+`simulation/neuron/Motoneuron.java:122-161`: os blocos antidrômico e ortodrômico já podem ter
+incrementado `indexAntidromicSpike`/`indexOrthodromicSpike`; o bloco de colisão (linhas 156-161)
+incrementa **os dois de novo**, sem verificar. Num passo em que um dos dois já avançou, um disparo
+extra é descartado silenciosamente. Pode ser exatamente o comportamento do original; é o tipo de
+coisa que precisa de um teste de *golden values* para não mudar por acidente.
+
+**F-61 — O vetor `picked[]` dos modelos de músculo é uma busca que devolve a si mesma.**
+`model/muscle/HillMuscle.java:109-131`, `CriticallyDampedMuscle.java:56-69`,
+`RaikovaMuscle.java:52-65`, `DistributionMomentsMuscle.java:26-39`: `picked[i] =
+unitWithCd(units[i].cd())`, e `unitWithCd` devolve **a primeira** unidade com aquele código. Se
+os códigos forem únicos, `picked[i] == units[i]` e a indireção é inútil; se houver código
+repetido, `picked[i]` aponta para a unidade **errada** e o abalo de uma unidade é somado duas
+vezes no lugar de outra. O comentário em `CriticallyDampedMuscle.java:55` declara a intenção
+(*"a soma percorre as unidades pelo código: a primeira com o código de cada posição"*).
+**Teste:** conferir que os códigos das unidades de um músculo são únicos, em todos os 45
+cenários. Uma linha, e fecha o risco.
+
+**F-06 — As correntes das bombas do axônio não batem com a tabela do artigo.**
+`model/neuron/AxonNode.java:146-148` calcula as correntes de Na⁺/K⁺ como as que mantêm
+exatamente os potenciais de repouso da tabela 1 de Howells et al. (2012). O javadoc da classe
+registra o resultado e a divergência (literal, linhas 25-27):
+
+> "as correntes das bombas são as que mantêm os potenciais de repouso da tabela 1 (−84,4 mV no nó
+> e −84,6 mV no internó do motor). **Calculadas assim, elas dão −41 e −9,2 pA no motor, contra
+> −33 e −7,9 pA da tabela: algum detalhe do modelo original difere desta reconstrução.**"
+
+São **24% e 16% de diferença**. O comentário também declara a segunda escolha: as equações das
+duas tensões são as do circuito da figura 1 sem desprezar termos, enquanto o artigo divide a do
+internó só por `C_ax` (o que o comentário argumenta dar o mesmo resultado, por a capacitância da
+mielina ser 200 vezes menor). **Consequência:** o repouso é correto por construção, mas o balanço
+de correntes em repouso difere do publicado, e com ele a acomodação e o electrotonus limiar — que
+são exatamente os observáveis que o modelo existe para reproduzir. **Teste:** `pumps()` expõe os
+dois valores; um teste que os registre documenta a divergência e detecta quando ela mudar. Os
+ciclos de recuperação e acomodação (§2.8, itens 4 e 5) são onde ela aparece.
+
+**F-32 — A citação dos polinômios da geometria musculotendínea ficou órfã noutro arquivo.**
+`model/joint/MusculotendonGeometry.java` contém 60 coeficientes de polinômios de 4º grau
+(§9.1) e **não cita fonte nenhuma**. A fonte está em
+`simulation/musculotendon/MusculotendonSuperClass.java:162`, como um comentário solto entre dois
+métodos, sem nada por perto a que se refira:
+
+```java
+// Polynomial fit from the data reported in Arnold et al. (2010) -- [L.A.E. 31/05/2012]
+```
+
+Esse arquivo não tem mais nenhum polinômio: as equações foram para o pacote `model` e a citação
+ficou. **Para a campanha:** sem este achado, os 60 coeficientes da geometria apareceriam como
+números anônimos e o item 1 de §9.1 (comparar os comprimentos em ângulo neutro com um conjunto
+antropométrico publicado) não teria alvo. Com ele, o alvo é o conjunto de dados de membro
+inferior de Arnold et al. (2010), e o teste de coerência `r(θ) = −dL/dθ` (§9.1, item 3) verifica
+se os dois ajustes vieram do mesmo conjunto.
+
+**F-33 — O torque voluntário máximo de 79 N·m merece conferência.**
+`model/joint/PositionTaskAnkle.java:25`: `MAXIMUM_VOLUNTARY_TORQUE = 79`. Atribuído a Maurer e
+Peterka (2005) pelo javadoc da classe. É plausível para a montagem de uma tarefa de posição com
+o pé isolado, mas bem abaixo do torque de plantiflexão isométrica humana (~100-150 N·m). Vale
+confrontar com a fonte antes de usar `percentageOfMVC` como referência fisiológica.
+
+**F-56 — A banda do filtro de EMG padrão é 50-1000 Hz, não a do SENIAM.**
+`engine/legacy/LegacyOutputs.java:38-39`. É o padrão da tela de resultados do site antigo, e o
+javadoc o declara. Mas a referência de EMG de superfície citada no próprio código
+(`model/muscle/MotorUnit.java:12`, Hermens et al. 1992 → SENIAM) recomenda **20-500 Hz**.
+Qualquer comparação de amplitude com EMG experimental tem de casar a banda, ou o pico-a-pico não
+bate.
+
+## 15.4 Severidade baixa
+
+**F-15 — Cinco modelos consomem a sequência de aleatoriedade sem usar o resultado.**
+Cada chamada a `Rng.newRandom()` consome um `nextLong()` da sequência da thread
+(`model/random/Rng.java:62-65`), então **qualquer mudança nesses pontos altera todos os sorteios
+seguintes** da simulação.
+
+| Onde | Linha | Por passo |
+| --- | --- | --- |
+| `model/muscle/HillMuscle.java` | 314 | 1 `newRandom()`, descartado |
+| `model/receptor/MileusnicSpindle.java` | 93-98 | 1 `newRandom()` + 1 `nextGaussian()` com σ = 0 |
+| `model/joint/InvertedPendulumAnkle.java` | 107-108 | **4** `newRandom()` + 4 `nextGaussian()` (um por estágio) |
+| `model/joint/PositionTaskAnkle.java` | 114-115 | **4** `newRandom()` + 4 `nextGaussian()`, com σ = 0 |
+| `model/joint/IsometricAnkle.java` | 50 | 1 `Rng.random()` no construtor |
+
+Todos declarados nos javadoc. Com quatro músculos e um pêndulo invertido, são ~9 extrações por
+passo que não afetam nada além da sequência. **Para a campanha:** é exatamente isso que faz a
+reprodutibilidade bit a bit frágil. O teste que importa é o de `setThreads(1)` versus `N`
+(§12.4), e um *golden value* por cenário.
+
+**F-01 — `PulseGate.reset()` não zera o último valor calculado.**
+`model/channel/PulseGate.java:22-26`, declarado no comentário (*"Como no original, o último valor
+calculado não é zerado"*). Zera `v0` e `t0` mas deixa `value`. Como `decaying` e `rising`
+recalculam a partir de `v0` e `t0`, o valor obsoleto nunca entra numa conta: ele só fica visível
+no campo `value` entre o reset e a próxima avaliação da comporta. Sem consequência numérica; é
+estado que mente, e que um teste de `reset()` por inspeção de campos acusaria.
+
+**F-02 — Não há família de cinética contínua para o interneurônio.**
+`SpinalMembrane permits MotoneuronMembrane, InterneuronMembrane` e
+`MotoneuronMembraneModel permits MotoneuronMembrane, ContinuousMotoneuronMembrane`: a segunda
+família existe só para o motoneurônio. Num cenário com `mnModelContinuous`, os motoneurônios têm
+cinética contínua e as células de Renshaw continuam com canais de pulso. É uma assimetria de
+modelo que um relatório de validação precisa declarar.
+
+**F-11 — `MotoneuronMembrane` não chama `reset()` no construtor; `ContinuousMotoneuronMembrane`
+chama.** `model/neuron/MotoneuronMembrane.java:31-33` versus
+`ContinuousMotoneuronMembrane.java:101-104`. Sem efeito prático, porque
+`simulation/neuron/Motoneuron.java:56` chama `reset()` logo depois — mas é o tipo de assimetria
+que morde quando alguém usa a classe fora da fábrica.
+
+**F-53 — Quatro parâmetros da membrana contínua não são configuráveis.**
+`vTraubSoma` (0), `vTraubDend` (35), `lTau` (60 ms) e `rInact` (0,05 /ms) têm *setter* público
+(`ContinuousMotoneuronMembrane.java:595-629`) mas `NeuronFactory.continuousConductances`
+(linhas 275-299) não os atribui, e nenhuma tabela de configuração os expõe. São efetivamente
+constantes. `lTau` e `rInact` controlam as duas escalas de tempo mais relevantes do modelo (o
+platô e a AHP), então vale explicitar isso no relatório.
+
+**F-16 — `Draws.gaussian` é Irwin-Hall com 12 uniformes: suporte limitado a ±6σ.**
+`model/random/Draws.java:13-19`, declarado. A curtose fica abaixo de 3 e não há caudas além de
+6σ. Um teste de normalidade estrito (Kolmogorov-Smirnov, Anderson-Darling) **falha
+legitimamente**. O teste correto é de média, desvio e assimetria, mais a verificação de que o
+suporte é `[m − 6dp, m + 6dp]`.
+
+**F-17 — `randomSpatialDistribution` desiste depois de 11 tentativas e mantém o `y` de fora do
+círculo.** `model/muscle/MotorUnit.java:159-183`: se 11 pares `(y, z)` caírem fora do círculo
+unitário, faz `z = 0` e `break`, deixando `y` com o **último sorteio**, que pode ter `|y| > 1`.
+A unidade sai da secção do músculo. O javadoc diz "fica no diâmetro horizontal", que descreve o
+`z = 0` mas não o `y` fora de faixa. Probabilidade de 11 rejeições: `(1 − π/4)¹¹` ≈ 1,2e-6 por
+unidade — raro, mas com milhares de unidades × 45 cenários × muitos *runs* vai acontecer.
+**Teste:** conferir que `posY² + posZ²` está dentro da secção para todas as unidades.
+
+**F-62 — `linearSpatialDistribution` divide por `muTotal − 1`.**
+`model/muscle/MotorUnit.java:188`. Com um músculo de **uma** unidade motora e distribuição
+linear, `0/0` → NaN, que propaga para `attenuationToSkin` e `timeWidening` e daí para o EMG.
+
+**F-63 — `CriticallyDampedMuscle` tem um transiente de velocidade se a simulação não começar em
+`t = 0` exato.** `model/muscle/CriticallyDampedMuscle.java:82-93`: `lastNormLength` começa em 0 e
+`lengthNorm` é sempre 1; o ramo `t == 0` zera as derivadas e grava `lastNormLength = 1`. Se a
+primeira chamada tiver `t ≠ 0`, a velocidade sai `(1 − 0)/step` = 20 por ms com passo de
+0,05 ms, e a aceleração 400. Isso iria para o fuso, se o fuso fosse atualizado nesse caso (F-48).
+
+**F-64 — Comparações `t == 0` exatas em sete lugares.**
+`Bag1Fiber:43,83`, `Bag2Fiber:58,92`, `ChainFiber:60`, `CriticallyDampedMuscle:83`,
+`RaikovaMuscle:75`, `InvertedPendulumAnkle:55`, `PositionTaskAnkle:60`,
+`MusculotendonSuperClass:85,110,136`. Toda a inicialização de estado desses modelos depende de
+uma igualdade exata de ponto flutuante com zero. Funciona porque o laço começa em 0,0 literal;
+quebra em qualquer cenário que comece noutro instante, ou se o tempo passar a ser acumulado por
+soma.
+
+**F-18 — `AlphaTwitch` tem um fator neutro herdado.**
+`model/muscle/AlphaTwitch.java:35`: `b1 = step * (1 * step / tpeak) * Math.exp(...)`. O `1 *` é
+inócuo; vale a nota só porque é o tipo de resíduo que indica onde a transcrição foi literal.
+
+**F-20 — O músculo de Raikova tem custo quadrático na duração.**
+`model/muscle/RaikovaMuscle.java:133-143`: o laço percorre **todos** os disparos da unidade a
+cada passo. Com 30 s, passo 0,05 ms (600 mil passos) e uma unidade a 20 Hz (600 disparos), são
+~1,8e8 avaliações de `Math.pow` por unidade. Declarado no javadoc. O mesmo padrão está em
+`DistributionMomentsMuscle.java:104-110`. **Para a campanha:** medir o tempo de parede dos
+cenários com Raikova separadamente, e não tratar a lentidão como falha.
+
+**F-22 — `DistributionMomentsMuscle.activation(t, slow)` recalcula e avança tudo.**
+`model/muscle/DistributionMomentsMuscle.java:63-76`, com o javadoc admitindo (*"recalculada:
+avança todas as unidades mais um passo"*). Caso particular de F-52.
+
+**F-23 e F-27 — Constantes de músculo e tendão sem citação de fonte.**
+`model/muscle/HillMuscle.java:25-49`: os 19 valores da força-comprimento e da força-velocidade
+(`B_S = 2.3`, `W_S = 1.12`, `P_S = 1.62`, `MAXIMUM_VELOCITY_S = −7.88`...) não têm artigo
+atribuído. `model/muscle/Tendon.java:47`: a lei `cT·kT·ln(e^((Ln − LrT)/kT) + 1)` também não.
+Todas as outras classes de modelo citam. **Para a campanha:** as formas funcionais são
+reconhecíveis e testáveis analiticamente (pico da força-comprimento em `Ln = 1`, zero da
+força-velocidade em `Vmax`), mas a **validação dos valores** precisa da fonte.
+
+**F-28 — O fator 1,033 do comprimento de referência do tendão.**
+`model/muscle/Tendon.java:32`: `l0T = 1.033 * slackLength`, sem justificativa. Provavelmente a
+deformação de referência de 3,3%; vale registrar.
+
+**F-60 — O distúrbio senoidal do tendão é calculado e multiplicado por zero.**
+`model/muscle/Tendon.java:42-45`: dois senos e três multiplicações por passo, por músculo, para
+depois `+ 0 * disturbance`. Declarado no javadoc. Custo desprezível; é código morto que confunde
+a leitura. O mesmo padrão em `PositionTaskAnkle.java:62,110` (o peso do pé × 0) e em
+`ExtrafusalMuscleSuperClass.calculateLengthNormAux` (F-55).
+
+**F-55 — O triângulo de amplitude zero do sóleo.**
+`simulation/musculotendon/ExtrafusalMuscleSuperClass.java:107-126`: constrói um
+`ModulatingSignal` triangular (`tini = 100`, `tfin = 110`, `amp = 0.00`, `width = 5`) só para o
+SOL, soma ao comprimento normalizado e o resultado é sempre 1. É um objeto novo por chamada.
+Declarado no javadoc de `CriticallyDampedMuscle`.
+
+**F-35 — As constantes do pêndulo invertido não têm fonte citada.**
+`model/joint/InvertedPendulumAnkle.java:19-26`: `BODY_MASS = 60` kg,
+`BODY_HEIGHT = 0.50 × 1.70` = 0,85 m, `BODY_INERTIA = (4/3)mh²`,
+`JOINT_VISCOSITY = 5.81`, `JOINT_ELASTICITY = 0.65·mgh`, `DISTURBANCE_STD = 0.05`. O fator
+0,65 (rigidez passiva como fração da gravitacional) e a viscosidade 5,81 são claramente de
+literatura de controle postural. A classe-irmã `PositionTaskAnkle` cita Maurer e Peterka (2005);
+esta não cita ninguém. **O fator 0,65 é o parâmetro mais importante do modelo** — é ele que torna
+a postura instável e exige controle ativo — e merece proveniência explícita.
+
+**F-34 — O tornozelo isométrico vale 0 antes do primeiro passo, e `step(Actuator[])` avalia o
+sinal em `t = 0`.** `model/joint/IsometricAnkle.java:34,58-60`: `angle = 0` até o primeiro
+`step`, declarado no javadoc (*"antes do primeiro passo o ângulo vale 0, de modo que os músculos
+veem o tornozelo em 0 no instante inicial"*). E a sobrecarga de um argumento chama `step(0,
+actuators)`, de modo que, **com um sinal de ângulo**, o sinal é sempre avaliado em `t = 0`.
+Quem chamar a sobrecarga curta num cenário de ângulo imposto perde a perturbação. Verifiquei que
+`AnkleIsometricModel.atualize` usa a sobrecarga de dois argumentos (linha 314), então o caminho
+real está correto — mas a sobrecarga é uma armadilha.
+
+**F-54 — Ramos de distribuição mortos em duas fábricas.**
+`simulation/factory/NeuronFactory.java:38` e `simulation/util/ElectroCalculation.java:74`:
+`String distribution = ReMoto.gradualGaussian;` é atribuído literalmente e em seguida testado
+contra `ReMoto.uniform` e um `else`. Os dois ramos nunca executam. São ~20 linhas de código
+inalcançável que descrevem distribuições alternativas (uniforme e linear sem ruído) que a
+configuração não pode mais selecionar.
+
+**F-30 — Os dois filtros de EMG têm interfaces incompatíveis.**
+`model/emg/BandPassFilter` é amostra a amostra (tem estado, `next(x)`);
+`model/emg/ThirdOrderBandPass` é offline (estático, recebe o vetor inteiro) e **zera as três
+primeiras amostras de cada estágio** (declarado). Não é possível trocar um pelo outro sem mudar o
+chamador, e o motor usa só o primeiro — o segundo aparece apenas em
+`remoto-web/.../ResultViews.java:486`.
+
+**F-51 — `Hill.instantMotorUnitForce` devolve 0.**
+`simulation/musculotendon/Hill.java:387-390`. O modelo de Hill não decompõe a força por unidade
+motora (a ativação é agregada por tipo, S e F), então a força por unidade não existe. Correto,
+mas é uma assimetria de API: as mesmas chamadas devolvem valores reais em SOCDS e Raikova.
+
+**F-69 — `AfferentFiber` tem dois métodos idênticos.**
+`model/neuron/AfferentFiber.java:147-150` (`axonSpikeTimes()`) e 293-296 (`axonSpikes()`): corpos
+iguais, `Arrays.copyOf(axonSpikes, axonSpikeCount)`. Só `axonSpikeTimes` é usado
+(`SensoryFiber.java:80`).
+
+**F-40 — `ChainFiber` redeclara cinco constantes da classe-base e sombreia `time_step`.**
+`model/receptor/ChainFiber.java:13` declara `protected double time_step`, que **sombreia** o
+campo de mesmo nome em `IntrafusalFiber.java:32`. Ambos recebem `step/1000` (o pai no construtor
+da base, o filho na linha 39), então o valor coincide — mas qualquer mudança num deles deixa o
+outro para trás. E `beta_2_chain`, `GAMMA_2_chain`, `X_chain`, `L_secondary_chain` e `freq_chain`
+são redeclaradas com os mesmos valores já presentes na base.
+
+**F-38 — O `else` do construtor de `Bag2Fiber` só zera um dos dois ganhos.**
+`model/receptor/Bag2Fiber.java:40-45`: no ramo de músculo desconhecido, `G_primary...= 0` mas
+`G_secondary...` não é tocado. Como o campo já é 0 por omissão, não há efeito; a assimetria é com
+o ramo de cima, que atribui os dois.
+
+**F-65 — A senoide perde 7 depois de 120 s.**
+`model/signal/Modulation.java:217-223`: `if (time > 120000) ret = ret − 7;`. Constante mágica,
+em tempo **absoluto** (não relativo a `tini`), declarada no javadoc da classe. Qualquer cenário
+com mais de 2 minutos e sinal senoidal sofre um degrau de −7 nas unidades do sinal.
+
+**F-66 — A forma "custom" ignora `amp`.**
+`model/signal/Modulation.java:183`: amplitude fixa 12,35 nos primeiros 10 s depois de `tini` e
+13,75 depois. Declarada no javadoc. Dois números mágicos num sinal cuja amplitude o usuário pensa
+estar configurando.
+
+**F-09 — Casos de borda da frequência do estímulo do nervo.**
+`model/stimulus/NerveStimulation.java:63-70,96-100`: `freq` abaixo de `1000/T_MAX` (1e-3 Hz)
+vira 0 e acima de `1000/step` é limitada; com `freq = 0` e sinal nulo, `período = 1000/0 =
+Infinity` e o trem nunca dispara. Com sinal **negativo** maior que `freq`, o período fica negativo
+e `|t − start| >= período` é sempre verdadeiro, de modo que `start` avança a cada passo. Além
+disso, o trem principal usa `start` incremental e `<= pulseWidth` **sem tolerância**, enquanto o
+pareado usa aritmética de ciclos **com** `T_TOLERANCE` (linha 123) — assimetria declarada no
+javadoc.
+
+**F-14 — O disparo inicial dos tratos é gravado mas não entregue.**
+`model/tract/TractSpikeGenerator.java:119-141`: o `reset()` anota um disparo em 0 (ou em
+`signal.tini()`) no trem do terminal **em todas as distribuições**, inclusive Poisson e gama, mas
+esse disparo não passa por `output.fire()` e portanto não chega às sinapses. Declarado no javadoc.
+**Consequência para os testes:** a contagem de disparos no trem gravado é **1 maior** que a
+contagem de disparos efetivos. Um teste de taxa média que conte o trem gravado terá um viés de
+`1/duração`.
+
+**F-59 — `MileusnicSpindle` cria um gerador por passo para um distúrbio de desvio zero.**
+`model/receptor/MileusnicSpindle.java:92-98`. Caso particular de F-15, listado à parte porque o
+comentário o explica como um experimento de ressonância estocástica deixado desligado (*"distúrbio
+de frequência para testar ressonância estocástica, desligado (desvio 0)"*).
+
+**F-68 — Em `SynapsesFactory`, `gType.setDynamics(...)` muta o objeto de configuração.**
+`simulation/factory/SynapsesFactory.java:512-513`: a cada sinapse criada, o `ConductanceVO` do
+tipo recebe a dinâmica. Como a dinâmica é lida pela mesma chave, o valor é sempre o mesmo e não
+há efeito observável — mas é um objeto de configuração compartilhado sendo escrito durante a
+construção da rede. Os dois `????` no comentário (linhas 509, 511) sugerem que o autor original
+também tinha dúvidas aqui.
+
+## 15.5 Os seis testes de maior retorno
+
+Se a campanha tiver de priorizar, estes seis cobrem a maior parte da superfície de risco deste
+módulo, e cinco deles não precisam de referência externa:
+
+1. **Capturar `stdout` e falhar o teste em qualquer mensagem de `catch`** (F-57, F-58, F-47).
+   Uma linha de infraestrutura; transforma seis buracos silenciosos em falhas visíveis.
+2. **`setThreads(1)` versus `setThreads(N)`, saída idêntica bit a bit**, nos 45 cenários
+   (F-15, §12.4). Fixa toda a superfície de aleatoriedade de uma vez.
+3. **Cenário isométrico com o músculo SOCDS: conferir se o fuso avança** (F-48). Se `IaFiringRate`
+   for zero, a combinação mais usada do simulador roda sem retroação proprioceptiva.
+4. **Joelho a 90° nos três modelos de articulação, medindo a força do MG** (F-31). Expõe a
+   diferença de unidade e os dois ramos de coeficientes que nunca se usam.
+5. **Coerência `r(θ) = −dL/dθ` na geometria musculotendínea** (§9.1, item 3). Teste numérico
+   puro que valida 60 coeficientes de uma vez e detecta se os dois ajustes vieram do mesmo
+   conjunto de dados de Arnold et al. (2010).
+6. **Curva f–I com as duas famílias de membrana, lado a lado** (§2.5, §2.6, F-05, F-10). É o
+   único teste que pode validar a membrana de cinética contínua, porque ela não tem fonte citada
+   contra a qual conferir parâmetros — e o próprio comentário da fábrica diz que é essa comparação
+   que está pendente.
