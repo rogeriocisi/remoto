@@ -45,8 +45,8 @@ public class AnkleIsometricModel extends AnkleSuperClass
 
 	public void atualize(double t){
 		// The samples are taken before the update: they hold the values of the previous step
-		samplerJointAngleStore.sample(jointAngleStore, "", t, angle*(180/Math.PI));
-		samplerJointTorqueStore.sample(jointTorqueStore, "", t, torque);
+		samplerJointAngleStore.sample(jointAngleStore, t, angle*(180/Math.PI));
+		samplerJointTorqueStore.sample(jointTorqueStore, t, torque);
 
 		ankle.step(t, actuators);
 

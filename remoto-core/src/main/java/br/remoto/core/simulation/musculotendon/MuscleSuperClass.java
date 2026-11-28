@@ -9,6 +9,7 @@ import br.remoto.core.simulation.MotorUnit;
 import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.util.Sample;
 import br.remoto.core.simulation.util.Signal;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 public abstract class MuscleSuperClass implements Serializable
 {
@@ -29,21 +30,21 @@ public abstract class MuscleSuperClass implements Serializable
 	protected Sample samplerMotorUnitForceStore;
 	protected Sample samplerPennationAngleStore;
 
-	protected ArrayList lengthStore = new ArrayList();
+	protected DoubleSeries lengthStore = new DoubleSeries();
 
-	protected ArrayList lengthNormStore = new ArrayList();
-	protected ArrayList velocityStore = new ArrayList();
-	protected ArrayList accelerationStore = new ArrayList();
+	protected DoubleSeries lengthNormStore = new DoubleSeries();
+	protected DoubleSeries velocityStore = new DoubleSeries();
+	protected DoubleSeries accelerationStore = new DoubleSeries();
 
-	protected ArrayList muscleActivationStore = new ArrayList();
+	protected DoubleSeries muscleActivationStore = new DoubleSeries();
 
-	protected ArrayList forceParallelElementStore = new ArrayList();
-	protected ArrayList forceViscousElementStore = new ArrayList();
+	protected DoubleSeries forceParallelElementStore = new DoubleSeries();
+	protected DoubleSeries forceViscousElementStore = new DoubleSeries();
 
-	protected ArrayList forceActiveSTypeStore = new ArrayList();
-	protected ArrayList forceActiveFTypeStore = new ArrayList();
+	protected DoubleSeries forceActiveSTypeStore = new DoubleSeries();
+	protected DoubleSeries forceActiveFTypeStore = new DoubleSeries();
 
-	protected ArrayList pennationAngleStore = new ArrayList();
+	protected DoubleSeries pennationAngleStore = new DoubleSeries();
 
 	protected double activationNorm;
 
@@ -110,27 +111,27 @@ public abstract class MuscleSuperClass implements Serializable
 		this.lengthNorm = lengthNorm;
 	}
 
-	public ArrayList getLengthNormStore() {
+	public DoubleSeries getLengthNormStore() {
 		return lengthNormStore;
 	}
 
-	public void setLengthNormStore(ArrayList lengthNormStore) {
+	public void setLengthNormStore(DoubleSeries lengthNormStore) {
 		this.lengthNormStore = lengthNormStore;
 	}
 
-	public ArrayList getVelocityStore() {
+	public DoubleSeries getVelocityStore() {
 		return velocityStore;
 	}
 
-	public void setVelocityStore(ArrayList velocityStore) {
+	public void setVelocityStore(DoubleSeries velocityStore) {
 		this.velocityStore = velocityStore;
 	}
 
-	public ArrayList getAccelerationStore() {
+	public DoubleSeries getAccelerationStore() {
 		return accelerationStore;
 	}
 
-	public void setAccelerationStore(ArrayList accelerationStore) {
+	public void setAccelerationStore(DoubleSeries accelerationStore) {
 		this.accelerationStore = accelerationStore;
 	}
 
@@ -148,7 +149,7 @@ public abstract class MuscleSuperClass implements Serializable
 	}
 
 	protected void atualizeActivation(double t){
-		samplerMuscleActivationStore.sample(muscleActivationStore, "", t, activationNorm);
+		samplerMuscleActivationStore.sample(muscleActivationStore, t, activationNorm);
 	}
 
 	public double getStretchVelocity() {
@@ -175,43 +176,43 @@ public abstract class MuscleSuperClass implements Serializable
 		this.activationNorm = activationNorm;
 	}
 
-	public ArrayList getMuscleActivationStore() {
+	public DoubleSeries getMuscleActivationStore() {
 		return muscleActivationStore;
 	}
 
-	public void setMuscleActivationStore(ArrayList muscleActivationStore) {
+	public void setMuscleActivationStore(DoubleSeries muscleActivationStore) {
 		this.muscleActivationStore = muscleActivationStore;
 	}
 
-	public ArrayList getForceParallelElementStore() {
+	public DoubleSeries getForceParallelElementStore() {
 		return forceParallelElementStore;
 	}
 
-	public void setForceParallelElementStore(ArrayList forceParallelElementStore) {
+	public void setForceParallelElementStore(DoubleSeries forceParallelElementStore) {
 		this.forceParallelElementStore = forceParallelElementStore;
 	}
 
-	public ArrayList getForceViscousElementStore() {
+	public DoubleSeries getForceViscousElementStore() {
 		return forceViscousElementStore;
 	}
 
-	public void setForceViscousElementStore(ArrayList forceViscousElementStore) {
+	public void setForceViscousElementStore(DoubleSeries forceViscousElementStore) {
 		this.forceViscousElementStore = forceViscousElementStore;
 	}
 
-	public ArrayList getForceActiveSTypeStore() {
+	public DoubleSeries getForceActiveSTypeStore() {
 		return forceActiveSTypeStore;
 	}
 
-	public void setForceActiveSTypeStore(ArrayList forceActiveSTypeStore) {
+	public void setForceActiveSTypeStore(DoubleSeries forceActiveSTypeStore) {
 		this.forceActiveSTypeStore = forceActiveSTypeStore;
 	}
 
-	public ArrayList getForceActiveFTypeStore() {
+	public DoubleSeries getForceActiveFTypeStore() {
 		return forceActiveFTypeStore;
 	}
 
-	public void setForceActiveFTypeStore(ArrayList forceActiveFTypeStore) {
+	public void setForceActiveFTypeStore(DoubleSeries forceActiveFTypeStore) {
 		this.forceActiveFTypeStore = forceActiveFTypeStore;
 	}
 
@@ -247,19 +248,19 @@ public abstract class MuscleSuperClass implements Serializable
 		this.shorteningAcceleration = shorteningAcceleration;
 	}
 
-	public ArrayList getLengthStore() {
+	public DoubleSeries getLengthStore() {
 		return lengthStore;
 	}
 
-	public void setLengthStore(ArrayList lengthStore) {
+	public void setLengthStore(DoubleSeries lengthStore) {
 		this.lengthStore = lengthStore;
 	}
 
-	public ArrayList getPennationAngleStore() {
+	public DoubleSeries getPennationAngleStore() {
 		return pennationAngleStore;
 	}
 
-	public void setPennationAngleStore(ArrayList pennationAngleStore) {
+	public void setPennationAngleStore(DoubleSeries pennationAngleStore) {
 		this.pennationAngleStore = pennationAngleStore;
 	}
 }

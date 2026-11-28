@@ -7,6 +7,7 @@ import br.remoto.core.simulation.neuron.Miscellaneous;
 import br.remoto.core.simulation.setup.JointVO;
 import br.remoto.core.simulation.util.Sample;
 import br.remoto.core.simulation.util.Signal;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 public abstract class AnkleSuperClass
 {
@@ -29,15 +30,15 @@ public abstract class AnkleSuperClass
 	protected Sample samplerJointCenterPressureStore;
 	protected Sample samplerJointDisturbanceStore;
 
-	protected ArrayList jointAngleStore = new ArrayList();
-	protected ArrayList jointVelocityStore = new ArrayList();
-	protected ArrayList jointMuscleTorqueStore = new ArrayList();
-	protected ArrayList jointTorqueStore = new ArrayList();
-	protected ArrayList jointGravTorqueStore = new ArrayList();
-	protected ArrayList jointPassiveTorqueStore = new ArrayList();
-	protected ArrayList jointCenterMassStore = new ArrayList();
-	protected ArrayList jointCenterPressureStore = new ArrayList();
-	protected ArrayList jointDisturbanceStore = new ArrayList();
+	protected DoubleSeries jointAngleStore = new DoubleSeries();
+	protected DoubleSeries jointVelocityStore = new DoubleSeries();
+	protected DoubleSeries jointMuscleTorqueStore = new DoubleSeries();
+	protected DoubleSeries jointTorqueStore = new DoubleSeries();
+	protected DoubleSeries jointGravTorqueStore = new DoubleSeries();
+	protected DoubleSeries jointPassiveTorqueStore = new DoubleSeries();
+	protected DoubleSeries jointCenterMassStore = new DoubleSeries();
+	protected DoubleSeries jointCenterPressureStore = new DoubleSeries();
+	protected DoubleSeries jointDisturbanceStore = new DoubleSeries();
 
 	protected double angle;
 	protected double refAngle = 0 * (Math.PI/180);
@@ -118,75 +119,75 @@ public abstract class AnkleSuperClass
 		this.passiveTorque = passiveTorque;
 	}
 
-	public ArrayList getJointAngleStore() {
+	public DoubleSeries getJointAngleStore() {
 		return jointAngleStore;
 	}
 
-	public void setJointAngleStore(ArrayList jointAngleStore) {
+	public void setJointAngleStore(DoubleSeries jointAngleStore) {
 		this.jointAngleStore = jointAngleStore;
 	}
 
-	public ArrayList getJointVelocityStore() {
+	public DoubleSeries getJointVelocityStore() {
 		return jointVelocityStore;
 	}
 
-	public void setJointVelocityStore(ArrayList jointVelocityStore) {
+	public void setJointVelocityStore(DoubleSeries jointVelocityStore) {
 		this.jointVelocityStore = jointVelocityStore;
 	}
 
-	public ArrayList getJointCenterMassStore() {
+	public DoubleSeries getJointCenterMassStore() {
 		return jointCenterMassStore;
 	}
 
-	public void setJointCenterMassStore(ArrayList jointCenterMassStore) {
+	public void setJointCenterMassStore(DoubleSeries jointCenterMassStore) {
 		this.jointCenterMassStore = jointCenterMassStore;
 	}
 
-	public ArrayList getJointCenterPressureStore() {
+	public DoubleSeries getJointCenterPressureStore() {
 		return jointCenterPressureStore;
 	}
 
-	public void setJointCenterPressureStore(ArrayList jointCenterPressureStore) {
+	public void setJointCenterPressureStore(DoubleSeries jointCenterPressureStore) {
 		this.jointCenterPressureStore = jointCenterPressureStore;
 	}
 
-	public ArrayList getJointTorqueStore() {
+	public DoubleSeries getJointTorqueStore() {
 		return jointTorqueStore;
 	}
 
-	public void setJointDisturbanceStore(ArrayList jointDisturbanceStore) {
+	public void setJointDisturbanceStore(DoubleSeries jointDisturbanceStore) {
 		this.jointDisturbanceStore = jointDisturbanceStore;
 	}
 
-	public ArrayList getJointDisturbanceStore() {
+	public DoubleSeries getJointDisturbanceStore() {
 		return jointDisturbanceStore;
 	}
 
-	public void setJointTorqueStore(ArrayList jointTorqueStore) {
+	public void setJointTorqueStore(DoubleSeries jointTorqueStore) {
 		this.jointTorqueStore = jointTorqueStore;
 	}
 
-	public ArrayList getJointMuscleTorqueStore() {
+	public DoubleSeries getJointMuscleTorqueStore() {
 		return jointMuscleTorqueStore;
 	}
 
-	public void setJointMuscleTorqueStore(ArrayList jointMuscleTorqueStore) {
+	public void setJointMuscleTorqueStore(DoubleSeries jointMuscleTorqueStore) {
 		this.jointMuscleTorqueStore = jointMuscleTorqueStore;
 	}
 
-	public ArrayList getJointGravTorqueStore() {
+	public DoubleSeries getJointGravTorqueStore() {
 		return jointGravTorqueStore;
 	}
 
-	public void setJointGravTorqueStore(ArrayList jointGravTorqueStore) {
+	public void setJointGravTorqueStore(DoubleSeries jointGravTorqueStore) {
 		this.jointGravTorqueStore = jointGravTorqueStore;
 	}
 
-	public ArrayList getJointPassiveTorqueStore() {
+	public DoubleSeries getJointPassiveTorqueStore() {
 		return jointPassiveTorqueStore;
 	}
 
-	public void setJointPassiveTorqueStore(ArrayList jointPassiveTorqueStore) {
+	public void setJointPassiveTorqueStore(DoubleSeries jointPassiveTorqueStore) {
 		this.jointPassiveTorqueStore = jointPassiveTorqueStore;
 	}
 

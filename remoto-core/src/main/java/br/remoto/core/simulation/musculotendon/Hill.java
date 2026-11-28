@@ -65,16 +65,16 @@ public class Hill extends ExtrafusalMuscleSuperClass
 	public void atualize(double t)
 	{
 		// The samples are taken before the update: they hold the values of the previous step
-		samplerLengthStore.sample(lengthStore, "", t, muscle.length());
-		samplerLengthNormStore.sample(lengthNormStore, "", t, muscle.lengthNorm());
-		samplerVelocityStore.sample(velocityStore, "", t, muscle.velocity());
-		samplerAccelerationStore.sample(accelerationStore, "", t, muscle.acceleration());
-		samplerForceParallelElementStore.sample(forceParallelElementStore, "", t, muscle.forceParallelElement());
-		samplerForceViscousElementStore.sample(forceViscousElementStore, "", t, muscle.forceViscousElement());
-		samplerForceActiveSTypeStore.sample(forceActiveSTypeStore, "", t, muscle.forceActiveSType());
-		samplerForceActiveFTypeStore.sample(forceActiveFTypeStore, "", t, muscle.forceActiveFType());
-		samplerPennationAngleStore.sample(pennationAngleStore, "", t, muscle.pennationAngle() * 180 / Math.PI);
-		samplerForceStore.sample(forceStore, "", t, muscle.force());
+		samplerLengthStore.sample(lengthStore, t, muscle.length());
+		samplerLengthNormStore.sample(lengthNormStore, t, muscle.lengthNorm());
+		samplerVelocityStore.sample(velocityStore, t, muscle.velocity());
+		samplerAccelerationStore.sample(accelerationStore, t, muscle.acceleration());
+		samplerForceParallelElementStore.sample(forceParallelElementStore, t, muscle.forceParallelElement());
+		samplerForceViscousElementStore.sample(forceViscousElementStore, t, muscle.forceViscousElement());
+		samplerForceActiveSTypeStore.sample(forceActiveSTypeStore, t, muscle.forceActiveSType());
+		samplerForceActiveFTypeStore.sample(forceActiveFTypeStore, t, muscle.forceActiveFType());
+		samplerPennationAngleStore.sample(pennationAngleStore, t, muscle.pennationAngle() * 180 / Math.PI);
+		samplerForceStore.sample(forceStore, t, muscle.force());
 
 		muscle.step(t);
 

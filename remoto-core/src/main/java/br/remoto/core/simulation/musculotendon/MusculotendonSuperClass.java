@@ -18,14 +18,15 @@ import br.remoto.core.simulation.proprioceptor.MuscleSpindle;
 import br.remoto.core.simulation.util.Conversion;
 import br.remoto.core.simulation.util.Sample;
 import br.remoto.core.simulation.util.Signal;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 public class MusculotendonSuperClass
 {
 	protected Sample sampler1;
 	protected Sample sampler2;
 
-	protected ArrayList lengthStore = new ArrayList();
-	protected ArrayList momentArmStore = new ArrayList();
+	protected DoubleSeries lengthStore = new DoubleSeries();
+	protected DoubleSeries momentArmStore = new DoubleSeries();
 
 	ExtrafusalMuscleSuperClass extrafusalMuscle;
 	NonInnervatedTendon tendon;
@@ -102,8 +103,8 @@ public class MusculotendonSuperClass
 				gto.atualize(t, force);
 			}
 
-			sampler1.sample(lengthStore, "", t, length);
-			sampler2.sample(momentArmStore, "", t, momentArm);
+			sampler1.sample(lengthStore, t, length);
+			sampler2.sample(momentArmStore, t, momentArm);
 		}
 		else if(JointModel.equals("pendulum")){
 			calculateLength(cdMuscle, associatedJoint2.getAngle()*(180/Math.PI), associatedJoint2.getKneeAngle());
@@ -128,8 +129,8 @@ public class MusculotendonSuperClass
 
 			spindle.atualize(t, extrafusalMuscle.getLengthNorm(), extrafusalMuscle.getStretchVelocity(), extrafusalMuscle.getStretchAcceleration() );
 
-			sampler1.sample(lengthStore, "", t, length);
-			sampler2.sample(momentArmStore, "", t, momentArm);
+			sampler1.sample(lengthStore, t, length);
+			sampler2.sample(momentArmStore, t, momentArm);
 		}
 		else if(JointModel.equals("position")){
 			calculateLength(cdMuscle, associatedJoint3.getAngle()*(180/Math.PI), associatedJoint3.getKneeAngle());
@@ -154,8 +155,8 @@ public class MusculotendonSuperClass
 
 			spindle.atualize(t, extrafusalMuscle.getLengthNorm(), extrafusalMuscle.getStretchVelocity(), extrafusalMuscle.getStretchAcceleration() );
 
-			sampler1.sample(lengthStore, "", t, length);
-			sampler2.sample(momentArmStore, "", t, momentArm);
+			sampler1.sample(lengthStore, t, length);
+			sampler2.sample(momentArmStore, t, momentArm);
 		}
 	}
 
@@ -266,19 +267,19 @@ public class MusculotendonSuperClass
 		this.associatedJoint3 = associatedJoint3;
 	}
 
-	public ArrayList getLengthStore() {
+	public DoubleSeries getLengthStore() {
 		return lengthStore;
 	}
 
-	public void setLengthStore(ArrayList lengthStore) {
+	public void setLengthStore(DoubleSeries lengthStore) {
 		this.lengthStore = lengthStore;
 	}
 
-	public ArrayList getMomentArmStore() {
+	public DoubleSeries getMomentArmStore() {
 		return momentArmStore;
 	}
 
-	public void setMomentArmStore(ArrayList momentArmStore) {
+	public void setMomentArmStore(DoubleSeries momentArmStore) {
 		this.momentArmStore = momentArmStore;
 	}
 }

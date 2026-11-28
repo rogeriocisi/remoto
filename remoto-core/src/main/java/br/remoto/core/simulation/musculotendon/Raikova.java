@@ -69,10 +69,10 @@ public class Raikova extends ExtrafusalMuscleSuperClass
 		stretchAcceleration = muscle.stretchAcceleration();
 		force = muscle.force();
 
-		samplerLengthNormStore.sample(lengthNormStore, "", t, lengthNorm);
-		samplerVelocityStore.sample(velocityStore, "", t, stretchVelocity);
-		samplerAccelerationStore.sample(accelerationStore, "", t, stretchAcceleration);
-		samplerForceStore.sample(forceStore, "", t, force);
+		samplerLengthNormStore.sample(lengthNormStore, t, lengthNorm);
+		samplerVelocityStore.sample(velocityStore, t, stretchVelocity);
+		samplerAccelerationStore.sample(accelerationStore, t, stretchAcceleration);
+		samplerForceStore.sample(forceStore, t, force);
 	}
 
 	@Override

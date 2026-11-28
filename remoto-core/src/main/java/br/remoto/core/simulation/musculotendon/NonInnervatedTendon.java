@@ -6,6 +6,7 @@ import br.remoto.core.model.muscle.Tendon;
 import br.remoto.core.simulation.setup.Configuration;
 import br.remoto.core.simulation.musculotendon.TendonSuperClass;
 import br.remoto.core.simulation.util.Sample;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 /**
  * The tendon of the original model: the samplers of length and force. The tendon is
@@ -13,8 +14,8 @@ import br.remoto.core.simulation.util.Sample;
  */
 public class NonInnervatedTendon extends TendonSuperClass
 {
-	protected ArrayList lengthStore = new ArrayList();
-	protected ArrayList forceStore = new ArrayList();
+	protected DoubleSeries lengthStore = new DoubleSeries();
+	protected DoubleSeries forceStore = new DoubleSeries();
 
 	private final Tendon tendon;
 	private final double slackLength;
@@ -34,8 +35,8 @@ public class NonInnervatedTendon extends TendonSuperClass
 	{
 		tendon.step(t, musculotendonLength, muscleLength, pennationAngle);
 
-		sampler1.sample(lengthStore, "", t, tendon.length());
-		sampler2.sample(forceStore, "", t, tendon.force());
+		sampler1.sample(lengthStore, t, tendon.length());
+		sampler2.sample(forceStore, t, tendon.force());
 	}
 
 	public double getSlackLengthNorm() {
@@ -50,10 +51,10 @@ public class NonInnervatedTendon extends TendonSuperClass
 	public double getLengthNorm() {
 		return tendon.lengthNorm();
 	}
-	public ArrayList getLengthStore() {
+	public DoubleSeries getLengthStore() {
 		return lengthStore;
 	}
-	public ArrayList getForceStore() {
+	public DoubleSeries getForceStore() {
 		return forceStore;
 	}
 }

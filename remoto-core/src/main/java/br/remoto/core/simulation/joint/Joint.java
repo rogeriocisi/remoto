@@ -14,6 +14,7 @@ import br.remoto.core.simulation.joint.PositionTaskModel;
 import br.remoto.core.simulation.musculotendon.MusculotendonSuperClass;
 import br.remoto.core.simulation.musculotendon.MuscleSuperClass;
 import br.remoto.core.simulation.musculotendon.ExtrafusalMuscleSuperClass;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 public class Joint
 {
@@ -65,7 +66,7 @@ public class Joint
 		this.ankleModel3 = ankleModel3;
 	}
 
-	public ArrayList getJointAngleStore() {
+	public DoubleSeries getJointAngleStore() {
 		if(JointModel.equals("pendulum"))
 			return ankleModel2.getJointAngleStore();
 		else if(JointModel.equals("position"))
@@ -74,22 +75,22 @@ public class Joint
 			return ankleModel.getJointAngleStore();
 	}
 
-	public ArrayList getJointVelocityStore() {
+	public DoubleSeries getJointVelocityStore() {
 		if(JointModel.equals("position"))
 			return ankleModel3.getJointVelocityStore();
 		else
 			return ankleModel2.getJointVelocityStore();
 	}
 
-	public ArrayList getJointCenterMassStore(){
+	public DoubleSeries getJointCenterMassStore(){
 		return ankleModel2.getJointCenterMassStore();
 	}
 
-	public ArrayList getJointCenterPressureStore(){
+	public DoubleSeries getJointCenterPressureStore(){
 		return ankleModel2.getJointCenterPressureStore();
 	}
 
-	public ArrayList getJointTorqueStore(){
+	public DoubleSeries getJointTorqueStore(){
 		if(JointModel.equals("pendulum"))
 			return ankleModel2.getJointTorqueStore();
 		else if(JointModel.equals("position"))
@@ -98,28 +99,28 @@ public class Joint
 			return ankleModel.getJointTorqueStore();
 	}
 
-	public ArrayList getJointMuscleTorqueStore(){
+	public DoubleSeries getJointMuscleTorqueStore(){
 		if(JointModel.equals("position"))
 			return ankleModel3.getJointMuscleTorqueStore();
 		else
 			return ankleModel2.getJointMuscleTorqueStore();
 	}
 
-	public ArrayList getJointGravTorqueStore(){
+	public DoubleSeries getJointGravTorqueStore(){
 		if(JointModel.equals("position"))
 			return ankleModel3.getJointGravTorqueStore();
 		else
 			return ankleModel2.getJointGravTorqueStore();
 	}
 
-	public ArrayList getJointPassiveTorqueStore(){
+	public DoubleSeries getJointPassiveTorqueStore(){
 		if(JointModel.equals("position"))
 			return ankleModel3.getJointPassiveTorqueStore();
 		else
 			return ankleModel2.getJointPassiveTorqueStore();
 	}
 
-	public ArrayList getJointDisturbanceStore(){
+	public DoubleSeries getJointDisturbanceStore(){
 		if(JointModel.equals("position"))
 			return ankleModel3.getJointDisturbanceStore();
 		else

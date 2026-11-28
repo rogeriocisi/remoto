@@ -26,4 +26,18 @@ public class Sample
 
 		it++;
 	}
+
+	/**
+	 * Mesma decimação, para uma série de um observável só: guarda em vetores primitivos,
+	 * sem criar um objeto por amostra. Os instantes e os valores são idênticos aos da
+	 * variante acima.
+	 */
+	public void sample(DoubleSeries store, double t, double y){
+		if(it == 0 || it == order){
+			store.add(t, y);
+			it = 0;
+		}
+
+		it++;
+	}
 }

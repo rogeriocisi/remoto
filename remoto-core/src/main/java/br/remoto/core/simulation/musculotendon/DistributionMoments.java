@@ -56,7 +56,7 @@ public class DistributionMoments extends ExtrafusalMuscleSuperClass
 		activationNorm = muscle.activationNorm();
 		atualizeActivation(t);
 
-		samplerForceStore.sample(forceStore, "", t, force);
+		samplerForceStore.sample(forceStore, t, force);
 	}
 
 	@Override

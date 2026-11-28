@@ -11,13 +11,14 @@ import br.remoto.core.simulation.neuron.Neuron;
 import br.remoto.core.simulation.neuron.SensoryFiber;
 import br.remoto.core.simulation.util.Sample;
 import br.remoto.core.simulation.util.Signal;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 public class GolgiTendonOrgan {
 	private String cdNucleus;
 
 	protected Sample samplerIbFiringRate;
 
-	protected ArrayList IbFiringRateStore = new ArrayList();
+	protected DoubleSeries IbFiringRateStore = new DoubleSeries();
 
 	protected CragoTendonOrgan lumpedGTO;
 
@@ -66,14 +67,14 @@ public class GolgiTendonOrgan {
 		lumpedGTO.step(force);
 		IbFiringRate = lumpedGTO.ibFiringRate();
 
-		samplerIbFiringRate.sample(IbFiringRateStore, "", t, IbFiringRate);
+		samplerIbFiringRate.sample(IbFiringRateStore, t, IbFiringRate);
 	}
 
-	public ArrayList getIbFiringRateStore() {
+	public DoubleSeries getIbFiringRateStore() {
 		return IbFiringRateStore;
 	}
 
-	public void setIbFiringRateStore(ArrayList ibFiringRateStore) {
+	public void setIbFiringRateStore(DoubleSeries ibFiringRateStore) {
 		IbFiringRateStore = ibFiringRateStore;
 	}
 

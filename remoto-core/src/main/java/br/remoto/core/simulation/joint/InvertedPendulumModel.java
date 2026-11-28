@@ -55,15 +55,15 @@ public class InvertedPendulumModel extends AnkleSuperClass
 		ankle.prepare(t);
 
 		// The samples are taken before the update: they hold the values of the previous step
-		samplerJointAngleStore.sample(jointAngleStore, "", t, ankle.angle() * (180/Math.PI));
-		samplerJointVelocityStore.sample(jointVelocityStore,"", t, ankle.velocity() * (180/Math.PI));
-		samplerJointTorqueStore.sample(jointTorqueStore, "", t, ankle.jointTorque());
-		samplerJointMuscleTorqueStore.sample(jointMuscleTorqueStore, "", t, ankle.muscleTorque());
-		samplerJointGravTorqueStore.sample(jointGravTorqueStore, "", t, ankle.gravitationalTorque());
-		samplerJointPassiveTorqueStore.sample(jointPassiveTorqueStore, "", t, ankle.passiveTorque());
-		samplerJointCenterMassStore.sample(jointCenterMassStore, "", t, ankle.centerMass() * 1000);
-		samplerJointCenterPressureStore.sample(jointCenterPressureStore, "", t, ankle.centerPressure() * 1000);
-		samplerJointDisturbanceStore.sample(jointDisturbanceStore, "", t, ankle.disturbance());
+		samplerJointAngleStore.sample(jointAngleStore, t, ankle.angle() * (180/Math.PI));
+		samplerJointVelocityStore.sample(jointVelocityStore, t, ankle.velocity() * (180/Math.PI));
+		samplerJointTorqueStore.sample(jointTorqueStore, t, ankle.jointTorque());
+		samplerJointMuscleTorqueStore.sample(jointMuscleTorqueStore, t, ankle.muscleTorque());
+		samplerJointGravTorqueStore.sample(jointGravTorqueStore, t, ankle.gravitationalTorque());
+		samplerJointPassiveTorqueStore.sample(jointPassiveTorqueStore, t, ankle.passiveTorque());
+		samplerJointCenterMassStore.sample(jointCenterMassStore, t, ankle.centerMass() * 1000);
+		samplerJointCenterPressureStore.sample(jointCenterPressureStore, t, ankle.centerPressure() * 1000);
+		samplerJointDisturbanceStore.sample(jointDisturbanceStore, t, ankle.disturbance());
 
 		ankle.advance(t, actuators);
 

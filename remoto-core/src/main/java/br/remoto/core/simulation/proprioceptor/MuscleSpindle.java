@@ -10,6 +10,7 @@ import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.neuron.Neuron;
 import br.remoto.core.simulation.neuron.SensoryFiber;
 import br.remoto.core.simulation.util.Sample;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 /**
  * The muscle spindle of a nucleus in the original model: the afferent fibers it drives and the
@@ -29,8 +30,8 @@ public class MuscleSpindle {
 	protected double IaFiringRate;
 	protected double IIFiringRate;
 
-	protected ArrayList IaFiringRateStore = new ArrayList();
-	protected ArrayList IIFiringRateStore = new ArrayList();
+	protected DoubleSeries IaFiringRateStore = new DoubleSeries();
+	protected DoubleSeries IIFiringRateStore = new DoubleSeries();
 
 	private MileusnicSpindle mileusnic;
 
@@ -100,8 +101,8 @@ public class MuscleSpindle {
 			IIFiringRate = mileusnic.iiFiringRate();
 		}
 
-		samplerIaFiringRateStore.sample(IaFiringRateStore, "", t, IaFiringRate);
-		samplerIIFiringRateStore.sample(IIFiringRateStore, "", t, IIFiringRate);
+		samplerIaFiringRateStore.sample(IaFiringRateStore, t, IaFiringRate);
+		samplerIIFiringRateStore.sample(IIFiringRateStore, t, IIFiringRate);
 	}
 
 	/** The constant rate plus the signal, never negative (Hz). */
@@ -119,10 +120,10 @@ public class MuscleSpindle {
 	public void setCdNucleus(String cdNucleus) {
 		this.cdNucleus = cdNucleus;
 	}
-	public ArrayList getIaFiringRateStore() {
+	public DoubleSeries getIaFiringRateStore() {
 		return IaFiringRateStore;
 	}
-	public ArrayList getIIFiringRateStore() {
+	public DoubleSeries getIIFiringRateStore() {
 		return IIFiringRateStore;
 	}
 	public double getIaFiringRate() {

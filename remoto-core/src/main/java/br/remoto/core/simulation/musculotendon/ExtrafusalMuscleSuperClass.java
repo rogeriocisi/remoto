@@ -14,13 +14,14 @@ import br.remoto.core.simulation.util.Signal;
 import br.remoto.core.simulation.musculotendon.MusculotendonSuperClass;
 import br.remoto.core.simulation.musculotendon.MuscleSuperClass;
 import br.remoto.core.simulation.setup.MuscleVO;
+import br.remoto.core.simulation.util.DoubleSeries;
 
 public abstract class ExtrafusalMuscleSuperClass extends MuscleSuperClass
 {
 	protected MotorUnit motorunits[];
 	protected Hashtable mn_mu = new Hashtable();
 
-	protected ArrayList forceStore = new ArrayList();
+	protected DoubleSeries forceStore = new DoubleSeries();
 	protected ArrayList motorUnitForceStore = new ArrayList();
 
 	protected double optimalLength;
@@ -36,8 +37,8 @@ public abstract class ExtrafusalMuscleSuperClass extends MuscleSuperClass
 	protected double activationNormSType;
 	protected double activationNormFType;
 
-	protected ArrayList STypeMuscleActivationStore = new ArrayList();
-	protected ArrayList FTypeMuscleActivationStore = new ArrayList();
+	protected DoubleSeries STypeMuscleActivationStore = new DoubleSeries();
+	protected DoubleSeries FTypeMuscleActivationStore = new DoubleSeries();
 
 	protected double timeScale;
 
@@ -99,8 +100,8 @@ public abstract class ExtrafusalMuscleSuperClass extends MuscleSuperClass
 	protected void atualizeActivation(double t){
 		super.atualizeActivation(t);
 
-		samplerSTypeMuscleActivationStore.sample(STypeMuscleActivationStore, "", t, activationNormSType);
-		samplerFTypeMuscleActivationStore.sample(FTypeMuscleActivationStore, "", t, activationNormFType);
+		samplerSTypeMuscleActivationStore.sample(STypeMuscleActivationStore, t, activationNormSType);
+		samplerFTypeMuscleActivationStore.sample(FTypeMuscleActivationStore, t, activationNormFType);
 	}
 
 	public double calculateLengthNormAux(double force, double t) {
@@ -203,11 +204,11 @@ public abstract class ExtrafusalMuscleSuperClass extends MuscleSuperClass
 		this.elasticCoeficientOfParallelElement = elasticCoeficientOfParallelElement;
 	}
 
-	public ArrayList getForceStore() {
+	public DoubleSeries getForceStore() {
 		return forceStore;
 	}
 
-	public void setForceStore(ArrayList forceStore) {
+	public void setForceStore(DoubleSeries forceStore) {
 		this.forceStore = forceStore;
 	}
 
@@ -247,19 +248,19 @@ public abstract class ExtrafusalMuscleSuperClass extends MuscleSuperClass
 		this.activationNormFType = activationNormFType;
 	}
 
-	public ArrayList getSTypeMuscleActivationStore() {
+	public DoubleSeries getSTypeMuscleActivationStore() {
 		return STypeMuscleActivationStore;
 	}
 
-	public void setSTypeMuscleActivationStore(ArrayList sTypeMuscleActivationStore) {
+	public void setSTypeMuscleActivationStore(DoubleSeries sTypeMuscleActivationStore) {
 		STypeMuscleActivationStore = sTypeMuscleActivationStore;
 	}
 
-	public ArrayList getFTypeMuscleActivationStore() {
+	public DoubleSeries getFTypeMuscleActivationStore() {
 		return FTypeMuscleActivationStore;
 	}
 
-	public void setFTypeMuscleActivationStore(ArrayList fTypeMuscleActivationStore) {
+	public void setFTypeMuscleActivationStore(DoubleSeries fTypeMuscleActivationStore) {
 		FTypeMuscleActivationStore = fTypeMuscleActivationStore;
 	}
 
