@@ -21,6 +21,35 @@ jobs:
       - name: Conferir a regra do e-mail do site
         run: node scripts/site-domain-test.mjs
 
+  # O ReMoto promete que o mesmo cenário com a mesma semente dá o mesmo resultado, bit a bit. Essa
+  # promessa nunca foi medida fora de uma arquitetura: até aqui o CI inteiro rodava só em
+  # ubuntu-latest (x86-64). O núcleo usa Math.pow 149 vezes e Math.exp 49, e nenhuma das duas é
+  # obrigada pela especificação da linguagem a dar o mesmo bit em plataformas diferentes — só
+  # StrictMath é, e não há nenhuma ocorrência dela no repositório.
+  #
+  # Este job mede isso. Fica separado do build de propósito: o deploy não depende dele, para que
+  # uma divergência no macOS (arm64) não pare as publicações antes de alguém decidir o que fazer.
+  # Se divergir, a decisão é humana e tem um custo: migrar para StrictMath regenera todos os
+  # golden masters de uma vez. Se não divergir, este job pode ser dobrado dentro do build.
+  portabilidade:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+      - name: Compilar e testar, com os golden masters gerados no Linux
+        run: ./mvnw -B verify
+
   # Todo push no master que passa nos testes vai para produção: o site estático e o simulador.
   # Onde é "produção" não está no repositório — vem dos Secrets e Variables do GitHub (README,
   # seção "Installing on a server, and deploying"). Sem eles configurados, este job não envia nada
