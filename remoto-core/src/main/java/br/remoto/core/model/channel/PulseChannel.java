@@ -42,11 +42,18 @@ public abstract sealed class PulseChannel permits SodiumChannel, GatedChannel {
                 rising = true;
             }
         }
-        double lastValue = value;
-        value = conductance(t, rising);
-        if (Double.isNaN(value)) {
-            value = lastValue;
+        double computed = conductance(t, rising);
+        if (Double.isNaN(computed)) {
+            // O original substituía pelo último valor calculado e seguia. Isso faz o único ponto
+            // do modelo que detecta divergência numérica ser também o que a esconde: a condutância
+            // congela e a simulação termina com um número que parece bom. Uma condutância NaN só
+            // aparece com parâmetro impossível (beta <= 0, ou gmax 0 com a comporta divergindo),
+            // e nesse caso o resultado não vale nada — melhor parar e dizer onde.
+            throw new IllegalStateException("condutância NaN em " + getClass().getSimpleName()
+                    + " no instante " + t + " ms (gmax=" + gmax + ", e=" + e
+                    + ", duração do pulso=" + pulseDuration + " ms): confira os parâmetros do canal");
         }
+        value = computed;
         return value;
     }
 
