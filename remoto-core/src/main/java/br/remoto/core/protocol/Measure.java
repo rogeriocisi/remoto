@@ -72,24 +72,29 @@ public record Measure(String name, Function function, String output, double from
     public double ofSeries(double[] timeMs, double[] values) {
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
-        double sum = 0;
-        double sum2 = 0;
+        // Média e variância por Welford: a forma fechada (sum2 - n*média²)/(n-1) subtrai dois
+        // números grandes e quase iguais numa série longa em torno de um valor alto — uma força de
+        // 1000 N com flutuação pequena, por exemplo —, e podia dar negativo, o que o
+        // Math.max(0, ...) de antes escondia. Aqui a soma acumulada é a dos desvios, que são
+        // pequenos, e o resultado não depende da ordem de grandeza do sinal.
+        double mean = 0;
+        double m2 = 0;
         int n = 0;
         for (int i = 0; i < timeMs.length; i++) {
             if (timeMs[i] >= from && timeMs[i] <= to) {
                 double v = values[i];
                 min = Math.min(min, v);
                 max = Math.max(max, v);
-                sum += v;
-                sum2 += v * v;
                 n++;
+                double delta = v - mean;
+                mean += delta / n;
+                m2 += delta * (v - mean);
             }
         }
         if (n == 0) {
             return Double.NaN;
         }
-        double mean = sum / n;
-        double sd = n > 1 ? Math.sqrt(Math.max(0, (sum2 - n * mean * mean) / (n - 1))) : 0;
+        double sd = n > 1 ? Math.sqrt(m2 / (n - 1)) : 0;
         return switch (function) {
             case P2P -> max - min;
             case MAX -> max;
