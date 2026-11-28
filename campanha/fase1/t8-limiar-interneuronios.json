@@ -1,0 +1,145 @@
+{
+ "teste": "t8-limiar-interneuronios",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "THRESHOLD1/2 por TIPO de interneurônio (IaIn, IbIn, RC, gII)",
+  "alvo": "o mesmo tipo de interneurônio deve ter a mesma faixa em todos os cenários que declarem a mesma fonte; Elias et al. 2014 publica 10 a 20 mV",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 360,
+  "falhas": 3,
+  "detalhe": [
+   {
+    "tipo": "IaIn",
+    "faixas": [
+     {
+      "faixa": [
+       10,
+       15
+      ],
+      "n_cenarios": 45,
+      "exemplos": [
+       "aidp-force-task-s0.json",
+       "aidp-force-task-s1.json",
+       "aidp-force-task-s2.json"
+      ]
+     },
+     {
+      "faixa": [
+       10,
+       20
+      ],
+      "n_cenarios": 31,
+      "exemplos": [
+       "aidp-force-task-s0.json",
+       "aidp-force-task-s1.json",
+       "aidp-force-task-s2.json"
+      ]
+     }
+    ]
+   },
+   {
+    "tipo": "IbIn",
+    "faixas": [
+     {
+      "faixa": [
+       10,
+       15
+      ],
+      "n_cenarios": 45,
+      "exemplos": [
+       "aidp-force-task-s0.json",
+       "aidp-force-task-s1.json",
+       "aidp-force-task-s2.json"
+      ]
+     },
+     {
+      "faixa": [
+       10,
+       20
+      ],
+      "n_cenarios": 31,
+      "exemplos": [
+       "aidp-force-task-s0.json",
+       "aidp-force-task-s1.json",
+       "aidp-force-task-s2.json"
+      ]
+     }
+    ]
+   },
+   {
+    "tipo": "gII",
+    "faixas": [
+     {
+      "faixa": [
+       10,
+       15
+      ],
+      "n_cenarios": 45,
+      "exemplos": [
+       "aidp-force-task-s0.json",
+       "aidp-force-task-s1.json",
+       "aidp-force-task-s2.json"
+      ]
+     },
+     {
+      "faixa": [
+       10,
+       20
+      ],
+      "n_cenarios": 31,
+      "exemplos": [
+       "aidp-force-task-s0.json",
+       "aidp-force-task-s1.json",
+       "aidp-force-task-s2.json"
+      ]
+     }
+    ]
+   }
+  ],
+  "inventario_por_tipo": {
+   "IaIn": [
+    [
+     10,
+     20
+    ],
+    [
+     10,
+     15
+    ]
+   ],
+   "IbIn": [
+    [
+     10,
+     20
+    ],
+    [
+     10,
+     15
+    ]
+   ],
+   "RC": [
+    [
+     5,
+     15
+    ]
+   ],
+   "gII": [
+    [
+     10,
+     20
+    ],
+    [
+     10,
+     15
+    ]
+   ]
+  }
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Tipos diferentes com faixas diferentes é esperado e não conta como falha. A comparação com 10/20 exige confirmar a tabela no artigo."
+}

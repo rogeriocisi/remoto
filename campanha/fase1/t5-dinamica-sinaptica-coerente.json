@@ -1,0 +1,6808 @@
+{
+ "teste": "t5-dinamica-sinaptica-coerente",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "DYNAMIC_TYPE uniforme dentro de cada CD_CONDUCTANCE_TYPE",
+  "alvo": "uma via sináptica ou tem dinâmica (depressão/facilitação) ou não tem; a exceção por par de núcleos precisa de justificativa escrita",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 272,
+  "falhas": 137,
+  "detalhe": [
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 200.0,
+      "variacao": 50.0
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 200.0,
+      "variacao": 5.0
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-27-position-task-iia-no-ia.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-27-position-task-iia-no-ia.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-27-position-task-iia-no-ia.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-28-position-task-ib.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-28-position-task-ib.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-28-position-task-ib.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-32-variability-gamma.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-32-variability-gamma.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-32-variability-gamma.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-34-identification-sol-mg.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-34-identification-sol-mg.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-34-identification-sol-mg.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-35-identification-lg.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-35-identification-lg.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-35-identification-lg.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-36-identification-sol-mg.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-36-identification-sol-mg.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-36-identification-sol-mg.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-39-isometrictaskam.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-39-isometrictaskam.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-39-isometrictaskam.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "conductance_type": "MN FF-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "conductance_type": "MN FR-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "conductance_type": "MN S-IN RC",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "IN_ext",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_ext",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 200,
+      "variacao": 50
+     },
+     {
+      "pos": "IN_flex",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 200,
+      "variacao": 50
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "conductance_type": "AF Ia-MN FF",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "conductance_type": "AF Ia-MN FR",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "TA",
+      "pre": "TA",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "conductance_type": "AF Ia-MN S",
+    "tipos_presentes": [
+     "D",
+     "N"
+    ],
+    "linhas": [
+     {
+      "pos": "LG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "LG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "MG",
+      "pre": "SOL",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "LG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "MG",
+      "tipo_dinamica": "D",
+      "tau": 1500,
+      "variacao": 11
+     },
+     {
+      "pos": "SOL",
+      "pre": "SOL",
+      "tipo_dinamica": "N",
+      "tau": 1500,
+      "variacao": 11
+     }
+    ]
+   }
+  ]
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Uma exceção pode ser deliberada. O teste aponta onde ela existe sem estar documentada."
+}

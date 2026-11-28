@@ -1,0 +1,2820 @@
+{
+ "teste": "t2-limiar-axonio-aferente",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "AXON_THRESHOLD1/2 das fibras Ia e Ib",
+  "alvo": "Cisi & Kohn 2008, Tabela 4: Ia 6,0 -> 18,0 mA e Ib 13,0 -> 22,0 mA, crescente",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 360,
+  "falhas": 360,
+  "detalhe": [
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "LG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "MG",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "SOL",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "TA",
+    "fibra": "Ia",
+    "banco": [
+     18,
+     9
+    ],
+    "publicado": [
+     6.0,
+     18.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "LG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "MG",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "SOL",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "TA",
+    "fibra": "Ib",
+    "banco": [
+     16,
+     10
+    ],
+    "publicado": [
+     13.0,
+     22.0
+    ],
+    "problema": "decrescente+valores != Tabela 4"
+   }
+  ]
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Não prova qual dos dois está certo: o banco pode ter sido reparametrizado de propósito. Prova que o banco contradiz a tabela em valor E em direção."
+}

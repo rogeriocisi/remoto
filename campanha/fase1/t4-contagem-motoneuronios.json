@@ -1,0 +1,90 @@
+{
+ "teste": "t4-contagem-motoneuronios",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "QUANTITY das linhas de motoneurônio, por núcleo e tipo",
+  "alvo": "Elias et al. 2014, Tabela 2: SOL 800/50/50, MG 300/150/150, LG 130/65/65, TA 250/50/50",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 180,
+  "falhas": 5,
+  "detalhe": [
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "SOL",
+    "banco": [
+     5,
+     50,
+     50
+    ],
+    "elias2014": [
+     800,
+     50,
+     50
+    ]
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "SOL",
+    "banco": [
+     3,
+     50,
+     50
+    ],
+    "elias2014": [
+     800,
+     50,
+     50
+    ]
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "nucleo": "SOL",
+    "banco": [
+     400,
+     200,
+     200
+    ],
+    "elias2014": [
+     800,
+     50,
+     50
+    ]
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "nucleo": "LG",
+    "banco": [
+     1,
+     65,
+     65
+    ],
+    "elias2014": [
+     130,
+     65,
+     65
+    ]
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "nucleo": "LG",
+    "banco": [
+     1,
+     65,
+     65
+    ],
+    "elias2014": [
+     130,
+     65,
+     65
+    ]
+   }
+  ]
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Cenários com núcleo desligado aparecem com zeros e foram ignorados. Divergência aqui pode ser escolha do cenário, não defeito."
+}

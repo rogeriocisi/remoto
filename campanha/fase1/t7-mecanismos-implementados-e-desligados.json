@@ -1,0 +1,36 @@
+{
+ "teste": "t7-mecanismos-implementados-e-desligados",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "axonVelocitySTD, gammaCa e axonThresholdSTD em todos os cenários",
+  "alvo": "um mecanismo implementado e exercitado por nenhum cenário público é código não validado; gammaCa=0 torna Elias 2012/2013 irreproduzível e axonVelocitySTD=0 mata a dispersão de 3,3 m/s que Oliveira 2022 exige",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 135,
+  "falhas": 2,
+  "detalhe": [
+   {
+    "propriedade": "axonVelocitySTD",
+    "valor": 0,
+    "n_cenarios": 90,
+    "distribuicao": {
+     "0": 45
+    }
+   },
+   {
+    "propriedade": "gammaCa",
+    "valor": 0,
+    "n_cenarios": 90,
+    "distribuicao": {
+     "0": 45
+    }
+   }
+  ]
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Valor zero pode ser a escolha correta do cenário. O teste mede quantos cenários deixam cada mecanismo inerte."
+}

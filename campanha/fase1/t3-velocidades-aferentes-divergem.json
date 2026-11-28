@@ -1,0 +1,115 @@
+{
+ "teste": "t3-velocidades-aferentes-divergem",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "AXON_VELOCITY1/2 das fibras Ia, Ib e II em todos os cenários",
+  "alvo": "um único conjunto por tipo de fibra, declarado por fonte publicada",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 540,
+  "falhas": 7,
+  "detalhe": [
+   {
+    "fibra": "Ia",
+    "faixa": [
+     62,
+     67
+    ],
+    "n_cenarios": 32,
+    "exemplos": [
+     "aidp-force-task-s0.json",
+     "aidp-force-task-s1.json",
+     "aidp-force-task-s2.json",
+     "aidp-position-task-s0.json"
+    ]
+   },
+   {
+    "fibra": "Ia",
+    "faixa": [
+     55,
+     66
+    ],
+    "n_cenarios": 14,
+    "exemplos": [
+     "remoto-14-isometric-contraction.json",
+     "remoto-16-recruitment.json",
+     "remoto-17-default-soleus-contraction.json",
+     "remoto-18-neuroscience-meeting-2012.json"
+    ]
+   },
+   {
+    "fibra": "Ia",
+    "faixa": [
+     66,
+     71
+    ],
+    "n_cenarios": 1,
+    "exemplos": [
+     "remoto-19-biceps-brachii-stim-ia.json"
+    ]
+   },
+   {
+    "fibra": "Ib",
+    "faixa": [
+     56,
+     62
+    ],
+    "n_cenarios": 31,
+    "exemplos": [
+     "aidp-force-task-s0.json",
+     "aidp-force-task-s1.json",
+     "aidp-force-task-s2.json",
+     "aidp-position-task-s0.json"
+    ]
+   },
+   {
+    "fibra": "Ib",
+    "faixa": [
+     47,
+     63
+    ],
+    "n_cenarios": 14,
+    "exemplos": [
+     "remoto-14-isometric-contraction.json",
+     "remoto-16-recruitment.json",
+     "remoto-17-default-soleus-contraction.json",
+     "remoto-18-neuroscience-meeting-2012.json"
+    ]
+   },
+   {
+    "fibra": "II",
+    "faixa": [
+     30,
+     35
+    ],
+    "n_cenarios": 31,
+    "exemplos": [
+     "aidp-force-task-s0.json",
+     "aidp-force-task-s1.json",
+     "aidp-force-task-s2.json",
+     "aidp-position-task-s0.json"
+    ]
+   },
+   {
+    "fibra": "II",
+    "faixa": [
+     33,
+     40
+    ],
+    "n_cenarios": 14,
+    "exemplos": [
+     "remoto-14-isometric-contraction.json",
+     "remoto-16-recruitment.json",
+     "remoto-17-default-soleus-contraction.json",
+     "remoto-18-neuroscience-meeting-2012.json"
+    ]
+   }
+  ]
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Não diz qual conjunto é o certo. Diz que há mais de um em uso e que nenhum cenário declara qual fonte segue."
+}

@@ -1,0 +1,1220 @@
+{
+ "teste": "t6-exclusao-ia-simetrica",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "conectividade Ia->MN entre núcleos diferentes, nos dois sentidos",
+  "alvo": "se uma projeção Ia entre dois núcleos é declarada ausente (0%), a recíproca também deve ser",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 810,
+  "falhas": 270,
+  "detalhe": [
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "via": "AF Ia-MN S",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "via": "AF Ia-MN FF",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "via": "AF Ia-MN FR",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "via": "AF Ia-MN S",
+    "SOL<-MG": 0,
+    "MG<-SOL": 15
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "via": "AF Ia-MN FF",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "via": "AF Ia-MN FR",
+    "MG<-SOL": 15,
+    "SOL<-MG": 0
+   }
+  ]
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Assimetria anatômica real existe. O teste aponta onde ela é afirmada sem fonte."
+}

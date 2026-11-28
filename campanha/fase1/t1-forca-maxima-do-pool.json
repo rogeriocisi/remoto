@@ -1,0 +1,1460 @@
+{
+ "teste": "t1-forca-maxima-do-pool",
+ "declarado_em": "2026-11-28T14:15:40.957821+00:00",
+ "commit": "6adbf8ceb1c2",
+ "criterio": {
+  "observavel": "soma de gpeak*twTet sobre as unidades do núcleo contra MAXIMUM_MUSCLE_FORCE do musculotendão de Hill do mesmo músculo",
+  "alvo": "as duas são declarações independentes da força máxima do músculo e devem concordar dentro de 25%; é assim que CriticallyDampedMuscle e HillMuscle calculam o máximo do pool",
+  "tolerancia": "igualdade exata (teste de tabela)",
+  "fonte": "ver campo alvo"
+ },
+ "medido": {
+  "itens_conferidos": 180,
+  "falhas": 180,
+  "detalhe": [
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "aidp-force-task-s0.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "aidp-force-task-s1.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "aidp-force-task-s2.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "aidp-position-task-s0.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "aidp-position-task-s1.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "aidp-position-task-s2.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "demo-2-ramp-mg.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "estiramento-tornozelo.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "ia880-h-reflex-conditioning.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "modelo-completo.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-ankle-impedance.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "SOL",
+    "n_unidades": 105,
+    "soma_gpeak_twTet_N": 1684.5,
+    "fmax_hill_N": 3586,
+    "razao": 0.47
+   },
+   {
+    "cenario": "projectfr-antidromic-stimulation.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-descending-command.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-force-variability.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-h-reflex-m-wave.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-hill-muscle.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-isometric-closed-loop.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-mn-pool-renshaw.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-motor-unit-pool-emg.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-muscle-spindle.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-neural-tract-unit.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-neural-tract.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "SOL",
+    "n_unidades": 103,
+    "soma_gpeak_twTet_N": 1677.4,
+    "fmax_hill_N": 3586,
+    "razao": 0.47
+   },
+   {
+    "cenario": "projectfr-node-axons.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-postural-control.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-reciprocal-inhibition.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "projectfr-renshaw-injected-current.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-14-isometric-contraction.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-16-recruitment.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-17-default-soleus-contraction.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-18-neuroscience-meeting-2012.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "nucleo": "SOL",
+    "n_unidades": 800,
+    "soma_gpeak_twTet_N": 8093.6,
+    "fmax_hill_N": 3586,
+    "razao": 2.26
+   },
+   {
+    "cenario": "remoto-19-biceps-brachii-stim-ia.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-24-isb-2013-stretch-reflex.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-25-position-task.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-26-position-task-iia.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-27-position-task-iia-no-ia.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-27-position-task-iia-no-ia.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-27-position-task-iia-no-ia.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-27-position-task-iia-no-ia.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-28-position-task-ib.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-28-position-task-ib.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-28-position-task-ib.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-28-position-task-ib.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-32-variability-gamma.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-32-variability-gamma.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-32-variability-gamma.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-32-variability-gamma.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-34-identification-sol-mg.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-34-identification-sol-mg.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-34-identification-sol-mg.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-34-identification-sol-mg.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-35-identification-lg.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-35-identification-lg.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-35-identification-lg.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-35-identification-lg.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-36-identification-sol-mg.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-36-identification-sol-mg.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-36-identification-sol-mg.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-36-identification-sol-mg.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "nucleo": "LG",
+    "n_unidades": 131,
+    "soma_gpeak_twTet_N": 1653.2,
+    "fmax_hill_N": 606,
+    "razao": 2.73
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-38-identsol.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-39-isometrictaskam.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-39-isometrictaskam.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-39-isometrictaskam.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-39-isometrictaskam.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-41-ammodrenshaw.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "nucleo": "LG",
+    "n_unidades": 260,
+    "soma_gpeak_twTet_N": 2066.6,
+    "fmax_hill_N": 606,
+    "razao": 3.41
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-42-jn-watanabe-and-kohn-2015.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "nucleo": "LG",
+    "n_unidades": 131,
+    "soma_gpeak_twTet_N": 1653.2,
+    "fmax_hill_N": 606,
+    "razao": 2.73
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "nucleo": "MG",
+    "n_unidades": 600,
+    "soma_gpeak_twTet_N": 4768.5,
+    "fmax_hill_N": 1306,
+    "razao": 3.65
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "nucleo": "SOL",
+    "n_unidades": 900,
+    "soma_gpeak_twTet_N": 4526.2,
+    "fmax_hill_N": 3586,
+    "razao": 1.26
+   },
+   {
+    "cenario": "remoto-44-identsolrenshaw.json",
+    "nucleo": "TA",
+    "n_unidades": 350,
+    "soma_gpeak_twTet_N": 986.3,
+    "fmax_hill_N": 674,
+    "razao": 1.46
+   }
+  ]
+ },
+ "veredito": "falha",
+ "classificacao": "a classificar",
+ "limitacao": "Substitui o teste anterior, que comparava TWITCH_TENSION com TETANIC_TENSION: a segunda nunca entra em cálculo de força, então a comparação não media nada do que a simulação faz. Este compara duas grandezas que o motor de fato usa. A tolerância de 25% é arbitrada por mim, não publicada: serve para separar discrepância de escala de diferença de arredondamento."
+}
