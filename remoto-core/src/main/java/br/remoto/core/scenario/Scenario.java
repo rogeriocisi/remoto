@@ -49,8 +49,20 @@ public record Scenario(
         return new Scenario(id, name, description, schemaVersion, seed, newDurationMs, stepMs, engine, legacy);
     }
 
-    /** Número de passos de integração. */
+    /**
+     * Número de passos de integração que a simulação vai de fato rodar.
+     *
+     * <p>Trunca, e não arredonda, porque é o que {@code Simulation.run} faz
+     * ({@code totSteps = (int)(tFin/step)}). Com {@code Math.round} os dois discordavam quando a
+     * duração não é múltipla exata do passo — 8,6 ms com passo de 0,05 ms dá 171,999… , que
+     * arredonda para 172 e trunca para 171 —, e o validador contava um passo que o motor nunca
+     * roda. Nenhum dos cenários públicos cai nesse caso, mas {@code --duration-ms} aceita
+     * qualquer valor.
+     *
+     * <p>A consequência de truncar, que continua valendo, é que uma duração não múltipla do passo
+     * simula um pedaço a menos do que foi pedido: 8,6 ms viram 8,55 ms.
+     */
     public long totalSteps() {
-        return Math.round(durationMs / stepMs);
+        return (long) (durationMs / stepMs);
     }
 }
