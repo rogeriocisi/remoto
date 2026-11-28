@@ -54,6 +54,26 @@ public final class Rng {
         CURRENT.set(FORBIDDEN);
     }
 
+    /**
+     * Roda {@code body} com os sorteios proibidos nesta thread e devolve, no fim, o gerador que
+     * ela tinha.
+     *
+     * <p>Existe porque a thread que coordena a atualização paralela também processa blocos de
+     * neurônios, depois de rodar o laço sequencial — onde sortear é legítimo e necessário. Sem
+     * isto, um sorteio indevido num neurônio paralelo só era detectado quando o bloco calhava de
+     * cair numa thread de trabalho, de modo que a proteção valia por sorteio e por execução, e
+     * não sempre.
+     */
+    public static void forbidDuring(Runnable body) {
+        Random before = CURRENT.get();
+        CURRENT.set(FORBIDDEN);
+        try {
+            body.run();
+        } finally {
+            CURRENT.set(before);
+        }
+    }
+
     /** Um número uniforme em [0, 1), no lugar de {@code Math.random()}. */
     public static double random() {
         return CURRENT.get().nextDouble();

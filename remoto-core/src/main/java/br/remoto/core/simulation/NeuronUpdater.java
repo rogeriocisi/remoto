@@ -170,7 +170,9 @@ final class NeuronUpdater implements AutoCloseable
 			failure = e;
 		}
 
-		work();
+		// A thread chamadora também processa blocos paralelos, e lá sortear é proibido: do
+		// contrário um sorteio num neurônio paralelo só falharia quando o bloco caísse num worker.
+		Rng.forbidDuring(this::work);
 
 		await(end);
 
