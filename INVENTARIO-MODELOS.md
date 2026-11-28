@@ -2194,3 +2194,466 @@ invertido (F-37).
    comparar `FOOT_MASS`, `ANKLE_FOOT_DISTANCE`, `JOINT_ELASTICITY` e
    `JOINT_VISCOSITY` com a tabela do artigo é um teste de proveniência que vale a pena
    fazer manualmente uma vez.
+
+---
+
+# 10. Receptores e proprioceptores — `br.remoto.core.model.receptor`
+
+Sete classes: o fuso de Mileusnic (quatro delas), a alternativa de Prochazka e o órgão
+tendinoso de Crago.
+
+## 10.1 `IntrafusalFiber` (classe-base) — `model/receptor/IntrafusalFiber.java`
+
+**O que modela.** As constantes e o estado comum das fibras intrafusais.
+
+**Fonte citada (literal, linhas 3-6):**
+
+> "Fibra intrafusal do fuso de **Mileusnic et al. (2006)**: constantes do modelo e o estado
+> comum (comprimento normalizado, velocidade e aceleração de estiramento, ativação
+> fusimotora e tensão)."
+
+**Constantes do modelo (linhas 9-26) — transcrição completa.** Os nomes seguem a notação
+do artigo (e a convenção de nomes do original, com maiúsculas e minúsculas misturadas):
+
+| Constante | Valor | Papel na notação de Mileusnic |
+| --- | --- | --- |
+| `K_SR` | **10.4649** | rigidez da região sensorial |
+| `K_PR` | **0.1500** | rigidez da região polar |
+| `M` | **0.0002** | massa da fibra |
+| `beta_1` | **0.2592** | coeficiente de atrito dependente de γ_dinâmico (bag1) |
+| `beta_2_chain` | **−0.0690** | idem, chain |
+| `GAMMA_1` | **0.0289** | força ativa por unidade de ativação (bag1) |
+| `GAMMA_2_chain` | **0.0954** | idem, chain |
+| `C_lengthening` | **1** | assimetria do atrito no alongamento |
+| `C_shortening` | **0.4200** | idem no encurtamento |
+| `X_chain` | **0.7** | partição sensorial/polar da aferência II |
+| `L_SR_N` | **0.0423** | comprimento da zona sensorial no limiar |
+| `a` | **0.3** | expoente da não linearidade de velocidade |
+| `R` | **0.46** | comprimento de referência do termo de atrito |
+| `L_SR_0` | **0.04** | comprimento de folga da zona sensorial |
+| `L_PR_0` | **0.76** | comprimento de folga da zona polar |
+| `L_secondary_chain` | **0.04** | posição da terminação secundária |
+| `freq_chain` | **90** Hz | meia-saturação do fusimotor da chain |
+| `p` | **2** | expoente da saturação fusimotora |
+
+**Estado comum (linhas 28-40):** `cdMuscle`, `gamma_static`, `gamma_dynamic`,
+`time_step` (**= step/1000, ou seja em segundos**, linha 45), `fusimotorActivation`,
+`intrafusalFiberTension`, `beta`, `GAMMA`, `lengthNorm`, `stretchVelocity`,
+`stretchAcceleration`.
+
+**Assimetria do atrito (`calculateC`, linhas 66-69)** — a única equação da classe-base:
+
+```java
+if ((stretch_velocity - dT / K_SR) >= 0) return C_lengthening;   // 1
+else return C_shortening;                                        // 0.42
+```
+
+**Acionamento fusimotor variável (`setFusimotor`, linhas 50-54):** "Muda os disparos
+fusimotores (Hz) a partir do próximo passo" — é o gancho que permite γ modulado no tempo
+em vez de constante.
+
+**Status.** Implementado (classe-base abstrata).
+
+## 10.2 `Bag1Fiber` — `model/receptor/Bag1Fiber.java`
+
+**O que modela.** A fibra **bag1**, sensível ao fusimotor **dinâmico** — a fonte da
+sensibilidade à velocidade da aferência Ia.
+
+**Fonte citada (literal, linhas 3-8):**
+
+> "Fibra bag1 (fusimotor dinâmico) do fuso de **Mileusnic et al. (2006)**.
+>
+> **O corpo é o do ReMoto original, sem alteração nas expressões: integração de Euler da
+> tensão e da ativação fusimotora (o Runge-Kutta ficou comentado no original), com o passo
+> em segundos.**"
+
+**Constantes próprias (linhas 12-17):**
+
+| Constante | Valor |
+| --- | --- |
+| `beta_0_bag1` | **0.0605** (atrito passivo) |
+| `L_PR_N_bag1` | **0** |
+| `L_secondary_bag1` | **0** |
+| `tau_bag1` | **0.149 s** (constante de tempo da ativação fusimotora) |
+| `freq_bag1` | **60 Hz** (meia-saturação do fusimotor dinâmico) |
+
+**Equações.**
+
+Ativação fusimotora (`Df_dynDt`, linhas 102-111):
+
+```
+df_dyn/dt = (γ_din^p / τ_bag1) / (γ_din^p + freq_bag1^p) − f_dyn/τ_bag1
+```
+
+com `p = 2`. Em regime: `f_dyn∞ = γ_din²/(γ_din² + 60²)`.
+
+Tensão (`f1`/`f2`, linhas 113-136) — o sistema de 2ª ordem de Mileusnic:
+
+```
+β = beta_0_bag1 + beta_1·f_dyn
+Γ = GAMMA_1·f_dyn
+dT/dt = z
+dz/dt = (K_SR/M)·[ C(v,z)·β·sign(v − z/K_SR)·|v − z/K_SR|^a·|L − L_SR_0 − T/K_SR − R|
+                 + K_PR·(L − L_SR_0 − T/K_SR − L_PR_0)
+                 + M·acel
+                 + Γ
+                 − T ]
+```
+
+Integração (linhas 41-65), **Euler semi-implícito**: `T += h·z` **primeiro**, depois
+`z += h·f2(T_novo, z)`.
+
+Aferência primária (linhas 67-73):
+
+```
+Ia_bag1 = G_primary_bag1 · (T/K_SR − (L_SR_N − L_SR_0)),  truncada em 0
+```
+
+com `L_SR_N − L_SR_0 = 0.0023`.
+
+Aferência secundária (linhas 138-140): **0** — correto, a bag1 não tem terminação
+secundária.
+
+**Parâmetros aceitos.** `cdMuscle`, `step` (ms), `gamma_dyn` (Hz), `gamma_static` (Hz),
+`primaryBag1Gain`. O ganho só é atribuído se `cdMuscle` for **SOL, MG, LG ou TA**
+(linhas 33-36); qualquer outro código → ganho 0.
+
+**Status.** Implementado.
+
+**Como testar.**
+
+1. **Resposta a rampa de estiramento.** O observável canônico do fuso: estirar o músculo
+   em rampa-platô e medir a taxa Ia. Esperado: **pico dinâmico** durante a rampa, queda
+   para um platô estático. Com γ_dinâmico alto, o pico dinâmico cresece muito mais que o
+   platô — essa é a assinatura da bag1 e é separável das outras duas fibras.
+2. **Saturação do fusimotor.** Varrer `gamma_dynamic` de 0 a 200 Hz e medir `f_dyn` em
+   regime: deve seguir `γ²/(γ² + 3600)`, valendo 0,5 exatamente em **γ = 60 Hz**. Teste
+   analítico fechado, direto por `fusimotorActivations()[0]`.
+3. **Constante de tempo.** Degrau de γ_dinâmico: `f_dyn` deve subir com
+   **τ = 0,149 s**. Observável direto.
+4. **Expoente de velocidade.** O termo `|v|^0.3` dá a compressão característica da
+   resposta Ia à velocidade: a taxa Ia deve crescer com `v^0.3`, não linearmente.
+   Comparar com Mileusnic et al. (2006), figuras de resposta a rampas de várias
+   velocidades.
+
+## 10.3 `Bag2Fiber` — `model/receptor/Bag2Fiber.java`
+
+**O que modela.** A fibra **bag2**, sensível ao fusimotor **estático**; contribui para Ia
+**e** para II.
+
+**Fonte citada:** "Fibra bag2 (fusimotor estático) do fuso de **Mileusnic et al.
+(2006)**" + a mesma nota de integração por Euler (linhas 3-8).
+
+**Constantes próprias (linhas 12-22):**
+
+| Constante | Valor |
+| --- | --- |
+| `beta_0_bag2_chain` | **0.0822** |
+| `beta_2_bag2` | **−0.0460** |
+| `GAMMA_2_bag2` | **0.0636** |
+| `X_bag2` | **0.7** |
+| `L_PR_N_bag2_and_chain` | **0.89** |
+| `L_secondary_bag2` | **0.04** |
+| `tau_bag2` | **0.205 s** |
+| `freq_bag2` | **60 Hz** |
+
+**Equações.** Idênticas às da bag1 em forma (`f1`/`f2`, linhas 116-139), com
+
+```
+β = beta_0_bag2_chain + beta_2_bag2·f_static
+Γ = GAMMA_2_bag2·f_static
+df_static/dt = (γ_est²/τ_bag2)/(γ_est² + 60²) − f_static/τ_bag2
+```
+
+Aferência primária (linhas 141-147): mesma forma da bag1, com
+`G_primary_bag2_and_chain`.
+
+Aferência secundária (linhas 149-161) — **esta é a equação própria da II**:
+
+```
+termo1 = X_bag2·(L_sec/L_SR_0)·(T/K_SR − (L_SR_N − L_SR_0))
+termo2 = (1 − X_bag2)·(L_sec/L_PR_0)·(L − T/K_SR − L_SR_0 − L_PR_N)
+II_bag2 = G_secondary_bag2_and_chain·(termo1 + termo2),  truncada em 0
+```
+
+Isto é: **70% da zona sensorial, 30% da zona polar** — a partição de Mileusnic que faz
+a II ser mais sensível ao comprimento e menos à velocidade.
+
+**Parâmetros aceitos.** `cdMuscle`, `step`, `gamma_dyn`, `gamma_static`,
+`primaryBag2AndChainGain`, `secondaryBag2AndChainGain`. Mesma guarda por código de
+músculo (linhas 40-45), mas **assimétrica**: o `else` só zera o ganho primário
+(ver F-38).
+
+**Status.** Implementado.
+
+**Como testar.**
+
+1. **Separação Ia/II.** Rampa-platô de estiramento com γ_estático variando: a **II deve
+   ser quase insensível à velocidade** e proporcional ao comprimento; a Ia, dominada pelo
+   pico dinâmico. Medir a razão `pico_dinâmico/platô` nas duas: ~5-10 para Ia, ~1,2-2
+   para II. Comparar com Mileusnic et al. (2006), e com os registros de microneurografia
+   humana de Edin e Vallbo.
+2. **Saturação em 60 Hz.** `fusimotorActivations()[1]` em regime deve valer 0,5 para
+   γ_estático = 60 Hz.
+3. **Constante de tempo 0,205 s.** Degrau de γ_estático.
+4. **Partição 70/30.** Teste analítico: zerar o comprimento (manter T fixo) e conferir que
+   a contribuição dos dois termos obedece à razão `X/(1−X)` ponderada por
+   `L_sec/L_SR_0` e `L_sec/L_PR_0`.
+
+## 10.4 `ChainFiber` — `model/receptor/ChainFiber.java` ⚠
+
+**O que modela.** A fibra **chain**, também de fusimotor estático, mas **sem dinâmica de
+ativação**: a ativação é instantânea.
+
+**Fonte citada e admissão de falha (literal, linhas 3-8):**
+
+> "Fibra chain (fusimotor estático) do fuso de **Mileusnic et al. (2006)**. **Como no
+> original, os ganhos das aferências dela nunca são atribuídos e ficam em 0.**
+>
+> O corpo é o do ReMoto original, sem alteração nas expressões: integração de Euler da
+> tensão e da ativação fusimotora (o Runge-Kutta ficou comentado no original), com o passo
+> em segundos."
+
+Este é o achado F-39, e é grave: a fibra chain existe, integra tensão, mas **não
+contribui nada** para Ia nem para II.
+
+**Constantes próprias (linhas 15-23).** Note que `beta_2_chain`, `GAMMA_2_chain`,
+`X_chain`, `L_secondary_chain` e `freq_chain` **são redeclaradas** aqui com os mesmos
+valores já presentes em `IntrafusalFiber` (F-40):
+
+| Constante | Valor | Já existe na base? |
+| --- | --- | --- |
+| `beta_0_bag2_chain` | 0.0822 | não |
+| `beta_2_chain` | −0.0690 | **sim** |
+| `GAMMA_2_chain` | 0.0954 | **sim** |
+| `X_chain` | 0.7 | **sim** |
+| `L_PR_N_bag2_and_chain` | 0.89 | não |
+| `L_secondary_chain` | 0.04 | **sim** |
+| `freq_chain` | 90 Hz | **sim** |
+
+**Equação diferente das bags — ativação sem dinâmica (linhas 49-55):**
+
+```
+f_static = γ_est^p / (γ_est^p + freq_chain^p)        [instantâneo, sem τ]
+```
+
+ou seja, a chain responde **sem atraso**, com meia-saturação em **90 Hz** (não 60).
+Tensão e aferências: mesma forma da bag2, com `beta_2_chain` e `GAMMA_2_chain`.
+
+**Parâmetros aceitos.** `cdMuscle`, `step`, `gamma_dyn`, `gamma_static` — **nenhum ganho
+aferente** (construtor de 4 args, linhas 37-40).
+
+**Status.** **Parcial / inoperante nas aferências.** A tensão e a ativação são
+calculadas e expostas por `fiberTensions()` e `fusimotorActivations()`, mas
+`calculatePrimaryAfferentActivity` e `calculateSecondaryAfferentActivity` sempre devolvem
+**0**, porque os ganhos nunca são atribuídos.
+
+**Como testar.**
+
+1. **Teste que documenta o zero.** `calculatePrimaryAfferentActivity` e
+   `...Secondary...` devem devolver 0 em qualquer condição — fixa o comportamento atual e
+   detecta quando alguém o corrigir.
+2. **Meia-saturação em 90 Hz.** `fusimotorActivations()[2]` deve valer 0,5 em
+   γ_estático = 90 Hz, e responder **instantaneamente** a um degrau (sem τ). Observável
+   que distingue a chain das bags.
+3. **Efeito da correção.** Se os ganhos forem atribuídos, a Ia e a II devem subir; medir
+   quanto mede o impacto da falha (ver §10.5 para a oclusão parcial, que amortece parte
+   do efeito na Ia).
+
+## 10.5 `MileusnicSpindle` — `model/receptor/MileusnicSpindle.java` ⭐
+
+**O que modela.** O **fuso muscular completo**: as três fibras combinadas em Ia e II.
+
+**Fonte citada (literal, linhas 7-15):**
+
+> "Fuso muscular de **Mileusnic et al. (2006)**: três fibras intrafusais (bag1, bag2 e
+> chain) movidas pelo comprimento do fascículo e pelos disparos fusimotores dinâmico e
+> estático. A aferência primária (Ia) combina as três com **oclusão parcial: a maior das
+> parcelas bag1 e bag2 + chain, mais 0.156 vezes a menor**; a secundária (II) soma bag2 e
+> chain.
+>
+> **Fiel ao ReMoto original: a cada cálculo da Ia, o fuso cria um gerador derivado de
+> `Rng` para um distúrbio de desvio-padrão zero (o sorteio muda a sequência de
+> aleatoriedade do resto da simulação).**"
+
+**Constante.** `S = 0.156` (linhas 19-20): "Peso da parcela menor na oclusão parcial da
+Ia" — o valor de Mileusnic.
+
+**Equações.**
+
+Oclusão parcial da Ia (`calculateIa`, linhas 87-112):
+
+```
+maior  = max(Ia_bag1, Ia_bag2 + Ia_chain)
+menor  = min(Ia_bag1, Ia_bag2 + Ia_chain)
+Ia     = S·menor + maior + distúrbio      [distúrbio = 0·N(0,1), sempre 0]
+```
+
+Aferência II (`calculateII`, linhas 114-119): `II = II_bag2 + II_chain`.
+
+**Conversão de unidades no `step` (linhas 60-85)** — importante para testar:
+
+```
+lengthNorm        ← fascicleLength                  (adimensional)
+stretchVelocity   ← velocity · 1000                 (por ms → por s)
+stretchAcceleration ← acceleration · 1000000        (por ms² → por s²)
+t_s               ← t / 1000                        (ms → s)
+```
+
+Ordem de atualização: ativação fusimotora das três → tensão das três → Ia → II.
+
+**Parâmetros do construtor (linhas 29-40):** `cdMuscle`, `step` (ms),
+`gammaDynamic` (Hz), `gammaStatic` (Hz), `primaryBag1Gain`,
+`primaryBag2AndChainGain`, `secondaryBag2AndChainGain`.
+
+**Acionamento fusimotor variável (`setFusimotor`, linhas 42-50):**
+
+> "Muda os disparos fusimotores dinâmico e estático (Hz) a partir do próximo passo: o
+> fusimotor deixa de ser constante quando o cenário o modula no tempo."
+
+**Observáveis expostos:** `iaFiringRate()`, `iiFiringRate()`,
+`fusimotorActivations()` (as três), `fiberTensions()` (as três).
+
+**Variantes selecionáveis.** O fuso de Mileusnic é **uma das duas** implementações de
+fuso; a outra é `ProchazkaSpindle` (§10.6).
+
+**Status.** Implementado, com a contribuição da chain em 0 (F-39).
+
+**Como testar.**
+
+1. **Rampa-platô, o teste de referência.** Estirar de 0,95 a 1,05 L₀ em rampas de
+   diferentes velocidades, manter o platô, e medir a Ia. Reproduzir as figuras de
+   Mileusnic et al. (2006): a Ia deve mostrar pico dinâmico proporcional a `v^0.3`,
+   *initial burst*, e platô dependente do comprimento.
+2. **Oclusão parcial.** O teste mais específico desta classe: medir
+   `Ia_total`, `Ia_bag1` e `Ia_bag2 + Ia_chain` (pelas três fibras isoladas) e conferir
+   que `Ia = max + 0.156·min`. Verificação direta da equação, sem referência externa.
+   E um corolário testável: a Ia total é **sempre menor** que a soma simples —
+   a diferença é `(1 − S)·min`.
+3. **Resposta a γ constante versus modulado.** `setFusimotor` em degrau no meio da
+   simulação: a Ia deve mudar com as constantes de tempo das fibras (0,149 s para a bag1,
+   0,205 s para a bag2, **instantânea** para a chain). É o teste do acionamento fusimotor
+   variável.
+4. **Taxa de repouso.** Em comprimento 1 e velocidade 0, sem fusimotor, a Ia deve ser
+   baixa mas não nula (depende de `G_primary` e da tensão passiva). Comparar com as
+   descargas tônicas de 5-30 Hz dos aferentes Ia humanos em repouso.
+5. **Consumo de aleatoriedade.** Um `Rng.newRandom()` por passo por fuso: quatro músculos
+   × 1 fuso = 4 `nextLong()` por passo só daqui (F-15).
+
+## 10.6 `ProchazkaSpindle` — `model/receptor/ProchazkaSpindle.java`
+
+**O que modela.** O **fuso agrupado de Prochazka** — a alternativa simples ao de
+Mileusnic, sem fusimotor.
+
+**Fonte citada (literal, linhas 3-6):**
+
+> "Fuso muscular agrupado de **Prochazka (1999)**: as taxas das aferências primária e
+> secundária são funções diretas do comprimento normalizado e da velocidade de
+> estiramento, **sem fusimotor**."
+
+**Equações (linhas 29-54) — transcrição completa:**
+
+```
+aux = |v|^0.6                        [v em por-segundo: velocity·1000]
+
+Ia:  se v >= 0:  80·aux + 250·(L − 1.00) + 15
+     se v <  0: −80·aux + 250·(L − 1.00) + 15
+     truncada em 0
+
+II:  250·(L − 1.00) + 8,  truncada em 0
+```
+
+**Parâmetros.** Nenhum configurável: as constantes **80, 0.6, 250, 15, 8** estão em
+linha (F-41).
+
+**Variantes selecionáveis.** É a alternativa a `MileusnicSpindle`. Note que **não tem
+construtor com argumentos** nem `setFusimotor`: o acionamento fusimotor variável não se
+aplica a esta variante.
+
+**Status.** Implementado.
+
+**Como testar.**
+
+1. **Formas fechadas.** Cada equação é testável diretamente: com `L = 1` e `v = 0`,
+   Ia = 15 Hz e II = 8 Hz. Com `L = 1.04`, II = 18 Hz. Teste unitário de três linhas.
+2. **Expoente 0,6 versus 0,3 de Mileusnic.** A comparação entre os dois fusos no mesmo
+   estiramento é o observável mais informativo: Prochazka cresce mais rápido com a
+   velocidade. Rodar o mesmo cenário com as duas variantes e sobrepor as taxas Ia.
+3. **Simetria do encurtamento.** O ramo negativo usa o **mesmo ganho 80**, logo a taxa
+   cai tão rápido quanto sobe, e é truncada em 0 — comportamento fisiologicamente
+   duvidoso (os aferentes Ia param de disparar no encurtamento, mas não simetricamente).
+   Ver F-42.
+4. **Proveniência.** Conferir as constantes contra Prochazka (1999) é um teste manual de
+   alto valor, dado que não há citação de equação ou tabela no código.
+
+## 10.7 `CragoTendonOrgan` — `model/receptor/CragoTendonOrgan.java` ⭐
+
+**O que modela.** O **órgão tendinoso de Golgi agrupado**.
+
+**Fonte citada e admissões (literal, linhas 3-12):**
+
+> "Órgão tendinoso de Golgi agrupado (**Crago et al., 1982**): a força do tendão passa por
+> uma não linearidade estática `60·ln(F/4 + 1)` Hz e por um filtro linear de 2ª ordem
+> (discretizado por **Tustin** no passo da simulação); a taxa resultante é dividida entre
+> as fibras Ib do núcleo.
+>
+> **Como no original, a primeira chamada (iteração 0) devolve 0 sem levar a força em conta,
+> e, sem fibras Ib, a divisão dá NaN e depois infinito; nenhuma fibra lê esse valor, e os
+> resultados não o mostram.**"
+
+**Constantes (linhas 15-21):** `N = 2` (ordem), `GR = 60` ("Ganho da não linearidade
+(Hz)"), `FN = 4` ("Força de referência da não linearidade (N)").
+
+**Equações.**
+
+Não linearidade estática (linha 65):
+
+```java
+x[N] = 40 * (GR * Math.log(force / FN + 1));
+```
+
+⚠ Note o fator **40** que **não aparece no javadoc** (que descreve a não linearidade como
+`60·ln(F/4 + 1)`). Ver F-43.
+
+Filtro de 2ª ordem discretizado por Tustin (construtor, linhas 42-50) — os coeficientes
+como polinômios no passo `h`:
+
+```
+den = 0.4h² + 4.4h + 4
+a1  = (0.8h² − 8) / den
+a2  = (0.4h² − 4.4h + 4) / den
+b0  = (0.4h² + 5.16h + 6.8) / den
+b1  = (0.8h² − 13.6) / den
+b2  = (0.4h² − 5.16h + 6.8) / den
+
+y[n] = −a1·y[n−1] − a2·y[n−2] + b0·x[n] + b1·x[n−1] + b2·x[n−2]
+```
+
+Divisão entre fibras (linha 54): `ibFiringRate = y[N] / afferentNumber`.
+
+**Parâmetros (javadoc, linhas 38-41):** `step` (ms, "passo da simulação"),
+`afferentNumber` ("fibras Ib ativas do núcleo, entre as quais a taxa se divide").
+
+**Status.** Implementado, com dois comportamentos degenerados declarados: iteração 0
+devolve 0, e `afferentNumber = 0` dá NaN/infinito.
+
+**Como testar.**
+
+1. **Não linearidade estática.** Com força em degrau e esperando o regime, a taxa deve
+   seguir a curva logarítmica: compressão forte em força alta. Teste quantitativo:
+   dobrar a força **não** dobra a taxa. Alvo: a sensibilidade Ib cai como `1/(F + 4)`.
+   **Mas** o fator 40 do código multiplica a escala por 40 — então o teste tem de
+   decidir qual é o alvo: o javadoc (`60·ln`) ou o código (`2400·ln`). Esse é o teste que
+   resolve F-43.
+2. **Resposta em frequência do filtro.** Injetar força senoidal de frequência variável e
+   medir ganho e fase. Recuperar a função de transferência contínua a partir dos
+   coeficientes (invertendo Tustin) e comparar com a de Crago et al. (1982) — é a única
+   maneira de validar os coeficientes mágicos (F-44).
+3. **Invariância ao passo.** Rodar com `step = 0.05` e `step = 0.025`: a resposta ao
+   degrau deve ser **a mesma** (Tustin é projetado para isso). Se não for, há erro na
+   discretização. Teste de alto valor e baixo custo.
+4. **Latência do reflexo Ib.** Observável de sistema: estimular o músculo, medir o atraso
+   entre o pico de força e a resposta Ib. Soma-se à latência de condução da fibra Ib
+   (§2.9) para a inibição autógena.
+5. **Força negativa.** `log(F/4 + 1)` dá **NaN** para `F < −4` N. Teste de borda
+   (F-45).
