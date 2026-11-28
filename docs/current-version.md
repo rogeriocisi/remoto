@@ -941,6 +941,34 @@ original:
   each nucleus, in *Miscellaneous*); the afferents of a muscle spread over its motor nucleus, and
   the descending axons over the whole column. Between Renshaw cells and motoneurons, 0 keeps the
   factors of the *Miscellaneous* screen.
+- **Tetanus-to-twitch ratio and saturation factor of the motor units** (`motorUnitForce`:
+  "nucleus:type" → [twTet1, twTet2, b1, b2], from the first to the last unit of the type). These
+  are the parameters that set the force scale of a nucleus: both `CriticallyDampedMuscle` and
+  `HillMuscle` compute the maximum force of the pool as the sum of `gpeak * twTet` over its units,
+  and `b` is the factor of the saturation sigmoid. The original fixed them in the code of
+  `ConfigurationAssembler`, per nucleus and type (triceps surae: S 2.97→4.08, FR 4.08→6.71,
+  FF 6.71→8.73; tibialis anterior: S 2.16→2.49), and no screen showed them. Without the key, those
+  are the values, so a scenario that does not carry it gives the same result as before, bit for
+  bit.
+
+  **The `TETANIC_TENSION` column of the database is not the force scale.** It is read from the
+  database, written back to it and never enters any force computation. Its values match table 3 of
+  Cisi and Kohn (2008) to the hundredth (0.392 / 0.491 / 1.177 / 1.962 N), while `TWITCH_TENSION`,
+  which does feed the peak force of each unit, does not match that table: the peak twitch exceeds
+  the tetanic tension of the same row by 1.8 to 5.1 times, in every row of every scenario. So
+  **table 3 of the 2008 paper no longer describes the force parameterization**, and the force
+  output cannot be validated against it.
+
+  **The two muscle models disagree on the maximum force of the same muscle.** In the SOCDS model
+  the force comes out in newtons from the units themselves, and the maximum of the muscle *is* the
+  sum of `gpeak * twTet` (`CriticallyDampedMuscle`, which never reads the table's
+  `MAXIMUM_MUSCLE_FORCE`). In the Hill model that same sum is only a denominator: the pool force is
+  normalized by it and then scaled by `MAXIMUM_MUSCLE_FORCE` (`HillMuscle`). The two therefore give
+  different maxima for the same muscle — 4526 N against 3586 N in the soleus, 4769 against 1306 in
+  the medial gastrocnemius, 2067 against 606 in the lateral one and 986 against 674 in the
+  tibialis anterior — and by a different factor in each, from 1.26 to 3.65. Changing the muscle
+  model on the *Biomechanical Elements* screen rescales the force axis by that factor, silently.
+  Which of the two scales is the intended one is an open question for the authors.
 
 **Still left out:** the choice of joint (the converted scenarios only have ankle data), the muscle
 boxes of *Biomechanical Elements* (the original Action did not save them; use *Neural Elements*),

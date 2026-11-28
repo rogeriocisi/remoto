@@ -5,6 +5,7 @@ import br.remoto.core.simulation.ReMoto;
 import br.remoto.core.simulation.setup.ConductanceVO;
 import br.remoto.core.simulation.setup.Configuration;
 import br.remoto.core.simulation.setup.NerveVO;
+import br.remoto.core.simulation.setup.MotorUnitVO;
 import br.remoto.core.simulation.setup.NeuronVO;
 
 import java.beans.IntrospectionException;
@@ -98,6 +99,22 @@ public final class LegacySettings {
      */
     public static final String PERCENTAGE_OF_MVC = "percentageOfMVC";
 
+    /**
+     * A razão tetania/abalo e o fator de saturação de cada tipo de unidade motora, que no original
+     * eram fixos no código do {@code ConfigurationAssembler} e não apareciam em tela nenhuma:
+     * "núcleo:tipo" → [twTet1, twTet2, b1, b2], do primeiro ao último do tipo.
+     *
+     * <p>São eles, e não a coluna {@code TETANIC_TENSION} do banco, que determinam a força máxima
+     * do núcleo: {@code CriticallyDampedMuscle} e {@code HillMuscle} a calculam como a soma de
+     * {@code gpeak * twTet} sobre as unidades, e {@code b} é o fator do sigmoide de saturação.
+     * A coluna {@code TETANIC_TENSION} é lida do banco, devolvida ao banco e nunca entra em
+     * cálculo de força.
+     *
+     * <p>Sem valor, valem os do código, de modo que um cenário que não traga a chave dá o mesmo
+     * resultado de antes, bit a bit.
+     */
+    public static final String MOTOR_UNIT_FORCE = "motorUnitForce";
+
     /** A carga da tarefa de posição do original, posta pelo {@code ConfigurationAssembler}. */
     private static final double ORIGINAL_PERCENTAGE_OF_MVC = 0.15;
 
@@ -177,6 +194,19 @@ public final class LegacySettings {
                 if (o instanceof NeuronVO neu && ReMoto.MN.equals(neu.getCategory())
                         && blocks.get(neu.getCdNucleus()) != null) {
                     neu.setBlockedAxons(((Number) number(blocks.get(neu.getCdNucleus()))).doubleValue());
+                }
+            }
+        }
+        if (settings.get(MOTOR_UNIT_FORCE) instanceof Map<?, ?> forces && conf.getMotorunitsTypes() != null) {
+            for (Object o : conf.getMotorunitsTypes()) {
+                if (!(o instanceof MotorUnitVO mu)) {
+                    continue;
+                }
+                if (forces.get(mu.getCdNucleus() + ":" + mu.getType()) instanceof List<?> v && v.size() == 4) {
+                    mu.settwTet1(((Number) number(v.get(0))).doubleValue());
+                    mu.settwTet2(((Number) number(v.get(1))).doubleValue());
+                    mu.setb1(((Number) number(v.get(2))).doubleValue());
+                    mu.setb2(((Number) number(v.get(3))).doubleValue());
                 }
             }
         }
@@ -277,6 +307,18 @@ public final class LegacySettings {
         }
         if (conf.getpercentageOfMVC() != ORIGINAL_PERCENTAGE_OF_MVC) {
             settings.put(PERCENTAGE_OF_MVC, conf.getpercentageOfMVC());
+        }
+        Map<String, Object> forces = new LinkedHashMap<>();
+        if (conf.getMotorunitsTypes() != null) {
+            for (Object o : conf.getMotorunitsTypes()) {
+                if (o instanceof MotorUnitVO mu) {
+                    forces.put(mu.getCdNucleus() + ":" + mu.getType(),
+                            List.of(mu.gettwTet1(), mu.gettwTet2(), mu.getb1(), mu.getb2()));
+                }
+            }
+        }
+        if (!forces.isEmpty()) {
+            settings.put(MOTOR_UNIT_FORCE, forces);
         }
         Map<String, Object> blocks = new LinkedHashMap<>();
         for (Object o : conf.getNeuronTypes()) {

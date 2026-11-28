@@ -490,7 +490,8 @@ public final class LegacyScreens {
                 (conf, sel) -> conf.getMotorUnitTypes(sel.get("pool")),
                 item -> ((MotorUnitVO) item).getType(),
                 List.of(Field.number("Twitch peak", "N", "twitchTension1", "twitchTension2"),
-                        Field.number("Tetanic force", "N", "maxTension1", "maxTension2"),
+                        Field.number("Tetanus-to-twitch ratio", null, "twTet1", "twTet2"),
+                        Field.number("Saturation factor", null, "b1", "b2"),
                         Field.number("Twitch time-to-peak", "ms", "contractionTime1", "contractionTime2")));
         Part emg = new Part("EMG model parameters", Layout.MATRIX,
                 (conf, sel) -> conf.getMotorUnitTypes(sel.get("pool")),
@@ -505,9 +506,17 @@ public final class LegacyScreens {
                 List.of(model, muscle, emg),
                 (conf, sel, items) -> conf.setListMotorUnitTypes(items.get(1)),
                 List.of(
-                        "Twitch peak and tetanic force: the force of a single twitch of one unit of that"
-                                + " type, and of its fully fused contraction. With the twitch time-to-peak, they are"
-                                + " what grade the force of the pool as more units are recruited and fire faster.",
+                        "Twitch peak, tetanus-to-twitch ratio and saturation factor: the force of a single"
+                                + " twitch of one unit of that type, how many times its fully fused contraction"
+                                + " exceeds that twitch, and the factor of the saturation curve between the two."
+                                + " With the twitch time-to-peak, they are what grade the force of the pool as more"
+                                + " units are recruited and fire faster, and their product over the units is the"
+                                + " maximum force of the nucleus.",
+                        "The tetanic force column of the stored table is not on this screen: it is kept in the"
+                                + " scenario as it is, but no force computation reads it. The force scale comes from"
+                                + " the twitch peak and the tetanus-to-twitch ratio above.",
+                        "The ratio and the saturation factor were fixed in the code of the original and are now"
+                                + " saved with the scenario; leaving them as they are keeps the original results.",
                         "MUAP scale and duration factors: the amplitude and the width of the action"
                                 + " potential that a unit of that type adds to the electromyogram. The shape itself"
                                 + " is chosen on the Electromyogram screen.",
