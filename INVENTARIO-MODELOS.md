@@ -2657,3 +2657,647 @@ devolve 0, e `afferentNumber = 0` dá NaN/infinito.
    (§2.9) para a inibição autógena.
 5. **Força negativa.** `log(F/4 + 1)` dá **NaN** para `F < −4` N. Teste de borda
    (F-45).
+
+---
+
+# 11. A camada de simulação: o segundo conjunto de classes de modelo
+
+As classes de `br.remoto.core.simulation.{neuron,musculotendon,joint,proprioceptor}` são o porte
+direto do ReMoto original. A maioria hoje **envolve** um modelo de `br.remoto.core.model`,
+acrescentando identidade, trens de disparo, amostradores (`Sample`) e as escolhas de variante;
+algumas ainda contêm equações próprias. O javadoc de cada uma diz explicitamente onde está o
+modelo — por exemplo `simulation/neuron/Motoneuron.java:15-19`:
+
+> "A motoneuron of the original model: identity, spike trains and the axon (stimulation by the
+> nerve, conduction latencies, collision of antidromic and orthodromic spikes). The two
+> compartment membrane is `br.remoto.core.model.neuron.MotoneuronMembrane`."
+
+## 11.1 `Motoneuron` — `simulation/neuron/Motoneuron.java` ⭐
+
+**O que modela além da membrana.** O **axônio** do motoneurônio: estimulação pelo nervo,
+latências de condução e a **colisão de disparos antidrômicos e ortodrômicos** — o mecanismo que
+produz o decaimento do reflexo H em intensidade alta.
+
+**Escolha da variante de membrana (linhas 52-54)** — é aqui que a família se decide:
+
+```java
+this.membrane = ReMoto.mnModelContinuous.equals(misc.getMotoneuronModel())
+        ? new ContinuousMotoneuronMembrane(misc)
+        : new MotoneuronMembrane(misc);
+```
+
+**Padrão: a membrana de pulso.** `Miscellaneous.motoneuronModel` é inicializado com
+`ReMoto.mnModelPulse` e o *getter* devolve `mnModelPulse` também quando o campo é nulo
+(`simulation/neuron/Miscellaneous.java:27-32`):
+
+> "Qual membrana os motoneurônios usam; sem valor, a de pulso do original."
+
+**Equações próprias — a colisão (`atualize`, linhas 102-167).**
+
+```
+// propagação antidrômica (do ponto de estímulo para a medula)
+se t > tAntidromico + latencyStimulusSpinal:
+    se t − tSomaSpike >= mnSomaRefractoryPeriod − T_TOLERANCE:  dispara o soma
+    indexAntidromico++
+
+// propagação ortodrômica (do soma para o ponto de estímulo)
+se t > tOrtodromico + latencyStimulusSpinal:
+    se t − tAxonSpike >= mnAxonRefractoryPeriod − T_TOLERANCE:  dispara o axônio
+    indexOrtodromico++
+
+// colisão no meio do axônio
+se |tAntidromico − tOrtodromico| < latencyStimulusSpinal:
+    indexAntidromico++;  indexOrtodromico++        // os dois disparos se aniquilam
+```
+
+**Latências (`setLatencies`, linhas 249-261).** Três, todas arredondadas para múltiplo do passo:
+`latencyStimulusSpinal`, `latencyStimulusEndPlate` e `latencySpinalEndPlate`
+(= soma das distâncias / velocidade). `axonVelocity < 0.01` m/s é elevado a 0,01.
+
+**Variante do axônio (`atualizeAxon`, linhas 201-228).** Com `nerve.usesAxonNodes()`, cria um
+`AxonNode(Kind.MOTOR, step, max(axonThreshold, 1e-9))` no primeiro passo e deixa o nó decidir;
+senão, compara `nerve.getMotorIntensity()` com `axonThreshold`.
+
+**Status.** Implementado.
+
+**Como testar.**
+
+1. **Razão H/M e o decaimento do H.** É aqui que a colisão vive: em intensidade supramáxima,
+   o disparo antidrômico (do estímulo subindo pelo axônio motor) colide com o ortodrômico
+   (gerado pelo reflexo) e o H desaparece. Teste: varrer a intensidade e conferir que o H sobe,
+   atinge máximo e **volta a zero** quando o M satura. Alvo: `H_max/M_max ≈ 0,5-0,7` no sóleo.
+2. **Latência da onda M.** `latencyStimulusEndPlate` é a latência eferente: a onda M deve
+   aparecer nesse tempo depois do estímulo (~5-8 ms no sóleo).
+3. **Latência do reflexo H.** `latencyStimulusSpinal` (aferente) + atraso sináptico +
+   `latencyStimulusEndPlate` (eferente) ≈ 28-35 ms no sóleo.
+4. **Refratariedade do axônio.** Dois estímulos com intervalo menor que
+   `mnAxonRefractoryPeriod`: só o primeiro deve gerar onda M.
+
+## 11.2 `Interneuron` — `simulation/neuron/Interneuron.java`
+
+**O que modela.** A identidade dos quatro tipos de interneurônio e **a atribuição do período
+refratário por tipo** (linhas 306-314):
+
+| Tipo (`ReMoto`) | Período refratário lido de |
+| --- | --- |
+| `RC` (Renshaw) | `getRcSomaRefractoryPeriod()` |
+| `IaIn` | `getIaInSomaRefractoryPeriod()` |
+| `IbIn` | `getIbInSomaRefractoryPeriod()` |
+| `gII` | `getGIISomaRefractoryPeriod()` |
+
+Comentário próprio (linhas 364): "For interneurons, terminalSpikeTrain is the same as
+somaSpikeTrain" — não há axônio separado.
+
+**Status.** Implementado. Um tipo fora dos quatro fica com refratário **0** (ver F-46).
+
+## 11.3 `SensoryFiber` — `simulation/neuron/SensoryFiber.java`
+
+**O que modela.** A ligação entre a `AfferentFiber` e o receptor, e a escolha da ordem gama.
+
+**Ligação receptor→fibra (linhas 101-117):**
+
+```java
+setGTO(gto):     se kind == IB  → fiber.setFiringRate(gto::getIbFiringRate)
+setSpindle(sp):  se kind == IA  → fiber.setFiringRate(sp::getIaFiringRate)
+                 se kind == II  → fiber.setFiringRate(sp::getIIFiringRate)
+```
+
+**Ordem do processo gama (linha 32):** `Math.max(0, neu.getGammaOrder())` — vem da
+configuração do neurônio; **0 = as ordens do original** (25/30/400).
+
+**Nó de Ranvier (linhas 64-66):** criado no primeiro passo se
+`nerve.isActive() && nerve.usesAxonNodes()`.
+
+**Status.** Implementado.
+
+## 11.4 `Nerve` — `simulation/Nerve.java` ⭐
+
+**O que modela.** O nervo estimulado e **a escolha de qual dos três modelos de limiar os axônios
+usam**.
+
+**Javadoc (literal, linhas 376-383):**
+
+> "A stimulated nerve of a simulation: the properties of the configuration and the intensity of the
+> stimulus at each step, from `br.remoto.core.model.stimulus.NerveStimulation`. Motoneurons and
+> afferent fibers of the nerve read the intensity to fire their axons: **the intensity itself, with
+> the threshold by current of the original, or the intensity equivalent to the charge with leak of
+> each kind of axon** (`LeakyCharge`), **or, with a node of Ranvier at the stimulus site of each
+> axon** (`AxonNode`), **the intensity itself, which each axon model integrates.**"
+
+**As três variantes de limiar e seus padrões** (`simulation/setup/NerveVO.java:43-53`):
+
+| Constante | Valor da string | Padrão? |
+| --- | --- | --- |
+| `CURRENT_THRESHOLD` | `"current"` | **sim** (`thresholdModel = CURRENT_THRESHOLD`) |
+| `CHARGE_THRESHOLD` | `"charge"` | não |
+| `NODE_THRESHOLD` | `"node"` | não |
+
+Com constantes de tempo padrão para o limiar por carga:
+`DEFAULT_TAU_MOTOR = 0.45` ms e `DEFAULT_TAU_SENSORY = 0.65` ms (linhas 47-48), e
+`pulseWidth` padrão = `NerveStimulation.PULSE_WIDTH` = 1,0 ms.
+`setThresholdModel` rejeita qualquer outro valor com `IllegalArgumentException` (linhas 269-273).
+
+**Comentário que registra divergência (linhas 425-426):**
+
+> "The frequency of the paired train is not copied from the configuration: it is always the
+> frequency of the nerve"
+
+**Status.** Implementado, três variantes, padrão = limiar por corrente.
+
+**Como testar.** As três variantes no mesmo cenário de reflexo H, variando a largura do pulso:
+
+- **corrente**: o limiar não depende da largura (nenhuma curva I-D);
+- **carga**: segue Lapicque com `tau` = 0,45/0,65 ms → **cronaxia de 0,31/0,45 ms**;
+- **nó**: segue o modelo de Bostock, com constante de tempo ~0,4/0,5 ms (§2.8).
+
+A comparação das três curvas intensidade-duração no mesmo cenário é o teste mais informativo
+desta classe, e tem os três alvos numéricos acima.
+
+## 11.5 `MuscleSpindle` — `simulation/proprioceptor/MuscleSpindle.java` ⭐
+
+**O que modela.** O fuso de um núcleo: a escolha da variante, o **acionamento fusimotor variável**
+e os amostradores das taxas.
+
+**Escolha da variante (linhas 54-60):**
+
+```java
+if (spindle_model.equals(ReMoto.spindleModelProchazka))  prochazka = new ProchazkaSpindle();
+else if (spindle_model.equals(ReMoto.spindleModelMileusnic))
+    mileusnic = new MileusnicSpindle(cdNucleus, conf.getStep(), gammaDynamic, gammaStatic,
+            conf.getPrimaryBag1Gain(), conf.getPrimaryBag2AndChainGain(),
+            conf.getSecondaryBag2AndChainGain());
+```
+
+**Acionamento fusimotor variável (linhas 37-39, 94-110)** — o gancho que torna γ dependente do
+tempo. Comentário:
+
+> "Fusimotor drive over time (added to the constant rates); null when the scenario does not
+> modulate it"
+
+```java
+private static double fusimotor(double rate, ModulatingSignal signal, double t) {
+    return signal == null ? rate : Math.max(0, rate + signal.value(t));
+}
+private static ModulatingSignal active(ModulatingSignal signal) {
+    return signal == null || signal.getCdSignal() == null || ReMoto.none.equals(signal.getCdSignal())
+            ? null : signal;
+}
+```
+
+Isto é: γ_dinâmico e γ_estático são **a taxa constante mais o sinal, nunca negativos**, e
+`setFusimotor` só é chamado quando pelo menos um dos dois sinais está ativo
+(`!= null` e código `!= "none"`). **Por padrão o acionamento fusimotor é constante.**
+E só vale para a variante de Mileusnic: a de Prochazka não tem fusimotor.
+
+**Status.** Implementado. Fusimotor variável **implementado, desligado por padrão**.
+
+**Como testar.** Modular γ_estático com uma senoide de 1 Hz e medir a modulação da Ia: o ganho
+deve seguir as constantes de tempo das fibras (§10.2, §10.3), com a chain respondendo
+instantaneamente. Comparar a profundidade de modulação da Ia com a de γ.
+
+## 11.6 `GolgiTendonOrgan` — `simulation/proprioceptor/GolgiTendonOrgan.java`
+
+**O que modela.** O órgão tendinoso de um núcleo e **a contagem das fibras Ib ativas** entre as
+quais a taxa se divide (linhas 191-193: `if (neu.getType().equals(ReMoto.Ib)) afferentNumber++`).
+
+**Comentário que admite o caso degenerado (linhas 225-229):**
+
+> "Whether the muscle has active Ib fibers. Without them, the rate per fiber of the original is the
+> rate of the tendon organ divided by zero (NaN, then infinity): nothing reads it, and the results
+> do not show it."
+
+**Status.** Implementado. Única variante: `lumpedGtoModelCrago` (linha 198). Ver F-47 —
+qualquer outro valor deixa `lumpedGTO` nulo e `atualize` lança `NullPointerException`.
+
+## 11.7 `MusculotendonSuperClass` — `simulation/musculotendon/MusculotendonSuperClass.java` ⭐
+
+**O que modela.** A cadeia **geometria → músculo → tendão → GTO → fuso** a cada passo, e é onde
+a geometria de `MusculotendonGeometry` é alimentada com os ângulos.
+
+**A citação de Arnold (literal, linha 162)** — órfã, solta entre dois métodos:
+
+```java
+// Polynomial fit from the data reported in Arnold et al. (2010) -- [L.A.E. 31/05/2012]
+```
+
+**Esta é a fonte dos polinômios de `MusculotendonGeometry`** (§9.1), que ficou para trás quando
+as equações foram movidas para o pacote `model` — ver F-32.
+
+**Ordem do passo (`atualize`, linhas 82-160).** Três ramos quase idênticos, um por modelo de
+articulação:
+
+```
+comprimento ← geometry.updateLength(ângulo_tornozelo em GRAUS, ângulo_joelho)
+se t == 0: extrafusalMuscle.setInitialLengthNorm()
+braço de momento ← geometry.updateMomentArm(...)
+extrafusalMuscle.atualize(t)
+se o modelo é "hill":
+    tendon.atualize(t, comprimento, lengthNorm·optimalLength, pennationAngle)
+    force ← tendon.getForce();  gto.atualize(t, tendon.getForce())
+senão:
+    force ← extrafusalMuscle.getForce();  gto.atualize(t, force)
+spindle.atualize(t, lengthNorm, stretchVelocity, stretchAcceleration)
+```
+
+**Com uma diferença crítica entre os ramos** (ver F-48): no ramo **isométrico** a chamada
+`spindle.atualize` está **dentro** do `if (muscleModel == "hill")` (linha 98); nos ramos
+**pêndulo** (linha 129) e **posição** (linha 155) está **fora**, depois do `if/else`.
+
+**E uma segunda** (ver F-31): o ângulo do joelho entregue à geometria é
+`associatedJoint.getKneeAngle()`, que vale **radianos** no isométrico
+(`IsometricAnkle.kneeAngle()` devolve rad) e **graus** no pêndulo e na tarefa de posição
+(`InvertedPendulumAnkle.kneeAngle()` e `PositionTaskAnkle.kneeAngle()` devolvem graus, como os
+próprios javadoc dizem).
+
+**Status.** Implementado, com as duas assimetrias acima.
+
+## 11.8 `Hill`, `SecondOrderCriticallyDampedSystem`, `Raikova`, `DistributionMoments` — `simulation/musculotendon/`
+
+**O que modelam.** Os quatro invólucros dos modelos de músculo, com os amostradores de sinais.
+
+**As quatro variantes de músculo e o padrão** (`simulation/factory/JointFactory.java:110-122`):
+
+```java
+if      (muscle_model.equals(ReMoto.Raikova))            muscle = new Raikova(...);
+else if (muscle_model.equals(ReMoto.Hill))               muscle = new Hill(...);
+else if (muscle_model.equals(ReMoto.DistributionMoments)) muscle = new DistributionMoments(...);
+else                                                      muscle = new SecondOrderCriticallyDampedSystem(...);
+```
+
+**Padrão: SOCDS** — é o ramo `else`, que pega qualquer código não reconhecido.
+
+**Amostragem antes da atualização** (`Hill.atualize`, comentário na linha 352):
+
+> "The samples are taken before the update: they hold the values of the previous step"
+
+O mesmo vale para os três modelos de articulação. Isso significa que **todo sinal gravado está
+atrasado de um passo** em relação ao estado — relevante para medir latências (ver F-49).
+
+**Assimetrias entre os quatro invólucros** (todas achados):
+
+| Método | Hill | SOCDS | Raikova | DistributionMoments |
+| --- | --- | --- | --- | --- |
+| `getMaximumMuscleForce()` | `muscle.maximumMuscleForce()` | `muscle.maximumMuscleForce()` | **0** (F-50) | — |
+| `instantMotorUnitForce()` | **0** (F-51) | `muscle.unitForce(...)` | `muscle.unitForce(...)` | — |
+| `setInitialLengthNorm()` | delega ao modelo | **vazio** | **vazio** | — |
+
+E `instantMuscleForce`/`instantMotorUnitForce` de SOCDS e Raikova chamam
+`muscle.muscleForce(t)`/`muscle.unitForce(...)`, que **avançam o estado dos abalos** (F-52).
+
+## 11.9 `AnkleIsometricModel`, `InvertedPendulumModel`, `PositionTaskModel` — `simulation/joint/`
+
+**O que modelam.** Os três invólucros das articulações, com os amostradores e a ligação dos
+músculos como `Actuator` (força × braço de momento).
+
+**As variantes de articulação e o padrão** (`JointFactory.createJoint`, linhas 373-404):
+
+| Código | Classe de simulação | Modelo |
+| --- | --- | --- |
+| `isometricAnkle(...)` (inclui `imposedAngle`) | `AnkleIsometricModel` | `IsometricAnkle` |
+| `"pendulum"` | `InvertedPendulumModel` | `InvertedPendulumAnkle` |
+| `"position"` | `PositionTaskModel` | `PositionTaskAnkle` |
+
+**Ângulo imposto (`AnkleIsometricModel`, linhas 291-294):**
+
+```java
+ModulatingSignal angleSignal = conf.getJointAngleSignal();
+this.ankle = ReMoto.imposedAngle.equals(conf.getCdJointModel()) && angleSignal != null
+        ? new IsometricAnkle(conf.getJointAngle(), conf.getKneeAngle(), angleSignal::value)
+        : new IsometricAnkle(conf.getJointAngle(), conf.getKneeAngle());
+```
+
+**Status.** Implementados.
+
+**Como testar.** Cada um tem alvos próprios (§9.2-9.4). O teste transversal mais útil é
+**trocar a articulação mantendo todo o resto**: a força e o EMG devem ser iguais no primeiro
+segundo (o pêndulo e a tarefa de posição não integram antes de `t = 1000` ms) e divergir depois.
+
+---
+
+# 12. Como os parâmetros chegam aos modelos: as fábricas
+
+## 12.1 `NeuronFactory` — `simulation/factory/NeuronFactory.java` (313 linhas) ⭐
+
+**O que faz.** Constrói cada neurônio e **traduz a configuração em parâmetros de modelo**,
+incluindo as conversões de unidade e os gradientes ao longo do pool.
+
+**Gradiente do pool (linhas 28-32):**
+
+```java
+double bias = 0;
+if (reference.getQuantity() > 1) bias = (double) index / (reference.getQuantity() - 1);
+```
+
+**Conversões de unidade — a tabela que um teste de unidades precisa (linhas 169-174, 264-282):**
+
+| Grandeza | Conversão | Onde |
+| --- | --- | --- |
+| `gmax` dos canais | `gmax × 1e6 × área` (nS), depois `/1000` (µS) | 169-174, 250 |
+| Área do soma / dendrito | `π · d · l`, com `d` e `l` já em cm (`/1e4`) | 119-120, `ElectroCalculation:69-72` |
+| Capacitância | `cm × 1e3 × área` → nF | `ElectroCalculation:49-56` |
+| Condutância de fuga | `1e6 × área / Rm` → µS | `ElectroCalculation:23-28` |
+| Acoplamento | `2e6 / (R_axial_dend + R_axial_soma)` → µS | `ElectroCalculation:13-21` |
+| Resistência de entrada `Rn` | `1/(g_leak,s + g_leak,d·g_c/(g_leak,d + g_c))` | `ElectroCalculation:30-35` |
+
+**Limiares sorteados (linhas 126-127):**
+
+```java
+threshold   = Draws.gaussian(threshold1,   threshold1   * miscellaneous(thresholdSTD));
+thresholdCa = Draws.gaussian(thresholdCa1, thresholdCa1 * miscellaneous(thresholdCaSTD));
+```
+
+**Bloqueio de condução (literal, linhas 157-164):**
+
+> "Conduction block of the slowest axons of the pool (scenario settings `axonConductionBlock`), as
+> in the demyelinating version of the Fortran ReMoto: **the velocity 0 becomes the minimum of 0.01
+> m/s, a latency of tens of seconds, so the spike of the soma never reaches the terminal and the
+> motor unit makes no force.**"
+
+```java
+int poolSize = referenceS.getQuantity() + referenceFR.getQuantity() + referenceFF.getQuantity();
+if (indexCategory <= (int)(poolSize * reference.getBlockedAxons())) axonVelocity = 0;
+```
+
+`indexCategory` é o índice **no pool inteiro** (linhas 86-90: `index + 1`, mais as quantidades de
+S e FR nos tipos FR e FF), então a fração bloqueia os primeiros do pool — as unidades S, as mais
+lentas. Mecanismo coerente com o comentário.
+
+**Status.** Implementado. **Desligado por padrão** quando `blockedAxons = 0`.
+
+**Como testar.** Com `blockedAxons = 0,3`, a força máxima do músculo deve cair aproximadamente na
+proporção da força das unidades bloqueadas (não 30% da força, porque as S contribuem pouco), e a
+onda M deve ficar **intacta** (o axônio ainda dispara no ponto de estímulo; só a condução até a
+placa é que atrasa). Observável que distingue bloqueio de condução de perda de motoneurônios:
+no bloqueio, o `somaSpikeTrain` continua normal e só o `terminalSpikeTrain` fica inútil. Esse
+contraste é o teste.
+
+**Condutâncias da membrana de cinética contínua (`continuousConductances`, linhas 275-299).**
+É a ponte entre as duas famílias, e o javadoc admite uma divergência (literal, linhas 262-272):
+
+> "Persistent sodium over the pool, in S/cm², from the published parameter set of the model this
+> membrane transcribes: it has a gradient of its own, which is why it is not a fraction of the fast
+> sodium. **The source grades it along a curve; here the interpolation is linear, like every other
+> per-unit parameter of the ReMoto, until the comparison of the f-I curve says whether the curve
+> shape matters.**
+>
+> The configuration's gmax is S/cm² times 1e-5, which is what makes `gmax * 1e6 * area` come out in
+> nS; from S/cm² the same conductance in uS is `value * area / 100`."
+
+```java
+PERSISTENT_SODIUM_FIRST = 0.00043      // S/cm², o primeiro do pool
+PERSISTENT_SODIUM_LAST  = 0.00067      // S/cm², o último
+
+c.setGNaBar ( pattern.getGNaMVO().getGmax() / 1000 );   // µS, o mesmo do canal de pulso
+c.setGKfBar ( pattern.getGKNVO().getGmax()  / 1000 );
+c.setGKsBar ( pattern.getGKQVO().getGmax()  / 1000 );
+c.setGCaLBar( pattern.getGCaPVO().getGmax() / 1000 );
+c.setGNapBar( Gradient.linear(0.00043, 0.00067, bias) * areaSoma / 100 );
+c.setENa ( pattern.getGNaMVO().getE() );
+c.setEK  ( pattern.getGKNVO().getE()  );
+c.setECaL( pattern.getGCaPVO().getE() );
+c.reset();
+```
+
+**Note o que a fábrica NÃO atribui:** `vTraubSoma`, `vTraubDend`, `lTau` e `rInact` ficam nos
+padrões do campo (0, 35, 60, 0,05) — nenhum cenário pode mudá-los (ver F-53). E as condutâncias
+máximas são **as mesmas** dos canais de pulso, apesar de o significado ser diferente
+(ver F-05).
+
+**Ramos mortos (linhas 38, 74 de `ElectroCalculation`):** `String distribution =
+ReMoto.gradualGaussian;` é atribuído literalmente, e os ramos `uniform` e o `else` nunca
+executam (F-54).
+
+## 12.2 `SynapsesFactory` — `simulation/factory/SynapsesFactory.java` (653 linhas) ⭐
+
+**O que faz.** Monta a rede: para cada par pré/pós sorteia a conectividade, calcula o peso e
+cria a sinapse no compartimento certo.
+
+**Decaimento do peso sináptico com a distância** — a equação, em dois lugares.
+
+Para o par Renshaw↔motoneurônio (linhas 164-194):
+
+```
+distance  = |x_pre − x_pos|                        [mm, no eixo caudo-rostral]
+declining = o do tipo de sinapse, se > 0, senão o da tela Miscellaneous
+            (ReMoto.decliningRCtoMN ou ReMoto.decliningMNtoRC)
+weight    = declining / (declining + distance²)
+se weight < 0.01: não cria a sinapse
+```
+
+Para os outros tipos (`createSynapticConductance`, linhas 494-507), com o comentário:
+
+> "Weight falling with the distance, when the synapse type has a decay (the Renshaw-motoneuron
+> synapses have their own rule above; the noises have no position)"
+
+```java
+if (gType.getDistanceDecay() > 0 && !renshawPair(pre, pos) && !Noise.equals(pre.getCategory())) {
+    double distance = Math.abs(pre.getXPosition() - pos.getXPosition());
+    double factor = gType.getDistanceDecay() / (gType.getDistanceDecay() + distance * distance);
+    if (factor < 0.01) return;            // "too weak, no synapse"
+    weight = weight * factor;
+}
+```
+
+A lei é **lorentziana**: `w(r) = d/(d + r²)`, valendo 1 em `r = 0` e caindo a 1/2 em
+`r = √d`. O corte em 0,01 corresponde a `r = √(99·d)`.
+
+**Conectividade (linhas 144-150):**
+
+```java
+double connectivity = conf.getSynapticConnectivity(g);
+double rand = Rng.random();
+if (connectivity < rand || connectivity < 0.01) continue;
+```
+
+**Dinâmica sináptica (linhas 640-652):** lida de `conf.getDynamicType(cdConductanceType,
+cdNucleusPre, cdNucleus)`, com o comentário:
+
+> "Same reading as the original DynamicProperties: no VO means no dynamics, an unknown type too"
+
+```java
+SynapticDynamics.Kind kind = NONE;
+if (...) kind = DEPRESSING;  else if (...) kind = FACILITATING;
+return new SynapticDynamics(kind, vo.getTau(), vo.getVariation());
+```
+
+**Padrão: `NONE`** — tanto por ausência de VO quanto por tipo desconhecido.
+
+**Condutância da sinapse (linha 636):** `group.add(cd, (gmax × weight)/1000.0, delay,
+dynamics)` — nS → µS.
+
+**Uma divergência deliberada do original, documentada (linhas 522-526):**
+
+> "Only the motoneuron has two compartments. The interneuron has one, and its membrane
+> (`InterneuronMembrane`) integrates the dendritic groups alone, so **a synapse put in the somatic
+> group of an interneuron would never reach it.** In the original database the compartment is empty
+> for every synapse onto an interneuron, which already lands here; **this keeps a scenario that
+> says 'S' there working instead of silently losing the synapse.**"
+
+```java
+boolean soma = ReMoto.somaCompartment.equals(gType.getCompartment()) && neuronPos instanceof Motoneuron;
+```
+
+**Posicionamento no eixo caudo-rostral (`placeAfferentsAndTracts`, linhas 568-573):**
+
+> "Positions (mm) in the caudal-rostral column for the cells the original did not place, used only
+> by the synapses with a distance decay: the afferents of a muscle spread over its motoneuron pool
+> (xIni to xEnd of the nucleus), each type in the order of its fibers, and the descending axons
+> spread over the whole column (the first xIni to the last xEnd)."
+
+**Status.** Implementado. Decaimento com a distância **desligado por padrão** para os tipos de
+sinapse cujo `distanceDecay` é 0; para o par RC↔MN o decaimento é sempre aplicado, com o valor
+da tela Miscellaneous.
+
+**Como testar.**
+
+1. **Lei do decaimento, direto.** Dois motoneurônios conhecidos a distâncias crescentes de uma
+   Renshaw: medir a amplitude do IPSP e conferir que segue `d/(d + r²)`. Teste quantitativo
+   fechado.
+2. **Corte em 0,01.** Conferir que acima de `r = √(99·d)` nenhuma sinapse é criada: contar
+   sinapses em função de `declining`.
+3. **Inibição recorrente em função da distância.** Observável de sistema: a redução de taxa de um
+   motoneurônio pela ativação das Renshaw deve ser maior nos vizinhos do pool. Comparar o perfil
+   espacial com Cisi e Kohn (2008).
+4. **Reprodutibilidade da construção da rede.** `Rng.random()` por par candidato: duas
+   construções com a mesma semente devem dar **a mesma rede**, e um teste que conte sinapses por
+   tipo é um bom *golden value*.
+
+## 12.3 `JointFactory` — `simulation/factory/JointFactory.java` (405 linhas)
+
+**O que faz.** Monta as unidades motoras, o músculo, o tendão, o fuso, o órgão tendinoso, o
+musculotendão e a articulação — **nesta ordem** (linhas 103-140), o que importa porque
+`CriticallyDampedMuscle` soma `gpeak·twTet` no construtor e `RaikovaMuscle` deriva k, p, m ali:
+`configureMotorUnits` (linha 103) roda **antes** dos construtores de músculo (linhas 110-122).
+
+**Parâmetros da unidade motora por gradiente (linhas 297-312 e 323-335).** Todos por
+`Gradient.linear(v1, v2, bias)`:
+
+`gpeak`, `tpeak`, `gpeakRaikova`, `tpeakRaikova`, `tHalfRaikova`, `b`, `twTet`, `bRaikova`,
+`twTetRaikova`, `ampEMG`, `lambdaEMG`.
+
+**Interpolação entre tipos no modo "merged" (linhas 233-290)** — nas fronteiras S/FR e FR/FF os
+parâmetros são a **média** dos dois tipos vizinhos, por exemplo:
+
+```java
+ampEMG2 = (muS.getAmpEMG2() + muFR.getAmpEMG1()) / 2;
+```
+
+**Distribuição espacial das unidades (linhas 340-366).** Três variantes:
+
+| `conf.getMuDistribution()` | Método chamado |
+| --- | --- |
+| `muDistributionPreset` | `presetSpatialDistribution` (com `Point` da tabela `MU_POSITION`); **sem ponto, cai no aleatório** |
+| `muDistributionLinear` | `linearSpatialDistribution` |
+| qualquer outro (padrão) | `randomSpatialDistribution` |
+
+Parâmetros espaciais lidos de Miscellaneous (linhas 150-154): `thickness + cdNucleus`
+(espessura por músculo), `skinLayer`, `tauAttenuation`, `cteEnlargement`.
+
+**O triângulo de amplitude zero (`ExtrafusalMuscleSuperClass.calculateLengthNormAux`,
+linhas 107-126):** para o SOL constrói um `ModulatingSignal` triangular de `tini = 100`,
+`tfin = 110`, `amp = 0.00`, `width = 5` e soma ao comprimento — **sempre zero**. É a origem da
+frase "o original somava ao do sóleo um triângulo de amplitude zero" no javadoc de
+`CriticallyDampedMuscle` (F-55).
+
+**Status.** Implementado.
+
+## 12.4 `NeuronUpdater` e `Rng.forbid()` — `simulation/NeuronUpdater.java`
+
+**O que faz.** A atualização paralela dos neurônios, com a garantia de reprodutibilidade.
+
+**Javadoc (literal, linhas 30-34):**
+
+> "...in parallel, and only when their injected current is constant; **they draw no random
+> numbers.** ... threads are marked with `Rng#forbid()`: **a draw there fails the simulation instead
+> of** [mudar silenciosamente a sequência]"
+
+`MIN_PARALLEL_NEURONS` (linha 41): "Below this many parallel neurons the synchronization costs
+more than it saves."
+
+**Como testar.** O teste decisivo de reprodutibilidade: rodar o **mesmo cenário** com
+`setThreads(1)` e com `setThreads(N)` e exigir saída **idêntica bit a bit**. Combinado com o
+mecanismo `forbid()`, cobre toda a superfície de aleatoriedade listada em F-15.
+
+---
+
+# 13. A cadeia do EMG, de ponta a ponta
+
+Vale juntar num lugar, porque atravessa três pacotes e é onde a razão H/M é medida.
+
+```
+1. Motoneuron.addAxonSpike(t)        → terminalSpikeTrain recebe t + latencyStimulusEndPlate
+                                       (simulation/neuron/Motoneuron.java:243-247)
+2. MotorUnit.emg(t)                  → MUAP de Hermite-Rodriguez de cada disparo,
+                                       alargado e atenuado pela profundidade
+                                       (model/muscle/MotorUnit.java:93-153)
+3. ExtrafusalMuscleSuperClass
+     .instantMuscleEMG(t)            → soma das unidades do músculo
+                                       (simulation/musculotendon/...:74-84)
+4. LegacyOutputs.emg(...)            → ruído + filtro passa-faixa
+                                       (engine/legacy/LegacyOutputs.java:75-104)
+```
+
+**Parâmetros da etapa 4 (`LegacyOutputs.java:38-40`), que são os padrões da tela de resultados:**
+
+| Constante | Valor |
+| --- | --- |
+| `EMG_FC_LOW_HZ` | **50 Hz** |
+| `EMG_FC_HIGH_HZ` | **1000 Hz** |
+| `EMG_ATTENUATION` | **true** |
+
+**Javadoc da etapa 4 (literal, linhas 69-74):**
+
+> "Mesmo cálculo do ramo 'EMG' de `ResultDisplay` (site antigo), com os padrões da tela de
+> resultados: atenuação ligada, ruído = média de |EMG| × noiseEMG, filtro '1st2nd'
+> (`BandPassFilter`, o `ButterworthImpulseInvariance` original) de 50 a 1000 Hz. A única diferença
+> é o ruído, que vem de um gerador com a seed do cenário em vez de `Math.random()`."
+
+**Mais uma fidelidade documentada (linhas 92-93):**
+
+> "O filtro original zerava as duas primeiras amostras do próprio vetor de entrada, que é o EMG
+> bruto gravado logo abaixo; mantido para o resultado não mudar."
+
+**As duas saídas:** `emg-<núcleo>` (filtrado, mV) e `emg-bruto-<núcleo>` (sem filtro nem ruído).
+A variante `ThirdOrderBandPass` é usada só na camada web
+(`remoto-web/.../ResultViews.java:486`), não no motor.
+
+**Como testar a cadeia inteira.**
+
+1. **Razão H/M.** Cenário de reflexo H com rampa de intensidade; medir pico-a-pico das janelas
+   de latência M (~5-8 ms) e H (~30 ms) no sinal `emg-SOL`. Alvo: `H_max/M_max = 0,5-0,7`.
+   Usar `emg-bruto-SOL` para evitar que o filtro distorça a amplitude.
+2. **Banda do filtro.** O padrão é **50-1000 Hz**, mais alto que o 20-500 Hz do SENIAM
+   (Hermens et al.): a comparação com EMG experimental tem de usar a mesma banda, ou o
+   pico-a-pico não bate (F-56).
+3. **Ruído.** `meanNoise = média(|EMG|) × noiseEMG`: com `noiseEMG = 0`, o sinal filtrado deve
+   ser determinístico dada a semente.
+4. **Espectro.** Densidade espectral do `emg-bruto`: pico em 50-100 Hz, e o alargamento dos MUAPs
+   profundos deve deslocar o pico para baixo quando `cteEnlargement` sobe.
+
+---
+
+# 14. Resumo das variantes selecionáveis e dos padrões
+
+| Dimensão | Variantes | Padrão | Onde a escolha é feita |
+| --- | --- | --- | --- |
+| Membrana do motoneurônio | pulso (Destexhe) / cinética contínua | **pulso** | `Motoneuron:52-54`, `Miscellaneous:27-32` |
+| PIC (`gammaCa`) | 0 a 1 | **0 (desligada)** | `NetworkFactory:40`; valor 0 em `scenarios/modelo-completo.json:4942` |
+| Membrana do interneurônio | só uma | `InterneuronMembrane` | — |
+| Canal de potássio | `fastPotassium` (n⁴) / `slowPotassium` (q²) | ambos, papéis fixos | `NeuronFactory:178-180` |
+| Limiar do axônio | corrente / carga (Lapicque) / nó de Ranvier (Bostock) | **corrente** | `NerveVO:43-53` |
+| τ do limiar por carga | — | **0,45 ms motor / 0,65 ms sensitivo** | `NerveVO:47-48` |
+| Largura do pulso de estímulo | livre > 0 | **1,0 ms** | `NerveVO:50` |
+| Tipo de `AxonNode` | MOTOR / SENSORY | pelo tipo do axônio | `AxonNode:43-46` |
+| Ordem do processo gama (aferentes) | 0 (as do original: 25/30/400) ou inteira | **0** | `SensoryFiber:32`, `AfferentFiber:106` |
+| Fuso muscular | Mileusnic / Prochazka | pelo cenário | `MuscleSpindle:54-60` |
+| Acionamento fusimotor | constante / modulado por sinal | **constante** | `MuscleSpindle:51-52, 94-97` |
+| Órgão tendinoso | Crago (único) | Crago | `GolgiTendonOrgan:198` |
+| Músculo | Hill / SOCDS / Raikova / momentos de distribuição | **SOCDS** (ramo `else`) | `JointFactory:110-122` |
+| Articulação | isométrica / ângulo imposto / pêndulo invertido / tarefa de posição | pelo cenário | `JointFactory:373-404` |
+| Distribuição espacial das UMs | aleatória / linear / predefinida | **aleatória** (ramo `else`) | `JointFactory:340-366` |
+| Dinâmica sináptica | NONE / DEPRESSING / FACILITATING | **NONE** | `SynapsesFactory:640-652` |
+| Decaimento do peso com a distância | ligado se `distanceDecay > 0` | **desligado**, exceto RC↔MN | `SynapsesFactory:496-507` |
+| Bloqueio de condução | fração `blockedAxons` do pool | **0 (nenhum)** | `NeuronFactory:157-164` |
+| Distribuição dos tratos | Poisson / gama / gaussiana | pelo cenário | `TractSpikeGenerator:33-64` |
+| Forma do sinal modulante | 13 formas | pelo cenário | `Modulation.Shape` |
+| Filtro de EMG | "1st2nd" (`BandPassFilter`) / 3ª+3ª ordem (`ThirdOrderBandPass`) | **"1st2nd", 50-1000 Hz** | `LegacyOutputs:38-40`; a 2ª só na web |
